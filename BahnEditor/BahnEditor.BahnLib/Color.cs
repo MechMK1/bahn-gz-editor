@@ -34,7 +34,7 @@ namespace BahnEditor.BahnLib
 				{
 					throw new ArgumentNullException("color");
 				}
-				
+
 				List<uint> colors = new List<uint>();
 				colors.Add(0);
 				int colorcounter = 1, colorposition = 0;
@@ -51,7 +51,7 @@ namespace BahnEditor.BahnLib
 						length++;
 						lastcolor = color[colorposition];
 					}
-					if (color[colorposition] == FARBE_TRANSPARENT)
+					if (lastcolor == FARBE_TRANSPARENT)
 					{
 						colors.Add(FARBE_KOMPR_TR | (uint)(length - 2));
 						colorcounter++;
@@ -59,7 +59,7 @@ namespace BahnEditor.BahnLib
 					else
 					{
 						colors.Add(FARBE_KOMPRIMIERT | (uint)(length - 2));
-						colors[colorcounter + 1] = lastcolor;
+						colors.Add(lastcolor);
 						colorcounter += 2;
 					}
 
@@ -82,12 +82,16 @@ namespace BahnEditor.BahnLib
 
 		public static uint[] Decompress(uint[] input)
 		{
+			if (input == null)
+			{
+				throw new ArgumentNullException("input");
+			}
 			int viewlen, i, aktColumn = 1;
 			uint currentColor, f, count, wdhlen;  // i.e. COLORREFRGB
 			List<uint> color = new List<uint>();
 
 			viewlen = (int)input[0]; // Length of packed data in COLORREFRGB, see remark above
-			for (int j = 0; j < viewlen; j++)
+			while (aktColumn < viewlen)
 			{
 				currentColor = input[aktColumn++]; // read next value from file or from buffer
 				if ((currentColor & FARBE_ZUSATZ) == FARBE_KOMPRIMIERT)
@@ -95,33 +99,41 @@ namespace BahnEditor.BahnLib
 				{
 					// Bit7..0 contain number of loops minus 2, ie 0..255 for 2..257
 					count = (currentColor & FARBMASK_KOMPR_ZAHL) + 2;
-					for (int k = 0; k < count; k++)
+
+					if ((currentColor & FARBMASK_KOMPR_TR) != 0)
 					{
-						if ((currentColor & FARBMASK_KOMPR_TR) != 0)
+						// this "color" is needed more than any other...
+						for (int k = 0; k < count; k++)
 						{
-							// this "color" is needed more than any other...
 							color.Add(FARBE_TRANSPARENT);
+						}
+						wdhlen = 1;
+					}
+					else
+					{
+						if ((currentColor & FARBMASK_KOMPR_SYS) != 0)
+						{
+							// this color is not RGB but a configurable color
+							for (int k = 0; k < count; k++)
+							{
+								color.Add(((currentColor & FARBMASK_KOMPR_SFB) >> 8) + FARBE_WIE_MIN);
+							}
 							wdhlen = 1;
 						}
 						else
 						{
-							if ((currentColor & FARBMASK_KOMPR_SYS) != 0)
+							wdhlen = ((currentColor & FARBMASK_KOMPR_LEN) >> 8) + 1;
+							wdhlen = Math.Min(wdhlen, MAX_FARBFOLGE_LEN); // for security, but otherwise you should cancel here
+							// there follows a number of RGB colors
+							for (int k = 0; k < count; k++)
 							{
-								// this color is not RGB but a configurable color
-								color.Add(((currentColor & FARBMASK_KOMPR_SFB) >> 8) + FARBE_WIE_MIN);
-								wdhlen = 1;
-							}
-							else
-							{
-								wdhlen = ((currentColor & FARBMASK_KOMPR_LEN) >> 8) + 1;
-								wdhlen = Math.Min(wdhlen, MAX_FARBFOLGE_LEN); // for security, but otherwise you should cancel here
-								// there follows a number of RGB colors
 								for (i = 0; i < wdhlen; i++)
 								{
-									f = input[aktColumn++];
+									f = input[aktColumn];
 									color.Add(f);
 								}
 							}
+							aktColumn++;
 						}
 					}
 				}

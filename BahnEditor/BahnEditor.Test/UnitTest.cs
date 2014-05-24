@@ -34,7 +34,7 @@ namespace BahnEditor.Test
 			uint[] tmp = Color.Compress(input);
 			uint[] output = Color.Decompress(tmp);
 
-			Assert.Equals(output, expected);
+			CollectionAssert.AreEqual(expected, output);
 		}
 		
 	}
