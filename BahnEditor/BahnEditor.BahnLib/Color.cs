@@ -29,6 +29,11 @@ namespace BahnEditor.BahnLib
 		{
 			try
 			{
+				if (color == null)
+				{
+					throw new ArgumentNullException("color");
+				}
+
 				uint[] colors = new uint[2];
 				//colors[0] = (uint) color.GetLength(0);
 				//colors[1] = 0;

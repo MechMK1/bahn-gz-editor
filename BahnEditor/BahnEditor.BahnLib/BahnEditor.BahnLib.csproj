@@ -21,7 +21,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <CodeAnalysisRuleSet>ExtendedCorrectnessRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\CustomRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Color.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Graphic.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
