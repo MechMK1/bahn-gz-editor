@@ -53,6 +53,12 @@
     <Compile Include="UnitTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BahnEditor.BahnLib\BahnEditor.BahnLib.csproj">
+      <Project>{9552d044-73c6-4f57-a2e7-6605095d419f}</Project>
+      <Name>BahnEditor.BahnLib</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
