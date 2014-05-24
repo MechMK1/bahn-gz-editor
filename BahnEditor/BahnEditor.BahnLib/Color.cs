@@ -25,7 +25,7 @@ namespace BahnEditor.BahnLib
 		public const uint MAX_FARBFOLGE_LEN = 4;
 
 
-		public static uint[] compress (uint[] color)
+		public static uint[] compress (uint[] color) //
 		{
 			try
 			{
