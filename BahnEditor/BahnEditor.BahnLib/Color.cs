@@ -37,11 +37,11 @@ namespace BahnEditor.BahnLib
 
 				List<uint> colors = new List<uint>();
 				colors.Add(0);
-				int colorcounter = 1, colorposition = 0;
+				int  colorposition = 0;
 				while (colorposition < color.Length)
 				{
 					int length = 0;
-					uint lastcolor = color[colorcounter];
+					uint lastcolor = color[colorposition];
 					for (; colorposition < color.Length; colorposition++)
 					{
 						if (lastcolor != color[colorposition])
@@ -54,13 +54,11 @@ namespace BahnEditor.BahnLib
 					if (lastcolor == FARBE_TRANSPARENT)
 					{
 						colors.Add(FARBE_KOMPR_TR | (uint)(length - 2));
-						colorcounter++;
 					}
 					else
 					{
 						colors.Add(FARBE_KOMPRIMIERT | (uint)(length - 2));
 						colors.Add(lastcolor);
-						colorcounter += 2;
 					}
 
 
