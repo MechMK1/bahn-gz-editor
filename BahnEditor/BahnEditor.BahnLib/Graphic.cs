@@ -24,13 +24,10 @@ namespace BahnEditor.BahnLib
 		{
 			using (BinaryReader br = new BinaryReader(path))
 			{
-				
-			}
-			
-			
-			//TODO Implement Load(FileStream)
+				//TODO Implement Load(FileStream)
 
-			throw new NotImplementedException();
+				throw new NotImplementedException();
+			}
 		}
 
 		public bool Save(string path, bool overwrite)
@@ -52,9 +49,13 @@ namespace BahnEditor.BahnLib
 		{
 			try
 			{
-				//TODO Implement Save(FileStream)
+				using (BinaryWriter bw = new BinaryWriter(path))
+				{
+					//TODO Implement Save(FileStream)
 
-				return true;
+					return true;
+				}
+				
 			}
 			catch (Exception) //TODO Exchange general exceptions with specific ones
 			{
