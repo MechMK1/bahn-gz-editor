@@ -9,16 +9,25 @@ namespace BahnEditor.BahnLib
 {
 	public class Graphic
 	{
-		public Graphic Load(string path) {
+		public static Graphic Load(string path) {
 			if (File.Exists(path))
 			{
-				return Load(File.OpenRead(path));
+				using (FileStream stream = File.OpenRead(path))
+				{
+					return Load(stream);
+				}
 			}
 			else throw new FileNotFoundException("File not found", path);
 		}
 
-		private Graphic Load(FileStream path)
+		private static Graphic Load(FileStream path)
 		{
+			using (BinaryReader br = new BinaryReader(path))
+			{
+				
+			}
+			
+			
 			//TODO Implement Load(FileStream)
 
 			throw new NotImplementedException();
@@ -32,7 +41,10 @@ namespace BahnEditor.BahnLib
 			}
 			else
 			{
-				return Save(File.OpenWrite(path));
+				using (FileStream stream = File.OpenWrite(path))
+				{
+					return Save(stream);
+				}
 			}
 		}
 
@@ -44,7 +56,7 @@ namespace BahnEditor.BahnLib
 
 				return true;
 			}
-			catch (Exception)
+			catch (Exception) //TODO Exchange general exceptions with specific ones
 			{
 				return false;
 			}

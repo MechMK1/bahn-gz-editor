@@ -34,15 +34,15 @@ namespace BahnEditor.BahnLib
 				while (colorposition < color.Length)
 				{
 					colors[colorcounter] = FARBE_KOMPRIMIERT;
-					int length = 0;
+				int length = 0;
 					uint lastcolor = color[colorcounter];
 					for (; colorposition < color.Length; colorposition++)
-					{
+				{
 						if (lastcolor != color[colorposition])
-						{
-							break;
-						}
-						length++;
+					{
+						break;
+					}
+					length++;
 						lastcolor = color[colorposition];
 					}
 					colors[colorcounter] = colors[colorcounter] | (uint)(length - 2);
@@ -63,7 +63,7 @@ namespace BahnEditor.BahnLib
 			}
 			catch (IndexOutOfRangeException)
 			{
-
+				
 				throw;
 			}
 			catch (ArgumentNullException)
