@@ -12,6 +12,7 @@ namespace BahnEditor.BahnLib
 		public const uint FARBE_TRANSPARENT = (FARBE_LOGISCH | 0x00000001);
 		public const uint FARBE_LAMPE = 0x50000000;
 		public const uint FARBE_ZUSATZ = 0xFf000000;
+		public const uint FARBE_WIE_MIN = (FARBE_LOGISCH | 0x00000100);
 
 		public const uint FARBE_KOMPRIMIERT = (FARBE_LOGISCH | 0x40000000);
 		public const uint FARBMASK_KOMPR_TR = 0x00010000;
@@ -39,7 +40,6 @@ namespace BahnEditor.BahnLib
 				int colorcounter = 1, colorposition = 0;
 				while (colorposition < color.Length)
 				{
-					colors[colorcounter] = FARBE_KOMPRIMIERT;
 					int length = 0;
 					uint lastcolor = color[colorcounter];
 					for (; colorposition < color.Length; colorposition++)
@@ -51,14 +51,14 @@ namespace BahnEditor.BahnLib
 						length++;
 						lastcolor = color[colorposition];
 					}
-					colors[colorcounter] = colors[colorcounter] | (uint)(length - 2);
 					if (color[colorposition] == FARBE_TRANSPARENT)
 					{
-						colors[colorcounter] = colors[colorcounter] | FARBE_KOMPR_TR;
+						colors.Add(FARBE_KOMPR_TR | (uint)(length - 2));
 						colorcounter++;
 					}
 					else
 					{
+						colors.Add(FARBE_KOMPRIMIERT | (uint)(length - 2));
 						colors[colorcounter + 1] = lastcolor;
 						colorcounter += 2;
 					}
@@ -82,53 +82,62 @@ namespace BahnEditor.BahnLib
 
 		public static uint[] Decompress(uint[] input)
 		{
-			int viewlen, count, wdhlen, i, aktColor = 0;
-			uint currentColor, f;  // i.e. COLORREFRGB
+			int viewlen, i, aktColumn = 1;
+			uint currentColor, f, count, wdhlen;  // i.e. COLORREFRGB
 			List<uint> color = new List<uint>();
 
-			//viewlen = file.Length; // Length of packed data in COLORREFRGB, see remark above
-
-			currentColor = input[aktColor]; // read next value from file or from buffer
-			if ((w32 & FARBE_ZUSATZ) == FARBE_KOMPRIMIERT)
-			// packed, more than 1 pixel
+			viewlen = (int)input[0]; // Length of packed data in COLORREFRGB, see remark above
+			for (int j = 0; j < viewlen; j++)
 			{
-				// Bit7..0 contain number of loops minus 2, ie 0..255 for 2..257
-				count = (w32 & FARBMASK_KOMPR_ZAHL) + 2;
-
-				if (w32 & FARBMASK_KOMPR_TR)
+				currentColor = input[aktColumn++]; // read next value from file or from buffer
+				if ((currentColor & FARBE_ZUSATZ) == FARBE_KOMPRIMIERT)
+				// packed, more than 1 pixel
 				{
-					// this "color" is needed more than any other...
-					color[0] = FARBE_TRANSPARENT;
-					wdhlen = 1;
-				}
-				else
-				{
-					if (w32 & FARBMASK_KOMPR_SYS)
+					// Bit7..0 contain number of loops minus 2, ie 0..255 for 2..257
+					count = (currentColor & FARBMASK_KOMPR_ZAHL) + 2;
+					for (int k = 0; k < count; k++)
 					{
-						// this color is not RGB but a configurable color
-						color[0] = ((w32 & FARBMASK_KOMPR_SFB) >> 8) + FARBE_WIE_MIN;
-						wdhlen = 1;
-					}
-					else
-					{
-						wdhlen = ((w32 & FARBMASK_KOMPR_LEN) >> 8) + 1;
-						wdhlen = min(wdhlen, MAX_FARBFOLGE_LEN); // for security, but otherwise you should cancel here
-						// there follows a number of RGB colors
-						for (i = 0; i < wdhlen; i++)
+						if ((currentColor & FARBMASK_KOMPR_TR) != 0)
 						{
-							f = ReadWord32();
-							color[i] = f;
+							// this "color" is needed more than any other...
+							color.Add(FARBE_TRANSPARENT);
+							wdhlen = 1;
+						}
+						else
+						{
+							if ((currentColor & FARBMASK_KOMPR_SYS) != 0)
+							{
+								// this color is not RGB but a configurable color
+								color.Add(((currentColor & FARBMASK_KOMPR_SFB) >> 8) + FARBE_WIE_MIN);
+								wdhlen = 1;
+							}
+							else
+							{
+								wdhlen = ((currentColor & FARBMASK_KOMPR_LEN) >> 8) + 1;
+								wdhlen = Math.Min(wdhlen, MAX_FARBFOLGE_LEN); // for security, but otherwise you should cancel here
+								// there follows a number of RGB colors
+								for (i = 0; i < wdhlen; i++)
+								{
+									f = input[aktColumn++];
+									color.Add(f);
+								}
+							}
 						}
 					}
 				}
+				else // not packed, single pixel
+				{
+					count = 1;
+					wdhlen = 1;
+					color.Add(currentColor);
+				}
 			}
-			else // not packed, single pixel
-			{
-				count = 1;
-				wdhlen = 1;
-				color[0] = w32;
-			}
+			return color.ToArray();
+		}
 
+		private static uint GetRGB(byte red, byte green, byte blue)
+		{
+			return ((uint)(((blue) | ((ushort)(green) << 8)) | (((uint)(red)) << 16)));
 		}
 	}
 }
