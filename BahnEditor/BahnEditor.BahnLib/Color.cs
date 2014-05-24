@@ -25,28 +25,30 @@ namespace BahnEditor.BahnLib
 		public const uint MAX_FARBFOLGE_LEN = 4;
 
 
-		public static uint[] compress(uint[] color)
+		public static uint[] Compress(uint[] color)
 		{
-			if (color == null)
-			{
-				throw new ArgumentNullException("color");
-			}
 			try
 			{
+				if (color == null)
+				{
+					throw new ArgumentNullException("color");
+				}
+				
 				List<uint> colors = new List<uint>();
-				int colorcounter = 0, colorposition = 0;
+				colors.Add(0);
+				int colorcounter = 1, colorposition = 0;
 				while (colorposition < color.Length)
 				{
 					colors[colorcounter] = FARBE_KOMPRIMIERT;
-				int length = 0;
+					int length = 0;
 					uint lastcolor = color[colorcounter];
 					for (; colorposition < color.Length; colorposition++)
-				{
-						if (lastcolor != color[colorposition])
 					{
-						break;
-					}
-					length++;
+						if (lastcolor != color[colorposition])
+						{
+							break;
+						}
+						length++;
 						lastcolor = color[colorposition];
 					}
 					colors[colorcounter] = colors[colorcounter] | (uint)(length - 2);
@@ -63,11 +65,12 @@ namespace BahnEditor.BahnLib
 
 
 				}
+				colors[0] = (uint)(colors.Count - 1);
 				return colors.ToArray();
 			}
 			catch (IndexOutOfRangeException)
 			{
-				
+
 				throw;
 			}
 			catch (ArgumentNullException)
@@ -77,17 +80,15 @@ namespace BahnEditor.BahnLib
 			}
 		}
 
-		/*public static int decompress(uint input, out uint[] color)
+		public static uint[] Decompress(uint[] input)
 		{
-			int viewlen, count, wdhlen, i;
-			uint w32, f;  // i.e. COLORREFRGB
-			color = new uint[MAX_FARBFOLGE_LEN];
+			int viewlen, count, wdhlen, i, aktColor = 0;
+			uint currentColor, f;  // i.e. COLORREFRGB
+			List<uint> color = new List<uint>();
 
 			//viewlen = file.Length; // Length of packed data in COLORREFRGB, see remark above
 
-
-
-			w32 = input; // read next value from file or from buffer
+			currentColor = input[aktColor]; // read next value from file or from buffer
 			if ((w32 & FARBE_ZUSATZ) == FARBE_KOMPRIMIERT)
 			// packed, more than 1 pixel
 			{
@@ -128,6 +129,6 @@ namespace BahnEditor.BahnLib
 				color[0] = w32;
 			}
 
-		}*/
+		}
 	}
 }
