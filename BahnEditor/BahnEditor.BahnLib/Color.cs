@@ -25,32 +25,45 @@ namespace BahnEditor.BahnLib
 		public const uint MAX_FARBFOLGE_LEN = 4;
 
 
-		public static uint[] compress (uint[] color) //
+		public static uint[] compress(uint[] color)
 		{
 			try
 			{
-				uint[] colors = new uint[2];
-				//colors[0] = (uint) color.GetLength(0);
-				//colors[1] = 0;
-				colors[0] = FARBE_KOMPRIMIERT;
-				int length = 0;
-				uint lastcolor = color[0];
-				colors[1] = color[0];
-				for (int i = 0; i < color.Length; i++)
+				List<uint> colors = new List<uint>();
+				int colorcounter = 0, colorposition = 0;
+				while (colorposition < color.Length)
 				{
-					if (lastcolor != color[i])
+					colors[colorcounter] = FARBE_KOMPRIMIERT;
+					int length = 0;
+					uint lastcolor = color[colorcounter];
+					for (; colorposition < color.Length; colorposition++)
 					{
-						break;
+						if (lastcolor != color[colorposition])
+						{
+							break;
+						}
+						length++;
+						lastcolor = color[colorposition];
 					}
-					length++;
-					lastcolor = color[i];
+					colors[colorcounter] = colors[colorcounter] | (uint)(length - 2);
+					if (color[colorposition] == FARBE_TRANSPARENT)
+					{
+						colors[colorcounter] = colors[colorcounter] | FARBE_KOMPR_TR;
+						colorcounter++;
+					}
+					else
+					{
+						colors[colorcounter + 1] = lastcolor;
+						colorcounter += 2;
+					}
+
+
 				}
-				colors[0] = colors[0] | (uint)(length - 2);
-				return colors;
+				return colors.ToArray();
 			}
 			catch (IndexOutOfRangeException)
 			{
-				
+
 				throw;
 			}
 			catch (ArgumentNullException)
