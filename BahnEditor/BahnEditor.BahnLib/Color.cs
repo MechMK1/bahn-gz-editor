@@ -27,6 +27,10 @@ namespace BahnEditor.BahnLib
 
 		public static uint[] compress(uint[] color)
 		{
+			if (color == null)
+			{
+				throw new ArgumentNullException("color");
+			}
 			try
 			{
 				List<uint> colors = new List<uint>();
