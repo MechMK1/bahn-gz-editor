@@ -137,7 +137,7 @@ namespace BahnEditor.BahnLib
 
 		private static uint GetRGB(byte red, byte green, byte blue)
 		{
-			return ((uint)(((blue) | ((ushort)(green) << 8)) | (((uint)(red)) << 16)));
+			return ((uint)((uint)((blue) | ((ushort)(green) << 8)) | (((uint)(red)) << 16)));
 		}
 	}
 }
