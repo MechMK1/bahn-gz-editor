@@ -34,7 +34,7 @@ namespace BahnEditor.Test
 		[TestMethod]
 		public void TestColorWithTransparent()
 		{
-			uint[] input = new uint[] { 1684300800, 1684300800, 1684300800, Color.FARBE_TRANSPARENT, Color.FARBE_TRANSPARENT, 1684300800, 1515870720, 1684300800, 1684300800 };
+			uint[] input	= new uint[] { 1684300800, 1684300800, 1684300800, Color.FARBE_TRANSPARENT, Color.FARBE_TRANSPARENT, 1684300800, 1515870720, 1684300800, 1684300800 };
 			uint[] expected = new uint[] { 1684300800, 1684300800, 1684300800, Color.FARBE_TRANSPARENT, Color.FARBE_TRANSPARENT, 1684300800, 1515870720, 1684300800, 1684300800 };
 			uint[] tmp = Color.Compress(input);
 			uint[] output = Color.Decompress(tmp);
