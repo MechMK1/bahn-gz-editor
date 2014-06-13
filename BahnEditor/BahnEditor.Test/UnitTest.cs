@@ -9,19 +9,7 @@ namespace BahnEditor.Test
 	{
 
 		[TestMethod]
-		public void TestColorDecompress()
-		{
-			uint[] input = null;
-			uint[] expected = null; //TODO insert actual value
-			uint[] output = null;
-
-			output = Color.Decompress(input);
-
-			Assert.Equals(output, expected);
-		}
-
-		[TestMethod]
-		public void TestColor()
+		public void TestColorCompressAndDecompress()
 		{
 			uint[] input = new uint[] { 1684300800, 1684300800, 1684300800, 1684300800 };
 			uint[] expected = new uint[] { 1684300800, 1684300800, 1684300800, 1684300800 };
