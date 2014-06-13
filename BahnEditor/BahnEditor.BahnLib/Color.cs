@@ -8,24 +8,6 @@ namespace BahnEditor.BahnLib
 {
 	public static class Color
 	{
-		public const uint FARBE_LOGISCH = 0x80000000;
-		public const uint FARBE_TRANSPARENT = (FARBE_LOGISCH | 0x00000001);
-		public const uint FARBE_LAMPE = 0x50000000;
-		public const uint FARBE_ZUSATZ = 0xFf000000;
-		public const uint FARBE_WIE_MIN = (FARBE_LOGISCH | 0x00000100);
-
-		public const uint FARBE_KOMPRIMIERT = (FARBE_LOGISCH | 0x40000000);
-		public const uint FARBMASK_KOMPR_TR = 0x00010000;
-		public const uint FARBE_KOMPR_TR = (FARBE_KOMPRIMIERT | FARBMASK_KOMPR_TR);
-		public const uint FARBMASK_KOMPR_SYS = 0x00040000;
-		public const uint FARBE_KOMPR_SYS = (FARBE_KOMPRIMIERT | FARBMASK_KOMPR_SYS);
-		public const uint FARBMASK_KOMPR_SFB = 0x0000ff00;
-		public const uint FARBMASK_KOMPR_ZAHL = 0x000000Ff;
-		public const uint MAX_FARB_WDH = 257;
-		public const uint FARBMASK_KOMPR_LEN = 0x0000Ff00;
-		public const uint MAX_FARBFOLGE_LEN = 4;
-
-
 		public static uint[] Compress(uint[] color)
 		{
 			try
@@ -51,7 +33,11 @@ namespace BahnEditor.BahnLib
 						length++;
 						lastcolor = color[colorposition];
 					}
-					if (lastcolor == FARBE_TRANSPARENT)
+					if (length <= 1)
+					{
+						colors.Add(lastcolor);
+					}
+					else if (lastcolor == FARBE_TRANSPARENT)
 					{
 						colors.Add(FARBE_KOMPR_TR | (uint)(length - 2));
 					}
@@ -149,5 +135,24 @@ namespace BahnEditor.BahnLib
 		{
 			return ((uint)((uint)((blue) | ((ushort)(green) << 8)) | (((uint)(red)) << 16)));
 		}
+
+		#region Constants
+		public const uint FARBE_LOGISCH = 0x80000000;
+		public const uint FARBE_TRANSPARENT = (FARBE_LOGISCH | 0x00000001);
+		public const uint FARBE_LAMPE = 0x50000000;
+		public const uint FARBE_ZUSATZ = 0xFf000000;
+		public const uint FARBE_WIE_MIN = (FARBE_LOGISCH | 0x00000100);
+
+		public const uint FARBE_KOMPRIMIERT = (FARBE_LOGISCH | 0x40000000);
+		public const uint FARBMASK_KOMPR_TR = 0x00010000;
+		public const uint FARBE_KOMPR_TR = (FARBE_KOMPRIMIERT | FARBMASK_KOMPR_TR);
+		public const uint FARBMASK_KOMPR_SYS = 0x00040000;
+		public const uint FARBE_KOMPR_SYS = (FARBE_KOMPRIMIERT | FARBMASK_KOMPR_SYS);
+		public const uint FARBMASK_KOMPR_SFB = 0x0000ff00;
+		public const uint FARBMASK_KOMPR_ZAHL = 0x000000Ff;
+		public const uint MAX_FARB_WDH = 257;
+		public const uint FARBMASK_KOMPR_LEN = 0x0000Ff00;
+		public const uint MAX_FARBFOLGE_LEN = 4;
+		#endregion
 	}
 }

@@ -49,10 +49,10 @@ namespace BahnEditor.BahnLib
 		{
 			try
 			{
-				using (BinaryWriter bw = new BinaryWriter(path))
+				using (BinaryWriter bw = new BinaryWriter(path, Encoding.Unicode))
 				{
 					//TODO Implement Save(FileStream)
-
+					
 					return true;
 				}
 				
