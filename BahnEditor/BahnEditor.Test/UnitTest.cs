@@ -9,12 +9,6 @@ namespace BahnEditor.Test
 	{
 
 		[TestMethod]
-		public void TestMethod()
-		{
-			Assert.IsTrue(true);
-		}
-
-		[TestMethod]
 		public void TestColorDecompress()
 		{
 			uint[] input = null;
