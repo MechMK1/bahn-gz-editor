@@ -83,9 +83,9 @@ namespace BahnEditor.BahnLib
 					bw.Write((short)1);
 					bw.Write((byte)0);
 					bw.Write((byte)0x80);
-					bw.Write(layer); //Anzahl der Ebenen
-					//bw.Write((ushort)0xFFFE);
-					bw.Write(this.InfoText);
+					bw.Write((short)layer); //layer
+					bw.Write((ushort)0xFFFE);
+					bw.Write(this.InfoText.ToCharArray());
 					bw.Write(Constants.UNICODE_NULL);
 					for (int i = 1; i <= layer; i++)
 					{
