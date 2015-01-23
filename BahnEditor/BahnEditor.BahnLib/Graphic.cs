@@ -12,12 +12,24 @@ namespace BahnEditor.BahnLib
 		public uint[,] GraphicArray { get; set; }
 		public byte ZoomFactor { get; set; }
 		public string InfoText { get; set; }
+		public int Height { get; set; }
+		public int Width { get; set; }
+		public int StartHeight { get; set; }
+		public int StartWidth { get; set; }
 
-		public Graphic(string infoText, byte zoomFactor)
+		public Graphic(string infoText, byte zoomFactor, int height, int width, int startHeight, int startWidth)
 		{
+			if (height + startHeight > Constants.SYMHOEHE || width + startWidth > Constants.SYMBREITE)
+			{
+				throw new Exception("height or width out of range");
+			}
 			this.ZoomFactor = zoomFactor;
 			this.InfoText = infoText;
-			this.GraphicArray = new uint[Constants.SYMHOEHE / 2, Constants.SYMBREITE / 2];
+			this.Height = height;
+			this.Width = width;
+			this.StartHeight = startHeight;
+			this.StartWidth = startWidth;
+			this.GraphicArray = new uint[height, width];
 			for (int i = 0; i < this.GraphicArray.GetLength(0); i++)
 			{
 				for (int j = 0; j < this.GraphicArray.GetLength(1); j++)
@@ -27,7 +39,8 @@ namespace BahnEditor.BahnLib
 			}
 		}
 
-		public static Graphic Load(string path) {
+		public static Graphic Load(string path)
+		{
 			if (File.Exists(path))
 			{
 				using (FileStream stream = File.OpenRead(path))
@@ -89,23 +102,17 @@ namespace BahnEditor.BahnLib
 					bw.Write(Constants.UNICODE_NULL);
 					for (int i = 1; i <= layer; i++)
 					{
-						short x0 = 0;
-						short y0 = 0;
-						short width = 16;
-						short height = 8;
+
 						bw.Write((short)(i + 1)); //layer
-						bw.Write(x0); //x0
-						bw.Write(y0); //y0
-						bw.Write(width); //width
-						bw.Write(height); //height
-						//bw.Write((short)2);
-						//bw.Write((short)0);
-						//Console.WriteLine("x0: {0}, y0: {1}, width: {2}, height: {3}", x0, y0, width, height);
-						uint[] lines = new uint[width * height];
+						bw.Write((short)this.StartWidth); //x0
+						bw.Write((short)this.StartHeight); //y0
+						bw.Write((short)this.Width); //width
+						bw.Write((short)this.Height); //height
+						uint[] lines = new uint[this.Width * this.Height];
 						int count = 0;
-						for (int j = y0; j <= y0 + height - (short)1; j++)
+						for (int j = 0; j <= this.Height - 1; j++)
 						{
-							for (int k = x0; k <= x0 + width - (short)1; k++)
+							for (int k = 0; k <= this.Width - (short)1; k++)
 							{
 								lines[count] = this.GraphicArray[j, k];
 								count++;
@@ -122,7 +129,7 @@ namespace BahnEditor.BahnLib
 					bw.Close();
 					return true;
 				}
-				
+
 			}
 			catch (Exception) //TODO Exchange general exceptions with specific ones
 			{

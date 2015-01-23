@@ -35,25 +35,25 @@ namespace BahnEditor.Test
 		{
 			PrivateType pt = new PrivateType(typeof(BahnLib.Color)); //Used to access private static methods
 
-			uint blackExpected		= 0;
-			uint blueExpected		= 255;
-			uint greenExpected		= 65280; // 255 * 256
-			uint greenBlueExpected	= greenExpected + blueExpected;
-			uint redExpected		= 16711680; // 255 * 256 * 256
-			uint redBlueExpected	= redExpected + blueExpected;
-			uint redGreenExpected	= redExpected + greenExpected;
-			uint whiteExpected		= redExpected + greenExpected + blueExpected;
-			uint purpleExpected		= 6553855; // 100 * 256 * 256 + 255
+			uint blackExpected = 0;
+			uint blueExpected = 255;
+			uint greenExpected = 65280; // 255 * 256
+			uint greenBlueExpected = greenExpected + blueExpected;
+			uint redExpected = 16711680; // 255 * 256 * 256
+			uint redBlueExpected = redExpected + blueExpected;
+			uint redGreenExpected = redExpected + greenExpected;
+			uint whiteExpected = redExpected + greenExpected + blueExpected;
+			uint purpleExpected = 6553855; // 100 * 256 * 256 + 255
 
-			uint blackActual		= (uint)pt.InvokeStatic("FromRGB", new Object[] { (byte)0, (byte)0, (byte)0 });
-			uint blueActual			= (uint)pt.InvokeStatic("FromRGB", new Object[] { (byte)0, (byte)0, (byte)255 });
-			uint greenActual		= (uint)pt.InvokeStatic("FromRGB", new Object[] { (byte)0, (byte)255, (byte)0 });
-			uint greenBlueActual	= (uint)pt.InvokeStatic("FromRGB", new Object[] { (byte)0, (byte)255, (byte)255 });
-			uint redActual			= (uint)pt.InvokeStatic("FromRGB", new Object[] { (byte)255, (byte)0, (byte)0 });
-			uint redBlueActual		= (uint)pt.InvokeStatic("FromRGB", new Object[] { (byte)255, (byte)0, (byte)255 });
-			uint redGreenActual		= (uint)pt.InvokeStatic("FromRGB", new Object[] { (byte)255, (byte)255, (byte)0 });
-			uint whiteActual		= (uint)pt.InvokeStatic("FromRGB", new Object[] { (byte)255, (byte)255, (byte)255 });
-			uint purpleActual		= (uint)pt.InvokeStatic("FromRGB", new Object[] { (byte)100, (byte)0, (byte)255 });
+			uint blackActual = (uint)pt.InvokeStatic("FromRGB", new Object[] { (byte)0, (byte)0, (byte)0 });
+			uint blueActual = (uint)pt.InvokeStatic("FromRGB", new Object[] { (byte)0, (byte)0, (byte)255 });
+			uint greenActual = (uint)pt.InvokeStatic("FromRGB", new Object[] { (byte)0, (byte)255, (byte)0 });
+			uint greenBlueActual = (uint)pt.InvokeStatic("FromRGB", new Object[] { (byte)0, (byte)255, (byte)255 });
+			uint redActual = (uint)pt.InvokeStatic("FromRGB", new Object[] { (byte)255, (byte)0, (byte)0 });
+			uint redBlueActual = (uint)pt.InvokeStatic("FromRGB", new Object[] { (byte)255, (byte)0, (byte)255 });
+			uint redGreenActual = (uint)pt.InvokeStatic("FromRGB", new Object[] { (byte)255, (byte)255, (byte)0 });
+			uint whiteActual = (uint)pt.InvokeStatic("FromRGB", new Object[] { (byte)255, (byte)255, (byte)255 });
+			uint purpleActual = (uint)pt.InvokeStatic("FromRGB", new Object[] { (byte)100, (byte)0, (byte)255 });
 
 			Assert.AreEqual<uint>(blackExpected, blackActual);
 			Assert.AreEqual<uint>(blueExpected, blueActual);
@@ -69,7 +69,7 @@ namespace BahnEditor.Test
 		[TestMethod]
 		public void TestSave()
 		{
-			Graphic g = new Graphic("Test", 1);
+			Graphic g = new Graphic("Test", 1, 10, 5, 5, 7);
 			g.Save("test.gz1", true);
 		}
 	}

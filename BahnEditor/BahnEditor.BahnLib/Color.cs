@@ -19,7 +19,7 @@ namespace BahnEditor.BahnLib
 
 				List<uint> colors = new List<uint>();
 				colors.Add(0);
-				int  colorposition = 0;
+				int colorposition = 0;
 				while (colorposition < color.Length)
 				{
 					int length = 0;
@@ -145,7 +145,7 @@ namespace BahnEditor.BahnLib
 						) |
 						(
 							(
-								(uint) (red)
+								(uint)(red)
 							) << 16
 						)
 					)
