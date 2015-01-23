@@ -131,7 +131,7 @@ namespace BahnEditor.BahnLib
 			return color.ToArray();
 		}
 
-		private static uint FromRGB(byte red, byte green, byte blue)
+		public static uint FromRGB(byte red, byte green, byte blue)
 		{
 			return
 				(

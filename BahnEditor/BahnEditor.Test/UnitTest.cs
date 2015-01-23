@@ -65,5 +65,12 @@ namespace BahnEditor.Test
 			Assert.AreEqual<uint>(whiteExpected, whiteActual);
 			Assert.AreEqual<uint>(purpleExpected, purpleActual);
 		}
+
+		[TestMethod]
+		public void TestSave()
+		{
+			Graphic g = new Graphic("Test", 1);
+			g.Save("test.gz1", true);
+		}
 	}
 }
