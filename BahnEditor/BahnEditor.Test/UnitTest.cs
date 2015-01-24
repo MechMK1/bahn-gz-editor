@@ -67,10 +67,25 @@ namespace BahnEditor.Test
 		}
 
 		[TestMethod]
-		public void TestSave()
+		public void TestSaveAndLoad()
 		{
-			Graphic g = new Graphic("Test", 1, 10, 5, 5, 7);
-			g.Save("test.gz1", true);
+			string infoTextExpected = "Test";
+			byte zoomFactorExpected = 1;
+			short heightExpected = 10;
+			short widthExpected = 5;
+			short startHeightExpected = 5;
+			short startWidthExpected = 7;
+			
+			Graphic graphic = new Graphic(infoTextExpected, zoomFactorExpected, heightExpected, widthExpected, startHeightExpected, startWidthExpected);
+			graphic.Save("test.gz1", true);
+			Graphic newGraphic = Graphic.Load("test.gz1");
+
+			Assert.AreEqual<string>(infoTextExpected, newGraphic.InfoText);
+			Assert.AreEqual<byte>(zoomFactorExpected, newGraphic.ZoomFactor);
+			Assert.AreEqual<short>(heightExpected, newGraphic.Height);
+			Assert.AreEqual<short>(widthExpected, newGraphic.Width);
+			Assert.AreEqual<short>(startHeightExpected, newGraphic.StartHeight);
+			Assert.AreEqual<short>(startWidthExpected, newGraphic.StartWidth);
 		}
 	}
 }
