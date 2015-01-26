@@ -19,23 +19,27 @@ namespace BahnEditor.Test
 			short x0Expected = 7;
 			short y0Expected = 5;
 			Pixel colorInSchematicModeExpected = Pixel.RGBPixel(50, 50, 50);
-
-			Layer layer = new Layer();
-			layer.Height = heightExpected;
-			layer.Width = widthExpected;
-			layer.X0 = x0Expected;
-			layer.Y0 = y0Expected;
-			layer.LayerID = (short)Constants.GFX_Z_HI;
-			layer.Element = new Pixel[heightExpected, widthExpected];
-
+			Pixel[,] elementExpected = new Pixel[heightExpected, widthExpected];
 			for (int i = 0; i < heightExpected; i++)
 			{
 				for (int j = 0; j < widthExpected; j++)
 				{
-					layer.Element[i, j] = Pixel.RGBPixel(80, 90, 100);
+					if (i == 2)
+					{
+						elementExpected[i, j] = Pixel.TransparentPixel();
+					}
+					else if(j == 3)
+					{
+						elementExpected[i, j] = Pixel.RGBPixel(200, 200, 200);
+					}
+					else
+					{
+						elementExpected[i, j] = Pixel.RGBPixel(80, 90, 100);
+					}
 				}
 			}
-
+			Layer layer = new Layer(heightExpected, widthExpected, x0Expected, y0Expected, (short)Constants.GFY_Z_VG, elementExpected);
+			
 			List<Layer> layerList = new List<Layer> { layer };
 
 			Graphic graphic = new Graphic(infoTextExpected, zoomFactorExpected, colorInSchematicModeExpected, layerList);

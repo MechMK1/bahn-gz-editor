@@ -16,6 +16,21 @@ namespace BahnEditor.BahnLib
 		public short LayerID { get; set; }
 		public Pixel[,] Element { get; set; }
 
+		public Layer()
+		{
+
+		}
+
+		public Layer(short height, short width, short x0, short y0, short layerID, Pixel[,] element)
+		{
+			this.Height = height;
+			this.Width = width;
+			this.X0 = x0;
+			this.Y0 = y0;
+			this.LayerID = layerID;
+			this.Element = element;
+		}
+
 		public void WriteLayerToStream(BinaryWriter bw)
 		{
 			bw.Write(this.LayerID); //layer
@@ -71,6 +86,7 @@ namespace BahnEditor.BahnLib
 						for (int j = 0; j < wdhlen; j++)
 						{
 							buffer.Add(br.ReadUInt32());
+							i++;
 						}
 						for (int j = 0; j < count; j++)
 						{
