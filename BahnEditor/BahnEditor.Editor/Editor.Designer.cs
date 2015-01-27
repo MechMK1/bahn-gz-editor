@@ -31,10 +31,11 @@
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Editor));
 			this.toolStrip1 = new System.Windows.Forms.ToolStrip();
 			this.newButton = new System.Windows.Forms.ToolStripButton();
+			this.loadButton = new System.Windows.Forms.ToolStripButton();
 			this.drawPanel = new System.Windows.Forms.Panel();
 			this.controlPanel = new System.Windows.Forms.Panel();
-			this.loadButton = new System.Windows.Forms.ToolStripButton();
 			this.loadFileDialog = new System.Windows.Forms.OpenFileDialog();
+			this.saveButton = new System.Windows.Forms.ToolStripButton();
 			this.toolStrip1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -43,7 +44,8 @@
 			this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newButton,
-            this.loadButton});
+            this.loadButton,
+            this.saveButton});
 			this.toolStrip1.Location = new System.Drawing.Point(0, 0);
 			this.toolStrip1.Name = "toolStrip1";
 			this.toolStrip1.Size = new System.Drawing.Size(577, 25);
@@ -59,6 +61,16 @@
 			this.newButton.Size = new System.Drawing.Size(23, 22);
 			this.newButton.Text = "New";
 			this.newButton.Click += new System.EventHandler(this.newButton_Click);
+			// 
+			// loadButton
+			// 
+			this.loadButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.loadButton.Image = ((System.Drawing.Image)(resources.GetObject("loadButton.Image")));
+			this.loadButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.loadButton.Name = "loadButton";
+			this.loadButton.Size = new System.Drawing.Size(23, 22);
+			this.loadButton.Text = "Load";
+			this.loadButton.Click += new System.EventHandler(this.loadButton_Click);
 			// 
 			// drawPanel
 			// 
@@ -76,19 +88,19 @@
 			this.controlPanel.Size = new System.Drawing.Size(142, 340);
 			this.controlPanel.TabIndex = 2;
 			// 
-			// loadButton
-			// 
-			this.loadButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.loadButton.Image = ((System.Drawing.Image)(resources.GetObject("loadButton.Image")));
-			this.loadButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.loadButton.Name = "loadButton";
-			this.loadButton.Size = new System.Drawing.Size(23, 22);
-			this.loadButton.Text = "Load";
-			this.loadButton.Click += new System.EventHandler(this.loadButton_Click);
-			// 
 			// loadFileDialog
 			// 
 			this.loadFileDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.loadFileDialog_FileOk);
+			// 
+			// saveButton
+			// 
+			this.saveButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.saveButton.Image = ((System.Drawing.Image)(resources.GetObject("saveButton.Image")));
+			this.saveButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.saveButton.Name = "saveButton";
+			this.saveButton.Size = new System.Drawing.Size(23, 22);
+			this.saveButton.Text = "Save";
+			this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
 			// 
 			// Editor
 			// 
@@ -115,6 +127,7 @@
 		private System.Windows.Forms.Panel controlPanel;
 		private System.Windows.Forms.ToolStripButton loadButton;
 		private System.Windows.Forms.OpenFileDialog loadFileDialog;
+		private System.Windows.Forms.ToolStripButton saveButton;
 
 	}
 }

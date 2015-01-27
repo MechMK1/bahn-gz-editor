@@ -58,6 +58,11 @@ namespace BahnEditor.BahnLib
 					colorInSchematicMode = Pixel.FromUInt(br.ReadUInt32());
 					br.ReadUInt32();
 				}
+				if((settings & 0x0008) != 0)
+				{
+					br.ReadInt32();
+					br.ReadInt32();
+				}
 				short layer = br.ReadInt16();
 				br.ReadUInt16();
 				char c;
