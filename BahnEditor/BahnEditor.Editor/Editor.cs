@@ -15,58 +15,14 @@ namespace BahnEditor.Editor
 	{
 		private Graphic graphic;
 		private Pixel[,] actualElement;
+		private string lastPath = "";
+		private Pixel leftColor = Pixel.RGBPixel(0, 0, 0);
+		private Pixel rightColor = Pixel.RGBPixel(255, 255, 255);
 
 		public Editor()
 		{
 			InitializeComponent();
 		}
-
-		private void newButton_Click(object sender, EventArgs e)
-		{
-			this.NewGraphic();
-		}
-
-		private void drawPanel_Paint(object sender, PaintEventArgs e)
-		{
-			if (this.graphic == null)
-			{
-				return;
-			}//transparent 0, 112, 0
-			//e.Graphics.DrawLine(new Pen(Brushes.Red), new Point(2, 2), new Point(5, 5));
-			//e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(100, 100, 100)), 30, 30, 20, 20);
-			for (int i = 0; i < this.actualElement.GetLength(0); i++)
-			{
-				for (int j = 0; j < this.actualElement.GetLength(1); j++)
-				{
-					SolidBrush sb;
-					if (this.actualElement[i, j].IsTransparent == true)
-					{
-						sb = new SolidBrush(Color.FromArgb(0, 112, 0));
-					}
-					else
-					{
-						sb = new SolidBrush(Color.FromArgb(this.actualElement[i, j].Red, this.actualElement[i, j].Green, this.actualElement[i, j].Blue));
-					}
-					e.Graphics.FillRectangle(sb, j * 10 + 20, (20 + 10 * this.actualElement.GetLength(0)) - (10 * i), 10, 10);
-				}
-			}
-		}
-
-		private void loadButton_Click(object sender, EventArgs e)
-		{
-			this.loadFileDialog.ShowDialog();
-		}
-
-		private void loadFileDialog_FileOk(object sender, CancelEventArgs e)
-		{
-			this.LoadGraphic();
-		}
-
-		private void saveButton_Click(object sender, EventArgs e)
-		{
-			this.SaveGraphic();
-		}
-
 
 		private void NewGraphic()
 		{
@@ -100,7 +56,43 @@ namespace BahnEditor.Editor
 			Pixel[,] element = this.TrimActualElement(out x0, out y0);
 			Layer layer = new Layer((short)element.GetLength(0), (short)element.GetLength(1), x0, y0, Constants.GFY_Z_VG, element);
 			this.graphic.Layers.Add(layer);
-			this.graphic.Save("test2.gz1", true);
+			this.graphic.Save(lastPath, true);
+		}
+
+		private void SaveClick(bool forceSave)
+		{
+			if (lastPath == "" || forceSave == true)
+			{
+				this.saveFileDialog.ShowDialog();
+			}
+			else
+			{
+				this.SaveGraphic();
+			}
+		}
+
+		private void PaintGraphic(Graphics g)
+		{
+			if (this.graphic == null)
+			{
+				return;
+			}//transparent 0, 112, 0
+			for (int i = 0; i < this.actualElement.GetLength(0); i++)
+			{
+				for (int j = 0; j < this.actualElement.GetLength(1); j++)
+				{
+					SolidBrush sb;
+					if (this.actualElement[i, j].IsTransparent == true)
+					{
+						sb = new SolidBrush(Color.FromArgb(0, 112, 0));
+					}
+					else
+					{
+						sb = new SolidBrush(Color.FromArgb(this.actualElement[i, j].Red, this.actualElement[i, j].Green, this.actualElement[i, j].Blue));
+					}
+					g.FillRectangle(sb, j * 10 + 20, (20 + 10 * this.actualElement.GetLength(0)) - (10 * i), 10, 10);
+				}
+			}
 		}
 
 		private void LoadActualElement()
@@ -133,21 +125,21 @@ namespace BahnEditor.Editor
 			{
 				for (int j = 0; j < this.actualElement.GetLength(1); j++)
 				{
-					if(this.actualElement[i,j].IsTransparent == false)
+					if (this.actualElement[i, j].IsTransparent == false)
 					{
-						if(minx > j)
+						if (minx > j)
 						{
 							minx = j;
 						}
-						if(maxx < j)
+						if (maxx < j)
 						{
 							maxx = j;
 						}
-						if(miny > i)
+						if (miny > i)
 						{
 							miny = i;
 						}
-						if(maxy < i)
+						if (maxy < i)
 						{
 							maxy = i;
 						}
@@ -168,5 +160,85 @@ namespace BahnEditor.Editor
 			y0 = (short)miny;
 			return element;
 		}
+
+		#region Event-Handler
+		private void newButton_Click(object sender, EventArgs e)
+		{
+			this.NewGraphic();
+		}
+
+		private void drawPanel_Paint(object sender, PaintEventArgs e)
+		{
+			this.PaintGraphic(e.Graphics);
+		}
+
+		private void loadButton_Click(object sender, EventArgs e)
+		{
+			this.loadFileDialog.ShowDialog();
+		}
+
+		private void loadFileDialog_FileOk(object sender, CancelEventArgs e)
+		{
+			this.LoadGraphic();
+		}
+
+		private void saveButton_Click(object sender, EventArgs e)
+		{
+			this.SaveClick(false);
+		}
+
+		private void newMenuItem_Click(object sender, EventArgs e)
+		{
+			this.NewGraphic();
+		}
+
+		private void openMenuItem_Click(object sender, EventArgs e)
+		{
+			this.loadFileDialog.ShowDialog();
+		}
+
+		private void saveMenuItem_Click(object sender, EventArgs e)
+		{
+			this.SaveClick(false);
+		}
+
+		private void saveFileDialog_FileOk(object sender, CancelEventArgs e)
+		{
+			this.lastPath = this.saveFileDialog.FileName;
+			this.SaveGraphic();
+		}
+
+		private void saveAsMenuItem_Click(object sender, EventArgs e)
+		{
+			this.SaveClick(true);
+		}
+
+		private void exitMenuItem_Click(object sender, EventArgs e)
+		{
+			Application.Exit();
+		}
+
+		private void leftColorButton_Click(object sender, EventArgs e)
+		{
+			DialogResult dr = this.colorDialog.ShowDialog();
+			if(dr == DialogResult.OK)
+			{
+				Color c = this.colorDialog.Color;
+				this.leftColor = Pixel.RGBPixel(c.R, c.G, c.B);
+				this.leftColorButton.BackColor = c;
+			}
+		}
+
+		private void rightColorButton_Click(object sender, EventArgs e)
+		{
+			DialogResult dr = this.colorDialog.ShowDialog();
+			if (dr == DialogResult.OK)
+			{
+				Color c = this.colorDialog.Color;
+				this.rightColor = Pixel.RGBPixel(c.R, c.G, c.B);
+				this.rightColorButton.BackColor = c;
+			}
+		}
+		#endregion
 	}
 }
