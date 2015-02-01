@@ -37,9 +37,12 @@ namespace BahnEditor.BahnLib
 		public static Pixel FromUInt(uint data)
 		{
 			Pixel p = new Pixel();
-			if((data & Constants.FARBE_TRANSPARENT) != 0)
+			if ((data & Constants.FARBE_LOGISCH) != 0)
 			{
-				p.IsTransparent = true;
+				if ((data & Constants.FARBE_TRANSPARENT) != 0)
+				{
+					p.IsTransparent = true;
+				}
 			}
 			else
 			{
@@ -83,7 +86,7 @@ namespace BahnEditor.BahnLib
 			if (obj is Pixel)
 			{
 				Pixel p = (Pixel)obj;
-				if((this.IsTransparent && p.IsTransparent) || (this.Red == p.Red && this.Green == p.Green && this.Blue == p.Blue))
+				if ((this.IsTransparent && p.IsTransparent) || (this.Red == p.Red && this.Green == p.Green && this.Blue == p.Blue))
 				{
 					return true;
 				}

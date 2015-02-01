@@ -97,15 +97,21 @@
 			// 
 			// drawPanel
 			// 
+			this.drawPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.drawPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.drawPanel.Location = new System.Drawing.Point(13, 52);
 			this.drawPanel.Name = "drawPanel";
 			this.drawPanel.Size = new System.Drawing.Size(403, 317);
 			this.drawPanel.TabIndex = 1;
 			this.drawPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.drawPanel_Paint);
+			this.drawPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.drawPanel_MouseClick);
 			// 
 			// controlPanel
 			// 
+			this.controlPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.controlPanel.Controls.Add(this.rightColorButton);
 			this.controlPanel.Controls.Add(this.leftColorButton);
 			this.controlPanel.Location = new System.Drawing.Point(423, 52);
@@ -215,6 +221,7 @@
 			this.Controls.Add(this.drawPanel);
 			this.Controls.Add(this.toolStrip);
 			this.Controls.Add(this.menuStrip);
+			this.DoubleBuffered = true;
 			this.MainMenuStrip = this.menuStrip;
 			this.Name = "Editor";
 			this.Text = "Bahn Editor";

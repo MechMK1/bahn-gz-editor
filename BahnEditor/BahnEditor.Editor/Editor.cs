@@ -90,9 +90,24 @@ namespace BahnEditor.Editor
 					{
 						sb = new SolidBrush(Color.FromArgb(this.actualElement[i, j].Red, this.actualElement[i, j].Green, this.actualElement[i, j].Blue));
 					}
-					g.FillRectangle(sb, j * 10 + 20, (20 + 10 * this.actualElement.GetLength(0)) - (10 * i), 10, 10);
+					g.FillRectangle(sb, j * 10 + 20, (10 + 10 * this.actualElement.GetLength(0)) - (10 * i), 10, 10);
 				}
 			}
+		}
+
+		private void MouseClickGraphic(MouseEventArgs e)
+		{
+			int xElement = (e.X - 20) / 10;
+			int yElement = ((10 + 10 * this.actualElement.GetLength(0)) - (e.Y - 10)) / 10;
+			if(e.Button == MouseButtons.Left)
+			{
+				this.actualElement[yElement, xElement] = leftColor;
+			}
+			else if (e.Button == MouseButtons.Right)
+			{
+				this.actualElement[yElement, xElement] = rightColor;
+			}
+			drawPanel.Invalidate();
 		}
 
 		private void LoadActualElement()
@@ -162,14 +177,19 @@ namespace BahnEditor.Editor
 		}
 
 		#region Event-Handler
-		private void newButton_Click(object sender, EventArgs e)
-		{
-			this.NewGraphic();
-		}
 
 		private void drawPanel_Paint(object sender, PaintEventArgs e)
 		{
 			this.PaintGraphic(e.Graphics);
+		}
+		private void drawPanel_MouseClick(object sender, MouseEventArgs e)
+		{
+			this.MouseClickGraphic(e);
+		}
+
+		private void newButton_Click(object sender, EventArgs e)
+		{
+			this.NewGraphic();
 		}
 
 		private void loadButton_Click(object sender, EventArgs e)
@@ -221,7 +241,7 @@ namespace BahnEditor.Editor
 		private void leftColorButton_Click(object sender, EventArgs e)
 		{
 			DialogResult dr = this.colorDialog.ShowDialog();
-			if(dr == DialogResult.OK)
+			if (dr == DialogResult.OK)
 			{
 				Color c = this.colorDialog.Color;
 				this.leftColor = Pixel.RGBPixel(c.R, c.G, c.B);
