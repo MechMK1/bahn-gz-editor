@@ -35,21 +35,25 @@
 			this.saveButton = new System.Windows.Forms.ToolStripButton();
 			this.drawPanel = new System.Windows.Forms.Panel();
 			this.controlPanel = new System.Windows.Forms.Panel();
+			this.rightColorButton = new System.Windows.Forms.Button();
+			this.leftColorButton = new System.Windows.Forms.Button();
 			this.loadFileDialog = new System.Windows.Forms.OpenFileDialog();
 			this.menuStrip = new System.Windows.Forms.MenuStrip();
 			this.fileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.newMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.openMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
 			this.saveAsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.exitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
 			this.colorDialog = new System.Windows.Forms.ColorDialog();
-			this.leftColorButton = new System.Windows.Forms.Button();
-			this.rightColorButton = new System.Windows.Forms.Button();
+			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+			this.zoomTrackBar = new System.Windows.Forms.TrackBar();
 			this.toolStrip.SuspendLayout();
 			this.controlPanel.SuspendLayout();
 			this.menuStrip.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.zoomTrackBar)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// toolStrip
@@ -100,6 +104,7 @@
 			this.drawPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			this.drawPanel.AutoScrollMinSize = new System.Drawing.Size(350, 190);
 			this.drawPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.drawPanel.Location = new System.Drawing.Point(13, 52);
 			this.drawPanel.Name = "drawPanel";
@@ -112,12 +117,37 @@
 			// 
 			this.controlPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			this.controlPanel.Controls.Add(this.zoomTrackBar);
 			this.controlPanel.Controls.Add(this.rightColorButton);
 			this.controlPanel.Controls.Add(this.leftColorButton);
 			this.controlPanel.Location = new System.Drawing.Point(423, 52);
 			this.controlPanel.Name = "controlPanel";
 			this.controlPanel.Size = new System.Drawing.Size(142, 317);
 			this.controlPanel.TabIndex = 2;
+			// 
+			// rightColorButton
+			// 
+			this.rightColorButton.BackColor = System.Drawing.Color.White;
+			this.rightColorButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.rightColorButton.Location = new System.Drawing.Point(79, 4);
+			this.rightColorButton.Name = "rightColorButton";
+			this.rightColorButton.Size = new System.Drawing.Size(60, 23);
+			this.rightColorButton.TabIndex = 1;
+			this.rightColorButton.TabStop = false;
+			this.rightColorButton.UseVisualStyleBackColor = false;
+			this.rightColorButton.Click += new System.EventHandler(this.rightColorButton_Click);
+			// 
+			// leftColorButton
+			// 
+			this.leftColorButton.BackColor = System.Drawing.Color.Black;
+			this.leftColorButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.leftColorButton.Location = new System.Drawing.Point(4, 4);
+			this.leftColorButton.Name = "leftColorButton";
+			this.leftColorButton.Size = new System.Drawing.Size(60, 23);
+			this.leftColorButton.TabIndex = 0;
+			this.leftColorButton.TabStop = false;
+			this.leftColorButton.UseVisualStyleBackColor = false;
+			this.leftColorButton.Click += new System.EventHandler(this.leftColorButton_Click);
 			// 
 			// loadFileDialog
 			// 
@@ -138,8 +168,10 @@
 			this.fileMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newMenuItem,
             this.openMenuItem,
+            this.toolStripSeparator1,
             this.saveMenuItem,
             this.saveAsMenuItem,
+            this.toolStripSeparator2,
             this.exitMenuItem});
 			this.fileMenuItem.Name = "fileMenuItem";
 			this.fileMenuItem.Size = new System.Drawing.Size(46, 20);
@@ -166,10 +198,6 @@
 			this.saveMenuItem.Text = "Speichern";
 			this.saveMenuItem.Click += new System.EventHandler(this.saveMenuItem_Click);
 			// 
-			// saveFileDialog
-			// 
-			this.saveFileDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog_FileOk);
-			// 
 			// saveAsMenuItem
 			// 
 			this.saveAsMenuItem.Name = "saveAsMenuItem";
@@ -184,33 +212,35 @@
 			this.exitMenuItem.Text = "Beenden";
 			this.exitMenuItem.Click += new System.EventHandler(this.exitMenuItem_Click);
 			// 
+			// saveFileDialog
+			// 
+			this.saveFileDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog_FileOk);
+			// 
 			// colorDialog
 			// 
 			this.colorDialog.FullOpen = true;
 			// 
-			// leftColorButton
+			// toolStripSeparator1
 			// 
-			this.leftColorButton.BackColor = System.Drawing.Color.Black;
-			this.leftColorButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.leftColorButton.Location = new System.Drawing.Point(4, 4);
-			this.leftColorButton.Name = "leftColorButton";
-			this.leftColorButton.Size = new System.Drawing.Size(60, 23);
-			this.leftColorButton.TabIndex = 0;
-			this.leftColorButton.TabStop = false;
-			this.leftColorButton.UseVisualStyleBackColor = false;
-			this.leftColorButton.Click += new System.EventHandler(this.leftColorButton_Click);
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new System.Drawing.Size(163, 6);
 			// 
-			// rightColorButton
+			// toolStripSeparator2
 			// 
-			this.rightColorButton.BackColor = System.Drawing.Color.White;
-			this.rightColorButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.rightColorButton.Location = new System.Drawing.Point(79, 4);
-			this.rightColorButton.Name = "rightColorButton";
-			this.rightColorButton.Size = new System.Drawing.Size(60, 23);
-			this.rightColorButton.TabIndex = 1;
-			this.rightColorButton.TabStop = false;
-			this.rightColorButton.UseVisualStyleBackColor = false;
-			this.rightColorButton.Click += new System.EventHandler(this.rightColorButton_Click);
+			this.toolStripSeparator2.Name = "toolStripSeparator2";
+			this.toolStripSeparator2.Size = new System.Drawing.Size(163, 6);
+			// 
+			// zoomTrackBar
+			// 
+			this.zoomTrackBar.Location = new System.Drawing.Point(4, 34);
+			this.zoomTrackBar.Maximum = 5;
+			this.zoomTrackBar.Minimum = 2;
+			this.zoomTrackBar.Name = "zoomTrackBar";
+			this.zoomTrackBar.Size = new System.Drawing.Size(135, 45);
+			this.zoomTrackBar.TabIndex = 2;
+			this.zoomTrackBar.TabStop = false;
+			this.zoomTrackBar.Value = 3;
+			this.zoomTrackBar.Scroll += new System.EventHandler(this.zoomTrackBar_Scroll);
 			// 
 			// Editor
 			// 
@@ -225,11 +255,14 @@
 			this.MainMenuStrip = this.menuStrip;
 			this.Name = "Editor";
 			this.Text = "Bahn Editor";
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Editor_FormClosing);
 			this.toolStrip.ResumeLayout(false);
 			this.toolStrip.PerformLayout();
 			this.controlPanel.ResumeLayout(false);
+			this.controlPanel.PerformLayout();
 			this.menuStrip.ResumeLayout(false);
 			this.menuStrip.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.zoomTrackBar)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -255,6 +288,9 @@
 		private System.Windows.Forms.ColorDialog colorDialog;
 		private System.Windows.Forms.Button leftColorButton;
 		private System.Windows.Forms.Button rightColorButton;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+		private System.Windows.Forms.TrackBar zoomTrackBar;
 
 	}
 }

@@ -16,8 +16,11 @@ namespace BahnEditor.Editor
 		private Graphic graphic;
 		private Pixel[,] actualElement;
 		private string lastPath = "";
+		private int zoomLevel = 3;
+		private bool userMadeChanges = false;
 		private Pixel leftColor = Pixel.RGBPixel(0, 0, 0);
 		private Pixel rightColor = Pixel.RGBPixel(255, 255, 255);
+
 
 		public Editor()
 		{
@@ -28,9 +31,9 @@ namespace BahnEditor.Editor
 		{
 			List<Layer> layers = new List<Layer>();
 			this.actualElement = new Pixel[Constants.SYMHOEHE, Constants.SYMBREITE];
-			for (int i = 0; i < Constants.SYMHOEHE; i++)
+			for (int i = 0; i < this.actualElement.GetLength(0); i++)
 			{
-				for (int j = 0; j < Constants.SYMBREITE; j++)
+				for (int j = 0; j < this.actualElement.GetLength(1); j++)
 				{
 					this.actualElement[i, j] = Pixel.TransparentPixel();
 				}
@@ -57,6 +60,7 @@ namespace BahnEditor.Editor
 			Layer layer = new Layer((short)element.GetLength(0), (short)element.GetLength(1), x0, y0, Constants.GFY_Z_VG, element);
 			this.graphic.Layers.Add(layer);
 			this.graphic.Save(lastPath, true);
+			this.userMadeChanges = false;
 		}
 
 		private void SaveClick(bool forceSave)
@@ -90,24 +94,45 @@ namespace BahnEditor.Editor
 					{
 						sb = new SolidBrush(Color.FromArgb(this.actualElement[i, j].Red, this.actualElement[i, j].Green, this.actualElement[i, j].Blue));
 					}
-					g.FillRectangle(sb, j * 10 + 20, (10 + 10 * this.actualElement.GetLength(0)) - (10 * i), 10, 10);
+					g.FillRectangle(sb, j * (2 * this.zoomLevel) + 20, (10 + (2 * this.zoomLevel) * this.actualElement.GetLength(0)) - ((2 * this.zoomLevel) * i), (2 * this.zoomLevel), (2 * this.zoomLevel));
 				}
 			}
 		}
 
 		private void MouseClickGraphic(MouseEventArgs e)
 		{
-			int xElement = (e.X - 20) / 10;
-			int yElement = ((10 + 10 * this.actualElement.GetLength(0)) - (e.Y - 10)) / 10;
-			if(e.Button == MouseButtons.Left)
+			int xElement = (e.X - 20) / (2 * this.zoomLevel);
+			int yElement = ((10 + (2 * this.zoomLevel) * this.actualElement.GetLength(0)) - (e.Y - 10)) / (2 * this.zoomLevel) - 1;
+			if (xElement >= 0 && yElement >= 0 && xElement < this.actualElement.GetLength(1) && yElement < this.actualElement.GetLength(0))
 			{
-				this.actualElement[yElement, xElement] = leftColor;
+				if (e.Button == MouseButtons.Left)
+				{
+					this.actualElement[yElement, xElement] = leftColor;
+				}
+				else if (e.Button == MouseButtons.Right)
+				{
+					this.actualElement[yElement, xElement] = rightColor;
+				}
+				this.userMadeChanges = true;
+				drawPanel.Invalidate();
 			}
-			else if (e.Button == MouseButtons.Right)
+		}
+
+		private bool ExitEditor()
+		{
+			if (this.userMadeChanges == true)
 			{
-				this.actualElement[yElement, xElement] = rightColor;
+				DialogResult dr = MessageBox.Show("Soll die Grafik gespeichert werden?", "Speichern", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+				if (dr == DialogResult.Cancel)
+				{
+					return true;
+				}
+				else if (dr == DialogResult.Yes)
+				{
+					this.SaveClick(false);
+				}
 			}
-			drawPanel.Invalidate();
+			return false;
 		}
 
 		private void LoadActualElement()
@@ -176,12 +201,13 @@ namespace BahnEditor.Editor
 			return element;
 		}
 
-		#region Event-Handler
 
+		#region Event-Handler
 		private void drawPanel_Paint(object sender, PaintEventArgs e)
 		{
 			this.PaintGraphic(e.Graphics);
 		}
+
 		private void drawPanel_MouseClick(object sender, MouseEventArgs e)
 		{
 			this.MouseClickGraphic(e);
@@ -258,6 +284,17 @@ namespace BahnEditor.Editor
 				this.rightColor = Pixel.RGBPixel(c.R, c.G, c.B);
 				this.rightColorButton.BackColor = c;
 			}
+		}
+
+		private void Editor_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			e.Cancel = this.ExitEditor();
+		}
+
+		private void zoomTrackBar_Scroll(object sender, EventArgs e)
+		{
+			this.zoomLevel = this.zoomTrackBar.Value;
+			this.drawPanel.Invalidate();
 		}
 		#endregion
 	}
