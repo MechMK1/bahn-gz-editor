@@ -30,7 +30,7 @@ namespace BahnEditor.Editor
 		private void NewGraphic()
 		{
 			List<Layer> layers = new List<Layer>();
-			this.actualElement = new Pixel[Constants.SYMHOEHE, Constants.SYMBREITE];
+			this.actualElement = new Pixel[Constants.SYMHOEHE * 8, Constants.SYMBREITE * 3];
 			for (int i = 0; i < this.actualElement.GetLength(0); i++)
 			{
 				for (int j = 0; j < this.actualElement.GetLength(1); j++)
@@ -41,6 +41,7 @@ namespace BahnEditor.Editor
 			//Layer l = new Layer((short)Constants.SYMHOEHE, (short)Constants.SYMBREITE, 0, 0, Constants.GFY_Z_VG, element);
 			//layers.Add(l);
 			this.graphic = new Graphic("Test", 1, Pixel.RGBPixel(100, 100, 100), layers);
+			this.ResizeDrawPanel();
 			this.drawPanel.Invalidate();
 		}
 
@@ -48,6 +49,7 @@ namespace BahnEditor.Editor
 		{
 			this.graphic = Graphic.Load(this.loadFileDialog.FileName);
 			this.LoadActualElement();
+			this.ResizeDrawPanel();
 			this.drawPanel.Invalidate();
 		}
 
@@ -75,12 +77,18 @@ namespace BahnEditor.Editor
 			}
 		}
 
+		private void ResizeDrawPanel()
+		{
+			this.drawPanel.AutoScrollMinSize = new Size((int)((2 * this.zoomLevel) * Constants.SYMBREITE * 3 + 30), (int)((2 * this.zoomLevel) * Constants.SYMHOEHE * 8 + 30));
+		}
+
 		private void PaintGraphic(Graphics g)
 		{
-			if (this.graphic == null)
+			if (this.graphic == null || this.actualElement == null)
 			{
 				return;
-			}//transparent 0, 112, 0
+			}
+			g.TranslateTransform(drawPanel.AutoScrollPosition.X, drawPanel.AutoScrollPosition.Y);
 			for (int i = 0; i < this.actualElement.GetLength(0); i++)
 			{
 				for (int j = 0; j < this.actualElement.GetLength(1); j++)
@@ -88,21 +96,30 @@ namespace BahnEditor.Editor
 					SolidBrush sb;
 					if (this.actualElement[i, j].IsTransparent == true)
 					{
-						sb = new SolidBrush(Color.FromArgb(0, 112, 0));
+						sb = new SolidBrush(Color.FromArgb(0, 112, 0)); //transparent 0, 112, 0
 					}
 					else
 					{
 						sb = new SolidBrush(Color.FromArgb(this.actualElement[i, j].Red, this.actualElement[i, j].Green, this.actualElement[i, j].Blue));
 					}
-					g.FillRectangle(sb, j * (2 * this.zoomLevel) + 20, (10 + (2 * this.zoomLevel) * this.actualElement.GetLength(0)) - ((2 * this.zoomLevel) * i), (2 * this.zoomLevel), (2 * this.zoomLevel));
+					g.FillRectangle(sb, j * (2 * this.zoomLevel) + 20, (((2 * this.zoomLevel) * this.actualElement.GetLength(0)) - ((2 * this.zoomLevel) * (i + 1))) + 20, (2 * this.zoomLevel), (2 * this.zoomLevel));
+
 				}
 			}
+			for (int i = 0; i < 3; i++)
+			{
+				for (int j = 0; j < 8; j++)
+				{
+					g.DrawRectangle(Pens.Gray, 20 + (i * Constants.SYMBREITE) * (2 * this.zoomLevel), 20 + (j * Constants.SYMHOEHE) * (2 * this.zoomLevel), Constants.SYMBREITE * (2 * this.zoomLevel), Constants.SYMHOEHE * (2 * this.zoomLevel));
+				}
+			}
+			g.DrawRectangle(Pens.DarkGray, 20 + Constants.SYMBREITE * (2 * this.zoomLevel), 20 + (6 * Constants.SYMHOEHE) * (2 * this.zoomLevel), Constants.SYMBREITE * (2 * this.zoomLevel), Constants.SYMHOEHE * (2 * this.zoomLevel));
 		}
 
 		private void MouseClickGraphic(MouseEventArgs e)
 		{
-			int xElement = (e.X - 20) / (2 * this.zoomLevel);
-			int yElement = ((10 + (2 * this.zoomLevel) * this.actualElement.GetLength(0)) - (e.Y - 10)) / (2 * this.zoomLevel) - 1;
+			int xElement = (e.X - 20 - drawPanel.AutoScrollPosition.X) / (2 * this.zoomLevel);
+			int yElement = ((10 + (2 * this.zoomLevel) * this.actualElement.GetLength(0)) - (e.Y - 10 - drawPanel.AutoScrollPosition.Y)) / (2 * this.zoomLevel);
 			if (xElement >= 0 && yElement >= 0 && xElement < this.actualElement.GetLength(1) && yElement < this.actualElement.GetLength(0))
 			{
 				if (e.Button == MouseButtons.Left)
@@ -137,15 +154,17 @@ namespace BahnEditor.Editor
 
 		private void LoadActualElement()
 		{
-			this.actualElement = new Pixel[Constants.SYMHOEHE, Constants.SYMBREITE];
+			this.actualElement = new Pixel[Constants.SYMHOEHE * 8, Constants.SYMBREITE * 3];
 			Layer layer = this.graphic.Layers[0];
-			for (int i = 0; i < Constants.SYMHOEHE; i++)
+			int x0 = (int)(layer.X0 + Constants.SYMBREITE);
+			int y0 = (int)(layer.Y0 + Constants.SYMHOEHE);
+			for (int i = 0; i < this.actualElement.GetLength(0); i++)
 			{
-				for (int j = 0; j < Constants.SYMBREITE; j++)
+				for (int j = 0; j < this.actualElement.GetLength(1); j++)
 				{
-					if (i >= layer.Y0 && i < layer.Y0 + layer.Height && j >= layer.X0 && j < layer.X0 + layer.Width)
+					if (i >= y0 && i < y0 + layer.Height && j >= x0 && j < x0 + layer.Width)
 					{
-						this.actualElement[i, j] = layer.Element[i - layer.Y0, j - layer.X0];
+						this.actualElement[i, j] = layer.Element[i - y0, j - x0];
 					}
 					else
 					{
@@ -196,8 +215,8 @@ namespace BahnEditor.Editor
 					element[i, j] = this.actualElement[i + miny, j + minx];
 				}
 			}
-			x0 = (short)minx;
-			y0 = (short)miny;
+			x0 = (short)(minx - Constants.SYMBREITE);
+			y0 = (short)(miny - Constants.SYMHOEHE);
 			return element;
 		}
 
@@ -294,8 +313,10 @@ namespace BahnEditor.Editor
 		private void zoomTrackBar_Scroll(object sender, EventArgs e)
 		{
 			this.zoomLevel = this.zoomTrackBar.Value;
+			this.ResizeDrawPanel();
 			this.drawPanel.Invalidate();
 		}
 		#endregion
+
 	}
 }

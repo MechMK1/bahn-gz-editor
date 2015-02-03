@@ -33,8 +33,8 @@
 			this.newButton = new System.Windows.Forms.ToolStripButton();
 			this.loadButton = new System.Windows.Forms.ToolStripButton();
 			this.saveButton = new System.Windows.Forms.ToolStripButton();
-			this.drawPanel = new System.Windows.Forms.Panel();
 			this.controlPanel = new System.Windows.Forms.Panel();
+			this.zoomTrackBar = new System.Windows.Forms.TrackBar();
 			this.rightColorButton = new System.Windows.Forms.Button();
 			this.leftColorButton = new System.Windows.Forms.Button();
 			this.loadFileDialog = new System.Windows.Forms.OpenFileDialog();
@@ -42,18 +42,18 @@
 			this.fileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.newMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.openMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.saveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveAsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.exitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
 			this.colorDialog = new System.Windows.Forms.ColorDialog();
-			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-			this.zoomTrackBar = new System.Windows.Forms.TrackBar();
+			this.drawPanel = new BahnEditor.Editor.DrawPanel();
 			this.toolStrip.SuspendLayout();
 			this.controlPanel.SuspendLayout();
-			this.menuStrip.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.zoomTrackBar)).BeginInit();
+			this.menuStrip.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// toolStrip
@@ -65,7 +65,7 @@
             this.saveButton});
 			this.toolStrip.Location = new System.Drawing.Point(0, 24);
 			this.toolStrip.Name = "toolStrip";
-			this.toolStrip.Size = new System.Drawing.Size(577, 25);
+			this.toolStrip.Size = new System.Drawing.Size(882, 25);
 			this.toolStrip.TabIndex = 0;
 			this.toolStrip.Text = "toolStrip1";
 			// 
@@ -99,20 +99,6 @@
 			this.saveButton.Text = "Save";
 			this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
 			// 
-			// drawPanel
-			// 
-			this.drawPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.drawPanel.AutoScrollMinSize = new System.Drawing.Size(350, 190);
-			this.drawPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.drawPanel.Location = new System.Drawing.Point(13, 52);
-			this.drawPanel.Name = "drawPanel";
-			this.drawPanel.Size = new System.Drawing.Size(403, 317);
-			this.drawPanel.TabIndex = 1;
-			this.drawPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.drawPanel_Paint);
-			this.drawPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.drawPanel_MouseClick);
-			// 
 			// controlPanel
 			// 
 			this.controlPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -120,10 +106,23 @@
 			this.controlPanel.Controls.Add(this.zoomTrackBar);
 			this.controlPanel.Controls.Add(this.rightColorButton);
 			this.controlPanel.Controls.Add(this.leftColorButton);
-			this.controlPanel.Location = new System.Drawing.Point(423, 52);
+			this.controlPanel.Location = new System.Drawing.Point(728, 52);
 			this.controlPanel.Name = "controlPanel";
-			this.controlPanel.Size = new System.Drawing.Size(142, 317);
+			this.controlPanel.Size = new System.Drawing.Size(142, 474);
 			this.controlPanel.TabIndex = 2;
+			// 
+			// zoomTrackBar
+			// 
+			this.zoomTrackBar.LargeChange = 1;
+			this.zoomTrackBar.Location = new System.Drawing.Point(4, 426);
+			this.zoomTrackBar.Maximum = 5;
+			this.zoomTrackBar.Minimum = 2;
+			this.zoomTrackBar.Name = "zoomTrackBar";
+			this.zoomTrackBar.Size = new System.Drawing.Size(135, 45);
+			this.zoomTrackBar.TabIndex = 2;
+			this.zoomTrackBar.TabStop = false;
+			this.zoomTrackBar.Value = 3;
+			this.zoomTrackBar.Scroll += new System.EventHandler(this.zoomTrackBar_Scroll);
 			// 
 			// rightColorButton
 			// 
@@ -159,7 +158,7 @@
             this.fileMenuItem});
 			this.menuStrip.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip.Name = "menuStrip";
-			this.menuStrip.Size = new System.Drawing.Size(577, 24);
+			this.menuStrip.Size = new System.Drawing.Size(882, 24);
 			this.menuStrip.TabIndex = 3;
 			this.menuStrip.Text = "menuStrip1";
 			// 
@@ -191,6 +190,11 @@
 			this.openMenuItem.Text = "Öffnen";
 			this.openMenuItem.Click += new System.EventHandler(this.openMenuItem_Click);
 			// 
+			// toolStripSeparator1
+			// 
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new System.Drawing.Size(163, 6);
+			// 
 			// saveMenuItem
 			// 
 			this.saveMenuItem.Name = "saveMenuItem";
@@ -204,6 +208,11 @@
 			this.saveAsMenuItem.Size = new System.Drawing.Size(166, 22);
 			this.saveAsMenuItem.Text = "Speichern unter...";
 			this.saveAsMenuItem.Click += new System.EventHandler(this.saveAsMenuItem_Click);
+			// 
+			// toolStripSeparator2
+			// 
+			this.toolStripSeparator2.Name = "toolStripSeparator2";
+			this.toolStripSeparator2.Size = new System.Drawing.Size(163, 6);
 			// 
 			// exitMenuItem
 			// 
@@ -220,38 +229,30 @@
 			// 
 			this.colorDialog.FullOpen = true;
 			// 
-			// toolStripSeparator1
+			// drawPanel
 			// 
-			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(163, 6);
-			// 
-			// toolStripSeparator2
-			// 
-			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(163, 6);
-			// 
-			// zoomTrackBar
-			// 
-			this.zoomTrackBar.Location = new System.Drawing.Point(4, 34);
-			this.zoomTrackBar.Maximum = 5;
-			this.zoomTrackBar.Minimum = 2;
-			this.zoomTrackBar.Name = "zoomTrackBar";
-			this.zoomTrackBar.Size = new System.Drawing.Size(135, 45);
-			this.zoomTrackBar.TabIndex = 2;
-			this.zoomTrackBar.TabStop = false;
-			this.zoomTrackBar.Value = 3;
-			this.zoomTrackBar.Scroll += new System.EventHandler(this.zoomTrackBar_Scroll);
+			this.drawPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.drawPanel.AutoScroll = true;
+			this.drawPanel.BackColor = System.Drawing.Color.Transparent;
+			this.drawPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.drawPanel.Location = new System.Drawing.Point(12, 52);
+			this.drawPanel.Name = "drawPanel";
+			this.drawPanel.Size = new System.Drawing.Size(710, 474);
+			this.drawPanel.TabIndex = 4;
+			this.drawPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.drawPanel_Paint);
+			this.drawPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.drawPanel_MouseClick);
 			// 
 			// Editor
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(577, 381);
-			this.Controls.Add(this.controlPanel);
+			this.ClientSize = new System.Drawing.Size(882, 538);
 			this.Controls.Add(this.drawPanel);
+			this.Controls.Add(this.controlPanel);
 			this.Controls.Add(this.toolStrip);
 			this.Controls.Add(this.menuStrip);
-			this.DoubleBuffered = true;
 			this.MainMenuStrip = this.menuStrip;
 			this.Name = "Editor";
 			this.Text = "Bahn Editor";
@@ -260,9 +261,9 @@
 			this.toolStrip.PerformLayout();
 			this.controlPanel.ResumeLayout(false);
 			this.controlPanel.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.zoomTrackBar)).EndInit();
 			this.menuStrip.ResumeLayout(false);
 			this.menuStrip.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.zoomTrackBar)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -272,7 +273,6 @@
 
 		private System.Windows.Forms.ToolStrip toolStrip;
 		private System.Windows.Forms.ToolStripButton newButton;
-		private System.Windows.Forms.Panel drawPanel;
 		private System.Windows.Forms.Panel controlPanel;
 		private System.Windows.Forms.ToolStripButton loadButton;
 		private System.Windows.Forms.OpenFileDialog loadFileDialog;
@@ -291,6 +291,7 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
 		private System.Windows.Forms.TrackBar zoomTrackBar;
+		private DrawPanel drawPanel;
 
 	}
 }

@@ -139,7 +139,7 @@ namespace BahnEditor.BahnLib
 					uint lastcolor = pixels[colorposition];
 					for (; colorposition < pixels.Count; colorposition++)
 					{
-						if (lastcolor != pixels[colorposition])
+						if (lastcolor != pixels[colorposition] || length > 256)
 						{
 							break;
 						}
