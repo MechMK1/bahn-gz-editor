@@ -50,6 +50,7 @@
 			this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
 			this.colorDialog = new System.Windows.Forms.ColorDialog();
 			this.drawPanel = new BahnEditor.Editor.DrawPanel();
+			this.reloadButton = new System.Windows.Forms.ToolStripButton();
 			this.toolStrip.SuspendLayout();
 			this.controlPanel.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.zoomTrackBar)).BeginInit();
@@ -62,7 +63,8 @@
 			this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newButton,
             this.loadButton,
-            this.saveButton});
+            this.saveButton,
+            this.reloadButton});
 			this.toolStrip.Location = new System.Drawing.Point(0, 24);
 			this.toolStrip.Name = "toolStrip";
 			this.toolStrip.Size = new System.Drawing.Size(882, 25);
@@ -243,6 +245,17 @@
 			this.drawPanel.TabIndex = 4;
 			this.drawPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.drawPanel_Paint);
 			this.drawPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.drawPanel_MouseClick);
+			this.drawPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.drawPanel_MouseMove);
+			// 
+			// reloadButton
+			// 
+			this.reloadButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.reloadButton.Image = ((System.Drawing.Image)(resources.GetObject("reloadButton.Image")));
+			this.reloadButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.reloadButton.Name = "reloadButton";
+			this.reloadButton.Size = new System.Drawing.Size(23, 22);
+			this.reloadButton.Text = "reoad";
+			this.reloadButton.Click += new System.EventHandler(this.reloadButton_Click);
 			// 
 			// Editor
 			// 
@@ -292,6 +305,7 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
 		private System.Windows.Forms.TrackBar zoomTrackBar;
 		private DrawPanel drawPanel;
+		private System.Windows.Forms.ToolStripButton reloadButton;
 
 	}
 }

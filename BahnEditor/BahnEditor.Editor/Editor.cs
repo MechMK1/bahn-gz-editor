@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using BahnEditor.BahnLib;
+using System.Threading;
 
 namespace BahnEditor.Editor
 {
@@ -16,11 +17,12 @@ namespace BahnEditor.Editor
 		private Graphic graphic;
 		private Pixel[,] actualElement;
 		private string lastPath = "";
-		private int zoomLevel = 3;
+		private int zoomLevel = 6;
 		private bool userMadeChanges = false;
 		private Pixel leftColor = Pixel.RGBPixel(0, 0, 0);
 		private Pixel rightColor = Pixel.RGBPixel(255, 255, 255);
 
+		private static SolidBrush transparentBrush = new SolidBrush(Color.FromArgb(0, 112, 0));
 
 		public Editor()
 		{
@@ -65,7 +67,7 @@ namespace BahnEditor.Editor
 			this.userMadeChanges = false;
 		}
 
-		private void SaveClick(bool forceSave)
+		private void ClickOnSaveButton(bool forceSave)
 		{
 			if (lastPath == "" || forceSave == true)
 			{
@@ -79,7 +81,7 @@ namespace BahnEditor.Editor
 
 		private void ResizeDrawPanel()
 		{
-			this.drawPanel.AutoScrollMinSize = new Size((int)((2 * this.zoomLevel) * Constants.SYMBREITE * 3 + 30), (int)((2 * this.zoomLevel) * Constants.SYMHOEHE * 8 + 30));
+			this.drawPanel.AutoScrollMinSize = new Size((int)((this.zoomLevel) * Constants.SYMBREITE * 3 + 30), (int)((this.zoomLevel) * Constants.SYMHOEHE * 8 + 30));
 		}
 
 		private void PaintGraphic(Graphics g)
@@ -88,50 +90,99 @@ namespace BahnEditor.Editor
 			{
 				return;
 			}
-			g.TranslateTransform(drawPanel.AutoScrollPosition.X, drawPanel.AutoScrollPosition.Y);
-			for (int i = 0; i < this.actualElement.GetLength(0); i++)
+			
+			if (g.ClipBounds.Width == this.zoomLevel * 2 && g.ClipBounds.Height == this.zoomLevel * 2)
 			{
-				for (int j = 0; j < this.actualElement.GetLength(1); j++)
+				int x = (int)g.ClipBounds.X;
+				int y = (int)g.ClipBounds.Y;
+				if (x - drawPanel.AutoScrollPosition.X < 20)
 				{
-					SolidBrush sb;
-					if (this.actualElement[i, j].IsTransparent == true)
+					x = 20;
+				}
+				/*else if (x - drawPanel.AutoScrollPosition.X + this.zoomLevel * 2 >= Constants.SYMBREITE * 3 * this.zoomLevel)
+				{
+					x = (int)Constants.SYMBREITE * 3 * this.zoomLevel;
+				}*/
+				if (y - drawPanel.AutoScrollPosition.Y < 20)
+				{
+					y = 20;
+				}
+				g.FillRectangle(transparentBrush, x, y, this.zoomLevel * 2, this.zoomLevel * 2);
+				int xElement = ((x - 20 - drawPanel.AutoScrollPosition.X) / (this.zoomLevel));
+				int yElement = (((10 + (this.zoomLevel) * this.actualElement.GetLength(0)) - (y - 10 - drawPanel.AutoScrollPosition.Y)) / (this.zoomLevel));
+				g.TranslateTransform(drawPanel.AutoScrollPosition.X, drawPanel.AutoScrollPosition.Y);
+				if(yElement >= this.actualElement.GetLength(0))
+				{
+					yElement = this.actualElement.GetLength(0) - 1;
+				}
+				if(xElement >= this.actualElement.GetLength(1))
+				{
+					xElement = this.actualElement.GetLength(1) - 1;
+				}
+				for (int i = yElement; (i >= yElement - 3) && i < this.actualElement.GetLength(0) && i >= 0; i--)
+				{
+					for (int j = xElement; (j < xElement + 3) && j < this.actualElement.GetLength(1); j++)
 					{
-						sb = new SolidBrush(Color.FromArgb(0, 112, 0)); //transparent 0, 112, 0
+						if (this.actualElement[i, j].IsTransparent != true)
+						{
+							g.FillRectangle(new SolidBrush(Color.FromArgb(this.actualElement[i, j].Red, this.actualElement[i, j].Green, this.actualElement[i, j].Blue)), j * (this.zoomLevel) + 20, (((this.zoomLevel) * this.actualElement.GetLength(0)) - ((this.zoomLevel) * (i + 1))) + 20, (this.zoomLevel), (this.zoomLevel));
+						}
 					}
-					else
+				}
+			}
+			else
+			{
+				g.TranslateTransform(drawPanel.AutoScrollPosition.X, drawPanel.AutoScrollPosition.Y);
+				g.FillRectangle(transparentBrush, 20, 20, Constants.SYMBREITE * this.zoomLevel * 3, Constants.SYMHOEHE * this.zoomLevel * 8); //transparent 0, 112, 0
+				for (int i = 0; i < this.actualElement.GetLength(0); i++)
+				{
+					for (int j = 0; j < this.actualElement.GetLength(1); j++)
 					{
-						sb = new SolidBrush(Color.FromArgb(this.actualElement[i, j].Red, this.actualElement[i, j].Green, this.actualElement[i, j].Blue));
+						if (this.actualElement[i, j].IsTransparent != true)
+						{
+							g.FillRectangle(new SolidBrush(Color.FromArgb(this.actualElement[i, j].Red, this.actualElement[i, j].Green, this.actualElement[i, j].Blue)), j * (this.zoomLevel) + 20, (((this.zoomLevel) * this.actualElement.GetLength(0)) - ((this.zoomLevel) * (i + 1))) + 20, (this.zoomLevel), (this.zoomLevel));
+						}
 					}
-					g.FillRectangle(sb, j * (2 * this.zoomLevel) + 20, (((2 * this.zoomLevel) * this.actualElement.GetLength(0)) - ((2 * this.zoomLevel) * (i + 1))) + 20, (2 * this.zoomLevel), (2 * this.zoomLevel));
-
 				}
 			}
 			for (int i = 0; i < 3; i++)
 			{
 				for (int j = 0; j < 8; j++)
 				{
-					g.DrawRectangle(Pens.Gray, 20 + (i * Constants.SYMBREITE) * (2 * this.zoomLevel), 20 + (j * Constants.SYMHOEHE) * (2 * this.zoomLevel), Constants.SYMBREITE * (2 * this.zoomLevel), Constants.SYMHOEHE * (2 * this.zoomLevel));
+					g.DrawRectangle(Pens.Gray, 20 + (i * Constants.SYMBREITE) * (this.zoomLevel), 20 + (j * Constants.SYMHOEHE) * (this.zoomLevel), Constants.SYMBREITE * (this.zoomLevel), Constants.SYMHOEHE * (this.zoomLevel));
 				}
 			}
-			g.DrawRectangle(Pens.DarkGray, 20 + Constants.SYMBREITE * (2 * this.zoomLevel), 20 + (6 * Constants.SYMHOEHE) * (2 * this.zoomLevel), Constants.SYMBREITE * (2 * this.zoomLevel), Constants.SYMHOEHE * (2 * this.zoomLevel));
+			g.DrawRectangle(Pens.DarkGray, 20 + Constants.SYMBREITE * (this.zoomLevel), 20 + (6 * Constants.SYMHOEHE) * (this.zoomLevel), Constants.SYMBREITE * (this.zoomLevel), Constants.SYMHOEHE * (this.zoomLevel));
 		}
 
 		private void MouseClickGraphic(MouseEventArgs e)
 		{
-			int xElement = (e.X - 20 - drawPanel.AutoScrollPosition.X) / (2 * this.zoomLevel);
-			int yElement = ((10 + (2 * this.zoomLevel) * this.actualElement.GetLength(0)) - (e.Y - 10 - drawPanel.AutoScrollPosition.Y)) / (2 * this.zoomLevel);
-			if (xElement >= 0 && yElement >= 0 && xElement < this.actualElement.GetLength(1) && yElement < this.actualElement.GetLength(0))
+			if (e.Button != MouseButtons.None && this.actualElement != null)
 			{
-				if (e.Button == MouseButtons.Left)
+				if (e.X - drawPanel.AutoScrollPosition.X >= 20 && e.Y - drawPanel.AutoScrollPosition.Y >= 20)
 				{
-					this.actualElement[yElement, xElement] = leftColor;
+					int xElement = (e.X - 20 - drawPanel.AutoScrollPosition.X) / (this.zoomLevel);
+					int yElement = ((10 + (this.zoomLevel) * this.actualElement.GetLength(0)) - (e.Y - 10 - drawPanel.AutoScrollPosition.Y)) / (this.zoomLevel);
+					if (xElement >= 0 && yElement >= 0 && xElement < this.actualElement.GetLength(1) && yElement < this.actualElement.GetLength(0))
+					{
+						if (e.Button == MouseButtons.Left && this.actualElement[yElement, xElement] != leftColor)
+						{
+							this.actualElement[yElement, xElement] = leftColor;
+
+						}
+						else if (e.Button == MouseButtons.Right && this.actualElement[yElement, xElement] != rightColor)
+						{
+							this.actualElement[yElement, xElement] = rightColor;
+						}
+						else
+						{
+							return;
+						}
+						this.userMadeChanges = true;
+						drawPanel.Invalidate(new Rectangle(e.X - this.zoomLevel, e.Y - this.zoomLevel, this.zoomLevel * 2, this.zoomLevel * 2));
+						//drawPanel.Invalidate();
+					}
 				}
-				else if (e.Button == MouseButtons.Right)
-				{
-					this.actualElement[yElement, xElement] = rightColor;
-				}
-				this.userMadeChanges = true;
-				drawPanel.Invalidate();
 			}
 		}
 
@@ -146,7 +197,7 @@ namespace BahnEditor.Editor
 				}
 				else if (dr == DialogResult.Yes)
 				{
-					this.SaveClick(false);
+					this.ClickOnSaveButton(false);
 				}
 			}
 			return false;
@@ -249,7 +300,7 @@ namespace BahnEditor.Editor
 
 		private void saveButton_Click(object sender, EventArgs e)
 		{
-			this.SaveClick(false);
+			this.ClickOnSaveButton(false);
 		}
 
 		private void newMenuItem_Click(object sender, EventArgs e)
@@ -264,7 +315,7 @@ namespace BahnEditor.Editor
 
 		private void saveMenuItem_Click(object sender, EventArgs e)
 		{
-			this.SaveClick(false);
+			this.ClickOnSaveButton(false);
 		}
 
 		private void saveFileDialog_FileOk(object sender, CancelEventArgs e)
@@ -275,7 +326,7 @@ namespace BahnEditor.Editor
 
 		private void saveAsMenuItem_Click(object sender, EventArgs e)
 		{
-			this.SaveClick(true);
+			this.ClickOnSaveButton(true);
 		}
 
 		private void exitMenuItem_Click(object sender, EventArgs e)
@@ -312,11 +363,21 @@ namespace BahnEditor.Editor
 
 		private void zoomTrackBar_Scroll(object sender, EventArgs e)
 		{
-			this.zoomLevel = this.zoomTrackBar.Value;
+			this.zoomLevel = this.zoomTrackBar.Value * 2;
 			this.ResizeDrawPanel();
 			this.drawPanel.Invalidate();
 		}
+
+		private void drawPanel_MouseMove(object sender, MouseEventArgs e)
+		{
+			this.MouseClickGraphic(e);
+		}
+
 		#endregion
 
+		private void reloadButton_Click(object sender, EventArgs e)
+		{
+			drawPanel.Invalidate();
+		}
 	}
 }
