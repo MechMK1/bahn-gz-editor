@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
 
 namespace BahnEditor.BahnLib
 {
@@ -79,6 +80,20 @@ namespace BahnEditor.BahnLib
 						)
 					);
 			}
+		}
+
+		public static Pixel FromColor(Color color)
+		{
+			return Pixel.RGBPixel(color.R, color.G, color.B);
+		}
+
+		public Color ConvertToColor()
+		{
+			if(this.IsTransparent == true)
+			{
+				return Color.FromArgb(0, 112, 0);
+			}
+			return Color.FromArgb(this.Red, this.Green, this.Blue);			
 		}
 
 		public override bool Equals(object obj)
