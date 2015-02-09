@@ -49,8 +49,9 @@
 			this.exitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
 			this.colorDialog = new System.Windows.Forms.ColorDialog();
+			this.leftComboBox = new System.Windows.Forms.ComboBox();
+			this.rightComboBox = new System.Windows.Forms.ComboBox();
 			this.drawPanel = new BahnEditor.Editor.DrawPanel();
-			this.reloadButton = new System.Windows.Forms.ToolStripButton();
 			this.toolStrip.SuspendLayout();
 			this.controlPanel.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.zoomTrackBar)).BeginInit();
@@ -63,8 +64,7 @@
 			this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newButton,
             this.loadButton,
-            this.saveButton,
-            this.reloadButton});
+            this.saveButton});
 			this.toolStrip.Location = new System.Drawing.Point(0, 24);
 			this.toolStrip.Name = "toolStrip";
 			this.toolStrip.Size = new System.Drawing.Size(882, 25);
@@ -105,12 +105,14 @@
 			// 
 			this.controlPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			this.controlPanel.Controls.Add(this.rightComboBox);
+			this.controlPanel.Controls.Add(this.leftComboBox);
 			this.controlPanel.Controls.Add(this.zoomTrackBar);
 			this.controlPanel.Controls.Add(this.rightColorButton);
 			this.controlPanel.Controls.Add(this.leftColorButton);
-			this.controlPanel.Location = new System.Drawing.Point(728, 52);
+			this.controlPanel.Location = new System.Drawing.Point(673, 52);
 			this.controlPanel.Name = "controlPanel";
-			this.controlPanel.Size = new System.Drawing.Size(142, 474);
+			this.controlPanel.Size = new System.Drawing.Size(197, 474);
 			this.controlPanel.TabIndex = 2;
 			// 
 			// zoomTrackBar
@@ -120,7 +122,7 @@
 			this.zoomTrackBar.Maximum = 5;
 			this.zoomTrackBar.Minimum = 2;
 			this.zoomTrackBar.Name = "zoomTrackBar";
-			this.zoomTrackBar.Size = new System.Drawing.Size(135, 45);
+			this.zoomTrackBar.Size = new System.Drawing.Size(190, 45);
 			this.zoomTrackBar.TabIndex = 2;
 			this.zoomTrackBar.TabStop = false;
 			this.zoomTrackBar.Value = 3;
@@ -130,9 +132,9 @@
 			// 
 			this.rightColorButton.BackColor = System.Drawing.Color.White;
 			this.rightColorButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.rightColorButton.Location = new System.Drawing.Point(79, 4);
+			this.rightColorButton.Location = new System.Drawing.Point(104, 3);
 			this.rightColorButton.Name = "rightColorButton";
-			this.rightColorButton.Size = new System.Drawing.Size(60, 23);
+			this.rightColorButton.Size = new System.Drawing.Size(90, 23);
 			this.rightColorButton.TabIndex = 1;
 			this.rightColorButton.TabStop = false;
 			this.rightColorButton.UseVisualStyleBackColor = false;
@@ -142,9 +144,9 @@
 			// 
 			this.leftColorButton.BackColor = System.Drawing.Color.Black;
 			this.leftColorButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.leftColorButton.Location = new System.Drawing.Point(4, 4);
+			this.leftColorButton.Location = new System.Drawing.Point(3, 3);
 			this.leftColorButton.Name = "leftColorButton";
-			this.leftColorButton.Size = new System.Drawing.Size(60, 23);
+			this.leftColorButton.Size = new System.Drawing.Size(90, 23);
 			this.leftColorButton.TabIndex = 0;
 			this.leftColorButton.TabStop = false;
 			this.leftColorButton.UseVisualStyleBackColor = false;
@@ -231,6 +233,34 @@
 			// 
 			this.colorDialog.FullOpen = true;
 			// 
+			// leftComboBox
+			// 
+			this.leftComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.leftComboBox.FormattingEnabled = true;
+			this.leftComboBox.Items.AddRange(new object[] {
+            "Normal",
+            "Transparent"});
+			this.leftComboBox.Location = new System.Drawing.Point(4, 33);
+			this.leftComboBox.Name = "leftComboBox";
+			this.leftComboBox.Size = new System.Drawing.Size(89, 21);
+			this.leftComboBox.TabIndex = 4;
+			this.leftComboBox.TabStop = false;
+			this.leftComboBox.SelectedIndexChanged += new System.EventHandler(this.leftComboBox_SelectedIndexChanged);
+			// 
+			// rightComboBox
+			// 
+			this.rightComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.rightComboBox.FormattingEnabled = true;
+			this.rightComboBox.Items.AddRange(new object[] {
+            "Normal",
+            "Transparent"});
+			this.rightComboBox.Location = new System.Drawing.Point(104, 32);
+			this.rightComboBox.Name = "rightComboBox";
+			this.rightComboBox.Size = new System.Drawing.Size(90, 21);
+			this.rightComboBox.TabIndex = 5;
+			this.rightComboBox.TabStop = false;
+			this.rightComboBox.SelectedIndexChanged += new System.EventHandler(this.rightComboBox_SelectedIndexChanged);
+			// 
 			// drawPanel
 			// 
 			this.drawPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -241,21 +271,11 @@
 			this.drawPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.drawPanel.Location = new System.Drawing.Point(12, 52);
 			this.drawPanel.Name = "drawPanel";
-			this.drawPanel.Size = new System.Drawing.Size(710, 474);
+			this.drawPanel.Size = new System.Drawing.Size(655, 474);
 			this.drawPanel.TabIndex = 4;
 			this.drawPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.drawPanel_Paint);
 			this.drawPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.drawPanel_MouseClick);
 			this.drawPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.drawPanel_MouseMove);
-			// 
-			// reloadButton
-			// 
-			this.reloadButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.reloadButton.Image = ((System.Drawing.Image)(resources.GetObject("reloadButton.Image")));
-			this.reloadButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.reloadButton.Name = "reloadButton";
-			this.reloadButton.Size = new System.Drawing.Size(23, 22);
-			this.reloadButton.Text = "reoad";
-			this.reloadButton.Click += new System.EventHandler(this.reloadButton_Click);
 			// 
 			// Editor
 			// 
@@ -270,6 +290,7 @@
 			this.Name = "Editor";
 			this.Text = "Bahn Editor";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Editor_FormClosing);
+			this.Load += new System.EventHandler(this.Editor_Load);
 			this.toolStrip.ResumeLayout(false);
 			this.toolStrip.PerformLayout();
 			this.controlPanel.ResumeLayout(false);
@@ -305,7 +326,8 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
 		private System.Windows.Forms.TrackBar zoomTrackBar;
 		private DrawPanel drawPanel;
-		private System.Windows.Forms.ToolStripButton reloadButton;
+		private System.Windows.Forms.ComboBox rightComboBox;
+		private System.Windows.Forms.ComboBox leftComboBox;
 
 	}
 }

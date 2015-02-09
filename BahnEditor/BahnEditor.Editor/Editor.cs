@@ -20,13 +20,21 @@ namespace BahnEditor.Editor
 		private int zoomLevel = 6;
 		private bool userMadeChanges = false;
 		private Pixel leftColor = Pixel.RGBPixel(0, 0, 0);
+		private Pixel lastLeftColor = null;
 		private Pixel rightColor = Pixel.RGBPixel(255, 255, 255);
+		private Pixel lastRightColor = null;
 
 		private static SolidBrush transparentBrush = new SolidBrush(Color.FromArgb(0, 112, 0));
 
 		public Editor()
 		{
 			InitializeComponent();
+		}
+
+		private void EditorLoaded()
+		{
+			this.rightComboBox.SelectedIndex = 0;
+			this.leftComboBox.SelectedIndex = 0;
 		}
 
 		private void NewGraphic()
@@ -90,32 +98,39 @@ namespace BahnEditor.Editor
 			{
 				return;
 			}
-			
+
 			if (g.ClipBounds.Width == this.zoomLevel * 2 && g.ClipBounds.Height == this.zoomLevel * 2)
 			{
 				int x = (int)g.ClipBounds.X;
 				int y = (int)g.ClipBounds.Y;
+				int diffX = 0;
+				int diffY = 0;
 				if (x - drawPanel.AutoScrollPosition.X < 20)
 				{
 					x = 20;
 				}
-				/*else if (x - drawPanel.AutoScrollPosition.X + this.zoomLevel * 2 >= Constants.SYMBREITE * 3 * this.zoomLevel)
+				else if (x - 20 - drawPanel.AutoScrollPosition.X + this.zoomLevel * 2 >= Constants.SYMBREITE * 3 * this.zoomLevel)
 				{
-					x = (int)Constants.SYMBREITE * 3 * this.zoomLevel;
-				}*/
+					//x = (int)Constants.SYMBREITE * 3 * this.zoomLevel;
+					diffX = (int)((x - 20 - drawPanel.AutoScrollPosition.X + this.zoomLevel * 2) - (Constants.SYMBREITE * 3 * this.zoomLevel));
+				}
 				if (y - drawPanel.AutoScrollPosition.Y < 20)
 				{
 					y = 20;
 				}
-				g.FillRectangle(transparentBrush, x, y, this.zoomLevel * 2, this.zoomLevel * 2);
+				else if (y - 20 - drawPanel.AutoScrollPosition.Y + this.zoomLevel * 2 >= Constants.SYMHOEHE * 8 * this.zoomLevel)
+				{
+					diffY = (int)((y - 20 - drawPanel.AutoScrollPosition.Y + this.zoomLevel * 2) - (Constants.SYMHOEHE * 8 * this.zoomLevel));
+				}
+				g.FillRectangle(transparentBrush, x, y, this.zoomLevel * 2 - diffX, this.zoomLevel * 2 - diffY);
 				int xElement = ((x - 20 - drawPanel.AutoScrollPosition.X) / (this.zoomLevel));
 				int yElement = (((10 + (this.zoomLevel) * this.actualElement.GetLength(0)) - (y - 10 - drawPanel.AutoScrollPosition.Y)) / (this.zoomLevel));
 				g.TranslateTransform(drawPanel.AutoScrollPosition.X, drawPanel.AutoScrollPosition.Y);
-				if(yElement >= this.actualElement.GetLength(0))
+				if (yElement >= this.actualElement.GetLength(0))
 				{
 					yElement = this.actualElement.GetLength(0) - 1;
 				}
-				if(xElement >= this.actualElement.GetLength(1))
+				if (xElement >= this.actualElement.GetLength(1))
 				{
 					xElement = this.actualElement.GetLength(1) - 1;
 				}
@@ -159,10 +174,10 @@ namespace BahnEditor.Editor
 		{
 			if (e.Button != MouseButtons.None && this.actualElement != null)
 			{
-				if (e.X - drawPanel.AutoScrollPosition.X >= 20 && e.Y - drawPanel.AutoScrollPosition.Y >= 20)
+				if (e.X - drawPanel.AutoScrollPosition.X >= 20 && e.Y - drawPanel.AutoScrollPosition.Y >= 20 && (20 + this.zoomLevel * this.actualElement.GetLength(0) + drawPanel.AutoScrollPosition.Y - e.Y) > 0)
 				{
 					int xElement = (e.X - 20 - drawPanel.AutoScrollPosition.X) / (this.zoomLevel);
-					int yElement = ((10 + (this.zoomLevel) * this.actualElement.GetLength(0)) - (e.Y - 10 - drawPanel.AutoScrollPosition.Y)) / (this.zoomLevel);
+					int yElement = (20 + this.zoomLevel * this.actualElement.GetLength(0) + drawPanel.AutoScrollPosition.Y - e.Y) / this.zoomLevel;
 					if (xElement >= 0 && yElement >= 0 && xElement < this.actualElement.GetLength(1) && yElement < this.actualElement.GetLength(0))
 					{
 						if (e.Button == MouseButtons.Left && this.actualElement[yElement, xElement] != leftColor)
@@ -340,7 +355,7 @@ namespace BahnEditor.Editor
 			if (dr == DialogResult.OK)
 			{
 				Color c = this.colorDialog.Color;
-				this.leftColor = Pixel.RGBPixel(c.R, c.G, c.B);
+				this.leftColor = Pixel.FromColor(c);
 				this.leftColorButton.BackColor = c;
 			}
 		}
@@ -351,7 +366,7 @@ namespace BahnEditor.Editor
 			if (dr == DialogResult.OK)
 			{
 				Color c = this.colorDialog.Color;
-				this.rightColor = Pixel.RGBPixel(c.R, c.G, c.B);
+				this.rightColor = Pixel.FromColor(c);
 				this.rightColorButton.BackColor = c;
 			}
 		}
@@ -373,11 +388,52 @@ namespace BahnEditor.Editor
 			this.MouseClickGraphic(e);
 		}
 
-		#endregion
-
-		private void reloadButton_Click(object sender, EventArgs e)
+		private void rightComboBox_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			drawPanel.Invalidate();
+			if(this.rightComboBox.SelectedIndex == 0)
+			{
+				if (this.lastRightColor != null)
+				{
+					this.rightColor = this.lastRightColor;
+					
+				}
+			}
+			else if(this.rightComboBox.SelectedIndex == 1)
+			{
+				if (this.rightColor.IsTransparent != true)
+				{
+					this.lastRightColor = this.rightColor;
+					this.rightColor = Pixel.TransparentPixel();
+				}
+			}
+			this.rightColorButton.BackColor = this.rightColor.ConvertToColor();
 		}
+
+		private void leftComboBox_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if(this.leftComboBox.SelectedIndex == 0)
+			{
+				if (this.lastLeftColor != null)
+				{
+					this.leftColor = this.lastLeftColor;
+				}
+			}
+			else if(this.leftComboBox.SelectedIndex == 1)
+			{
+				if (this.leftColor.IsTransparent != true)
+				{
+					this.lastLeftColor = this.leftColor;
+					this.leftColor = Pixel.TransparentPixel();
+				}
+			}
+			this.leftColorButton.BackColor = this.leftColor.ConvertToColor();
+		}
+
+		private void Editor_Load(object sender, EventArgs e)
+		{
+			this.EditorLoaded();
+		}
+
+		#endregion
 	}
 }
