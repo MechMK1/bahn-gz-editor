@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
+    <Compile Include="ElementIsEmptyException.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Graphic.cs" />
     <Compile Include="Layer.cs" />

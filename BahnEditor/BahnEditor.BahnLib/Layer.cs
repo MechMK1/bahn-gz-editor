@@ -9,10 +9,6 @@ namespace BahnEditor.BahnLib
 {
 	public class Layer
 	{
-		public short Height { get; set; }
-		public short Width { get; set; }
-		public short X0 { get; set; }
-		public short Y0 { get; set; }
 		public short LayerID { get; set; }
 		public Pixel[,] Element { get; set; }
 
@@ -21,36 +17,98 @@ namespace BahnEditor.BahnLib
 
 		}
 
-		public Layer(short height, short width, short x0, short y0, short layerID, Pixel[,] element)
+		public Layer(short layerID, Pixel[,] element)
 		{
-			this.Height = height;
-			this.Width = width;
-			this.X0 = x0;
-			this.Y0 = y0;
 			this.LayerID = layerID;
 			this.Element = element;
 		}
 
 		public void WriteLayerToStream(BinaryWriter bw)
 		{
+			short x0;
+			short y0;
+			Pixel[,] element = TrimElement(out x0, out y0);
 			bw.Write(this.LayerID); //layer
-			bw.Write(this.X0); //x0
-			bw.Write(this.Y0); //y0
-			bw.Write(this.Width); //width
-			bw.Write(this.Height); //height
-			WriteElementToStream(bw);
+			bw.Write(x0); //x0
+			bw.Write(y0); //y0
+			bw.Write((short)element.GetLength(1)); //width
+			bw.Write((short)element.GetLength(0)); //height
+			WriteElementToStream(element, bw);
 		}
 
 		public static Layer ReadLayerFromStream(BinaryReader br)
 		{
 			Layer layer = new Layer();
 			layer.LayerID = br.ReadInt16();
-			layer.X0 = br.ReadInt16();
-			layer.Y0 = br.ReadInt16();
-			layer.Width = br.ReadInt16();
-			layer.Height = br.ReadInt16();
-			layer.Element = ReadElementFromStream(br, layer.Width, layer.Height);
+			short x0 = br.ReadInt16();
+			short y0 = br.ReadInt16();
+			short width = br.ReadInt16();
+			short height = br.ReadInt16();
+			Pixel[,] element = ReadElementFromStream(br, width, height);
+			layer.Element = LoadElement(x0, y0, element);
 			return layer;
+		}
+
+		private static void WriteElementToStream(Pixel[,] element, BinaryWriter bw)
+		{
+			try
+			{
+				List<uint> pixels = new List<uint>();
+				for (int j = 0; j <= element.GetLength(0) - 1; j++)
+				{
+					for (int k = 0; k <= element.GetLength(1) - (short)1; k++)
+					{
+						pixels.Add(element[j, k].ConvertToUInt());
+					}
+				}
+				List<uint> colors = new List<uint>();
+				colors.Add(0);
+				int colorposition = 0;
+				while (colorposition < pixels.Count)
+				{
+					int length = 0;
+					uint lastcolor = pixels[colorposition];
+					for (; colorposition < pixels.Count; colorposition++)
+					{
+						if (lastcolor != pixels[colorposition] || length > 256)
+						{
+							break;
+						}
+						length++;
+						lastcolor = pixels[colorposition];
+					}
+					if (length <= 1)
+					{
+						colors.Add(lastcolor);
+					}
+					else if (lastcolor == Constants.FARBE_TRANSPARENT)
+					{
+						colors.Add(Constants.FARBE_KOMPR_TR | (uint)(length - 2));
+					}
+					else
+					{
+						colors.Add(Constants.FARBE_KOMPRIMIERT | (uint)(length - 2));
+						colors.Add(lastcolor);
+					}
+
+
+				}
+				colors[0] = (uint)(colors.Count - 1);
+				uint[] compressed = colors.ToArray();
+				for (int j = 0; j < compressed.Length; j++)
+				{
+					bw.Write(compressed[j]);
+				}
+				return;
+			}
+			catch (IndexOutOfRangeException)
+			{
+				throw;
+			}
+			catch (ArgumentNullException)
+			{
+				throw;
+			}
 		}
 
 		private static Pixel[,] ReadElementFromStream(BinaryReader br, short width, short height)
@@ -118,66 +176,77 @@ namespace BahnEditor.BahnLib
 			return element;
 		}
 
-		private void WriteElementToStream(BinaryWriter bw)
+		private static Pixel[,] LoadElement(int x0, int y0, Pixel[,] element)
 		{
-			try
+			Pixel[,] newElement = new Pixel[Constants.SYMHOEHE * 8, Constants.SYMBREITE * 3];
+			//Layer layer = this.graphic.Layers[0];
+			x0 = (int)(x0 + Constants.SYMBREITE);
+			y0 = (int)(y0 + Constants.SYMHOEHE);
+			for (int i = 0; i < newElement.GetLength(0); i++)
 			{
-				List<uint> pixels = new List<uint>();
-				for (int j = 0; j <= this.Height - 1; j++)
+				for (int j = 0; j < newElement.GetLength(1); j++)
 				{
-					for (int k = 0; k <= this.Width - (short)1; k++)
+					if (i >= y0 && i < y0 + element.GetLength(0) && j >= x0 && j < x0 + element.GetLength(1))
 					{
-						pixels.Add(this.Element[j, k].ConvertToUInt());
-					}
-				}
-				List<uint> colors = new List<uint>();
-				colors.Add(0);
-				int colorposition = 0;
-				while (colorposition < pixels.Count)
-				{
-					int length = 0;
-					uint lastcolor = pixels[colorposition];
-					for (; colorposition < pixels.Count; colorposition++)
-					{
-						if (lastcolor != pixels[colorposition] || length > 256)
-						{
-							break;
-						}
-						length++;
-						lastcolor = pixels[colorposition];
-					}
-					if (length <= 1)
-					{
-						colors.Add(lastcolor);
-					}
-					else if (lastcolor == Constants.FARBE_TRANSPARENT)
-					{
-						colors.Add(Constants.FARBE_KOMPR_TR | (uint)(length - 2));
+						newElement[i, j] = element[i - y0, j - x0];
 					}
 					else
 					{
-						colors.Add(Constants.FARBE_KOMPRIMIERT | (uint)(length - 2));
-						colors.Add(lastcolor);
+						newElement[i, j] = Pixel.TransparentPixel();
 					}
-
-
 				}
-				colors[0] = (uint)(colors.Count - 1);
-				uint[] compressed = colors.ToArray();
-				for (int j = 0; j < compressed.Length; j++)
+			}
+			return newElement;
+		}
+
+		private Pixel[,] TrimElement(out short x0, out short y0)
+		{
+			int minx = this.Element.GetLength(1);
+			int miny = this.Element.GetLength(0);
+			int maxx = 0;
+			int maxy = 0;
+			for (int i = 0; i < this.Element.GetLength(0); i++)
+			{
+				for (int j = 0; j < this.Element.GetLength(1); j++)
 				{
-					bw.Write(compressed[j]);
+					if (this.Element[i, j].IsTransparent == false)
+					{
+						if (minx > j)
+						{
+							minx = j;
+						}
+						if (maxx < j)
+						{
+							maxx = j;
+						}
+						if (miny > i)
+						{
+							miny = i;
+						}
+						if (maxy < i)
+						{
+							maxy = i;
+						}
+					}
 				}
-				return;
 			}
-			catch (IndexOutOfRangeException)
+			if(maxx == 0 && maxy == 0)
 			{
-				throw;
+				throw new ElementIsEmptyException("Element is Empty");
 			}
-			catch (ArgumentNullException)
+			maxx++;
+			maxy++;
+			Pixel[,] element = new Pixel[maxy - miny, maxx - minx];
+			for (int i = 0; i < element.GetLength(0); i++)
 			{
-				throw;
+				for (int j = 0; j < element.GetLength(1); j++)
+				{
+					element[i, j] = this.Element[i + miny, j + minx];
+				}
 			}
+			x0 = (short)(minx - Constants.SYMBREITE);
+			y0 = (short)(miny - Constants.SYMHOEHE);
+			return element;
 		}
 	}
 }

@@ -9,13 +9,28 @@
 
 		//Layers
 		public const uint GSYMTEIL_MAXZAHL = 4;	//Maximale Anzahl von Layern pro Element
-		public const short GFX_Z_HI = 1;			//zum Hintergrund (=flach, nicht "aufwärts", z. B. Platformen)
-		public const short GFY_Z_VG = 2;			//Vordergrund (in Front von Fahrwegen und Zügen
-		public const short GFX_Z_HG = 3;			//Hintergrund (auch hinter Zügen auf ny+1)
-		public const short GFX_Z_OG = 4;			//Front
-		public const short GFX_Z_VGO = 5;		//Upper foreground
-		public const short GFX_Z_MIN = 1;		//Minimum Layers
-		public const short GFX_Z_MAX = 5;		//Maximum Layers
+		/// <summary>
+		/// Flach nach hinten (z. B. Bahnsteige)
+		/// </summary>
+		public const short LAYER_FL = 1;
+		/// <summary>
+		/// Vordergrund (vor Zug)
+		/// </summary>
+		public const short LAYER_VG = 2;
+		/// <summary>
+		/// Hintergrund und flach nach vorn (hinter oder unter Zug)
+		/// </summary>
+		public const short LAYER_HG = 3;
+		/// <summary>
+		/// Vorn, auf Brücken
+		/// </summary>
+		public const short LAYER_VB = 4;
+		/// <summary>
+		/// Vordergrund, oben (z. B. Oberleitung)
+		/// </summary>
+		public const short LAYER_VO = 5;
+		public const short LAYER_MIN = 1; //Minimum Layers
+		public const short LAYER_MAX = 5; //Maximum Layers
 
 		//Variants
 		public const uint KEINE_ALTERNATIVE = 0;

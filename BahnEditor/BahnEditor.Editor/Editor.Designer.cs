@@ -34,6 +34,8 @@
 			this.loadButton = new System.Windows.Forms.ToolStripButton();
 			this.saveButton = new System.Windows.Forms.ToolStripButton();
 			this.controlPanel = new System.Windows.Forms.Panel();
+			this.rightComboBox = new System.Windows.Forms.ComboBox();
+			this.leftComboBox = new System.Windows.Forms.ComboBox();
 			this.zoomTrackBar = new System.Windows.Forms.TrackBar();
 			this.rightColorButton = new System.Windows.Forms.Button();
 			this.leftColorButton = new System.Windows.Forms.Button();
@@ -49,8 +51,7 @@
 			this.exitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
 			this.colorDialog = new System.Windows.Forms.ColorDialog();
-			this.leftComboBox = new System.Windows.Forms.ComboBox();
-			this.rightComboBox = new System.Windows.Forms.ComboBox();
+			this.layerComboBox = new System.Windows.Forms.ComboBox();
 			this.drawPanel = new BahnEditor.Editor.DrawPanel();
 			this.toolStrip.SuspendLayout();
 			this.controlPanel.SuspendLayout();
@@ -105,6 +106,7 @@
 			// 
 			this.controlPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			this.controlPanel.Controls.Add(this.layerComboBox);
 			this.controlPanel.Controls.Add(this.rightComboBox);
 			this.controlPanel.Controls.Add(this.leftComboBox);
 			this.controlPanel.Controls.Add(this.zoomTrackBar);
@@ -114,9 +116,39 @@
 			this.controlPanel.Name = "controlPanel";
 			this.controlPanel.Size = new System.Drawing.Size(197, 474);
 			this.controlPanel.TabIndex = 2;
+			this.controlPanel.Visible = false;
+			// 
+			// rightComboBox
+			// 
+			this.rightComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.rightComboBox.FormattingEnabled = true;
+			this.rightComboBox.Items.AddRange(new object[] {
+            "Normal",
+            "Transparent"});
+			this.rightComboBox.Location = new System.Drawing.Point(104, 32);
+			this.rightComboBox.Name = "rightComboBox";
+			this.rightComboBox.Size = new System.Drawing.Size(90, 21);
+			this.rightComboBox.TabIndex = 5;
+			this.rightComboBox.TabStop = false;
+			this.rightComboBox.SelectedIndexChanged += new System.EventHandler(this.rightComboBox_SelectedIndexChanged);
+			// 
+			// leftComboBox
+			// 
+			this.leftComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.leftComboBox.FormattingEnabled = true;
+			this.leftComboBox.Items.AddRange(new object[] {
+            "Normal",
+            "Transparent"});
+			this.leftComboBox.Location = new System.Drawing.Point(4, 33);
+			this.leftComboBox.Name = "leftComboBox";
+			this.leftComboBox.Size = new System.Drawing.Size(89, 21);
+			this.leftComboBox.TabIndex = 4;
+			this.leftComboBox.TabStop = false;
+			this.leftComboBox.SelectedIndexChanged += new System.EventHandler(this.leftComboBox_SelectedIndexChanged);
 			// 
 			// zoomTrackBar
 			// 
+			this.zoomTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.zoomTrackBar.LargeChange = 1;
 			this.zoomTrackBar.Location = new System.Drawing.Point(4, 426);
 			this.zoomTrackBar.Maximum = 5;
@@ -233,33 +265,23 @@
 			// 
 			this.colorDialog.FullOpen = true;
 			// 
-			// leftComboBox
+			// layerComboBox
 			// 
-			this.leftComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.leftComboBox.FormattingEnabled = true;
-			this.leftComboBox.Items.AddRange(new object[] {
-            "Normal",
-            "Transparent"});
-			this.leftComboBox.Location = new System.Drawing.Point(4, 33);
-			this.leftComboBox.Name = "leftComboBox";
-			this.leftComboBox.Size = new System.Drawing.Size(89, 21);
-			this.leftComboBox.TabIndex = 4;
-			this.leftComboBox.TabStop = false;
-			this.leftComboBox.SelectedIndexChanged += new System.EventHandler(this.leftComboBox_SelectedIndexChanged);
-			// 
-			// rightComboBox
-			// 
-			this.rightComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.rightComboBox.FormattingEnabled = true;
-			this.rightComboBox.Items.AddRange(new object[] {
-            "Normal",
-            "Transparent"});
-			this.rightComboBox.Location = new System.Drawing.Point(104, 32);
-			this.rightComboBox.Name = "rightComboBox";
-			this.rightComboBox.Size = new System.Drawing.Size(90, 21);
-			this.rightComboBox.TabIndex = 5;
-			this.rightComboBox.TabStop = false;
-			this.rightComboBox.SelectedIndexChanged += new System.EventHandler(this.rightComboBox_SelectedIndexChanged);
+			this.layerComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.layerComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.layerComboBox.FormattingEnabled = true;
+			this.layerComboBox.Items.AddRange(new object[] {
+            "Vordergrund",
+            "Hintergrund und flach nach vorn",
+            "Flach nach hinten",
+            "Vordergrund, oben",
+            "Vorn, auf Brücken"});
+			this.layerComboBox.Location = new System.Drawing.Point(4, 399);
+			this.layerComboBox.Name = "layerComboBox";
+			this.layerComboBox.Size = new System.Drawing.Size(190, 21);
+			this.layerComboBox.TabIndex = 6;
+			this.layerComboBox.TabStop = false;
+			this.layerComboBox.SelectedIndexChanged += new System.EventHandler(this.layerComboBox_SelectedIndexChanged);
 			// 
 			// drawPanel
 			// 
@@ -273,6 +295,7 @@
 			this.drawPanel.Name = "drawPanel";
 			this.drawPanel.Size = new System.Drawing.Size(655, 474);
 			this.drawPanel.TabIndex = 4;
+			this.drawPanel.Visible = false;
 			this.drawPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.drawPanel_Paint);
 			this.drawPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.drawPanel_MouseClick);
 			this.drawPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.drawPanel_MouseMove);
@@ -328,6 +351,7 @@
 		private DrawPanel drawPanel;
 		private System.Windows.Forms.ComboBox rightComboBox;
 		private System.Windows.Forms.ComboBox leftComboBox;
+		private System.Windows.Forms.ComboBox layerComboBox;
 
 	}
 }

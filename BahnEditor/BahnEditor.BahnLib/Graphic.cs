@@ -128,6 +128,10 @@ namespace BahnEditor.BahnLib
 				}
 
 			}
+			catch (ElementIsEmptyException)
+			{
+				throw;
+			}
 			catch (Exception) //TODO Exchange general exceptions with specific ones
 			{
 				throw;

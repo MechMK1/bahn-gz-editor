@@ -14,32 +14,24 @@ namespace BahnEditor.Test
 		{
 			string infoTextExpected = "Test";
 			byte zoomFactorExpected = 1;
-			short heightExpected = 10;
-			short widthExpected = 5;
-			short x0Expected = 7;
-			short y0Expected = 5;
+			short heightExpected = (short)(Constants.SYMHOEHE * 8);
+			short widthExpected = (short)(Constants.SYMBREITE * 3);
+			//short x0Expected = 7;
+			//short y0Expected = 5;
 			Pixel colorInSchematicModeExpected = Pixel.RGBPixel(50, 50, 50);
 			Pixel[,] elementExpected = new Pixel[heightExpected, widthExpected];
-			for (int i = 0; i < heightExpected; i++)
+			for (int i = 0; i < elementExpected.GetLength(0); i++)
 			{
-				for (int j = 0; j < widthExpected; j++)
+				for (int j = 0; j < elementExpected.GetLength(1); j++)
 				{
 					if (i == 2)
-					{
-						elementExpected[i, j] = Pixel.TransparentPixel();
-					}
-					else if(j == 3)
-					{
 						elementExpected[i, j] = Pixel.RGBPixel(200, 200, 200);
-					}
 					else
-					{
-						elementExpected[i, j] = Pixel.RGBPixel(80, 90, 100);
-					}
+						elementExpected[i, j] = Pixel.TransparentPixel();
 				}
 			}
-			Layer layer = new Layer(heightExpected, widthExpected, x0Expected, y0Expected, (short)Constants.GFY_Z_VG, elementExpected);
-			
+			Layer layer = new Layer((short)Constants.LAYER_VG, elementExpected);
+
 			List<Layer> layerList = new List<Layer> { layer };
 
 			Graphic graphic = new Graphic(infoTextExpected, zoomFactorExpected, colorInSchematicModeExpected, layerList);
@@ -48,10 +40,6 @@ namespace BahnEditor.Test
 
 			Assert.AreEqual<string>(infoTextExpected, newGraphic.InfoText);
 			Assert.AreEqual<byte>(zoomFactorExpected, newGraphic.ZoomFactor);
-			Assert.AreEqual<short>(heightExpected, newGraphic.Layers[0].Height);
-			Assert.AreEqual<short>(widthExpected, newGraphic.Layers[0].Width);
-			Assert.AreEqual<short>(x0Expected, newGraphic.Layers[0].X0);
-			Assert.AreEqual<short>(y0Expected, newGraphic.Layers[0].Y0);
 			Assert.AreEqual<Pixel>(colorInSchematicModeExpected, newGraphic.ColorInSchematicMode);
 
 			for (int i = 0; i < heightExpected; i++)
