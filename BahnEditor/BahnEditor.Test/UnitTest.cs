@@ -26,6 +26,10 @@ namespace BahnEditor.Test
 				{
 					if (i == 2)
 						elementExpected[i, j] = Pixel.RGBPixel(200, 200, 200);
+					else if (i == 3)
+						elementExpected[i, j] = Pixel.LogicalPixel(Pixel.LogicalColor.BehindGlass);
+					else if (i == 5)
+						elementExpected[i, j] = Pixel.LogicalPixel(Pixel.LogicalColor.As_Marking_Point_Bus0);
 					else
 						elementExpected[i, j] = Pixel.TransparentPixel();
 				}
