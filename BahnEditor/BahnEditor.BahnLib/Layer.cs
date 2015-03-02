@@ -25,6 +25,8 @@ namespace BahnEditor.BahnLib
 
 		public void WriteLayerToStream(BinaryWriter bw)
 		{
+			if (bw == null)
+				throw new ArgumentNullException("bw");
 			short x0;
 			short y0;
 			Pixel[,] element = TrimElement(out x0, out y0);
@@ -38,6 +40,8 @@ namespace BahnEditor.BahnLib
 
 		public static Layer ReadLayerFromStream(BinaryReader br)
 		{
+			if (br == null)
+				throw new ArgumentNullException("br");
 			Layer layer = new Layer();
 			layer.LayerID = br.ReadInt16();
 			short x0 = br.ReadInt16();
@@ -84,6 +88,13 @@ namespace BahnEditor.BahnLib
 					else if (lastcolor == Constants.FARBE_TRANSPARENT)
 					{
 						colors.Add(Constants.FARBE_KOMPR_TR | (uint)(length - 2));
+					}
+					else if((lastcolor & Constants.FARBE_LOGISCH) != 0)
+					{
+						uint color = lastcolor - Constants.FARBE_WIE_MIN;
+						color = color << 8;
+						color = color | Constants.FARBE_KOMPR_SYS;
+						colors.Add(color | (uint)(length - 2));
 					}
 					else
 					{
@@ -133,7 +144,10 @@ namespace BahnEditor.BahnLib
 					else if((item & Constants.FARBMASK_KOMPR_SYS) != 0)
 					{
 						// item is a system-color
-						throw new NotImplementedException("System colors not yet implemented");
+						for (int k = 0; k < count; k++)
+						{
+							colors.Add(Pixel.SpecialPixelWithoutRGB((Pixel.SpecialColorWithoutRGB) (((item & Constants.FARBMASK_KOMPR_SFB) >> 8) + Constants.FARBE_WIE_MIN)));
+						}
 					}
 					else
 					{

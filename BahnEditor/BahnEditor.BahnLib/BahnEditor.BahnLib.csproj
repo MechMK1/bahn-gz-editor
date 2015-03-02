@@ -49,6 +49,9 @@
     <Compile Include="Layer.cs" />
     <Compile Include="Pixel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Zoom1Graphic.cs" />
+    <Compile Include="Zoom2Graphic.cs" />
+    <Compile Include="Zoom4Graphic.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

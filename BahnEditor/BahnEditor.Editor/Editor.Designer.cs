@@ -34,6 +34,9 @@
 			this.loadButton = new System.Windows.Forms.ToolStripButton();
 			this.saveButton = new System.Windows.Forms.ToolStripButton();
 			this.controlPanel = new System.Windows.Forms.Panel();
+			this.rightLabel = new System.Windows.Forms.Label();
+			this.leftLabel = new System.Windows.Forms.Label();
+			this.layerComboBox = new System.Windows.Forms.ComboBox();
 			this.rightComboBox = new System.Windows.Forms.ComboBox();
 			this.leftComboBox = new System.Windows.Forms.ComboBox();
 			this.zoomTrackBar = new System.Windows.Forms.TrackBar();
@@ -51,7 +54,6 @@
 			this.exitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
 			this.colorDialog = new System.Windows.Forms.ColorDialog();
-			this.layerComboBox = new System.Windows.Forms.ComboBox();
 			this.drawPanel = new BahnEditor.Editor.DrawPanel();
 			this.toolStrip.SuspendLayout();
 			this.controlPanel.SuspendLayout();
@@ -106,17 +108,55 @@
 			// 
 			this.controlPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			this.controlPanel.Controls.Add(this.leftComboBox);
+			this.controlPanel.Controls.Add(this.rightLabel);
+			this.controlPanel.Controls.Add(this.leftLabel);
 			this.controlPanel.Controls.Add(this.layerComboBox);
 			this.controlPanel.Controls.Add(this.rightComboBox);
-			this.controlPanel.Controls.Add(this.leftComboBox);
 			this.controlPanel.Controls.Add(this.zoomTrackBar);
 			this.controlPanel.Controls.Add(this.rightColorButton);
 			this.controlPanel.Controls.Add(this.leftColorButton);
 			this.controlPanel.Location = new System.Drawing.Point(673, 52);
 			this.controlPanel.Name = "controlPanel";
-			this.controlPanel.Size = new System.Drawing.Size(197, 474);
+			this.controlPanel.Size = new System.Drawing.Size(200, 474);
 			this.controlPanel.TabIndex = 2;
 			this.controlPanel.Visible = false;
+			// 
+			// rightLabel
+			// 
+			this.rightLabel.AutoSize = true;
+			this.rightLabel.Location = new System.Drawing.Point(55, 104);
+			this.rightLabel.Name = "rightLabel";
+			this.rightLabel.Size = new System.Drawing.Size(94, 13);
+			this.rightLabel.TabIndex = 8;
+			this.rightLabel.Text = "Rechte Maustaste";
+			// 
+			// leftLabel
+			// 
+			this.leftLabel.AutoSize = true;
+			this.leftLabel.Location = new System.Drawing.Point(55, 10);
+			this.leftLabel.Name = "leftLabel";
+			this.leftLabel.Size = new System.Drawing.Size(85, 13);
+			this.leftLabel.TabIndex = 7;
+			this.leftLabel.Text = "Linke Maustaste";
+			// 
+			// layerComboBox
+			// 
+			this.layerComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.layerComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.layerComboBox.FormattingEnabled = true;
+			this.layerComboBox.Items.AddRange(new object[] {
+            "Vordergrund",
+            "Hintergrund und flach nach vorn",
+            "Flach nach hinten",
+            "Vordergrund, oben",
+            "Vorn, auf Brücken"});
+			this.layerComboBox.Location = new System.Drawing.Point(7, 399);
+			this.layerComboBox.Name = "layerComboBox";
+			this.layerComboBox.Size = new System.Drawing.Size(190, 21);
+			this.layerComboBox.TabIndex = 6;
+			this.layerComboBox.TabStop = false;
+			this.layerComboBox.SelectedIndexChanged += new System.EventHandler(this.layerComboBox_SelectedIndexChanged);
 			// 
 			// rightComboBox
 			// 
@@ -124,10 +164,42 @@
 			this.rightComboBox.FormattingEnabled = true;
 			this.rightComboBox.Items.AddRange(new object[] {
             "Normal",
-            "Transparent"});
-			this.rightComboBox.Location = new System.Drawing.Point(104, 32);
+            "Transparent",
+            "Halb Transparent (Hinter Glass)",
+            "Licht (nachts hell)",
+            "Lampe (warmweiß)",
+            "Lampe (kaltweiß)",
+            "Lampe (rot)",
+            "Lampe (gelb, Glühlampe)",
+            "Lampe (gelb, Gaslicht)",
+            "Fenster (nachts gelb)",
+            "Fenster (nachts neon)",
+            "wie Hintergrund",
+            "wie Schwellen 0",
+            "wie Schwellen 1",
+            "wie Schwellen 3",
+            "wie Schienen Str 0",
+            "wie Schienen Str 1",
+            "wie Schienen Str 2",
+            "wie Schienen Str 3",
+            "wie Schienen Gleisbett 0",
+            "wie Schienen Gleisbett 1",
+            "wie Schienen Gleisbett 2",
+            "wie Schienen Gleisbett 3",
+            "wie Punkte Bus 0",
+            "wie Punkte Bus 1",
+            "wie Punkte Bus 2",
+            "wie Punkte Bus 3",
+            "wie Punkte Wasserweg",
+            "wie Schottersteine",
+            "wie Kies",
+            "wie Rasengleis (Gras)",
+            "wie Feldweg (Hintergrund)",
+            "wie Feldweg (Fahrspur)",
+            "wie Text"});
+			this.rightComboBox.Location = new System.Drawing.Point(7, 149);
 			this.rightComboBox.Name = "rightComboBox";
-			this.rightComboBox.Size = new System.Drawing.Size(90, 21);
+			this.rightComboBox.Size = new System.Drawing.Size(190, 21);
 			this.rightComboBox.TabIndex = 5;
 			this.rightComboBox.TabStop = false;
 			this.rightComboBox.SelectedIndexChanged += new System.EventHandler(this.rightComboBox_SelectedIndexChanged);
@@ -138,10 +210,42 @@
 			this.leftComboBox.FormattingEnabled = true;
 			this.leftComboBox.Items.AddRange(new object[] {
             "Normal",
-            "Transparent"});
-			this.leftComboBox.Location = new System.Drawing.Point(4, 33);
+            "Transparent",
+            "Halb Transparent (Hinter Glass)",
+            "Licht (nachts hell)",
+            "Lampe (warmweiß)",
+            "Lampe (kaltweiß)",
+            "Lampe (rot)",
+            "Lampe (gelb, Glühlampe)",
+            "Lampe (gelb, Gaslicht)",
+            "Fenster (nachts gelb)",
+            "Fenster (nachts neon)",
+            "wie Hintergrund",
+            "wie Schwellen 0",
+            "wie Schwellen 1",
+            "wie Schwellen 3",
+            "wie Schienen Str 0",
+            "wie Schienen Str 1",
+            "wie Schienen Str 2",
+            "wie Schienen Str 3",
+            "wie Schienen Gleisbett 0",
+            "wie Schienen Gleisbett 1",
+            "wie Schienen Gleisbett 2",
+            "wie Schienen Gleisbett 3",
+            "wie Punkte Bus 0",
+            "wie Punkte Bus 1",
+            "wie Punkte Bus 2",
+            "wie Punkte Bus 3",
+            "wie Punkte Wasserweg",
+            "wie Schottersteine",
+            "wie Kies",
+            "wie Rasengleis (Gras)",
+            "wie Feldweg (Hintergrund)",
+            "wie Feldweg (Fahrspur)",
+            "wie Text"});
+			this.leftComboBox.Location = new System.Drawing.Point(7, 55);
 			this.leftComboBox.Name = "leftComboBox";
-			this.leftComboBox.Size = new System.Drawing.Size(89, 21);
+			this.leftComboBox.Size = new System.Drawing.Size(190, 21);
 			this.leftComboBox.TabIndex = 4;
 			this.leftComboBox.TabStop = false;
 			this.leftComboBox.SelectedIndexChanged += new System.EventHandler(this.leftComboBox_SelectedIndexChanged);
@@ -150,7 +254,7 @@
 			// 
 			this.zoomTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.zoomTrackBar.LargeChange = 1;
-			this.zoomTrackBar.Location = new System.Drawing.Point(4, 426);
+			this.zoomTrackBar.Location = new System.Drawing.Point(7, 426);
 			this.zoomTrackBar.Maximum = 5;
 			this.zoomTrackBar.Minimum = 2;
 			this.zoomTrackBar.Name = "zoomTrackBar";
@@ -164,7 +268,7 @@
 			// 
 			this.rightColorButton.BackColor = System.Drawing.Color.White;
 			this.rightColorButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.rightColorButton.Location = new System.Drawing.Point(104, 3);
+			this.rightColorButton.Location = new System.Drawing.Point(58, 120);
 			this.rightColorButton.Name = "rightColorButton";
 			this.rightColorButton.Size = new System.Drawing.Size(90, 23);
 			this.rightColorButton.TabIndex = 1;
@@ -176,7 +280,7 @@
 			// 
 			this.leftColorButton.BackColor = System.Drawing.Color.Black;
 			this.leftColorButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.leftColorButton.Location = new System.Drawing.Point(3, 3);
+			this.leftColorButton.Location = new System.Drawing.Point(55, 26);
 			this.leftColorButton.Name = "leftColorButton";
 			this.leftColorButton.Size = new System.Drawing.Size(90, 23);
 			this.leftColorButton.TabIndex = 0;
@@ -265,24 +369,6 @@
 			// 
 			this.colorDialog.FullOpen = true;
 			// 
-			// layerComboBox
-			// 
-			this.layerComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.layerComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.layerComboBox.FormattingEnabled = true;
-			this.layerComboBox.Items.AddRange(new object[] {
-            "Vordergrund",
-            "Hintergrund und flach nach vorn",
-            "Flach nach hinten",
-            "Vordergrund, oben",
-            "Vorn, auf Brücken"});
-			this.layerComboBox.Location = new System.Drawing.Point(4, 399);
-			this.layerComboBox.Name = "layerComboBox";
-			this.layerComboBox.Size = new System.Drawing.Size(190, 21);
-			this.layerComboBox.TabIndex = 6;
-			this.layerComboBox.TabStop = false;
-			this.layerComboBox.SelectedIndexChanged += new System.EventHandler(this.layerComboBox_SelectedIndexChanged);
-			// 
 			// drawPanel
 			// 
 			this.drawPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -352,6 +438,8 @@
 		private System.Windows.Forms.ComboBox rightComboBox;
 		private System.Windows.Forms.ComboBox leftComboBox;
 		private System.Windows.Forms.ComboBox layerComboBox;
+		private System.Windows.Forms.Label rightLabel;
+		private System.Windows.Forms.Label leftLabel;
 
 	}
 }

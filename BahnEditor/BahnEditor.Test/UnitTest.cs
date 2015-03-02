@@ -27,18 +27,21 @@ namespace BahnEditor.Test
 					if (i == 2)
 						elementExpected[i, j] = Pixel.RGBPixel(200, 200, 200);
 					else if (i == 3)
-						elementExpected[i, j] = Pixel.LogicalPixel(Pixel.LogicalColor.BehindGlass);
+						elementExpected[i, j] = Pixel.SpecialPixelWithoutRGB(Pixel.SpecialColorWithoutRGB.BehindGlass);
 					else if (i == 5)
-						elementExpected[i, j] = Pixel.LogicalPixel(Pixel.LogicalColor.As_Marking_Point_Bus0);
+						elementExpected[i, j] = Pixel.SpecialPixelWithoutRGB(Pixel.SpecialColorWithoutRGB.As_Marking_Point_Bus0);
+					else if (i == 4)
+						elementExpected[i, j] = Pixel.SpecialPixelWithRGB(Pixel.SpecialColorWithRGB.Always_Bright, 100, 100, 100);
+					else if (i == 6)
+						elementExpected[i, j] = Pixel.SpecialPixelWithRGB(Pixel.SpecialColorWithRGB.Lamp_Red, 0, 100, 100);
 					else
 						elementExpected[i, j] = Pixel.TransparentPixel();
 				}
 			}
 			Layer layer = new Layer((short)Constants.LAYER_VG, elementExpected);
 
-			List<Layer> layerList = new List<Layer> { layer };
-
-			Graphic graphic = new Graphic(infoTextExpected, zoomFactorExpected, colorInSchematicModeExpected, layerList);
+			Graphic graphic = new Zoom1Graphic(infoTextExpected, colorInSchematicModeExpected);
+			graphic.AddLayer(layer);
 			graphic.Save("test.gz1", true);
 			Graphic newGraphic = Graphic.Load("test.gz1");
 
@@ -50,7 +53,7 @@ namespace BahnEditor.Test
 			{
 				for (int j = 0; j < widthExpected; j++)
 				{
-					Assert.AreEqual<Pixel>(layer.Element[i, j], newGraphic.Layers[0].Element[i, j]);
+					Assert.AreEqual<Pixel>(layer.Element[i, j], newGraphic.GetLayerByID(Constants.LAYER_VG).Element[i, j]);
 				}
 			}
 		}

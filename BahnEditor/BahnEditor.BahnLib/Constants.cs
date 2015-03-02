@@ -60,8 +60,10 @@
 		public const uint FARBE_TRANSPARENT = (FARBE_LOGISCH | 0x00000001);
 		public const uint FARBE_LAMPE = 0x50000000;
 		public const uint FARBE_ZUSATZ = 0xFf000000;
-		public const uint FARBE_WIE_MIN = (FARBE_LOGISCH | 0x00000100);
+		public const uint FARBE_IMMERHELL = 0x40000000;
+		public const uint FARBE_FENSTER = 0x60000000;
 
+		public const uint FARBE_WIE_MIN = (FARBE_LOGISCH | 0x00000100);
 		public const uint FARBE_KOMPRIMIERT = (FARBE_LOGISCH | 0x40000000);
 		public const uint FARBMASK_KOMPR_TR = 0x00010000;
 		public const uint FARBE_KOMPR_TR = (FARBE_KOMPRIMIERT | FARBMASK_KOMPR_TR);

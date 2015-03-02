@@ -7,19 +7,58 @@ using System.Threading.Tasks;
 
 namespace BahnEditor.BahnLib
 {
-	public class Graphic
+	public abstract class Graphic
 	{
-		public byte ZoomFactor { get; set; }
+		private List<Layer> layers;
+
+		public byte ZoomFactor { get; protected set; }
 		public string InfoText { get; set; }
 		public Pixel ColorInSchematicMode { get; set; }
-		public List<Layer> Layers { get; set; }
 
-		public Graphic(string infoText, byte zoomFactor, Pixel colorInSchematicMode, List<Layer> layers)
+		protected Graphic(string infoText, byte zoomFactor, Pixel colorInSchematicMode)
 		{
 			this.ZoomFactor = zoomFactor;
 			this.InfoText = infoText;
 			this.ColorInSchematicMode = colorInSchematicMode;
-			Layers = layers;
+			layers = new List<Layer>();
+		}
+
+		public void AddTransparentLayer(short layerID)
+		{
+			Pixel[,] element = new Pixel[Constants.SYMHOEHE * 8 * this.ZoomFactor, Constants.SYMBREITE * 3 * this.ZoomFactor];
+			for (int i = 0; i < element.GetLength(0); i++)
+			{
+				for (int j = 0; j < element.GetLength(1); j++)
+				{
+					element[i, j] = Pixel.TransparentPixel();
+				}
+			}
+			Layer layer = new Layer(layerID, element);
+			this.AddLayer(layer);
+		}
+
+		public void AddLayer(Layer layer)
+		{
+			if (layer == null)
+			{
+				throw new ArgumentNullException("layer");
+			}
+			this.layers.Add(layer);
+		}
+
+		public Layer GetLayer(int index)
+		{
+			return layers[index];
+		}
+
+		public Layer GetLayerByID(short id)
+		{
+			return layers.Find(x => x.LayerID == id);
+		}
+
+		public int GetIndexByID(short id)
+		{
+			return layers.FindIndex(x => x.LayerID == id);
 		}
 
 		public static Graphic Load(string path)
@@ -58,7 +97,7 @@ namespace BahnEditor.BahnLib
 					colorInSchematicMode = Pixel.FromUInt(br.ReadUInt32());
 					br.ReadUInt32();
 				}
-				if((settings & 0x0008) != 0)
+				if ((settings & 0x0008) != 0)
 				{
 					br.ReadInt32();
 					br.ReadInt32();
@@ -72,12 +111,29 @@ namespace BahnEditor.BahnLib
 					sb.Append(c);
 				}
 				string infoText = sb.ToString();
-				List<Layer> layers = new List<Layer>();
+				Graphic graphic = null;
+				if (zoomFactor == 1)
+				{
+					graphic = new Zoom1Graphic(infoText, colorInSchematicMode);
+				}
+				else if (zoomFactor == 2)
+				{
+					graphic = new Zoom2Graphic(infoText, colorInSchematicMode);
+				}
+				else if (zoomFactor == 4)
+				{
+					graphic = new Zoom4Graphic(infoText, colorInSchematicMode);
+				}
+				else
+				{
+					throw new Exception("unknown zoom factor");
+				}
+				//List<Layer> layers = new List<Layer>();
 				for (int i = 0; i < layer; i++)
 				{
-					layers.Add(Layer.ReadLayerFromStream(br));
+					graphic.AddLayer(Layer.ReadLayerFromStream(br));
 				}
-				return new Graphic(infoText, zoomFactor, colorInSchematicMode, layers);
+				return graphic;
 			}
 		}
 
@@ -102,7 +158,23 @@ namespace BahnEditor.BahnLib
 			{
 				using (BinaryWriter bw = new BinaryWriter(path, Encoding.Unicode))
 				{
-					int layer = this.Layers.Count;
+					bool isEmpty = true;
+					foreach (var item in layers)
+					{
+						for (int i = 0; i < item.Element.GetLength(0) && isEmpty; i++)
+						{
+							for (int j = 0; j < item.Element.GetLength(1) && isEmpty; j++)
+							{
+								if (item.Element[i, j].IsTransparent == false)
+								{
+									isEmpty = false;
+								}
+							}
+						}
+					}
+					if (isEmpty == true)
+						throw new ElementIsEmptyException("element is empty");
+					int layer = this.layers.Count;
 					bw.Write(new byte[] { 67, 114, 101, 97, 116, 101, 100, 32, 98, 121, 32, 71, 90, 45, 69, 100, 105, 116 }); //Text "Testdatei"
 					bw.Write((byte)26); // text end
 					bw.Write(new byte[] { 71, 90, 71 }); //identification string GZG ASCII
@@ -120,10 +192,9 @@ namespace BahnEditor.BahnLib
 					bw.Write(Constants.UNICODE_NULL);
 					for (int i = 0; i < layer; i++)
 					{
-						this.Layers[i].WriteLayerToStream(bw);
+						this.layers[i].WriteLayerToStream(bw);
 					}
 					bw.Flush();
-					bw.Close();
 					return true;
 				}
 
