@@ -152,51 +152,35 @@ namespace BahnEditor.BahnLib
 			}
 		}
 
-		private bool Save(FileStream path)
+		internal bool Save(Stream path)
 		{
 			try
 			{
-				using (BinaryWriter bw = new BinaryWriter(path, Encoding.Unicode))
+				if (this.ValidateElement())
+					throw new ElementIsEmptyException("element is empty");
+				BinaryWriter bw = new BinaryWriter(path, Encoding.Unicode);
+				int layer = this.layers.Count;
+				bw.Write(Constants.HEADERTEXT.ToArray()); //Headertext 
+				bw.Write((byte)26); // text end
+				bw.Write(new byte[] { 71, 90, 71 }); //identification string GZG ASCII
+				bw.Write((byte)(48 + this.ZoomFactor)); //Zoom faktor ASCII
+				bw.Write((byte)0x03); //version
+				bw.Write((byte)0x84); //version
+				bw.Write((byte)0x00); //subversion
+				bw.Write((byte)0x05); //subversion
+				bw.Write((int)0x0220); //Gzg_Eig 
+				bw.Write(this.ColorInSchematicMode.ConvertToUInt()); //kfarbe
+				bw.Write(0x80000001);
+				bw.Write((short)layer); //layer
+				bw.Write((ushort)0xFFFE);
+				bw.Write(this.InfoText.ToCharArray());
+				bw.Write(Constants.UNICODE_NULL);
+				for (int i = 0; i < layer; i++)
 				{
-					bool isEmpty = true;
-					foreach (var item in layers)
-					{
-						for (int i = 0; i < item.Element.GetLength(0) && isEmpty; i++)
-						{
-							for (int j = 0; j < item.Element.GetLength(1) && isEmpty; j++)
-							{
-								if (item.Element[i, j].IsTransparent == false)
-								{
-									isEmpty = false;
-								}
-							}
-						}
-					}
-					if (isEmpty == true)
-						throw new ElementIsEmptyException("element is empty");
-					int layer = this.layers.Count;
-					bw.Write(new byte[] { 67, 114, 101, 97, 116, 101, 100, 32, 98, 121, 32, 71, 90, 45, 69, 100, 105, 116 }); //Text "Testdatei"
-					bw.Write((byte)26); // text end
-					bw.Write(new byte[] { 71, 90, 71 }); //identification string GZG ASCII
-					bw.Write((byte)(48 + this.ZoomFactor)); //Zoom faktor ASCII
-					bw.Write((byte)0x03); //version
-					bw.Write((byte)0x84); //version
-					bw.Write((byte)0x00); //subversion
-					bw.Write((byte)0x05); //subversion
-					bw.Write((int)0x0220); //Gzg_Eig 
-					bw.Write(this.ColorInSchematicMode.ConvertToUInt()); //kfarbe
-					bw.Write(0x80000001);
-					bw.Write((short)layer); //layer
-					bw.Write((ushort)0xFFFE);
-					bw.Write(this.InfoText.ToCharArray());
-					bw.Write(Constants.UNICODE_NULL);
-					for (int i = 0; i < layer; i++)
-					{
-						this.layers[i].WriteLayerToStream(bw);
-					}
-					bw.Flush();
-					return true;
+					this.layers[i].WriteLayerToStream(bw);
 				}
+				bw.Flush();
+				return true;
 
 			}
 			catch (ElementIsEmptyException)
@@ -207,6 +191,24 @@ namespace BahnEditor.BahnLib
 			{
 				throw;
 			}
+		}
+
+		public bool ValidateElement()
+		{
+			foreach (var item in layers)
+			{
+				for (int i = 0; i < item.Element.GetLength(0); i++)
+				{
+					for (int j = 0; j < item.Element.GetLength(1); j++)
+					{
+						if (item.Element[i, j].IsTransparent == false)
+						{
+							return false;
+						}
+					}
+				}
+			}
+			return true;
 		}
 	}
 }

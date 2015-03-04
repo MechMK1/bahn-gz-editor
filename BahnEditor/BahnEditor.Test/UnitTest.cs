@@ -57,5 +57,24 @@ namespace BahnEditor.Test
 				}
 			}
 		}
+
+		[TestMethod]
+		public void TestGraphicArchive()
+		{
+			Graphic graphic1 = new Zoom1Graphic("test1", Pixel.RGBPixel(50, 50, 50));
+			Graphic graphic2 = new Zoom1Graphic("test2", Pixel.RGBPixel(60, 60, 60));
+
+			graphic1.AddTransparentLayer(Constants.LAYER_VG);
+			graphic2.AddTransparentLayer(Constants.LAYER_VG);
+
+			graphic1.GetLayer(0).Element[10, 10] = Pixel.RGBPixel(100, 50, 20);
+			graphic2.GetLayer(0).Element[50, 40] = Pixel.RGBPixel(150, 63, 123);
+
+			GraphicArchive archive = new Zoom1GraphicArchive();
+			archive.AddGraphic(graphic1);
+			archive.AddGraphic(graphic2);
+
+			archive.Save("test2.uz1", true);
+		}
 	}
 }

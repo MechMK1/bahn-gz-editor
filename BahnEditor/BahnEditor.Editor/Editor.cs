@@ -71,7 +71,10 @@ namespace BahnEditor.Editor
 		{
 			try
 			{
-				this.graphic.Save(lastPath, true);
+				if(!this.graphic.Save(lastPath, true))
+				{
+					MessageBox.Show("Fehler beim Speichern!", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
 			}
 			catch (ElementIsEmptyException)
 			{

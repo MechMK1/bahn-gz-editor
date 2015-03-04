@@ -74,5 +74,7 @@
 		public const uint MAX_FARB_WDH = 257;
 		public const uint FARBMASK_KOMPR_LEN = 0x0000Ff00;
 		public const uint MAX_FARBFOLGE_LEN = 4;
+
+		public static System.Collections.ObjectModel.ReadOnlyCollection<byte> HEADERTEXT = new System.Collections.ObjectModel.ReadOnlyCollection<byte> ( new System.Collections.Generic.List<byte>() { 67, 114, 101, 97, 116, 101, 100, 32, 98, 121, 32, 66, 97, 104, 110, 32, 71, 114, 97, 112, 104, 105, 99, 32, 69, 100, 105, 116, 111, 114 });
 	}
 }

@@ -89,7 +89,7 @@ namespace BahnEditor.BahnLib
 					{
 						colors.Add(Constants.FARBE_KOMPR_TR | (uint)(length - 2));
 					}
-					else if((lastcolor & Constants.FARBE_LOGISCH) != 0)
+					else if (((lastcolor & Constants.FARBE_LOGISCH) != 0) && lastcolor != (uint)Pixel.SpecialColorWithoutRGB.BehindGlass)
 					{
 						uint color = lastcolor - Constants.FARBE_WIE_MIN;
 						color = color << 8;
