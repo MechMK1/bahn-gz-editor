@@ -45,36 +45,47 @@ namespace BahnEditor.Test
 			graphic.Save("test.gz1", true);
 			Graphic newGraphic = Graphic.Load("test.gz1");
 
-			Assert.AreEqual<string>(infoTextExpected, newGraphic.InfoText);
-			Assert.AreEqual<byte>(zoomFactorExpected, newGraphic.ZoomFactor);
-			Assert.AreEqual<Pixel>(colorInSchematicModeExpected, newGraphic.ColorInSchematicMode);
-
-			for (int i = 0; i < heightExpected; i++)
-			{
-				for (int j = 0; j < widthExpected; j++)
-				{
-					Assert.AreEqual<Pixel>(layer.Element[i, j], newGraphic.GetLayerByID(Constants.LAYER_VG).Element[i, j]);
-				}
-			}
+			CompareGraphic(graphic, newGraphic);
 		}
 
 		[TestMethod]
 		public void TestGraphicArchive()
 		{
-			Graphic graphic1 = new Zoom1Graphic("test1", Pixel.RGBPixel(50, 50, 50));
-			Graphic graphic2 = new Zoom1Graphic("test2", Pixel.RGBPixel(60, 60, 60));
+			Graphic expectedGraphic1 = new Zoom1Graphic("test1", Pixel.RGBPixel(50, 50, 50));
+			Graphic expectedGraphic2 = new Zoom1Graphic("test2", Pixel.RGBPixel(60, 60, 60));
 
-			graphic1.AddTransparentLayer(Constants.LAYER_VG);
-			graphic2.AddTransparentLayer(Constants.LAYER_VG);
+			expectedGraphic1.AddTransparentLayer(Constants.LAYER_VG);
+			expectedGraphic2.AddTransparentLayer(Constants.LAYER_VG);
 
-			graphic1.GetLayer(0).Element[10, 10] = Pixel.RGBPixel(100, 50, 20);
-			graphic2.GetLayer(0).Element[50, 40] = Pixel.RGBPixel(150, 63, 123);
+			expectedGraphic1.GetLayer(0).Element[10, 10] = Pixel.RGBPixel(100, 50, 20);
+			expectedGraphic2.GetLayer(0).Element[50, 40] = Pixel.RGBPixel(150, 63, 123);
 
-			GraphicArchive archive = new Zoom1GraphicArchive();
-			archive.AddGraphic(graphic1);
-			archive.AddGraphic(graphic2);
+			GraphicArchive expectedArchive = new Zoom1GraphicArchive();
+			expectedArchive.AddGraphic(expectedGraphic1);
+			expectedArchive.AddGraphic(expectedGraphic2);
 
-			archive.Save("test2.uz1", true);
+			expectedArchive.Save("test2.uz1", true);
+
+			GraphicArchive archive = GraphicArchive.Load("test2.uz1");
+			Assert.AreEqual(2, archive.GraphicsCount);
+
+			CompareGraphic(expectedGraphic1, archive[0]);
+			CompareGraphic(expectedGraphic2, archive[1]);
+		}
+
+		private void CompareGraphic(Graphic expectedGraphic, Graphic graphic)
+		{
+			Assert.AreEqual<string>(expectedGraphic.InfoText, graphic.InfoText);
+			Assert.AreEqual<byte>(expectedGraphic.ZoomFactor, graphic.ZoomFactor);
+			Assert.AreEqual<Pixel>(expectedGraphic.ColorInSchematicMode, graphic.ColorInSchematicMode);
+
+			for (int i = 0; i < expectedGraphic.GetLayerByID(Constants.LAYER_VG).Element.GetLength(0); i++)
+			{
+				for (int j = 0; j < expectedGraphic.GetLayerByID(Constants.LAYER_VG).Element.GetLength(1); j++)
+				{
+					Assert.AreEqual<Pixel>(expectedGraphic.GetLayerByID(Constants.LAYER_VG).Element[i, j], graphic.GetLayerByID(Constants.LAYER_VG).Element[i, j]);
+				}
+			}
 		}
 	}
 }

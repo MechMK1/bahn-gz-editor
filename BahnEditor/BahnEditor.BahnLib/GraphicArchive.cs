@@ -11,6 +11,13 @@ namespace BahnEditor.BahnLib
 	{
 		private List<Graphic> graphics;
 		public byte ZoomFactor { get; protected set; }
+		public int GraphicsCount
+		{
+			get
+			{
+				return graphics.Count;
+			}
+		}
 
 		protected GraphicArchive(byte zoomFactor)
 		{
@@ -22,6 +29,8 @@ namespace BahnEditor.BahnLib
 		{
 			if (graphic == null)
 				throw new ArgumentNullException("graphic");
+			if (graphic.ZoomFactor != this.ZoomFactor)
+				throw new Exception("ZoomFactor not matching");
 			this.graphics.Add(graphic);
 		}
 
@@ -52,7 +61,58 @@ namespace BahnEditor.BahnLib
 		{
 			using (BinaryReader br = new BinaryReader(path, Encoding.Unicode))
 			{
-				throw new NotImplementedException();
+				while (br.ReadByte() != 26) { }
+				byte[] read = br.ReadBytes(3);
+				if (read[0] != 85 || read[1] != 90 || read[2] != 88)
+				{
+					throw new Exception("wrong identification string");
+				}
+				byte zoomFactor = (byte)(br.ReadByte() - 48);
+				int elementNummer;
+				List<int> seekList = new List<int>();
+				while(true)
+				{
+					elementNummer = br.ReadInt32();
+					if(elementNummer == -1)
+					{
+						break;
+					}
+					br.BaseStream.Seek(16, SeekOrigin.Current);
+					seekList.Add((int)(br.BaseStream.Position + 8 + br.ReadInt32()));
+				}
+				
+				List<Graphic> graphics = new List<Graphic>();
+				foreach (var item in seekList)
+				{
+					br.BaseStream.Seek(item, SeekOrigin.Begin);
+					int bauform = br.ReadInt32();
+					int fwSig = br.ReadInt32();
+					int phase = br.ReadInt32();
+					int alt = br.ReadInt32();
+					int length = br.ReadInt32();
+					int date = br.ReadInt32();
+					MemoryStream ms = new MemoryStream();
+					br.BaseStream.CopyTo(ms, length);
+					ms.Position = 0;
+					graphics.Add(Graphic.Load(ms));
+				}
+				GraphicArchive archive;
+				switch (zoomFactor)
+				{
+					case 1:
+						archive = new Zoom1GraphicArchive();
+						break;
+					case 2:
+						archive = new Zoom2GraphicArchive();
+						break;
+					case 4:
+						archive = new Zoom2GraphicArchive();
+						break;
+					default:
+						throw new Exception("Invalid ZoomFactor");
+				}
+				archive.graphics = graphics;
+				return archive;
 			}
 		}
 
@@ -83,7 +143,6 @@ namespace BahnEditor.BahnLib
 			using (BinaryWriter bw = new BinaryWriter(path, Encoding.Unicode))
 			{
 				List<Tuple<long, long>> offsetList = new List<Tuple<long, long>>();
-				//int len = this.graphics.Count * 6 * sizeof(int) + sizeof(int);
 				bw.Write(Constants.HEADERTEXT.ToArray()); //Headertext 
 				bw.Write((byte)26); // text end
 				bw.Write(new byte[] { 85, 90, 88 }); //identification string UZX ASCII
@@ -96,9 +155,8 @@ namespace BahnEditor.BahnLib
 					bw.Write(0); //Phase
 					bw.Write(1); //Alt
 					offsetList.Add(Tuple.Create<long, long>(bw.BaseStream.Position, 0));
-					//len -= 6 * sizeof(int);
 					bw.Write(0); //Offset
-					
+
 				}
 				bw.Write(0xFFFFFFFF);
 				for (int i = 0; i < this.graphics.Count; i++)

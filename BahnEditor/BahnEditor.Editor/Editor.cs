@@ -518,9 +518,20 @@ namespace BahnEditor.Editor
 		{
 			if (this.rightComboBox.SelectedIndex == 0)
 			{
-				if (this.lastRightPixel != null)
+				if (this.lastRightPixel != null && !this.lastRightPixel.IsTransparent && !this.lastRightPixel.IsSpecialColorWithoutRGB)
 				{
-					this.rightPixel = this.lastRightPixel;
+					if (this.lastRightPixel.IsSpecialColorWithRGB)
+					{
+						this.rightPixel = Pixel.RGBPixel(this.lastRightPixel.Red, this.lastRightPixel.Green, this.lastRightPixel.Blue);
+					}
+					else
+					{
+						this.rightPixel = this.lastRightPixel;
+					}
+				}
+				else
+				{
+					this.rightPixel = Pixel.RGBPixel(0, 0, 0);
 				}
 			}
 			else if (this.rightComboBox.SelectedIndex == 1)
@@ -563,9 +574,20 @@ namespace BahnEditor.Editor
 		{
 			if (this.leftComboBox.SelectedIndex == 0)
 			{
-				if (this.lastLeftPixel != null)
+				if (this.lastLeftPixel != null && !this.lastLeftPixel.IsTransparent && !this.lastLeftPixel.IsSpecialColorWithoutRGB)
 				{
-					this.leftPixel = this.lastLeftPixel;
+					if (this.lastLeftPixel.IsSpecialColorWithRGB)
+					{
+						this.leftPixel = Pixel.RGBPixel(this.lastLeftPixel.Red, this.lastLeftPixel.Green, this.lastLeftPixel.Blue);
+					}
+					else
+					{
+						this.leftPixel = this.lastLeftPixel;
+					}
+				}
+				else
+				{
+					this.leftPixel = Pixel.RGBPixel(0, 0, 0);
 				}
 			}
 			else if (this.leftComboBox.SelectedIndex == 1)
