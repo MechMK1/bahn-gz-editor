@@ -214,5 +214,18 @@ namespace BahnEditor.BahnLib
 			}
 			return true;
 		}
+
+		public Pixel[,] ElementPreview()
+		{
+			Pixel[,] element = new Pixel[Constants.SYMHOEHE, Constants.SYMBREITE];
+			for (int i = 0; i < element.GetLength(0); i++)
+			{
+				for (int j = 0; j < element.GetLength(1); j++)
+				{
+					element[i, j] = this.GetLayerByID(Constants.LAYER_VG).Element[i + Constants.SYMHOEHE, j + Constants.SYMBREITE];
+				}
+			}
+			return element;
+		}
 	}
 }

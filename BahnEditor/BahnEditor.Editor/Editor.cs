@@ -12,7 +12,10 @@ namespace BahnEditor.Editor
 {
 	public partial class Editor : Form
 	{
-		private Graphic graphic;
+		private GraphicArchive archive;
+		private int actualGraphic = 0;
+		private int overviewLine = 0;
+		private int overviewAlternative = 0;
 		private int actualLayer;
 		private string lastPath = "";
 		private int zoomLevel = 6;
@@ -37,41 +40,46 @@ namespace BahnEditor.Editor
 			this.leftComboBox.SelectedIndex = 0;
 		}
 
-		private void NewGraphic()
+		private void NewGraphicArchive()
 		{
-			this.graphic = new Zoom1Graphic("Test", Pixel.RGBPixel(100, 100, 100));
-			this.graphic.AddTransparentLayer(Constants.LAYER_VG);
+			this.archive = new Zoom1GraphicArchive();
+			Graphic graphic = new Zoom1Graphic("Test", Pixel.RGBPixel(100, 100, 100));
+			graphic.AddTransparentLayer(Constants.LAYER_VG);
+			this.archive.AddGraphic(graphic);
 			this.drawPanel.Visible = true;
-			this.controlPanel.Visible = true;
+			this.overviewPanel.Visible = true;
 			this.layerComboBox.SelectedIndex = 0;
 			this.ResizeDrawPanel();
 			this.drawPanel.AutoScrollPosition = new Point(this.drawPanel.HorizontalScroll.Maximum, this.drawPanel.VerticalScroll.Maximum);
 			this.drawPanel.Invalidate();
+			this.overviewPanel.Invalidate();
 		}
 
-		private void LoadGraphic()
+		private void LoadGraphicArchive()
 		{
 			try
 			{
-				this.graphic = Graphic.Load(this.loadFileDialog.FileName);
+				this.archive = GraphicArchive.Load(this.loadFileDialog.FileName);
 				this.hasLoadedGraphic = true;
 				this.drawPanel.Visible = true;
-				this.controlPanel.Visible = true;
+				this.overviewPanel.Visible = true;
+				this.userMadeChanges = false;
 				this.ResizeDrawPanel();
 				this.drawPanel.AutoScrollPosition = new Point(this.drawPanel.HorizontalScroll.Maximum, this.drawPanel.VerticalScroll.Maximum / 2);
 				this.drawPanel.Invalidate();
+				this.overviewPanel.Invalidate();
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				MessageBox.Show(String.Format("Fehler: {0}!", ex.Message), "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 		}
 
-		private void SaveGraphic()
+		private void SaveGraphicArchive()
 		{
 			try
 			{
-				if(!this.graphic.Save(lastPath, true))
+				if (!this.archive.Save(lastPath, true))
 				{
 					MessageBox.Show("Fehler beim Speichern!", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}
@@ -91,7 +99,7 @@ namespace BahnEditor.Editor
 			}
 			else
 			{
-				this.SaveGraphic();
+				this.SaveGraphicArchive();
 			}
 		}
 
@@ -119,100 +127,131 @@ namespace BahnEditor.Editor
 					return;
 				}
 
-				if (this.graphic == null || this.graphic.GetLayer(this.actualLayer) == null || this.graphic.GetLayer(this.actualLayer).Element == null)
+				if (this.archive != null && this.archive[this.actualGraphic] != null && this.archive[this.actualGraphic].GetLayer(this.actualLayer) != null && this.archive[this.actualGraphic].GetLayer(this.actualLayer).Element != null)
 				{
-					return;
-				}
 
-				if (g.ClipBounds.Width == this.zoomLevel * 2 && g.ClipBounds.Height == this.zoomLevel * 2)
-				{
-					int x = (int)g.ClipBounds.X;
-					int y = (int)g.ClipBounds.Y;
-					int diffX = 0;
-					int diffY = 0;
-					if (x - drawPanel.AutoScrollPosition.X < 20)
+					if (g.ClipBounds.Width == this.zoomLevel * 2 && g.ClipBounds.Height == this.zoomLevel * 2)
 					{
-						x = 20;
-					}
-					else if (x - 20 - drawPanel.AutoScrollPosition.X + this.zoomLevel * 2 >= Constants.SYMBREITE * 3 * this.zoomLevel)
-					{
-						diffX = (int)((x - 20 - drawPanel.AutoScrollPosition.X + this.zoomLevel * 2) - (Constants.SYMBREITE * 3 * this.zoomLevel));
-					}
-					if (y - drawPanel.AutoScrollPosition.Y < 20)
-					{
-						y = 20;
-					}
-					else if (y - 20 - drawPanel.AutoScrollPosition.Y + this.zoomLevel * 2 >= Constants.SYMHOEHE * 8 * this.zoomLevel)
-					{
-						diffY = (int)((y - 20 - drawPanel.AutoScrollPosition.Y + this.zoomLevel * 2) - (Constants.SYMHOEHE * 8 * this.zoomLevel));
-					}
-					int xElement = ((x - 20 - drawPanel.AutoScrollPosition.X) / (this.zoomLevel));
-					int yElement = (((10 + (this.zoomLevel) * this.graphic.GetLayer(this.actualLayer).Element.GetLength(0)) - (y - 10 - drawPanel.AutoScrollPosition.Y)) / (this.zoomLevel));
-
-					g.FillRectangle(transparentBrush, x, y, this.zoomLevel * 2 - diffX, this.zoomLevel * 2 - diffY);
-					g.TranslateTransform(drawPanel.AutoScrollPosition.X, drawPanel.AutoScrollPosition.Y);
-
-					if (yElement >= this.graphic.GetLayer(this.actualLayer).Element.GetLength(0))
-					{
-						yElement = this.graphic.GetLayer(this.actualLayer).Element.GetLength(0) - 1;
-					}
-					if (xElement >= this.graphic.GetLayer(this.actualLayer).Element.GetLength(1))
-					{
-						xElement = this.graphic.GetLayer(this.actualLayer).Element.GetLength(1) - 1;
-					}
-
-					for (int i = yElement; (i >= yElement - 3) && i < this.graphic.GetLayer(this.actualLayer).Element.GetLength(0) && i >= 0; i--)
-					{
-						for (int j = xElement; (j < xElement + 3) && j < this.graphic.GetLayer(this.actualLayer).Element.GetLength(1); j++)
+						int x = (int)g.ClipBounds.X;
+						int y = (int)g.ClipBounds.Y;
+						int diffX = 0;
+						int diffY = 0;
+						if (x - drawPanel.AutoScrollPosition.X < 20)
 						{
-							if (this.graphic.GetLayer(this.actualLayer).Element[i, j].IsTransparent != true)
+							x = 20;
+						}
+						else if (x - 20 - drawPanel.AutoScrollPosition.X + this.zoomLevel * 2 >= Constants.SYMBREITE * 3 * this.zoomLevel)
+						{
+							diffX = (int)((x - 20 - drawPanel.AutoScrollPosition.X + this.zoomLevel * 2) - (Constants.SYMBREITE * 3 * this.zoomLevel));
+						}
+						if (y - drawPanel.AutoScrollPosition.Y < 20)
+						{
+							y = 20;
+						}
+						else if (y - 20 - drawPanel.AutoScrollPosition.Y + this.zoomLevel * 2 >= Constants.SYMHOEHE * 8 * this.zoomLevel)
+						{
+							diffY = (int)((y - 20 - drawPanel.AutoScrollPosition.Y + this.zoomLevel * 2) - (Constants.SYMHOEHE * 8 * this.zoomLevel));
+						}
+						int xElement = ((x - 20 - drawPanel.AutoScrollPosition.X) / (this.zoomLevel));
+						int yElement = (((10 + (this.zoomLevel) * this.archive[this.actualGraphic].GetLayer(this.actualLayer).Element.GetLength(0)) - (y - 10 - drawPanel.AutoScrollPosition.Y)) / (this.zoomLevel));
+
+						g.FillRectangle(transparentBrush, x, y, this.zoomLevel * 2 - diffX, this.zoomLevel * 2 - diffY);
+						g.TranslateTransform(drawPanel.AutoScrollPosition.X, drawPanel.AutoScrollPosition.Y);
+
+						if (yElement >= this.archive[this.actualGraphic].GetLayer(this.actualLayer).Element.GetLength(0))
+						{
+							yElement = this.archive[this.actualGraphic].GetLayer(this.actualLayer).Element.GetLength(0) - 1;
+						}
+						if (xElement >= this.archive[this.actualGraphic].GetLayer(this.actualLayer).Element.GetLength(1))
+						{
+							xElement = this.archive[this.actualGraphic].GetLayer(this.actualLayer).Element.GetLength(1) - 1;
+						}
+
+						for (int i = yElement; (i >= yElement - 3) && i < this.archive[this.actualGraphic].GetLayer(this.actualLayer).Element.GetLength(0) && i >= 0; i--)
+						{
+							for (int j = xElement; (j < xElement + 3) && j < this.archive[this.actualGraphic].GetLayer(this.actualLayer).Element.GetLength(1); j++)
 							{
-								Brush brush;
-								if (this.graphic.GetLayer(this.actualLayer).Element[i, j].IsSpecialColorWithoutRGB)
-									brush = new HatchBrush(HatchStyle.Percent20, Color.FromArgb(140, 140, 140), this.graphic.GetLayer(this.actualLayer).Element[i, j].ConvertToColor());
-								else if(this.graphic.GetLayer(this.actualLayer).Element[i, j].IsSpecialColorWithRGB)
-									brush = new HatchBrush(HatchStyle.Percent10, Color.FromArgb(140, 140, 140), this.graphic.GetLayer(this.actualLayer).Element[i, j].ConvertToColor());
-								else
-									brush = new SolidBrush(this.graphic.GetLayer(this.actualLayer).Element[i, j].ConvertToColor());
-								g.FillRectangle(brush, j * (this.zoomLevel) + 20, (((this.zoomLevel) * this.graphic.GetLayer(this.actualLayer).Element.GetLength(0)) - ((this.zoomLevel) * (i + 1))) + 20, (this.zoomLevel), (this.zoomLevel));
+								if (this.archive[this.actualGraphic].GetLayer(this.actualLayer).Element[i, j].IsTransparent != true)
+								{
+									Brush brush;
+									if (this.archive[this.actualGraphic].GetLayer(this.actualLayer).Element[i, j].IsSpecialColorWithoutRGB)
+										brush = new HatchBrush(HatchStyle.Percent20, Color.FromArgb(140, 140, 140), this.archive[this.actualGraphic].GetLayer(this.actualLayer).Element[i, j].ConvertToColor());
+									else if (this.archive[this.actualGraphic].GetLayer(this.actualLayer).Element[i, j].IsSpecialColorWithRGB)
+										brush = new HatchBrush(HatchStyle.Percent10, Color.FromArgb(140, 140, 140), this.archive[this.actualGraphic].GetLayer(this.actualLayer).Element[i, j].ConvertToColor());
+									else
+										brush = new SolidBrush(this.archive[this.actualGraphic].GetLayer(this.actualLayer).Element[i, j].ConvertToColor());
+									g.FillRectangle(brush, j * (this.zoomLevel) + 20, (((this.zoomLevel) * this.archive[this.actualGraphic].GetLayer(this.actualLayer).Element.GetLength(0)) - ((this.zoomLevel) * (i + 1))) + 20, (this.zoomLevel), (this.zoomLevel));
+								}
 							}
 						}
 					}
-				}
-				else
-				{
-					g.TranslateTransform(drawPanel.AutoScrollPosition.X, drawPanel.AutoScrollPosition.Y);
-					g.FillRectangle(transparentBrush, 20, 20, Constants.SYMBREITE * this.zoomLevel * 3, Constants.SYMHOEHE * this.zoomLevel * 8);
-					for (int i = 0; i < this.graphic.GetLayer(this.actualLayer).Element.GetLength(0); i++)
+					else
 					{
-						for (int j = 0; j < this.graphic.GetLayer(this.actualLayer).Element.GetLength(1); j++)
+						g.TranslateTransform(drawPanel.AutoScrollPosition.X + 20, drawPanel.AutoScrollPosition.Y + 20);
+						PaintElement(g, this.archive[this.actualGraphic].GetLayer(this.actualLayer).Element, this.zoomLevel, true);
+						g.TranslateTransform(-20, -20);
+					}
+					for (int i = 0; i < 3; i++)
+					{
+						for (int j = 0; j < 8; j++)
 						{
-							if (this.graphic.GetLayer(this.actualLayer).Element[i, j].IsTransparent != true)
-							{
-								Brush brush;
-								if (this.graphic.GetLayer(this.actualLayer).Element[i, j].IsSpecialColorWithoutRGB)
-									brush = new HatchBrush(HatchStyle.Percent20, Color.FromArgb(140, 140, 140), this.graphic.GetLayer(this.actualLayer).Element[i, j].ConvertToColor());
-								else if (this.graphic.GetLayer(this.actualLayer).Element[i, j].IsSpecialColorWithRGB)
-									brush = new HatchBrush(HatchStyle.Percent10, Color.FromArgb(140, 140, 140), this.graphic.GetLayer(this.actualLayer).Element[i, j].ConvertToColor());
-								else
-									brush = new SolidBrush(this.graphic.GetLayer(this.actualLayer).Element[i, j].ConvertToColor());
-								g.FillRectangle(brush, j * (this.zoomLevel) + 20, (((this.zoomLevel) * this.graphic.GetLayer(this.actualLayer).Element.GetLength(0)) - ((this.zoomLevel) * (i + 1))) + 20, (this.zoomLevel), (this.zoomLevel));
-							}
+							g.DrawRectangle(Pens.Gray, 20 + (i * Constants.SYMBREITE) * (this.zoomLevel), 20 + (j * Constants.SYMHOEHE) * (this.zoomLevel), Constants.SYMBREITE * (this.zoomLevel), Constants.SYMHOEHE * (this.zoomLevel));
 						}
 					}
+					g.DrawRectangle(Pens.DarkGray, 20 + Constants.SYMBREITE * (this.zoomLevel), 20 + (6 * Constants.SYMHOEHE) * (this.zoomLevel), Constants.SYMBREITE * (this.zoomLevel), Constants.SYMHOEHE * (this.zoomLevel));
 				}
-				for (int i = 0; i < 3; i++)
-				{
-					for (int j = 0; j < 8; j++)
-					{
-						g.DrawRectangle(Pens.Gray, 20 + (i * Constants.SYMBREITE) * (this.zoomLevel), 20 + (j * Constants.SYMHOEHE) * (this.zoomLevel), Constants.SYMBREITE * (this.zoomLevel), Constants.SYMHOEHE * (this.zoomLevel));
-					}
-				}
-				g.DrawRectangle(Pens.DarkGray, 20 + Constants.SYMBREITE * (this.zoomLevel), 20 + (6 * Constants.SYMHOEHE) * (this.zoomLevel), Constants.SYMBREITE * (this.zoomLevel), Constants.SYMHOEHE * (this.zoomLevel));
 			}
 			catch (IndexOutOfRangeException)
 			{
 
+			}
+		}
+
+		private void PaintOverview(Graphics g)
+		{
+			if (this.archive != null)
+			{
+				g.TranslateTransform(50, 20);
+				for (int i = this.overviewLine * 18 + this.overviewAlternative, j = 1; j <= 9; i += 2, j++)
+				{
+					if (i < this.archive.GraphicsCount)
+					{
+						PaintElement(g, this.archive[i].ElementPreview(), 1, false);
+					}
+					else
+					{
+						g.FillRectangle(new SolidBrush(Color.FromArgb(0, 112, 0)), 0, 0, Constants.SYMBREITE, Constants.SYMHOEHE);
+					}
+					g.DrawString(String.Format("{0} - {1}", j, i), DefaultFont, Brushes.Black, 1, 20);
+					g.TranslateTransform(Constants.SYMBREITE + 10, 0);
+				}
+			}
+		}
+
+		private static void PaintElement(Graphics g, Pixel[,] element, int zoomLevel, bool withHatchBrush)
+		{
+			if (withHatchBrush)
+				g.FillRectangle(transparentBrush, 0, 0, element.GetLength(1) * zoomLevel, element.GetLength(0) * zoomLevel);
+			else
+				g.FillRectangle(new SolidBrush(Color.FromArgb(0, 112, 0)), 0, 0, element.GetLength(1) * zoomLevel, element.GetLength(0) * zoomLevel);
+			for (int i = 0; i < element.GetLength(0); i++)
+			{
+				for (int j = 0; j < element.GetLength(1); j++)
+				{
+					if (element[i, j].IsTransparent != true)
+					{
+						Brush brush;
+						if (!withHatchBrush)
+							brush = new SolidBrush(element[i, j].ConvertToColor());
+						else if (element[i, j].IsSpecialColorWithoutRGB)
+							brush = new HatchBrush(HatchStyle.Percent20, Color.FromArgb(140, 140, 140), element[i, j].ConvertToColor());
+						else if (element[i, j].IsSpecialColorWithRGB)
+							brush = new HatchBrush(HatchStyle.Percent10, Color.FromArgb(140, 140, 140), element[i, j].ConvertToColor());
+						else
+							brush = new SolidBrush(element[i, j].ConvertToColor());
+						g.FillRectangle(brush, j * (zoomLevel), (((zoomLevel) * element.GetLength(0)) - ((zoomLevel) * (i + 1))), (zoomLevel), (zoomLevel));
+					}
+				}
 			}
 		}
 
@@ -228,27 +267,27 @@ namespace BahnEditor.Editor
 				//Pixel[,] element = NewElement();
 				short layerID = GetLayerIDBySelectedIndex();
 				//Layer layer = new Layer((short)layerID, element);
-				this.graphic.AddTransparentLayer(layerID);
-				this.actualLayer = this.graphic.GetIndexByID(layerID);
+				this.archive[this.actualGraphic].AddTransparentLayer(layerID);
+				this.actualLayer = this.archive[this.actualGraphic].GetIndexByID(layerID);
 			}
 			try
 			{
-				if (e.Button != MouseButtons.None && this.graphic != null && this.graphic.GetLayer(this.actualLayer) != null && this.graphic.GetLayer(this.actualLayer).Element != null)
+				if (e.Button != MouseButtons.None && this.archive != null && this.archive[this.actualGraphic] != null && this.archive[this.actualGraphic].GetLayer(this.actualLayer) != null && this.archive[this.actualGraphic].GetLayer(this.actualLayer).Element != null)
 				{
-					if (e.X - drawPanel.AutoScrollPosition.X >= 20 && e.Y - drawPanel.AutoScrollPosition.Y >= 20 && (20 + this.zoomLevel * this.graphic.GetLayer(this.actualLayer).Element.GetLength(0) + drawPanel.AutoScrollPosition.Y - e.Y) > 0)
+					if (e.X - drawPanel.AutoScrollPosition.X >= 20 && e.Y - drawPanel.AutoScrollPosition.Y >= 20 && (20 + this.zoomLevel * this.archive[this.actualGraphic].GetLayer(this.actualLayer).Element.GetLength(0) + drawPanel.AutoScrollPosition.Y - e.Y) > 0)
 					{
 						int xElement = (e.X - 20 - drawPanel.AutoScrollPosition.X) / (this.zoomLevel);
-						int yElement = (20 + this.zoomLevel * this.graphic.GetLayer(this.actualLayer).Element.GetLength(0) + drawPanel.AutoScrollPosition.Y - e.Y) / this.zoomLevel;
-						if (xElement >= 0 && yElement >= 0 && xElement < this.graphic.GetLayer(this.actualLayer).Element.GetLength(1) && yElement < this.graphic.GetLayer(this.actualLayer).Element.GetLength(0))
+						int yElement = (20 + this.zoomLevel * this.archive[this.actualGraphic].GetLayer(this.actualLayer).Element.GetLength(0) + drawPanel.AutoScrollPosition.Y - e.Y) / this.zoomLevel;
+						if (xElement >= 0 && yElement >= 0 && xElement < this.archive[this.actualGraphic].GetLayer(this.actualLayer).Element.GetLength(1) && yElement < this.archive[this.actualGraphic].GetLayer(this.actualLayer).Element.GetLength(0))
 						{
-							if (e.Button == MouseButtons.Left && this.graphic.GetLayer(this.actualLayer).Element[yElement, xElement] != leftPixel)
+							if (e.Button == MouseButtons.Left && this.archive[this.actualGraphic].GetLayer(this.actualLayer).Element[yElement, xElement] != leftPixel)
 							{
-								this.graphic.GetLayer(this.actualLayer).Element[yElement, xElement] = leftPixel;
+								this.archive[this.actualGraphic].GetLayer(this.actualLayer).Element[yElement, xElement] = leftPixel;
 
 							}
-							else if (e.Button == MouseButtons.Right && this.graphic.GetLayer(this.actualLayer).Element[yElement, xElement] != rightPixel)
+							else if (e.Button == MouseButtons.Right && this.archive[this.actualGraphic].GetLayer(this.actualLayer).Element[yElement, xElement] != rightPixel)
 							{
-								this.graphic.GetLayer(this.actualLayer).Element[yElement, xElement] = rightPixel;
+								this.archive[this.actualGraphic].GetLayer(this.actualLayer).Element[yElement, xElement] = rightPixel;
 							}
 							else
 							{
@@ -260,7 +299,7 @@ namespace BahnEditor.Editor
 					}
 				}
 			}
-			catch(IndexOutOfRangeException)
+			catch (IndexOutOfRangeException)
 			{
 
 			}
@@ -269,7 +308,7 @@ namespace BahnEditor.Editor
 		private void SelectLayer()
 		{
 			short index = (short)this.GetLayerIDBySelectedIndex();
-			this.actualLayer = this.graphic.GetIndexByID(index);
+			this.actualLayer = this.archive[this.actualGraphic].GetIndexByID(index);
 			this.drawPanel.Invalidate();
 		}
 
@@ -314,7 +353,7 @@ namespace BahnEditor.Editor
 			byte r = 0;
 			byte g = 0;
 			byte b = 0;
-			if(lastPixel != null && !lastPixel.IsTransparent && !lastPixel.IsSpecialColorWithoutRGB)
+			if (lastPixel != null && !lastPixel.IsTransparent && !lastPixel.IsSpecialColorWithoutRGB)
 			{
 				r = lastPixel.Red;
 				g = lastPixel.Green;
@@ -406,19 +445,20 @@ namespace BahnEditor.Editor
 
 		private void newButton_Click(object sender, EventArgs e)
 		{
-			this.NewGraphic();
+			this.NewGraphicArchive();
 		}
 
 		private void loadButton_Click(object sender, EventArgs e)
 		{
 			if (ExitEditor())
 				return;
+			this.loadFileDialog.Filter = "uz1-files|*.uz1";
 			this.loadFileDialog.ShowDialog();
 		}
 
 		private void loadFileDialog_FileOk(object sender, CancelEventArgs e)
 		{
-			this.LoadGraphic();
+			this.LoadGraphicArchive();
 		}
 
 		private void saveButton_Click(object sender, EventArgs e)
@@ -428,13 +468,14 @@ namespace BahnEditor.Editor
 
 		private void newMenuItem_Click(object sender, EventArgs e)
 		{
-			this.NewGraphic();
+			this.NewGraphicArchive();
 		}
 
 		private void openMenuItem_Click(object sender, EventArgs e)
 		{
 			if (ExitEditor())
 				return;
+			this.loadFileDialog.Filter = "uz1-files|*.uz1";
 			this.loadFileDialog.ShowDialog();
 		}
 
@@ -446,7 +487,7 @@ namespace BahnEditor.Editor
 		private void saveFileDialog_FileOk(object sender, CancelEventArgs e)
 		{
 			this.lastPath = this.saveFileDialog.FileName;
-			this.SaveGraphic();
+			this.SaveGraphicArchive();
 		}
 
 		private void saveAsMenuItem_Click(object sender, EventArgs e)
@@ -545,18 +586,18 @@ namespace BahnEditor.Editor
 			else
 			{
 				Pixel lastPixel = null;
-				if(this.rightPixel != null && !this.rightPixel.IsTransparent && !this.rightPixel.IsSpecialColorWithoutRGB)
+				if (this.rightPixel != null && !this.rightPixel.IsTransparent && !this.rightPixel.IsSpecialColorWithoutRGB)
 				{
 					lastPixel = this.rightPixel;
 				}
-				else if(this.lastRightPixel != null && !this.lastRightPixel.IsTransparent && !this.lastRightPixel.IsSpecialColorWithoutRGB)
+				else if (this.lastRightPixel != null && !this.lastRightPixel.IsTransparent && !this.lastRightPixel.IsSpecialColorWithoutRGB)
 				{
 					lastPixel = this.lastRightPixel;
 				}
 				Pixel pixel = this.GetPixelFromComboBox(this.rightComboBox.SelectedIndex, lastPixel);
-				if(pixel != null)
+				if (pixel != null)
 				{
-					if(!this.rightPixel.IsTransparent && !this.rightPixel.IsSpecialColorWithoutRGB)
+					if (!this.rightPixel.IsTransparent && !this.rightPixel.IsSpecialColorWithoutRGB)
 					{
 						this.lastRightPixel = this.rightPixel;
 					}
@@ -638,5 +679,37 @@ namespace BahnEditor.Editor
 
 		#endregion
 
+		private void overviewPanel_Paint(object sender, PaintEventArgs e)
+		{
+			this.PaintOverview(e.Graphics);
+		}
+
+		private void overviewLeftRightButton_Click(object sender, EventArgs e)
+		{
+			if (this.overviewAlternative == 1)
+				this.overviewAlternative = 0;
+			else
+				this.overviewAlternative = 1;
+			
+			this.overviewPanel.Invalidate();
+		}
+
+		private void overviewDownButton_Click(object sender, EventArgs e)
+		{
+			if(this.overviewLine > 0)
+			{
+				this.overviewLine--;
+				this.overviewPanel.Invalidate();
+			}
+		}
+
+		private void overviewUpButton_Click(object sender, EventArgs e)
+		{
+			if(this.overviewLine < 4)
+			{
+				this.overviewLine++;
+				this.overviewPanel.Invalidate();
+			}
+		}
 	}
 }

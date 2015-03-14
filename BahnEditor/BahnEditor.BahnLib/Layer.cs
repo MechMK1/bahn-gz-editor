@@ -29,7 +29,7 @@ namespace BahnEditor.BahnLib
 				throw new ArgumentNullException("bw");
 			short x0;
 			short y0;
-			Pixel[,] element = TrimElement(out x0, out y0);
+			Pixel[,] element = TrimElement(out x0, out y0, this.Element);
 			bw.Write(this.LayerID); //layer
 			bw.Write(x0); //x0
 			bw.Write(y0); //y0
@@ -213,17 +213,17 @@ namespace BahnEditor.BahnLib
 			return newElement;
 		}
 
-		private Pixel[,] TrimElement(out short x0, out short y0)
+		internal static Pixel[,] TrimElement(out short x0, out short y0, Pixel[,] element)
 		{
-			int minx = this.Element.GetLength(1);
-			int miny = this.Element.GetLength(0);
+			int minx = element.GetLength(1);
+			int miny = element.GetLength(0);
 			int maxx = 0;
 			int maxy = 0;
-			for (int i = 0; i < this.Element.GetLength(0); i++)
+			for (int i = 0; i < element.GetLength(0); i++)
 			{
-				for (int j = 0; j < this.Element.GetLength(1); j++)
+				for (int j = 0; j < element.GetLength(1); j++)
 				{
-					if (this.Element[i, j].IsTransparent == false)
+					if (element[i, j].IsTransparent == false)
 					{
 						if (minx > j)
 						{
@@ -250,17 +250,17 @@ namespace BahnEditor.BahnLib
 			}
 			maxx++;
 			maxy++;
-			Pixel[,] element = new Pixel[maxy - miny, maxx - minx];
-			for (int i = 0; i < element.GetLength(0); i++)
+			Pixel[,] newElement = new Pixel[maxy - miny, maxx - minx];
+			for (int i = 0; i < newElement.GetLength(0); i++)
 			{
-				for (int j = 0; j < element.GetLength(1); j++)
+				for (int j = 0; j < newElement.GetLength(1); j++)
 				{
-					element[i, j] = this.Element[i + miny, j + minx];
+					newElement[i, j] = element[i + miny, j + minx];
 				}
 			}
 			x0 = (short)(minx - Constants.SYMBREITE);
 			y0 = (short)(miny - Constants.SYMHOEHE);
-			return element;
+			return newElement;
 		}
 	}
 }
