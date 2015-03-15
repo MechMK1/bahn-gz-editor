@@ -12,7 +12,8 @@ namespace BahnEditor.BahnLib
 		/// <summary>
 		/// Tuple: Element number, Bauform, FwSig, Phase, Alt, Graphic
 		/// </summary>
-		private List<Tuple<int, int, int, int, int, Graphic>> graphics;
+		private List<Tuple<int, int, int, int, int, Graphic>> graphics; // TODO Create class from tuple
+																		// TODO Use Dictionary<int, Graphic>
 		public ZoomFactor ZoomFactor { get; protected set; }
 		public int GraphicsCount
 		{
@@ -30,6 +31,7 @@ namespace BahnEditor.BahnLib
 
 		public void AddGraphic(Graphic graphic)
 		{
+			//TODO graphic null check
 			int elementNumber;
 			if (this.graphics.Count == 0)
 				elementNumber = 0;
@@ -88,6 +90,7 @@ namespace BahnEditor.BahnLib
 
 		private static GraphicArchive Load(FileStream path)
 		{
+			// TODO remove magic numbers
 			using (BinaryReader br = new BinaryReader(path, Encoding.Unicode))
 			{
 				while (br.ReadByte() != 26) { }
@@ -130,13 +133,10 @@ namespace BahnEditor.BahnLib
 				switch (zoomFactor)
 				{
 					case 1:
-						archive = new GraphicArchive(ZoomFactor.Zoom1);
-						break;
 					case 2:
-						archive = new GraphicArchive(ZoomFactor.Zoom2);
-						break;
 					case 4:
-						archive = new GraphicArchive(ZoomFactor.Zoom4);
+						ZoomFactor f = (ZoomFactor)Enum.Parse(typeof(ZoomFactor), zoomFactor.ToString());
+						archive = new GraphicArchive(f);
 						break;
 					default:
 						throw new Exception("Invalid ZoomFactor");
@@ -170,6 +170,7 @@ namespace BahnEditor.BahnLib
 					throw new ElementIsEmptyException("a graphic is empty");
 				}
 			}
+			// TODO remove magic numbers
 			using (BinaryWriter bw = new BinaryWriter(path, Encoding.Unicode))
 			{
 				List<Tuple<long, long>> offsetList = new List<Tuple<long, long>>();
@@ -218,7 +219,7 @@ namespace BahnEditor.BahnLib
 
 		private int GetTime()
 		{
-
+			// TODO do actual stuff
 			return 0;
 		}
 	}
