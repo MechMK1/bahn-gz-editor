@@ -66,6 +66,7 @@ namespace BahnEditor.BahnLib
 			p.SpecialWithRGB = SpecialColorWithRGB.None;
 			return p;
 		}
+		//HACK constructor?
 
 		/// <summary>
 		/// Get a transparent pixel
@@ -75,6 +76,7 @@ namespace BahnEditor.BahnLib
 		{
 			return Pixel.SpecialPixelWithoutRGB(SpecialColorWithoutRGB.Transparent);
 		}
+		//HACK should be static instance
 
 		/// <summary>
 		/// Get a pixel with configurable color
@@ -104,6 +106,7 @@ namespace BahnEditor.BahnLib
 			return p;
 		}
 
+		//TODO Remove magic numbers
 		public static Pixel FromUInt(uint data)
 		{
 			Pixel p = new Pixel();
@@ -127,6 +130,7 @@ namespace BahnEditor.BahnLib
 			return p;
 		}
 
+		//HACK Convert what to uint
 		public uint ConvertToUInt()
 		{
 			if (this.IsTransparent)
@@ -145,11 +149,13 @@ namespace BahnEditor.BahnLib
 						(
 							(uint)
 							(
-								(Blue) |
+								(Blue)
+								|
 								(
 									(Green) << 8
 								)
-							) |
+							)
+							|
 							(
 								(
 									(uint)(Red)
@@ -236,9 +242,44 @@ namespace BahnEditor.BahnLib
 			Pixel p = obj as Pixel;
 			if (p != null)
 			{
-				if ((this.SpecialWithoutRGB != SpecialColorWithoutRGB.None && p.SpecialWithoutRGB != SpecialColorWithoutRGB.None && this.SpecialWithoutRGB == p.SpecialWithoutRGB)
-					|| (this.Red == p.Red && this.Green == p.Green && this.Blue == p.Blue && this.SpecialWithoutRGB == SpecialColorWithoutRGB.None && p.SpecialWithoutRGB == SpecialColorWithoutRGB.None)
-					|| (this.IsSpecialColorWithRGB && p.IsSpecialColorWithRGB && this.Red == p.Red && this.Green == p.Green && this.Blue == p.Blue && this.SpecialWithoutRGB == SpecialColorWithoutRGB.None && p.SpecialWithoutRGB == SpecialColorWithoutRGB.None))
+				if
+				(
+					(
+						this.SpecialWithoutRGB != SpecialColorWithoutRGB.None
+						&&
+						p.SpecialWithoutRGB != SpecialColorWithoutRGB.None
+						&&
+						this.SpecialWithoutRGB == p.SpecialWithoutRGB
+					)
+					||
+					(
+						this.Red == p.Red
+						&&
+						this.Green == p.Green
+						&&
+						this.Blue == p.Blue
+						&&
+						this.SpecialWithoutRGB == SpecialColorWithoutRGB.None
+						&&
+						p.SpecialWithoutRGB == SpecialColorWithoutRGB.None
+					)
+					||
+					(
+						this.IsSpecialColorWithRGB
+						&&
+						p.IsSpecialColorWithRGB
+						&&
+						this.Red == p.Red
+						&&
+						this.Green == p.Green
+						&&
+						this.Blue == p.Blue
+						&&
+						this.SpecialWithoutRGB == SpecialColorWithoutRGB.None
+						&&
+						p.SpecialWithoutRGB == SpecialColorWithoutRGB.None
+					)
+				)
 				{
 					return true;
 				}
@@ -246,11 +287,13 @@ namespace BahnEditor.BahnLib
 			return false;
 		}
 
+		// HACK Why?
 		public override int GetHashCode()
 		{
 			return base.GetHashCode();
 		}
 
+		//TODO Remove magic numbers
 		public enum SpecialColorWithoutRGB : uint
 		{
 			None = 0,
