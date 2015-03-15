@@ -30,6 +30,9 @@
 		{
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Editor));
 			this.toolStrip = new System.Windows.Forms.ToolStrip();
+			this.newButton = new System.Windows.Forms.ToolStripButton();
+			this.loadButton = new System.Windows.Forms.ToolStripButton();
+			this.saveButton = new System.Windows.Forms.ToolStripButton();
 			this.controlPanel = new System.Windows.Forms.Panel();
 			this.leftComboBox = new System.Windows.Forms.ComboBox();
 			this.rightLabel = new System.Windows.Forms.Label();
@@ -52,13 +55,10 @@
 			this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
 			this.colorDialog = new System.Windows.Forms.ColorDialog();
 			this.overviewPanel = new BahnEditor.Editor.DrawPanel();
-			this.drawPanel = new BahnEditor.Editor.DrawPanel();
 			this.overviewDownButton = new System.Windows.Forms.Button();
 			this.overviewUpButton = new System.Windows.Forms.Button();
 			this.overviewLeftRightButton = new System.Windows.Forms.Button();
-			this.newButton = new System.Windows.Forms.ToolStripButton();
-			this.loadButton = new System.Windows.Forms.ToolStripButton();
-			this.saveButton = new System.Windows.Forms.ToolStripButton();
+			this.drawPanel = new BahnEditor.Editor.DrawPanel();
 			this.toolStrip.SuspendLayout();
 			this.controlPanel.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.zoomTrackBar)).BeginInit();
@@ -78,6 +78,36 @@
 			this.toolStrip.Size = new System.Drawing.Size(1008, 25);
 			this.toolStrip.TabIndex = 0;
 			this.toolStrip.Text = "toolStrip1";
+			// 
+			// newButton
+			// 
+			this.newButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.newButton.Image = ((System.Drawing.Image)(resources.GetObject("newButton.Image")));
+			this.newButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.newButton.Name = "newButton";
+			this.newButton.Size = new System.Drawing.Size(23, 22);
+			this.newButton.Text = "New";
+			this.newButton.Click += new System.EventHandler(this.newButton_Click);
+			// 
+			// loadButton
+			// 
+			this.loadButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.loadButton.Image = ((System.Drawing.Image)(resources.GetObject("loadButton.Image")));
+			this.loadButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.loadButton.Name = "loadButton";
+			this.loadButton.Size = new System.Drawing.Size(23, 22);
+			this.loadButton.Text = "Load";
+			this.loadButton.Click += new System.EventHandler(this.loadButton_Click);
+			// 
+			// saveButton
+			// 
+			this.saveButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.saveButton.Image = ((System.Drawing.Image)(resources.GetObject("saveButton.Image")));
+			this.saveButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.saveButton.Name = "saveButton";
+			this.saveButton.Size = new System.Drawing.Size(23, 22);
+			this.saveButton.Text = "Save";
+			this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
 			// 
 			// controlPanel
 			// 
@@ -357,24 +387,8 @@
 			this.overviewPanel.Size = new System.Drawing.Size(812, 62);
 			this.overviewPanel.TabIndex = 5;
 			this.overviewPanel.Visible = false;
+			this.overviewPanel.Click += new System.EventHandler(this.overviewPanel_Click);
 			this.overviewPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.overviewPanel_Paint);
-			// 
-			// drawPanel
-			// 
-			this.drawPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.drawPanel.AutoScroll = true;
-			this.drawPanel.BackColor = System.Drawing.Color.Transparent;
-			this.drawPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.drawPanel.Location = new System.Drawing.Point(12, 120);
-			this.drawPanel.Name = "drawPanel";
-			this.drawPanel.Size = new System.Drawing.Size(813, 598);
-			this.drawPanel.TabIndex = 4;
-			this.drawPanel.Visible = false;
-			this.drawPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.drawPanel_Paint);
-			this.drawPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.drawPanel_MouseClick);
-			this.drawPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.drawPanel_MouseMove);
 			// 
 			// overviewDownButton
 			// 
@@ -409,35 +423,23 @@
 			this.overviewLeftRightButton.UseVisualStyleBackColor = true;
 			this.overviewLeftRightButton.Click += new System.EventHandler(this.overviewLeftRightButton_Click);
 			// 
-			// newButton
+			// drawPanel
 			// 
-			this.newButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.newButton.Image = ((System.Drawing.Image)(resources.GetObject("newButton.Image")));
-			this.newButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.newButton.Name = "newButton";
-			this.newButton.Size = new System.Drawing.Size(23, 22);
-			this.newButton.Text = "New";
-			this.newButton.Click += new System.EventHandler(this.newButton_Click);
-			// 
-			// loadButton
-			// 
-			this.loadButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.loadButton.Image = ((System.Drawing.Image)(resources.GetObject("loadButton.Image")));
-			this.loadButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.loadButton.Name = "loadButton";
-			this.loadButton.Size = new System.Drawing.Size(23, 22);
-			this.loadButton.Text = "Load";
-			this.loadButton.Click += new System.EventHandler(this.loadButton_Click);
-			// 
-			// saveButton
-			// 
-			this.saveButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.saveButton.Image = ((System.Drawing.Image)(resources.GetObject("saveButton.Image")));
-			this.saveButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.saveButton.Name = "saveButton";
-			this.saveButton.Size = new System.Drawing.Size(23, 22);
-			this.saveButton.Text = "Save";
-			this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
+			this.drawPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.drawPanel.AutoScroll = true;
+			this.drawPanel.BackColor = System.Drawing.Color.Transparent;
+			this.drawPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.drawPanel.Location = new System.Drawing.Point(12, 120);
+			this.drawPanel.Name = "drawPanel";
+			this.drawPanel.Size = new System.Drawing.Size(813, 598);
+			this.drawPanel.TabIndex = 4;
+			this.drawPanel.Visible = false;
+			this.drawPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.drawPanel_Paint);
+			this.drawPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.drawPanel_MouseClick);
+			this.drawPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.drawPanel_MouseMove);
+			this.drawPanel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.drawPanel_MouseUp);
 			// 
 			// Editor
 			// 

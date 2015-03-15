@@ -13,7 +13,6 @@ namespace BahnEditor.Test
 		public void TestSaveAndLoad()
 		{
 			string infoTextExpected = "Test";
-			byte zoomFactorExpected = 1;
 			short heightExpected = (short)(Constants.SYMHOEHE * 8);
 			short widthExpected = (short)(Constants.SYMBREITE * 3);
 			//short x0Expected = 7;

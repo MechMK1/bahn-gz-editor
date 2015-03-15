@@ -9,7 +9,10 @@ namespace BahnEditor.BahnLib
 {
 	public abstract class GraphicArchive
 	{
-		private List<Graphic> graphics;
+		/// <summary>
+		/// Tuple: Element number, Bauform, FwSig, Phase, Alt, Graphic
+		/// </summary>
+		private List<Tuple<int, int, int, int, int, Graphic>> graphics;
 		public byte ZoomFactor { get; protected set; }
 		public int GraphicsCount
 		{
@@ -21,27 +24,53 @@ namespace BahnEditor.BahnLib
 
 		protected GraphicArchive(byte zoomFactor)
 		{
-			graphics = new List<Graphic>();
+			graphics = new List<Tuple<int, int, int, int, int, Graphic>>();
 			this.ZoomFactor = zoomFactor;
 		}
 
 		public void AddGraphic(Graphic graphic)
 		{
+			int elementNumber;
+			if (this.graphics.Count == 0)
+				elementNumber = 0;
+			else
+				elementNumber = this.graphics.OrderBy(x => x.Item1).Last().Item1 + 1;
+			this.AddGraphic(elementNumber, graphic);
+		}
+
+		public void AddGraphic(int elementNumber, Graphic graphic)
+		{
+			this.AddGraphic(elementNumber, 0, 1, graphic);
+		}
+
+		public void AddGraphic(int elementNumber, int phase, int alternative, Graphic graphic)
+		{
 			if (graphic == null)
 				throw new ArgumentNullException("graphic");
+			if (elementNumber < 0 || elementNumber > 89)
+				throw new ArgumentOutOfRangeException("elementNumber");
+			if (phase < 0 || phase > 99)
+				throw new ArgumentOutOfRangeException("phase");
+			if (alternative < 0 || alternative > 4)
+				throw new ArgumentOutOfRangeException("alternative");
 			if (graphic.ZoomFactor != this.ZoomFactor)
 				throw new Exception("ZoomFactor not matching");
-			this.graphics.Add(graphic);
+			this.graphics.Add(Tuple.Create(elementNumber, 0, 0, phase, alternative, graphic));
 		}
 
 		public Graphic this[int index]
 		{
-			get { return graphics[index]; }
-			set
+			get
 			{
-				if (value == null)
-					throw new ArgumentNullException("value");
-				graphics[index] = value;
+				try
+				{
+					IEnumerable<Tuple<int, int, int, int, int, Graphic>> e = graphics.Where(x => x.Item1 == index);
+					return e.Single(x => x.Item4 == 0 && x.Item5 == 1).Item6;
+				}
+				catch (InvalidOperationException)
+				{
+					return null;
+				}
 			}
 		}
 
@@ -70,21 +99,22 @@ namespace BahnEditor.BahnLib
 				byte zoomFactor = (byte)(br.ReadByte() - 48);
 				int elementNummer;
 				List<int> seekList = new List<int>();
-				while(true)
+				while (true)
 				{
 					elementNummer = br.ReadInt32();
-					if(elementNummer == -1)
+					if (elementNummer == -1)
 					{
 						break;
 					}
 					br.BaseStream.Seek(16, SeekOrigin.Current);
-					seekList.Add((int)(br.BaseStream.Position + 8 + br.ReadInt32()));
+					seekList.Add((int)(br.BaseStream.Position + 4 + br.ReadInt32()));
 				}
-				
-				List<Graphic> graphics = new List<Graphic>();
+
+				List<Tuple<int, int, int, int, int, Graphic>> graphics = new List<Tuple<int, int, int, int, int, Graphic>>();
 				foreach (var item in seekList)
 				{
 					br.BaseStream.Seek(item, SeekOrigin.Begin);
+					int elementNumber = br.ReadInt32();
 					int bauform = br.ReadInt32();
 					int fwSig = br.ReadInt32();
 					int phase = br.ReadInt32();
@@ -94,7 +124,7 @@ namespace BahnEditor.BahnLib
 					MemoryStream ms = new MemoryStream();
 					br.BaseStream.CopyTo(ms, length);
 					ms.Position = 0;
-					graphics.Add(Graphic.Load(ms));
+					graphics.Add(Tuple.Create(elementNumber, bauform, fwSig, phase, alt, Graphic.Load(ms)));
 				}
 				GraphicArchive archive;
 				switch (zoomFactor)
@@ -135,7 +165,7 @@ namespace BahnEditor.BahnLib
 		{
 			foreach (var item in this.graphics)
 			{
-				if (item.ValidateElement())
+				if (item.Item6.ValidateElement())
 				{
 					throw new ElementIsEmptyException("a graphic is empty");
 				}
@@ -147,32 +177,34 @@ namespace BahnEditor.BahnLib
 				bw.Write((byte)26); // text end
 				bw.Write(new byte[] { 85, 90, 88 }); //identification string UZX ASCII
 				bw.Write((byte)(48 + this.ZoomFactor)); //Zoom faktor ASCII
-				for (int i = 0; i < this.graphics.Count; i++)
+				foreach (var item in this.graphics)
 				{
-					bw.Write(i); //Elementnummer
-					bw.Write(0); //Bauform
-					bw.Write(0); //FwSig
-					bw.Write(0); //Phase
-					bw.Write(1); //Alt
+					bw.Write(item.Item1); //Elementnummer
+					bw.Write(item.Item2); //Bauform
+					bw.Write(item.Item3); //FwSig
+					bw.Write(item.Item4); //Phase
+					bw.Write(item.Item5); //Alt
 					offsetList.Add(Tuple.Create<long, long>(bw.BaseStream.Position, 0));
 					bw.Write(0); //Offset
 
 				}
 				bw.Write(0xFFFFFFFF);
-				for (int i = 0; i < this.graphics.Count; i++)
+				int i = 0;
+				foreach (var item in this.graphics)
 				{
-					bw.Write(i); //Elementnummer
+					bw.Write(item.Item1); //Elementnummer
 					offsetList[i] = Tuple.Create(offsetList[i].Item1, bw.BaseStream.Position);
-					bw.Write(0); //Bauform
-					bw.Write(0); //FwSig
-					bw.Write(0); //Phase
-					bw.Write(1); //Alt
+					bw.Write(item.Item2); //Bauform
+					bw.Write(item.Item3); //FwSig
+					bw.Write(item.Item4); //Phase
+					bw.Write(item.Item5); //Alt
 					MemoryStream ms = new MemoryStream();
-					this.graphics[i].Save(ms);
+					item.Item6.Save(ms);
 					bw.Write((int)ms.Length); //Länge der Einzeldatei in Byte
 					bw.Write(0x46646E7C); //Datum
 					ms.WriteTo(bw.BaseStream);
 					ms.Dispose();
+					i++;
 				}
 				foreach (var item in offsetList)
 				{

@@ -14,10 +14,6 @@ namespace BahnEditor.BahnLib
 		public byte ZoomFactor { get; protected set; }
 		public string InfoText { get; set; }
 		public Pixel ColorInSchematicMode { get; set; }
-		public int Bauform { get; set; }
-		public int FwSig { get; set; }
-		public int Phase { get; set; }
-		public int Alt { get; set; }
 
 		protected Graphic(string infoText, byte zoomFactor, Pixel colorInSchematicMode)
 		{

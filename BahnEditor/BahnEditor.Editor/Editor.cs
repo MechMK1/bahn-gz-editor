@@ -43,7 +43,7 @@ namespace BahnEditor.Editor
 		private void NewGraphicArchive()
 		{
 			this.archive = new Zoom1GraphicArchive();
-			Graphic graphic = new Zoom1Graphic("Test", Pixel.RGBPixel(100, 100, 100));
+			Graphic graphic = new Zoom1Graphic("Kein Text", Pixel.RGBPixel(100, 100, 100));
 			graphic.AddTransparentLayer(Constants.LAYER_VG);
 			this.archive.AddGraphic(graphic);
 			this.drawPanel.Visible = true;
@@ -112,7 +112,7 @@ namespace BahnEditor.Editor
 		{
 			try
 			{
-				if (this.actualLayer < 0)
+				if (this.actualLayer < 0 || this.archive[this.actualGraphic] == null)
 				{
 					g.TranslateTransform(drawPanel.AutoScrollPosition.X, drawPanel.AutoScrollPosition.Y);
 					g.FillRectangle(transparentBrush, 20, 20, Constants.SYMBREITE * this.zoomLevel * 3, Constants.SYMHOEHE * this.zoomLevel * 8); //transparent 0, 112, 0
@@ -214,13 +214,13 @@ namespace BahnEditor.Editor
 				g.TranslateTransform(50, 20);
 				for (int i = this.overviewLine * 18 + this.overviewAlternative, j = 1; j <= 9; i += 2, j++)
 				{
-					if (i < this.archive.GraphicsCount)
+					if (this.archive[i] != null)
 					{
 						PaintElement(g, this.archive[i].ElementPreview(), 1, false);
 					}
 					else
 					{
-						g.FillRectangle(new SolidBrush(Color.FromArgb(0, 112, 0)), 0, 0, Constants.SYMBREITE, Constants.SYMHOEHE);
+						g.FillRectangle(transparentBrush, 0, 0, Constants.SYMBREITE, Constants.SYMHOEHE);
 					}
 					g.DrawString(String.Format("{0} - {1}", j, i), DefaultFont, Brushes.Black, 1, 20);
 					g.TranslateTransform(Constants.SYMBREITE + 10, 0);
@@ -262,11 +262,17 @@ namespace BahnEditor.Editor
 				this.hasLoadedGraphic = false;
 				return;
 			}
-			if (this.actualLayer < 0)
+			if (this.archive[this.actualGraphic] == null && e.Button != MouseButtons.None)
 			{
-				//Pixel[,] element = NewElement();
+				Graphic graphic = new Zoom1Graphic("Kein Text", Pixel.RGBPixel(100, 100, 100));
+				graphic.AddTransparentLayer(Constants.LAYER_VG);
+				this.archive.AddGraphic(this.actualGraphic, graphic);
+				this.actualLayer = this.archive[this.actualGraphic].GetIndexByID(Constants.LAYER_VG);
+				this.overviewPanel.Invalidate();
+			}
+			if (this.actualLayer < 0 && e.Button != MouseButtons.None)
+			{
 				short layerID = GetLayerIDBySelectedIndex();
-				//Layer layer = new Layer((short)layerID, element);
 				this.archive[this.actualGraphic].AddTransparentLayer(layerID);
 				this.actualLayer = this.archive[this.actualGraphic].GetIndexByID(layerID);
 			}
@@ -302,6 +308,35 @@ namespace BahnEditor.Editor
 			catch (IndexOutOfRangeException)
 			{
 
+			}
+		}
+
+		private void ClickOverview(MouseEventArgs e)
+		{
+			int element = -1;
+			int x = e.X - 50;
+			if (x >= 0 && 31 >= x)
+				element = 0;
+			else if (x >= 42 && 73 >= x)
+				element = 1;
+			else if (x >= 84 && 115 >= x)
+				element = 2;
+			else if (x >= 126 && 157 >= x)
+				element = 3;
+			else if (x >= 168 && 199 >= x)
+				element = 4;
+			else if (x >= 210 && 241 >= x)
+				element = 5;
+			else if (x >= 252 && 283 >= x)
+				element = 6;
+			else if (x >= 294 && 325 >= x)
+				element = 7;
+			else if (x >= 336 && 367 >= x)
+				element = 8;
+			if (element != -1)
+			{
+				this.actualGraphic = (element * 2 + overviewAlternative) + ((overviewLine) * 18);
+				this.drawPanel.Invalidate();
 			}
 		}
 
@@ -677,8 +712,6 @@ namespace BahnEditor.Editor
 			this.SelectLayer();
 		}
 
-		#endregion
-
 		private void overviewPanel_Paint(object sender, PaintEventArgs e)
 		{
 			this.PaintOverview(e.Graphics);
@@ -690,26 +723,44 @@ namespace BahnEditor.Editor
 				this.overviewAlternative = 0;
 			else
 				this.overviewAlternative = 1;
-			
 			this.overviewPanel.Invalidate();
+			drawPanel.Focus();
 		}
 
 		private void overviewDownButton_Click(object sender, EventArgs e)
 		{
-			if(this.overviewLine > 0)
+			if (this.overviewLine > 0)
 			{
 				this.overviewLine--;
 				this.overviewPanel.Invalidate();
 			}
+			drawPanel.Focus();
 		}
 
 		private void overviewUpButton_Click(object sender, EventArgs e)
 		{
-			if(this.overviewLine < 4)
+			if (this.overviewLine < 4)
 			{
 				this.overviewLine++;
 				this.overviewPanel.Invalidate();
 			}
+			drawPanel.Focus();
 		}
+
+		private void overviewPanel_Click(object sender, EventArgs e)
+		{
+			MouseEventArgs me = e as MouseEventArgs;
+			if (me != null)
+				ClickOverview(me);
+			else
+				MessageBox.Show("Interner Fehler", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+		}
+
+		private void drawPanel_MouseUp(object sender, MouseEventArgs e)
+		{
+			this.overviewPanel.Invalidate();
+		}
+
+		#endregion
 	}
 }
