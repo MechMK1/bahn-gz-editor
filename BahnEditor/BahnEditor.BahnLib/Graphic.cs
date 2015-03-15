@@ -9,13 +9,16 @@ namespace BahnEditor.BahnLib
 {
 	public class Graphic
 	{
+		#region Fields and Properties
 		private List<Layer> layers;
 
 		public ZoomFactor ZoomFactor { get; protected set; }
 		public string InfoText { get; set; }
 		public Pixel ColorInSchematicMode { get; set; }
+		#endregion Fields and Properties
 
-		public Graphic(string infoText, ZoomFactor zoomFactor, Pixel colorInSchematicMode)
+		#region Constructors
+		public Graphic(string infoText, Pixel colorInSchematicMode, ZoomFactor zoomFactor)
 		{
 			this.ZoomFactor = zoomFactor;
 			this.InfoText = infoText;
@@ -23,6 +26,12 @@ namespace BahnEditor.BahnLib
 			layers = new List<Layer>();
 		}
 
+		public Graphic(string infoText, Pixel colorInSchematicMode) : this(infoText, colorInSchematicMode, ZoomFactor.Zoom1)
+		{
+		}
+		#endregion Constructors
+
+		#region Public Methods
 		public void AddTransparentLayer(short layerID)
 		{
 			Pixel[,] element = new Pixel[Constants.SYMHOEHE * 8 * (byte)this.ZoomFactor, Constants.SYMBREITE * 3 * (byte)this.ZoomFactor];
@@ -48,16 +57,22 @@ namespace BahnEditor.BahnLib
 
 		public Layer GetLayer(int index)
 		{
+			// TODO Out of bounds check
 			return layers[index];
 		}
 
 		public Layer GetLayerByID(short id)
 		{
-			return layers.Find(x => x.LayerID == id);
+			return layers.SingleOrDefault(x => x.LayerID == id);
 		}
+		#endregion Public Methods
+		
+
+
 
 		public int GetIndexByID(short id)
 		{
+			// TODO Clarify
 			return layers.FindIndex(x => x.LayerID == id);
 		}
 
@@ -77,7 +92,7 @@ namespace BahnEditor.BahnLib
 		{
 			using (BinaryReader br = new BinaryReader(path, Encoding.Unicode))
 			{
-				while (br.ReadByte() != 26) { }
+				while (br.ReadByte() != 26) { } // TODO Remove magic numbers
 				byte[] read = br.ReadBytes(3);
 				if (read[0] != 71 || read[1] != 90 || read[2] != 71)
 				{
@@ -112,22 +127,18 @@ namespace BahnEditor.BahnLib
 				}
 				string infoText = sb.ToString();
 				Graphic graphic = null;
-				if (zoomFactor == 1)
+				switch (zoomFactor)
 				{
-					graphic = new Graphic(infoText, ZoomFactor.Zoom1, colorInSchematicMode);
+					case 1:
+					case 2:
+					case 4:
+						ZoomFactor f = (ZoomFactor)Enum.Parse(typeof(ZoomFactor), zoomFactor.ToString());
+						graphic = new Graphic(infoText, colorInSchematicMode, f);
+						break;
+					default:
+						throw new Exception("unknown zoom factor");
 				}
-				else if (zoomFactor == 2)
-				{
-					graphic = new Graphic(infoText, ZoomFactor.Zoom2, colorInSchematicMode);
-				}
-				else if (zoomFactor == 4)
-				{
-					graphic = new Graphic(infoText, ZoomFactor.Zoom4, colorInSchematicMode);
-				}
-				else
-				{
-					throw new Exception("unknown zoom factor");
-				}
+				
 				//List<Layer> layers = new List<Layer>();
 				for (int i = 0; i < layer; i++)
 				{
@@ -152,6 +163,7 @@ namespace BahnEditor.BahnLib
 			}
 		}
 
+		//TODO Remove magic numbers
 		internal bool Save(Stream path)
 		{
 			try

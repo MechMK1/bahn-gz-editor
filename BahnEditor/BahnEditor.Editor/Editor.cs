@@ -43,7 +43,7 @@ namespace BahnEditor.Editor
 		private void NewGraphicArchive()
 		{
 			this.archive = new GraphicArchive(ZoomFactor.Zoom1);
-			Graphic graphic = new Graphic("Kein Text", ZoomFactor.Zoom1, Pixel.RGBPixel(100, 100, 100));
+			Graphic graphic = new Graphic("Kein Text", Pixel.RGBPixel(100, 100, 100), ZoomFactor.Zoom1);
 			graphic.AddTransparentLayer(Constants.LAYER_VG);
 			this.archive.AddGraphic(graphic);
 			this.drawPanel.Visible = true;
@@ -264,7 +264,7 @@ namespace BahnEditor.Editor
 			}
 			if (this.archive[this.actualGraphic] == null && e.Button != MouseButtons.None)
 			{
-				Graphic graphic = new Graphic("Kein Text", ZoomFactor.Zoom1, Pixel.RGBPixel(100, 100, 100));
+				Graphic graphic = new Graphic("Kein Text", Pixel.RGBPixel(100, 100, 100), ZoomFactor.Zoom1);
 				graphic.AddTransparentLayer(Constants.LAYER_VG);
 				this.archive.AddGraphic(this.actualGraphic, graphic);
 				this.actualLayer = this.archive[this.actualGraphic].GetIndexByID(Constants.LAYER_VG);

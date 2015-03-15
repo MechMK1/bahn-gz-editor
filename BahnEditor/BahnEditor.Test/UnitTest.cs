@@ -39,7 +39,7 @@ namespace BahnEditor.Test
 			}
 			Layer layer = new Layer((short)Constants.LAYER_VG, elementExpected);
 
-			Graphic graphic = new Graphic(infoTextExpected, ZoomFactor.Zoom1 ,colorInSchematicModeExpected);
+			Graphic graphic = new Graphic(infoTextExpected, colorInSchematicModeExpected, ZoomFactor.Zoom1);
 			graphic.AddLayer(layer);
 			graphic.Save("test.gz1", true);
 			Graphic newGraphic = Graphic.Load("test.gz1");
@@ -50,8 +50,8 @@ namespace BahnEditor.Test
 		[TestMethod]
 		public void TestGraphicArchive()
 		{
-			Graphic expectedGraphic1 = new Graphic("test1", ZoomFactor.Zoom1, Pixel.RGBPixel(50, 50, 50));
-			Graphic expectedGraphic2 = new Graphic("test2", ZoomFactor.Zoom1, Pixel.RGBPixel(60, 60, 60));
+			Graphic expectedGraphic1 = new Graphic("test1", Pixel.RGBPixel(50, 50, 50), ZoomFactor.Zoom1);
+			Graphic expectedGraphic2 = new Graphic("test2", Pixel.RGBPixel(60, 60, 60), ZoomFactor.Zoom1);
 
 			expectedGraphic1.AddTransparentLayer(Constants.LAYER_VG);
 			expectedGraphic2.AddTransparentLayer(Constants.LAYER_VG);
