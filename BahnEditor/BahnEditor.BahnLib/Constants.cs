@@ -2,6 +2,9 @@
 {
 	public static class Constants
 	{
+		//TODO Write Doc for every constant
+		//TODO Constants in english
+
 		//Coordinates
 		public const uint SYMBREITE = 32;
 		public const uint SYMHOEHE = 16;

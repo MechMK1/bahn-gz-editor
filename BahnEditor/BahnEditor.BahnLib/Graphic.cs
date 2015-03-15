@@ -3,20 +3,26 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace BahnEditor.BahnLib
 {
+	// TODO Write doc for class
 	public class Graphic
 	{
 		#region Fields and Properties
 		private List<Layer> layers;
 
+		//TODO Write doc for property
 		public ZoomFactor ZoomFactor { get; protected set; }
+
+		//TODO Write doc for property
 		public string InfoText { get; set; }
+
+		//TODO Write doc for property
 		public Pixel ColorInSchematicMode { get; set; }
 		#endregion Fields and Properties
 
+		//TODO Write doc for constructors
 		#region Constructors
 		public Graphic(string infoText, Pixel colorInSchematicMode, ZoomFactor zoomFactor)
 		{
@@ -31,6 +37,7 @@ namespace BahnEditor.BahnLib
 		}
 		#endregion Constructors
 
+		//TODO Write doc for public methods
 		#region Public Methods
 		public void AddTransparentLayer(short layerID)
 		{
@@ -65,17 +72,62 @@ namespace BahnEditor.BahnLib
 		{
 			return layers.SingleOrDefault(x => x.LayerID == id);
 		}
-		#endregion Public Methods
-		
-
-
 
 		public int GetIndexByID(short id)
 		{
 			// HACK Clarify
 			return layers.FindIndex(x => x.LayerID == id);
 		}
+		public bool Save(string path, bool overwrite)
+		{
+			if (File.Exists(path) && !overwrite)
+			{
+				return false;
+			}
+			else
+			{
+				using (FileStream stream = File.OpenWrite(path))
+				{
+					return Save(stream);
+				}
+			}
+		}
 
+		public bool ValidateElement()
+		{
+			foreach (var item in layers)
+			{
+				for (int i = 0; i < item.Element.GetLength(0); i++)
+				{
+					for (int j = 0; j < item.Element.GetLength(1); j++)
+					{
+						if (item.Element[i, j].IsTransparent == false)
+						{
+							return false;
+						}
+					}
+				}
+			}
+			return true;
+		}
+
+		public Pixel[,] ElementPreview()
+		{
+			Pixel[,] element = new Pixel[Constants.SYMHOEHE, Constants.SYMBREITE];
+			for (int i = 0; i < element.GetLength(0); i++)
+			{
+				for (int j = 0; j < element.GetLength(1); j++)
+				{
+					element[i, j] = this.GetLayerByID(Constants.LAYER_VG).Element[i + Constants.SYMHOEHE, j + Constants.SYMBREITE];
+				}
+			}
+			return element;
+		}
+		#endregion Public Methods
+
+
+		// TODO Write doc for static methods
+		#region Static Methods
 		public static Graphic Load(string path)
 		{
 			if (File.Exists(path))
@@ -88,11 +140,13 @@ namespace BahnEditor.BahnLib
 			else throw new FileNotFoundException("File not found", path);
 		}
 
+		//TODO Reduce complexity (optional)
+		// TODO Remove magic numbers
 		internal static Graphic Load(Stream path)
 		{
 			using (BinaryReader br = new BinaryReader(path, Encoding.Unicode))
 			{
-				while (br.ReadByte() != 26) { } // TODO Remove magic numbers
+				while (br.ReadByte() != 26) { }
 				byte[] read = br.ReadBytes(3);
 				if (read[0] != 71 || read[1] != 90 || read[2] != 71)
 				{
@@ -138,7 +192,7 @@ namespace BahnEditor.BahnLib
 					default:
 						throw new Exception("unknown zoom factor");
 				}
-				
+
 				//List<Layer> layers = new List<Layer>();
 				for (int i = 0; i < layer; i++)
 				{
@@ -147,22 +201,9 @@ namespace BahnEditor.BahnLib
 				return graphic;
 			}
 		}
+		#endregion Static Methods
 
-		public bool Save(string path, bool overwrite)
-		{
-			if (File.Exists(path) && !overwrite)
-			{
-				return false;
-			}
-			else
-			{
-				using (FileStream stream = File.OpenWrite(path))
-				{
-					return Save(stream);
-				}
-			}
-		}
-
+		#region Internal Methods
 		//TODO Remove magic numbers
 		internal bool Save(Stream path)
 		{
@@ -170,6 +211,7 @@ namespace BahnEditor.BahnLib
 			{
 				if (this.ValidateElement())
 					throw new ElementIsEmptyException("element is empty");
+
 				BinaryWriter bw = new BinaryWriter(path, Encoding.Unicode);
 				int layer = this.layers.Count;
 				bw.Write(Constants.HEADERTEXT.ToArray()); //Headertext 
@@ -195,6 +237,7 @@ namespace BahnEditor.BahnLib
 				return true;
 
 			}
+			//TODO Remove catches if they do nothing
 			catch (ElementIsEmptyException)
 			{
 				throw;
@@ -204,36 +247,6 @@ namespace BahnEditor.BahnLib
 				throw;
 			}
 		}
-
-		public bool ValidateElement()
-		{
-			foreach (var item in layers)
-			{
-				for (int i = 0; i < item.Element.GetLength(0); i++)
-				{
-					for (int j = 0; j < item.Element.GetLength(1); j++)
-					{
-						if (item.Element[i, j].IsTransparent == false)
-						{
-							return false;
-						}
-					}
-				}
-			}
-			return true;
-		}
-
-		public Pixel[,] ElementPreview()
-		{
-			Pixel[,] element = new Pixel[Constants.SYMHOEHE, Constants.SYMBREITE];
-			for (int i = 0; i < element.GetLength(0); i++)
-			{
-				for (int j = 0; j < element.GetLength(1); j++)
-				{
-					element[i, j] = this.GetLayerByID(Constants.LAYER_VG).Element[i + Constants.SYMHOEHE, j + Constants.SYMBREITE];
-				}
-			}
-			return element;
-		}
+		#endregion Internal Methods
 	}
 }
