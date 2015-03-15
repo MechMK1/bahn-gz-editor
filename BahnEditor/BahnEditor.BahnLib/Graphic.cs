@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BahnEditor.BahnLib
 {
-	public abstract class Graphic
+	public class Graphic
 	{
 		private List<Layer> layers;
 

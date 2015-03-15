@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BahnEditor.BahnLib
 {
-	public abstract class GraphicArchive
+	public class GraphicArchive
 	{
 		/// <summary>
 		/// Tuple: Element number, Bauform, FwSig, Phase, Alt, Graphic
