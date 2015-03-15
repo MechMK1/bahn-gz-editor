@@ -39,7 +39,7 @@ namespace BahnEditor.Test
 			}
 			Layer layer = new Layer((short)Constants.LAYER_VG, elementExpected);
 
-			Graphic graphic = new Zoom1Graphic(infoTextExpected, colorInSchematicModeExpected);
+			Graphic graphic = new Graphic(infoTextExpected, ZoomFactor.Zoom1 ,colorInSchematicModeExpected);
 			graphic.AddLayer(layer);
 			graphic.Save("test.gz1", true);
 			Graphic newGraphic = Graphic.Load("test.gz1");
@@ -50,8 +50,8 @@ namespace BahnEditor.Test
 		[TestMethod]
 		public void TestGraphicArchive()
 		{
-			Graphic expectedGraphic1 = new Zoom1Graphic("test1", Pixel.RGBPixel(50, 50, 50));
-			Graphic expectedGraphic2 = new Zoom1Graphic("test2", Pixel.RGBPixel(60, 60, 60));
+			Graphic expectedGraphic1 = new Graphic("test1", ZoomFactor.Zoom1, Pixel.RGBPixel(50, 50, 50));
+			Graphic expectedGraphic2 = new Graphic("test2", ZoomFactor.Zoom1, Pixel.RGBPixel(60, 60, 60));
 
 			expectedGraphic1.AddTransparentLayer(Constants.LAYER_VG);
 			expectedGraphic2.AddTransparentLayer(Constants.LAYER_VG);
@@ -59,7 +59,7 @@ namespace BahnEditor.Test
 			expectedGraphic1.GetLayer(0).Element[10, 10] = Pixel.RGBPixel(100, 50, 20);
 			expectedGraphic2.GetLayer(0).Element[50, 40] = Pixel.RGBPixel(150, 63, 123);
 
-			GraphicArchive expectedArchive = new Zoom1GraphicArchive();
+			GraphicArchive expectedArchive = new GraphicArchive(ZoomFactor.Zoom1);
 			expectedArchive.AddGraphic(expectedGraphic1);
 			expectedArchive.AddGraphic(expectedGraphic2);
 
@@ -75,7 +75,7 @@ namespace BahnEditor.Test
 		private void CompareGraphic(Graphic expectedGraphic, Graphic graphic)
 		{
 			Assert.AreEqual<string>(expectedGraphic.InfoText, graphic.InfoText);
-			Assert.AreEqual<byte>(expectedGraphic.ZoomFactor, graphic.ZoomFactor);
+			Assert.AreEqual<ZoomFactor>(expectedGraphic.ZoomFactor, graphic.ZoomFactor);
 			Assert.AreEqual<Pixel>(expectedGraphic.ColorInSchematicMode, graphic.ColorInSchematicMode);
 
 			for (int i = 0; i < expectedGraphic.GetLayerByID(Constants.LAYER_VG).Element.GetLength(0); i++)

@@ -13,7 +13,7 @@ namespace BahnEditor.BahnLib
 		/// Tuple: Element number, Bauform, FwSig, Phase, Alt, Graphic
 		/// </summary>
 		private List<Tuple<int, int, int, int, int, Graphic>> graphics;
-		public byte ZoomFactor { get; protected set; }
+		public ZoomFactor ZoomFactor { get; protected set; }
 		public int GraphicsCount
 		{
 			get
@@ -22,7 +22,7 @@ namespace BahnEditor.BahnLib
 			}
 		}
 
-		protected GraphicArchive(byte zoomFactor)
+		public GraphicArchive(ZoomFactor zoomFactor)
 		{
 			graphics = new List<Tuple<int, int, int, int, int, Graphic>>();
 			this.ZoomFactor = zoomFactor;
@@ -130,13 +130,13 @@ namespace BahnEditor.BahnLib
 				switch (zoomFactor)
 				{
 					case 1:
-						archive = new Zoom1GraphicArchive();
+						archive = new GraphicArchive(ZoomFactor.Zoom1);
 						break;
 					case 2:
-						archive = new Zoom2GraphicArchive();
+						archive = new GraphicArchive(ZoomFactor.Zoom2);
 						break;
 					case 4:
-						archive = new Zoom2GraphicArchive();
+						archive = new GraphicArchive(ZoomFactor.Zoom4);
 						break;
 					default:
 						throw new Exception("Invalid ZoomFactor");

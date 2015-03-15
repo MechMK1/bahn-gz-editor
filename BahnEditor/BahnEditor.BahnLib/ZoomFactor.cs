@@ -1,6 +1,6 @@
 ﻿namespace BahnEditor.BahnLib
 {
-	public enum ZoomLevel
+	public enum ZoomFactor : byte
 	{
 		Zoom1 = 1,
 		Zoom2 = 2,

@@ -11,11 +11,11 @@ namespace BahnEditor.BahnLib
 	{
 		private List<Layer> layers;
 
-		public byte ZoomFactor { get; protected set; }
+		public ZoomFactor ZoomFactor { get; protected set; }
 		public string InfoText { get; set; }
 		public Pixel ColorInSchematicMode { get; set; }
 
-		protected Graphic(string infoText, byte zoomFactor, Pixel colorInSchematicMode)
+		public Graphic(string infoText, ZoomFactor zoomFactor, Pixel colorInSchematicMode)
 		{
 			this.ZoomFactor = zoomFactor;
 			this.InfoText = infoText;
@@ -25,7 +25,7 @@ namespace BahnEditor.BahnLib
 
 		public void AddTransparentLayer(short layerID)
 		{
-			Pixel[,] element = new Pixel[Constants.SYMHOEHE * 8 * this.ZoomFactor, Constants.SYMBREITE * 3 * this.ZoomFactor];
+			Pixel[,] element = new Pixel[Constants.SYMHOEHE * 8 * (byte)this.ZoomFactor, Constants.SYMBREITE * 3 * (byte)this.ZoomFactor];
 			for (int i = 0; i < element.GetLength(0); i++)
 			{
 				for (int j = 0; j < element.GetLength(1); j++)
@@ -114,15 +114,15 @@ namespace BahnEditor.BahnLib
 				Graphic graphic = null;
 				if (zoomFactor == 1)
 				{
-					graphic = new Zoom1Graphic(infoText, colorInSchematicMode);
+					graphic = new Graphic(infoText, ZoomFactor.Zoom1, colorInSchematicMode);
 				}
 				else if (zoomFactor == 2)
 				{
-					graphic = new Zoom2Graphic(infoText, colorInSchematicMode);
+					graphic = new Graphic(infoText, ZoomFactor.Zoom2, colorInSchematicMode);
 				}
 				else if (zoomFactor == 4)
 				{
-					graphic = new Zoom4Graphic(infoText, colorInSchematicMode);
+					graphic = new Graphic(infoText, ZoomFactor.Zoom4, colorInSchematicMode);
 				}
 				else
 				{
