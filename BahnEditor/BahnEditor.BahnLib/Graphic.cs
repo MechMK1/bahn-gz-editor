@@ -72,7 +72,7 @@ namespace BahnEditor.BahnLib
 
 		public int GetIndexByID(short id)
 		{
-			// TODO Clarify
+			// HACK Clarify
 			return layers.FindIndex(x => x.LayerID == id);
 		}
 

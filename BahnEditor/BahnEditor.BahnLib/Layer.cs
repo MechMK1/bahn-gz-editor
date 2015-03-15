@@ -14,7 +14,7 @@ namespace BahnEditor.BahnLib
 
 		public Layer()
 		{
-
+			// TODO remove other constructor. use named props instead
 		}
 
 		public Layer(short layerID, Pixel[,] element)
@@ -66,7 +66,7 @@ namespace BahnEditor.BahnLib
 					}
 				}
 				List<uint> colors = new List<uint>();
-				colors.Add(0);
+				colors.Add(0); // HACK Why?
 				int colorposition = 0;
 				while (colorposition < pixels.Count)
 				{
