@@ -14,13 +14,14 @@ namespace BahnEditor.Editor
 	{
 		private GraphicArchive archive;
 		private int actualGraphic = 0;
-		private int overviewLine = 0;
-		private int overviewAlternative = 0;
 		private int actualLayer;
+		private int actualZoomFactor = 1;
 		private string lastPath = "";
 		private int zoomLevel = 6;
 		private bool userMadeChanges = false;
 		private bool hasLoadedGraphic = false;
+		private int overviewLine = 0;
+		private int overviewAlternative = 0;
 		private Pixel leftPixel = Pixel.RGBPixel(0, 0, 0);
 		private Pixel lastLeftPixel = null;
 		private Pixel rightPixel = Pixel.RGBPixel(255, 255, 255);
@@ -48,6 +49,7 @@ namespace BahnEditor.Editor
 			this.archive.AddGraphic(graphic);
 			this.drawPanel.Visible = true;
 			this.overviewPanel.Visible = true;
+			this.tabControl.Visible = true;
 			this.layerComboBox.SelectedIndex = 0;
 			this.ResizeDrawPanel();
 			this.drawPanel.AutoScrollPosition = new Point(this.drawPanel.HorizontalScroll.Maximum, this.drawPanel.VerticalScroll.Maximum);
@@ -63,6 +65,7 @@ namespace BahnEditor.Editor
 				this.hasLoadedGraphic = true;
 				this.drawPanel.Visible = true;
 				this.overviewPanel.Visible = true;
+				this.tabControl.Visible = true;
 				this.userMadeChanges = false;
 				this.ResizeDrawPanel();
 				this.drawPanel.AutoScrollPosition = new Point(this.drawPanel.HorizontalScroll.Maximum, this.drawPanel.VerticalScroll.Maximum / 2);
@@ -762,5 +765,25 @@ namespace BahnEditor.Editor
 		}
 
 		#endregion
+
+
+		private void tabControl_Selecting(object sender, TabControlCancelEventArgs e)
+		{
+			switch (e.TabPageIndex)
+			{
+				case 0:
+					this.actualZoomFactor = 1;
+					break;
+				case 1:
+					this.actualZoomFactor = 2;
+					break;
+				case 2:
+					this.actualZoomFactor = 4;
+					break;
+				default:
+					throw new Exception("Internal Error!");
+			}
+			this.drawPanel.Invalidate();
+		}
 	}
 }

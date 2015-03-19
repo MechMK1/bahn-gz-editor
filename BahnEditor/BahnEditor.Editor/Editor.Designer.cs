@@ -54,15 +54,20 @@
 			this.exitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
 			this.colorDialog = new System.Windows.Forms.ColorDialog();
+			this.tabControl = new System.Windows.Forms.TabControl();
+			this.zoom1Tab = new System.Windows.Forms.TabPage();
+			this.zoom2Tab = new System.Windows.Forms.TabPage();
+			this.zoom4Tab = new System.Windows.Forms.TabPage();
+			this.drawPanel = new BahnEditor.Editor.DrawPanel();
 			this.overviewPanel = new BahnEditor.Editor.DrawPanel();
 			this.overviewDownButton = new System.Windows.Forms.Button();
 			this.overviewUpButton = new System.Windows.Forms.Button();
 			this.overviewLeftRightButton = new System.Windows.Forms.Button();
-			this.drawPanel = new BahnEditor.Editor.DrawPanel();
 			this.toolStrip.SuspendLayout();
 			this.controlPanel.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.zoomTrackBar)).BeginInit();
 			this.menuStrip.SuspendLayout();
+			this.tabControl.SuspendLayout();
 			this.overviewPanel.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -374,6 +379,64 @@
 			// 
 			this.colorDialog.FullOpen = true;
 			// 
+			// tabControl
+			// 
+			this.tabControl.Controls.Add(this.zoom1Tab);
+			this.tabControl.Controls.Add(this.zoom2Tab);
+			this.tabControl.Controls.Add(this.zoom4Tab);
+			this.tabControl.Location = new System.Drawing.Point(13, 120);
+			this.tabControl.Name = "tabControl";
+			this.tabControl.SelectedIndex = 0;
+			this.tabControl.Size = new System.Drawing.Size(812, 20);
+			this.tabControl.TabIndex = 6;
+			this.tabControl.TabStop = false;
+			this.tabControl.Visible = false;
+			this.tabControl.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tabControl_Selecting);
+			// 
+			// zoom1Tab
+			// 
+			this.zoom1Tab.Location = new System.Drawing.Point(4, 22);
+			this.zoom1Tab.Name = "zoom1Tab";
+			this.zoom1Tab.Padding = new System.Windows.Forms.Padding(3);
+			this.zoom1Tab.Size = new System.Drawing.Size(804, 0);
+			this.zoom1Tab.TabIndex = 0;
+			this.zoom1Tab.Text = "Zoom 1";
+			this.zoom1Tab.UseVisualStyleBackColor = true;
+			// 
+			// zoom2Tab
+			// 
+			this.zoom2Tab.Location = new System.Drawing.Point(4, 22);
+			this.zoom2Tab.Name = "zoom2Tab";
+			this.zoom2Tab.Padding = new System.Windows.Forms.Padding(3);
+			this.zoom2Tab.Size = new System.Drawing.Size(804, 0);
+			this.zoom2Tab.TabIndex = 1;
+			this.zoom2Tab.Text = "Zoom 2";
+			this.zoom2Tab.UseVisualStyleBackColor = true;
+			// 
+			// zoom4Tab
+			// 
+			this.zoom4Tab.Location = new System.Drawing.Point(4, 22);
+			this.zoom4Tab.Name = "zoom4Tab";
+			this.zoom4Tab.Size = new System.Drawing.Size(804, 0);
+			this.zoom4Tab.TabIndex = 2;
+			this.zoom4Tab.Text = "Zoom 4";
+			this.zoom4Tab.UseVisualStyleBackColor = true;
+			// 
+			// drawPanel
+			// 
+			this.drawPanel.AutoScroll = true;
+			this.drawPanel.BackColor = System.Drawing.Color.Transparent;
+			this.drawPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.drawPanel.Location = new System.Drawing.Point(13, 142);
+			this.drawPanel.Name = "drawPanel";
+			this.drawPanel.Size = new System.Drawing.Size(812, 576);
+			this.drawPanel.TabIndex = 4;
+			this.drawPanel.Visible = false;
+			this.drawPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.drawPanel_Paint);
+			this.drawPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.drawPanel_MouseClick);
+			this.drawPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.drawPanel_MouseMove);
+			this.drawPanel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.drawPanel_MouseUp);
+			// 
 			// overviewPanel
 			// 
 			this.overviewPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -423,31 +486,14 @@
 			this.overviewLeftRightButton.UseVisualStyleBackColor = true;
 			this.overviewLeftRightButton.Click += new System.EventHandler(this.overviewLeftRightButton_Click);
 			// 
-			// drawPanel
-			// 
-			this.drawPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.drawPanel.AutoScroll = true;
-			this.drawPanel.BackColor = System.Drawing.Color.Transparent;
-			this.drawPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.drawPanel.Location = new System.Drawing.Point(12, 120);
-			this.drawPanel.Name = "drawPanel";
-			this.drawPanel.Size = new System.Drawing.Size(813, 598);
-			this.drawPanel.TabIndex = 4;
-			this.drawPanel.Visible = false;
-			this.drawPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.drawPanel_Paint);
-			this.drawPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.drawPanel_MouseClick);
-			this.drawPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.drawPanel_MouseMove);
-			this.drawPanel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.drawPanel_MouseUp);
-			// 
 			// Editor
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(1008, 730);
-			this.Controls.Add(this.overviewPanel);
+			this.Controls.Add(this.tabControl);
 			this.Controls.Add(this.drawPanel);
+			this.Controls.Add(this.overviewPanel);
 			this.Controls.Add(this.controlPanel);
 			this.Controls.Add(this.toolStrip);
 			this.Controls.Add(this.menuStrip);
@@ -464,6 +510,7 @@
 			((System.ComponentModel.ISupportInitialize)(this.zoomTrackBar)).EndInit();
 			this.menuStrip.ResumeLayout(false);
 			this.menuStrip.PerformLayout();
+			this.tabControl.ResumeLayout(false);
 			this.overviewPanel.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
@@ -502,6 +549,10 @@
 		private System.Windows.Forms.Button overviewLeftRightButton;
 		private System.Windows.Forms.Button overviewUpButton;
 		private System.Windows.Forms.Button overviewDownButton;
+		private System.Windows.Forms.TabControl tabControl;
+		private System.Windows.Forms.TabPage zoom1Tab;
+		private System.Windows.Forms.TabPage zoom2Tab;
+		private System.Windows.Forms.TabPage zoom4Tab;
 
 	}
 }

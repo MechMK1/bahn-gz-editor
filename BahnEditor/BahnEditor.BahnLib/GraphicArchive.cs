@@ -31,7 +31,8 @@ namespace BahnEditor.BahnLib
 
 		public void AddGraphic(Graphic graphic)
 		{
-			//TODO graphic null check
+			if (graphic == null)
+				throw new ArgumentNullException("graphic");
 			int elementNumber;
 			if (this.graphics.Count == 0)
 				elementNumber = 0;

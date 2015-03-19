@@ -32,7 +32,8 @@ namespace BahnEditor.BahnLib
 			layers = new List<Layer>();
 		}
 
-		public Graphic(string infoText, Pixel colorInSchematicMode) : this(infoText, colorInSchematicMode, ZoomFactor.Zoom1)
+		public Graphic(string infoText, Pixel colorInSchematicMode)
+			: this(infoText, colorInSchematicMode, ZoomFactor.Zoom1)
 		{
 		}
 		#endregion Constructors
@@ -207,45 +208,32 @@ namespace BahnEditor.BahnLib
 		//TODO Remove magic numbers
 		internal bool Save(Stream path)
 		{
-			try
-			{
-				if (this.ValidateElement())
-					throw new ElementIsEmptyException("element is empty");
+			if (this.ValidateElement())
+				throw new ElementIsEmptyException("element is empty");
 
-				BinaryWriter bw = new BinaryWriter(path, Encoding.Unicode);
-				int layer = this.layers.Count;
-				bw.Write(Constants.HEADERTEXT.ToArray()); //Headertext 
-				bw.Write((byte)26); // text end
-				bw.Write(new byte[] { 71, 90, 71 }); //identification string GZG ASCII
-				bw.Write((byte)(48 + this.ZoomFactor)); //Zoom faktor ASCII
-				bw.Write((byte)0x03); //version
-				bw.Write((byte)0x84); //version
-				bw.Write((byte)0x00); //subversion
-				bw.Write((byte)0x05); //subversion
-				bw.Write((int)0x0220); //Gzg_Eig 
-				bw.Write(this.ColorInSchematicMode.ConvertToUInt()); //kfarbe
-				bw.Write(0x80000001);
-				bw.Write((short)layer); //layer
-				bw.Write((ushort)0xFFFE);
-				bw.Write(this.InfoText.ToCharArray());
-				bw.Write(Constants.UNICODE_NULL);
-				for (int i = 0; i < layer; i++)
-				{
-					this.layers[i].WriteLayerToStream(bw);
-				}
-				bw.Flush();
-				return true;
-
-			}
-			//TODO Remove catches if they do nothing
-			catch (ElementIsEmptyException)
+			BinaryWriter bw = new BinaryWriter(path, Encoding.Unicode);
+			int layer = this.layers.Count;
+			bw.Write(Constants.HEADERTEXT.ToArray()); //Headertext 
+			bw.Write((byte)26); // text end
+			bw.Write(new byte[] { 71, 90, 71 }); //identification string GZG ASCII
+			bw.Write((byte)(48 + this.ZoomFactor)); //Zoom faktor ASCII
+			bw.Write((byte)0x03); //version
+			bw.Write((byte)0x84); //version
+			bw.Write((byte)0x00); //subversion
+			bw.Write((byte)0x05); //subversion
+			bw.Write((int)0x0220); //Gzg_Eig 
+			bw.Write(this.ColorInSchematicMode.ConvertToUInt()); //kfarbe
+			bw.Write(0x80000001);
+			bw.Write((short)layer); //layer
+			bw.Write((ushort)0xFFFE);
+			bw.Write(this.InfoText.ToCharArray());
+			bw.Write(Constants.UNICODE_NULL);
+			for (int i = 0; i < layer; i++)
 			{
-				throw;
+				this.layers[i].WriteLayerToStream(bw);
 			}
-			catch (Exception) //TODO Exchange general exceptions with specific ones
-			{
-				throw;
-			}
+			bw.Flush();
+			return true;
 		}
 		#endregion Internal Methods
 	}
