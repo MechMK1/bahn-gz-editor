@@ -77,6 +77,16 @@ namespace BahnEditor.BahnLib
 			}
 		}
 
+		public int RemoveGraphic(int elementNumber)
+		{
+			return this.RemoveGraphic(elementNumber, 0, 1);
+		}
+
+		public int RemoveGraphic(int elementNumber, int phase, int alternative)
+		{
+			return this.graphics.RemoveAll(x => x.Item1 == elementNumber && x.Item4 == phase && x.Item5 == alternative);
+		}
+
 		public static GraphicArchive Load(string path)
 		{
 			if (File.Exists(path))
@@ -164,6 +174,10 @@ namespace BahnEditor.BahnLib
 
 		private bool Save(FileStream path)
 		{
+			if(this.graphics.Count <= 0)
+			{
+				throw new ArchiveIsEmptyException("the archive is empty");
+			}
 			foreach (var item in this.graphics)
 			{
 				if (item.Item6.ValidateElement())

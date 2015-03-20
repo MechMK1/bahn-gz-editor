@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArchiveIsEmptyException.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="ElementIsEmptyException.cs" />
     <Compile Include="GlobalSuppressions.cs" />

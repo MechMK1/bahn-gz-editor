@@ -39,7 +39,6 @@
 			this.leftLabel = new System.Windows.Forms.Label();
 			this.layerComboBox = new System.Windows.Forms.ComboBox();
 			this.rightComboBox = new System.Windows.Forms.ComboBox();
-			this.zoomTrackBar = new System.Windows.Forms.TrackBar();
 			this.rightColorButton = new System.Windows.Forms.Button();
 			this.leftColorButton = new System.Windows.Forms.Button();
 			this.loadFileDialog = new System.Windows.Forms.OpenFileDialog();
@@ -58,6 +57,12 @@
 			this.zoom1Tab = new System.Windows.Forms.TabPage();
 			this.zoom2Tab = new System.Windows.Forms.TabPage();
 			this.zoom4Tab = new System.Windows.Forms.TabPage();
+			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+			this.zoomInButton = new System.Windows.Forms.ToolStripButton();
+			this.zoomOutButton = new System.Windows.Forms.ToolStripButton();
+			this.settingsPanel = new System.Windows.Forms.Panel();
+			this.zoom2CheckBox = new System.Windows.Forms.CheckBox();
+			this.zoom4CheckBox = new System.Windows.Forms.CheckBox();
 			this.drawPanel = new BahnEditor.Editor.DrawPanel();
 			this.overviewPanel = new BahnEditor.Editor.DrawPanel();
 			this.overviewDownButton = new System.Windows.Forms.Button();
@@ -65,9 +70,9 @@
 			this.overviewLeftRightButton = new System.Windows.Forms.Button();
 			this.toolStrip.SuspendLayout();
 			this.controlPanel.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.zoomTrackBar)).BeginInit();
 			this.menuStrip.SuspendLayout();
 			this.tabControl.SuspendLayout();
+			this.settingsPanel.SuspendLayout();
 			this.overviewPanel.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -77,7 +82,10 @@
 			this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newButton,
             this.loadButton,
-            this.saveButton});
+            this.saveButton,
+            this.toolStripSeparator3,
+            this.zoomInButton,
+            this.zoomOutButton});
 			this.toolStrip.Location = new System.Drawing.Point(0, 24);
 			this.toolStrip.Name = "toolStrip";
 			this.toolStrip.Size = new System.Drawing.Size(1008, 25);
@@ -119,12 +127,12 @@
 			this.controlPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.controlPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.controlPanel.Controls.Add(this.settingsPanel);
 			this.controlPanel.Controls.Add(this.leftComboBox);
 			this.controlPanel.Controls.Add(this.rightLabel);
 			this.controlPanel.Controls.Add(this.leftLabel);
 			this.controlPanel.Controls.Add(this.layerComboBox);
 			this.controlPanel.Controls.Add(this.rightComboBox);
-			this.controlPanel.Controls.Add(this.zoomTrackBar);
 			this.controlPanel.Controls.Add(this.rightColorButton);
 			this.controlPanel.Controls.Add(this.leftColorButton);
 			this.controlPanel.Location = new System.Drawing.Point(831, 52);
@@ -207,7 +215,7 @@
             "Flach nach hinten",
             "Vordergrund, oben",
             "Vorn, auf Brücken"});
-			this.layerComboBox.Location = new System.Drawing.Point(3, 589);
+			this.layerComboBox.Location = new System.Drawing.Point(5, 189);
 			this.layerComboBox.Name = "layerComboBox";
 			this.layerComboBox.Size = new System.Drawing.Size(160, 21);
 			this.layerComboBox.TabIndex = 6;
@@ -259,20 +267,6 @@
 			this.rightComboBox.TabIndex = 5;
 			this.rightComboBox.TabStop = false;
 			this.rightComboBox.SelectedIndexChanged += new System.EventHandler(this.rightComboBox_SelectedIndexChanged);
-			// 
-			// zoomTrackBar
-			// 
-			this.zoomTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.zoomTrackBar.LargeChange = 1;
-			this.zoomTrackBar.Location = new System.Drawing.Point(3, 616);
-			this.zoomTrackBar.Maximum = 5;
-			this.zoomTrackBar.Minimum = 2;
-			this.zoomTrackBar.Name = "zoomTrackBar";
-			this.zoomTrackBar.Size = new System.Drawing.Size(160, 45);
-			this.zoomTrackBar.TabIndex = 2;
-			this.zoomTrackBar.TabStop = false;
-			this.zoomTrackBar.Value = 3;
-			this.zoomTrackBar.Scroll += new System.EventHandler(this.zoomTrackBar_Scroll);
 			// 
 			// rightColorButton
 			// 
@@ -422,14 +416,74 @@
 			this.zoom4Tab.Text = "Zoom 4";
 			this.zoom4Tab.UseVisualStyleBackColor = true;
 			// 
+			// toolStripSeparator3
+			// 
+			this.toolStripSeparator3.Name = "toolStripSeparator3";
+			this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
+			// 
+			// zoomInButton
+			// 
+			this.zoomInButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.zoomInButton.Image = ((System.Drawing.Image)(resources.GetObject("zoomInButton.Image")));
+			this.zoomInButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.zoomInButton.Name = "zoomInButton";
+			this.zoomInButton.Size = new System.Drawing.Size(23, 22);
+			this.zoomInButton.Text = "Zoom in";
+			this.zoomInButton.Click += new System.EventHandler(this.zoomInButton_Click);
+			// 
+			// zoomOutButton
+			// 
+			this.zoomOutButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.zoomOutButton.Image = ((System.Drawing.Image)(resources.GetObject("zoomOutButton.Image")));
+			this.zoomOutButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.zoomOutButton.Name = "zoomOutButton";
+			this.zoomOutButton.Size = new System.Drawing.Size(23, 22);
+			this.zoomOutButton.Text = "Zoom out";
+			this.zoomOutButton.Click += new System.EventHandler(this.zoomOutButton_Click);
+			// 
+			// settingsPanel
+			// 
+			this.settingsPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.settingsPanel.Controls.Add(this.zoom4CheckBox);
+			this.settingsPanel.Controls.Add(this.zoom2CheckBox);
+			this.settingsPanel.Location = new System.Drawing.Point(5, 217);
+			this.settingsPanel.Name = "settingsPanel";
+			this.settingsPanel.Size = new System.Drawing.Size(159, 444);
+			this.settingsPanel.TabIndex = 9;
+			// 
+			// zoom2CheckBox
+			// 
+			this.zoom2CheckBox.AutoSize = true;
+			this.zoom2CheckBox.Location = new System.Drawing.Point(39, 3);
+			this.zoom2CheckBox.Name = "zoom2CheckBox";
+			this.zoom2CheckBox.Size = new System.Drawing.Size(62, 17);
+			this.zoom2CheckBox.TabIndex = 0;
+			this.zoom2CheckBox.Text = "Zoom 2";
+			this.zoom2CheckBox.UseVisualStyleBackColor = true;
+			this.zoom2CheckBox.CheckedChanged += new System.EventHandler(this.zoom2CheckBox_CheckedChanged);
+			// 
+			// zoom4CheckBox
+			// 
+			this.zoom4CheckBox.AutoSize = true;
+			this.zoom4CheckBox.Location = new System.Drawing.Point(39, 26);
+			this.zoom4CheckBox.Name = "zoom4CheckBox";
+			this.zoom4CheckBox.Size = new System.Drawing.Size(62, 17);
+			this.zoom4CheckBox.TabIndex = 1;
+			this.zoom4CheckBox.Text = "Zoom 4";
+			this.zoom4CheckBox.UseVisualStyleBackColor = true;
+			this.zoom4CheckBox.CheckedChanged += new System.EventHandler(this.zoom4CheckBox_CheckedChanged);
+			// 
 			// drawPanel
 			// 
+			this.drawPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.drawPanel.AutoScroll = true;
 			this.drawPanel.BackColor = System.Drawing.Color.Transparent;
 			this.drawPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.drawPanel.Location = new System.Drawing.Point(13, 142);
+			this.drawPanel.Location = new System.Drawing.Point(13, 140);
 			this.drawPanel.Name = "drawPanel";
-			this.drawPanel.Size = new System.Drawing.Size(812, 576);
+			this.drawPanel.Size = new System.Drawing.Size(812, 578);
 			this.drawPanel.TabIndex = 4;
 			this.drawPanel.Visible = false;
 			this.drawPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.drawPanel_Paint);
@@ -507,10 +561,11 @@
 			this.toolStrip.PerformLayout();
 			this.controlPanel.ResumeLayout(false);
 			this.controlPanel.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.zoomTrackBar)).EndInit();
 			this.menuStrip.ResumeLayout(false);
 			this.menuStrip.PerformLayout();
 			this.tabControl.ResumeLayout(false);
+			this.settingsPanel.ResumeLayout(false);
+			this.settingsPanel.PerformLayout();
 			this.overviewPanel.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
@@ -538,7 +593,6 @@
 		private System.Windows.Forms.Button rightColorButton;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-		private System.Windows.Forms.TrackBar zoomTrackBar;
 		private DrawPanel drawPanel;
 		private System.Windows.Forms.ComboBox rightComboBox;
 		private System.Windows.Forms.ComboBox leftComboBox;
@@ -553,6 +607,12 @@
 		private System.Windows.Forms.TabPage zoom1Tab;
 		private System.Windows.Forms.TabPage zoom2Tab;
 		private System.Windows.Forms.TabPage zoom4Tab;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+		private System.Windows.Forms.ToolStripButton zoomInButton;
+		private System.Windows.Forms.ToolStripButton zoomOutButton;
+		private System.Windows.Forms.Panel settingsPanel;
+		private System.Windows.Forms.CheckBox zoom4CheckBox;
+		private System.Windows.Forms.CheckBox zoom2CheckBox;
 
 	}
 }

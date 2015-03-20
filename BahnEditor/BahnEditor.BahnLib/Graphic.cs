@@ -69,12 +69,12 @@ namespace BahnEditor.BahnLib
 			return layers[index];
 		}
 
-		public Layer GetLayerByID(short id)
+		public Layer GetLayerByLayerID(short id)
 		{
 			return layers.SingleOrDefault(x => x.LayerID == id);
 		}
 
-		public int GetIndexByID(short id)
+		public int GetIndexByLayerID(short id)
 		{
 			// HACK Clarify
 			return layers.FindIndex(x => x.LayerID == id);
@@ -119,7 +119,7 @@ namespace BahnEditor.BahnLib
 			{
 				for (int j = 0; j < element.GetLength(1); j++)
 				{
-					element[i, j] = this.GetLayerByID(Constants.LAYER_VG).Element[i + Constants.SYMHOEHE, j + Constants.SYMBREITE];
+					element[i, j] = this.GetLayerByLayerID(Constants.LAYER_VG).Element[i + Constants.SYMHOEHE, j + Constants.SYMBREITE];
 				}
 			}
 			return element;

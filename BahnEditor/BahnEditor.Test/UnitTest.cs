@@ -78,11 +78,11 @@ namespace BahnEditor.Test
 			Assert.AreEqual<ZoomFactor>(expectedGraphic.ZoomFactor, graphic.ZoomFactor);
 			Assert.AreEqual<Pixel>(expectedGraphic.ColorInSchematicMode, graphic.ColorInSchematicMode);
 
-			for (int i = 0; i < expectedGraphic.GetLayerByID(Constants.LAYER_VG).Element.GetLength(0); i++)
+			for (int i = 0; i < expectedGraphic.GetLayerByLayerID(Constants.LAYER_VG).Element.GetLength(0); i++)
 			{
-				for (int j = 0; j < expectedGraphic.GetLayerByID(Constants.LAYER_VG).Element.GetLength(1); j++)
+				for (int j = 0; j < expectedGraphic.GetLayerByLayerID(Constants.LAYER_VG).Element.GetLength(1); j++)
 				{
-					Assert.AreEqual<Pixel>(expectedGraphic.GetLayerByID(Constants.LAYER_VG).Element[i, j], graphic.GetLayerByID(Constants.LAYER_VG).Element[i, j]);
+					Assert.AreEqual<Pixel>(expectedGraphic.GetLayerByLayerID(Constants.LAYER_VG).Element[i, j], graphic.GetLayerByLayerID(Constants.LAYER_VG).Element[i, j]);
 				}
 			}
 		}

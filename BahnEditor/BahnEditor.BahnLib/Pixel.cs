@@ -41,7 +41,6 @@ namespace BahnEditor.BahnLib
 			}
 		}
 		public SpecialColorWithoutRGB SpecialWithoutRGB { get; private set; }
-
 		public SpecialColorWithRGB SpecialWithRGB { get; private set; }
 
 		private Pixel()
