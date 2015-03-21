@@ -33,7 +33,13 @@
 			this.newButton = new System.Windows.Forms.ToolStripButton();
 			this.loadButton = new System.Windows.Forms.ToolStripButton();
 			this.saveButton = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+			this.zoomInButton = new System.Windows.Forms.ToolStripButton();
+			this.zoomOutButton = new System.Windows.Forms.ToolStripButton();
 			this.controlPanel = new System.Windows.Forms.Panel();
+			this.settingsPanel = new System.Windows.Forms.Panel();
+			this.zoom4CheckBox = new System.Windows.Forms.CheckBox();
+			this.zoom2CheckBox = new System.Windows.Forms.CheckBox();
 			this.leftComboBox = new System.Windows.Forms.ComboBox();
 			this.rightLabel = new System.Windows.Forms.Label();
 			this.leftLabel = new System.Windows.Forms.Label();
@@ -57,12 +63,6 @@
 			this.zoom1Tab = new System.Windows.Forms.TabPage();
 			this.zoom2Tab = new System.Windows.Forms.TabPage();
 			this.zoom4Tab = new System.Windows.Forms.TabPage();
-			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-			this.zoomInButton = new System.Windows.Forms.ToolStripButton();
-			this.zoomOutButton = new System.Windows.Forms.ToolStripButton();
-			this.settingsPanel = new System.Windows.Forms.Panel();
-			this.zoom2CheckBox = new System.Windows.Forms.CheckBox();
-			this.zoom4CheckBox = new System.Windows.Forms.CheckBox();
 			this.drawPanel = new BahnEditor.Editor.DrawPanel();
 			this.overviewPanel = new BahnEditor.Editor.DrawPanel();
 			this.overviewDownButton = new System.Windows.Forms.Button();
@@ -70,9 +70,9 @@
 			this.overviewLeftRightButton = new System.Windows.Forms.Button();
 			this.toolStrip.SuspendLayout();
 			this.controlPanel.SuspendLayout();
+			this.settingsPanel.SuspendLayout();
 			this.menuStrip.SuspendLayout();
 			this.tabControl.SuspendLayout();
-			this.settingsPanel.SuspendLayout();
 			this.overviewPanel.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -122,6 +122,31 @@
 			this.saveButton.Text = "Save";
 			this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
 			// 
+			// toolStripSeparator3
+			// 
+			this.toolStripSeparator3.Name = "toolStripSeparator3";
+			this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
+			// 
+			// zoomInButton
+			// 
+			this.zoomInButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.zoomInButton.Image = ((System.Drawing.Image)(resources.GetObject("zoomInButton.Image")));
+			this.zoomInButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.zoomInButton.Name = "zoomInButton";
+			this.zoomInButton.Size = new System.Drawing.Size(23, 22);
+			this.zoomInButton.Text = "Zoom in";
+			this.zoomInButton.Click += new System.EventHandler(this.zoomInButton_Click);
+			// 
+			// zoomOutButton
+			// 
+			this.zoomOutButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.zoomOutButton.Image = ((System.Drawing.Image)(resources.GetObject("zoomOutButton.Image")));
+			this.zoomOutButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.zoomOutButton.Name = "zoomOutButton";
+			this.zoomOutButton.Size = new System.Drawing.Size(23, 22);
+			this.zoomOutButton.Text = "Zoom out";
+			this.zoomOutButton.Click += new System.EventHandler(this.zoomOutButton_Click);
+			// 
 			// controlPanel
 			// 
 			this.controlPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -140,6 +165,39 @@
 			this.controlPanel.Size = new System.Drawing.Size(170, 666);
 			this.controlPanel.TabIndex = 2;
 			// 
+			// settingsPanel
+			// 
+			this.settingsPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.settingsPanel.Controls.Add(this.zoom4CheckBox);
+			this.settingsPanel.Controls.Add(this.zoom2CheckBox);
+			this.settingsPanel.Location = new System.Drawing.Point(5, 217);
+			this.settingsPanel.Name = "settingsPanel";
+			this.settingsPanel.Size = new System.Drawing.Size(159, 444);
+			this.settingsPanel.TabIndex = 9;
+			this.settingsPanel.Visible = false;
+			// 
+			// zoom4CheckBox
+			// 
+			this.zoom4CheckBox.AutoSize = true;
+			this.zoom4CheckBox.Location = new System.Drawing.Point(39, 26);
+			this.zoom4CheckBox.Name = "zoom4CheckBox";
+			this.zoom4CheckBox.Size = new System.Drawing.Size(62, 17);
+			this.zoom4CheckBox.TabIndex = 1;
+			this.zoom4CheckBox.Text = "Zoom 4";
+			this.zoom4CheckBox.UseVisualStyleBackColor = true;
+			this.zoom4CheckBox.CheckedChanged += new System.EventHandler(this.zoom4CheckBox_CheckedChanged);
+			// 
+			// zoom2CheckBox
+			// 
+			this.zoom2CheckBox.AutoSize = true;
+			this.zoom2CheckBox.Location = new System.Drawing.Point(39, 3);
+			this.zoom2CheckBox.Name = "zoom2CheckBox";
+			this.zoom2CheckBox.Size = new System.Drawing.Size(62, 17);
+			this.zoom2CheckBox.TabIndex = 0;
+			this.zoom2CheckBox.Text = "Zoom 2";
+			this.zoom2CheckBox.UseVisualStyleBackColor = true;
+			this.zoom2CheckBox.CheckedChanged += new System.EventHandler(this.zoom2CheckBox_CheckedChanged);
+			// 
 			// leftComboBox
 			// 
 			this.leftComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -154,8 +212,12 @@
             "Lampe (rot)",
             "Lampe (gelb, Glühlampe)",
             "Lampe (gelb, Gaslicht)",
-            "Fenster (nachts gelb)",
-            "Fenster (nachts neon)",
+            "Fenster0 (nachts gelb)",
+            "Fenster1 (nachts gelb)",
+            "Fenster2 (nachts gelb)",
+            "Fenster0 (nachts neon)",
+            "Fenster1 (nachts neon)",
+            "Fenster2 (nachts neon)",
             "wie Hintergrund",
             "wie Schwellen 0",
             "wie Schwellen 1",
@@ -236,8 +298,12 @@
             "Lampe (rot)",
             "Lampe (gelb, Glühlampe)",
             "Lampe (gelb, Gaslicht)",
-            "Fenster (nachts gelb)",
-            "Fenster (nachts neon)",
+            "Fenster0 (nachts gelb)",
+            "Fenster1 (nachts gelb)",
+            "Fenster2 (nachts gelb)",
+            "Fenster0 (nachts neon)",
+            "Fenster1 (nachts neon)",
+            "Fenster2 (nachts neon)",
             "wie Hintergrund",
             "wie Schwellen 0",
             "wie Schwellen 1",
@@ -416,63 +482,6 @@
 			this.zoom4Tab.Text = "Zoom 4";
 			this.zoom4Tab.UseVisualStyleBackColor = true;
 			// 
-			// toolStripSeparator3
-			// 
-			this.toolStripSeparator3.Name = "toolStripSeparator3";
-			this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
-			// 
-			// zoomInButton
-			// 
-			this.zoomInButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.zoomInButton.Image = ((System.Drawing.Image)(resources.GetObject("zoomInButton.Image")));
-			this.zoomInButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.zoomInButton.Name = "zoomInButton";
-			this.zoomInButton.Size = new System.Drawing.Size(23, 22);
-			this.zoomInButton.Text = "Zoom in";
-			this.zoomInButton.Click += new System.EventHandler(this.zoomInButton_Click);
-			// 
-			// zoomOutButton
-			// 
-			this.zoomOutButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.zoomOutButton.Image = ((System.Drawing.Image)(resources.GetObject("zoomOutButton.Image")));
-			this.zoomOutButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.zoomOutButton.Name = "zoomOutButton";
-			this.zoomOutButton.Size = new System.Drawing.Size(23, 22);
-			this.zoomOutButton.Text = "Zoom out";
-			this.zoomOutButton.Click += new System.EventHandler(this.zoomOutButton_Click);
-			// 
-			// settingsPanel
-			// 
-			this.settingsPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.settingsPanel.Controls.Add(this.zoom4CheckBox);
-			this.settingsPanel.Controls.Add(this.zoom2CheckBox);
-			this.settingsPanel.Location = new System.Drawing.Point(5, 217);
-			this.settingsPanel.Name = "settingsPanel";
-			this.settingsPanel.Size = new System.Drawing.Size(159, 444);
-			this.settingsPanel.TabIndex = 9;
-			// 
-			// zoom2CheckBox
-			// 
-			this.zoom2CheckBox.AutoSize = true;
-			this.zoom2CheckBox.Location = new System.Drawing.Point(39, 3);
-			this.zoom2CheckBox.Name = "zoom2CheckBox";
-			this.zoom2CheckBox.Size = new System.Drawing.Size(62, 17);
-			this.zoom2CheckBox.TabIndex = 0;
-			this.zoom2CheckBox.Text = "Zoom 2";
-			this.zoom2CheckBox.UseVisualStyleBackColor = true;
-			this.zoom2CheckBox.CheckedChanged += new System.EventHandler(this.zoom2CheckBox_CheckedChanged);
-			// 
-			// zoom4CheckBox
-			// 
-			this.zoom4CheckBox.AutoSize = true;
-			this.zoom4CheckBox.Location = new System.Drawing.Point(39, 26);
-			this.zoom4CheckBox.Name = "zoom4CheckBox";
-			this.zoom4CheckBox.Size = new System.Drawing.Size(62, 17);
-			this.zoom4CheckBox.TabIndex = 1;
-			this.zoom4CheckBox.Text = "Zoom 4";
-			this.zoom4CheckBox.UseVisualStyleBackColor = true;
-			this.zoom4CheckBox.CheckedChanged += new System.EventHandler(this.zoom4CheckBox_CheckedChanged);
-			// 
 			// drawPanel
 			// 
 			this.drawPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -561,11 +570,11 @@
 			this.toolStrip.PerformLayout();
 			this.controlPanel.ResumeLayout(false);
 			this.controlPanel.PerformLayout();
+			this.settingsPanel.ResumeLayout(false);
+			this.settingsPanel.PerformLayout();
 			this.menuStrip.ResumeLayout(false);
 			this.menuStrip.PerformLayout();
 			this.tabControl.ResumeLayout(false);
-			this.settingsPanel.ResumeLayout(false);
-			this.settingsPanel.PerformLayout();
 			this.overviewPanel.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();

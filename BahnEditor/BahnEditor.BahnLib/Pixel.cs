@@ -332,8 +332,12 @@ namespace BahnEditor.BahnLib
 			Lamp_ColdWhite = (Constants.FARBE_LAMPE | 0x02000000),
 			Lamp_YellowWhite = (Constants.FARBE_LAMPE | 0x03000000),
 			Lamp_Gas_Yellow = (Constants.FARBE_LAMPE | 0x04000000),
-			Window_Yellow = (Constants.FARBE_FENSTER | 0x00000000),
-			Window_Neon = (Constants.FARBE_FENSTER | 0x04000000) 
+			Window_Yellow_0 = Constants.FARBE_FENSTER_0,
+			Window_Yellow_1 = Constants.FARBE_FENSTER_1,
+			Window_Yellow_2 = Constants.FARBE_FENSTER_2,
+			Window_Neon_0 = (Constants.FARBE_FENSTER_0 | 0x04000000), 
+			Window_Neon_1 = (Constants.FARBE_FENSTER_1 | 0x04000000) ,
+			Window_Neon_2 = (Constants.FARBE_FENSTER_2 | 0x04000000) 
 		}
 	}
 }

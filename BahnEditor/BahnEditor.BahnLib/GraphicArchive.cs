@@ -10,12 +10,21 @@ namespace BahnEditor.BahnLib
 {
 	public class GraphicArchive
 	{
+		#region Fields and Properties
 		/// <summary>
 		/// Tuple: Element number, Bauform, FwSig, Phase, Alt, Graphic
 		/// </summary>
 		private List<Tuple<int, int, int, int, int, Graphic>> graphics; // TODO Create class from tuple
-																		// TODO Use Dictionary<int, Graphic>
+		// TODO Use Dictionary<int, Graphic>
+
+		/// <summary>
+		/// Gets the zoom factor
+		/// </summary>
 		public ZoomFactor ZoomFactor { get; protected set; }
+
+		/// <summary>
+		/// Gets the count of graphics in the archive
+		/// </summary>
 		public int GraphicsCount
 		{
 			get
@@ -23,13 +32,26 @@ namespace BahnEditor.BahnLib
 				return graphics.Count;
 			}
 		}
+		#endregion Fields and Properties
 
+		#region Constructor
+		/// <summary>
+		/// Initializes a new Instance of BahnEditor.GraphicArchive class
+		/// </summary>
+		/// <param name="zoomFactor">Zoom factor of the graphics</param>
 		public GraphicArchive(ZoomFactor zoomFactor)
 		{
 			graphics = new List<Tuple<int, int, int, int, int, Graphic>>();
 			this.ZoomFactor = zoomFactor;
 		}
+		#endregion Constructor
 
+		#region Public Methods
+		/// <summary>
+		/// Adds a graphic to the archive at the last position
+		/// </summary>
+		/// <param name="graphic">Graphic</param>
+		/// <exception cref="System.ArgumentNullException"/>
 		public void AddGraphic(Graphic graphic)
 		{
 			if (graphic == null)
@@ -42,11 +64,28 @@ namespace BahnEditor.BahnLib
 			this.AddGraphic(elementNumber, graphic);
 		}
 
+		/// <summary>
+		/// Adds a graphic to the archive at a defined position
+		/// </summary>
+		/// <param name="elementNumber">Position in the archive</param>
+		/// <param name="graphic">Graphic</param>
+		/// <exception cref="System.ArgumentNullException"/>
+		/// <exception cref="System.ArgumentOutOfRangeException"/>
 		public void AddGraphic(int elementNumber, Graphic graphic)
 		{
 			this.AddGraphic(elementNumber, 0, 1, graphic);
 		}
 
+		/// <summary>
+		/// Adds a graphic to the archive at a defined position with animationphase and alternative
+		/// </summary>
+		/// <param name="elementNumber">Position in the archive</param>
+		/// <param name="phase">Animationphase</param>
+		/// <param name="alternative">Alternative</param>
+		/// <param name="graphic">Graphic</param>
+		/// <exception cref="System.ArgumentNullException"/>
+		/// <exception cref="System.ArgumentOutOfRangeException"/>
+		/// <exception cref="System.ArgumentException"/>
 		public void AddGraphic(int elementNumber, int phase, int alternative, Graphic graphic)
 		{
 			if (graphic == null)
@@ -58,7 +97,9 @@ namespace BahnEditor.BahnLib
 			if (alternative < 0 || alternative > 4)
 				throw new ArgumentOutOfRangeException("alternative");
 			if (graphic.ZoomFactor != this.ZoomFactor)
-				throw new Exception("ZoomFactor not matching");
+				throw new ArgumentException("Zoomfactor not matching");
+			if (this.graphics.Count(x => x.Item1 == elementNumber && x.Item4 == phase && x.Item5 == alternative) > 0)
+				throw new ArgumentException("Graphic is already existing at this position");
 			this.graphics.Add(Tuple.Create(elementNumber, 0, 0, phase, alternative, graphic));
 		}
 
@@ -78,16 +119,69 @@ namespace BahnEditor.BahnLib
 			}
 		}
 
-		public int RemoveGraphic(int elementNumber)
+		/// <summary>
+		/// Removes a graphic from the archive
+		/// </summary>
+		/// <param name="elementNumber">Position in the archive</param>
+		/// <exception cref="System.ArgumentException"/>
+		public void RemoveGraphic(int elementNumber)
 		{
-			return this.RemoveGraphic(elementNumber, 0, 1);
+			this.RemoveGraphic(elementNumber, 0, 1);
 		}
 
-		public int RemoveGraphic(int elementNumber, int phase, int alternative)
+		/// <summary>
+		/// Removes a graphic from the archive
+		/// </summary>
+		/// <param name="elementNumber">Position in the archive</param>
+		/// <param name="phase">Phase</param>
+		/// <param name="alternative">Alternative</param>
+		/// <exception cref="System.ArgumentException"/>
+		public void RemoveGraphic(int elementNumber, int phase, int alternative)
 		{
-			return this.graphics.RemoveAll(x => x.Item1 == elementNumber && x.Item4 == phase && x.Item5 == alternative);
+			int result = this.graphics.Count(x => x.Item1 == elementNumber && x.Item4 == phase && x.Item5 == alternative);
+			if (result > 1)
+				throw new ArgumentException("Too many graphics found");
+			if (result == 0)
+				throw new ArgumentException("Graphic not found");
+			this.graphics.RemoveAll(x => x.Item1 == elementNumber && x.Item4 == phase && x.Item5 == alternative);
 		}
 
+		/// <summary>
+		/// Saves the archive into a file
+		/// </summary>
+		/// <param name="path">Path for the file</param>
+		/// <param name="overwrite">If the file should be overwritten when existing</param>
+		/// <returns>Returns true if succeeded, else false</returns>
+		/// <exception cref="BahnEditor.BahnLib.ArchiveIsEmptyException"/>
+		/// <exception cref="BahnEditor.BahnLib.ElementIsEmptyException"/>
+		/// <exception cref="System.ArgumentNullException"/>
+		public bool Save(string path, bool overwrite)
+		{
+			if (path == null)
+				throw new ArgumentNullException("path");
+			if (File.Exists(path) && !overwrite)
+			{
+				return false;
+			}
+			else
+			{
+				using (FileStream stream = File.OpenWrite(path))
+				{
+					return Save(stream);
+				}
+			}
+		}
+		#endregion Public Methods
+
+		#region Static Methods
+
+		/// <summary>
+		/// Loads an archive from a file
+		/// </summary>
+		/// <param name="path">Path to the file</param>
+		/// <returns>Loaded Archive</returns>
+		/// <exception cref="System.IO.FileNotFoundException"/>
+		/// <exception cref="System.IO.InvalidDataException"/>
 		public static GraphicArchive Load(string path)
 		{
 			if (File.Exists(path))
@@ -99,7 +193,9 @@ namespace BahnEditor.BahnLib
 			}
 			else throw new FileNotFoundException("File not found", path);
 		}
+#		endregion Static Methods
 
+		#region Private Methods
 		private static GraphicArchive Load(FileStream path)
 		{
 			// TODO remove magic numbers
@@ -109,7 +205,7 @@ namespace BahnEditor.BahnLib
 				byte[] read = br.ReadBytes(3);
 				if (read[0] != 85 || read[1] != 90 || read[2] != 88)
 				{
-					throw new Exception("wrong identification string");
+					throw new InvalidDataException("wrong identification string");
 				}
 				byte zoomFactor = (byte)(br.ReadByte() - 48);
 				int elementNummer;
@@ -156,37 +252,22 @@ namespace BahnEditor.BahnLib
 						archive = new GraphicArchive(f);
 						break;
 					default:
-						throw new Exception("Invalid ZoomFactor");
+						throw new InvalidDataException("Invalid ZoomFactor");
 				}
 				archive.graphics = graphics;
 				return archive;
 			}
 		}
 
-		public bool Save(string path, bool overwrite)
-		{
-			if (File.Exists(path) && !overwrite)
-			{
-				return false;
-			}
-			else
-			{
-				using (FileStream stream = File.OpenWrite(path))
-				{
-					return Save(stream);
-				}
-			}
-		}
-
 		private bool Save(FileStream path)
 		{
-			if(this.graphics.Count <= 0)
+			if (this.graphics.Count <= 0)
 			{
 				throw new ArchiveIsEmptyException("the archive is empty");
 			}
 			foreach (var item in this.graphics)
 			{
-				if (item.Item6.ValidateElement())
+				if (item.Item6.IsElementEmpty())
 				{
 					throw new ElementIsEmptyException("a graphic is empty");
 				}
@@ -244,5 +325,6 @@ namespace BahnEditor.BahnLib
 			// TODO do actual stuff
 			return 0;
 		}
+		#endregion Private Methods
 	}
 }

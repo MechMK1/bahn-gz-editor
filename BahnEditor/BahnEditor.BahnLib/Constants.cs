@@ -65,6 +65,9 @@
 		public const uint FARBE_ZUSATZ = 0xFf000000;
 		public const uint FARBE_IMMERHELL = 0x40000000;
 		public const uint FARBE_FENSTER = 0x60000000;
+		public const uint FARBE_FENSTER_0 = FARBE_FENSTER;
+		public const uint FARBE_FENSTER_1 = (FARBE_FENSTER | 0x01000000);
+		public const uint FARBE_FENSTER_2 = (FARBE_FENSTER | 0x02000000);
 
 		public const uint FARBE_WIE_MIN = (FARBE_LOGISCH | 0x00000100);
 		public const uint FARBE_KOMPRIMIERT = (FARBE_LOGISCH | 0x40000000);
