@@ -1,6 +1,6 @@
 ﻿namespace BahnEditor.BahnLib
 {
-	public enum GraphicCursorDirection : int
+	public enum CursorDirection : int
 	{
 		/// <summary>
 		/// Direction to North

@@ -1,7 +1,7 @@
 ﻿namespace BahnEditor.BahnLib
 {
 	[System.Flags]
-	public enum GraphicClockProperties : int
+	public enum ClockProperties : int
 	{
 		/// <summary>
 		/// Display clock in 24h-format (else: 12h-format)

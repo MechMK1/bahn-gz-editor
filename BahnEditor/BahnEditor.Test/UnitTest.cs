@@ -91,7 +91,7 @@ namespace BahnEditor.Test
 			expectedGraphic.ClockHeight = 5;
 			expectedGraphic.ClockColorHoursPointer = Pixel.SpecialPixelWithRGB(Pixel.SpecialColorWithRGB.Always_Bright, 200, 0, 0);
 			expectedGraphic.ClockColorMinutesPointer = Pixel.RGBPixel(0, 0, 255);
-			expectedGraphic.ClockProperties = GraphicClockProperties.Display24h | GraphicClockProperties.MinutePointer;
+			expectedGraphic.ClockProperties = ClockProperties.Display24h | ClockProperties.MinutePointer;
 			expectedGraphic.Save("testProperties.gz1", true);
 
 			Graphic graphic = Graphic.Load("testProperties.gz1");

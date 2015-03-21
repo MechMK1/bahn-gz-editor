@@ -56,7 +56,7 @@ namespace BahnEditor.BahnLib
 		/// Gets or sets the properties of the clock
 		/// <para>Makes only sense if clock is set in properties, else data is ignored</para>
 		/// </summary>
-		public GraphicClockProperties ClockProperties { get; set; }
+		public ClockProperties ClockProperties { get; set; }
 
 		/// <summary>
 		/// Gets or sets the x position of the center of the clock
@@ -105,14 +105,14 @@ namespace BahnEditor.BahnLib
 		/// Gets or sets the normal cursor direction
 		/// <para>Makes only sense if cursor is set in properties, else data is ignored</para>
 		/// </summary>
-		public GraphicCursorDirection CursorNormalDirection { get; set; }
+		public CursorDirection CursorNormalDirection { get; set; }
 
 		/// <summary>
 		/// Gets or sets the reverse cursor direction
 		/// <para>Mostly, this is the opposite direction</para>
 		/// <para>Makes only sense if cursor is set in properties, else data is ignored</para>
 		/// </summary>
-		public GraphicCursorDirection CursorReverseDirection { get; set; }
+		public CursorDirection CursorReverseDirection { get; set; }
 		#endregion Fields and Properties
 
 		//TODO Write doc for constructors
@@ -284,7 +284,7 @@ namespace BahnEditor.BahnLib
 				{
 					br.ReadInt32(); //skipping unused data (for future use)
 					int clockProperties = br.ReadInt32();
-					graphic.ClockProperties = (GraphicClockProperties)Enum.Parse(typeof(GraphicClockProperties), clockProperties.ToString(CultureInfo.InvariantCulture));
+					graphic.ClockProperties = (ClockProperties)Enum.Parse(typeof(ClockProperties), clockProperties.ToString(CultureInfo.InvariantCulture));
 					graphic.ClockXPosition = br.ReadInt32();
 					graphic.ClockYPosition = br.ReadInt32();
 					graphic.ClockZPosition = br.ReadInt32();
@@ -298,8 +298,8 @@ namespace BahnEditor.BahnLib
 				{
 					int cursorNormalDirection = br.ReadInt32();
 					int cursorReverseDirection = br.ReadInt32();
-					graphic.CursorNormalDirection = (GraphicCursorDirection)Enum.Parse(typeof(GraphicCursorDirection), cursorNormalDirection.ToString(CultureInfo.InvariantCulture));
-					graphic.CursorReverseDirection = (GraphicCursorDirection)Enum.Parse(typeof(GraphicCursorDirection), cursorReverseDirection.ToString(CultureInfo.InvariantCulture));
+					graphic.CursorNormalDirection = (CursorDirection)Enum.Parse(typeof(CursorDirection), cursorNormalDirection.ToString(CultureInfo.InvariantCulture));
+					graphic.CursorReverseDirection = (CursorDirection)Enum.Parse(typeof(CursorDirection), cursorReverseDirection.ToString(CultureInfo.InvariantCulture));
 				}
 				if ((graphic.Properties & GraphicProperties.ColorSchematicMode) == GraphicProperties.ColorSchematicMode)
 				{
