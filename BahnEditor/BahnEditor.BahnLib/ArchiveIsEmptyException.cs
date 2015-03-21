@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace BahnEditor.BahnLib
 {
+	/// <summary>
+	/// The exception is thrown when the archive is empty
+	/// </summary>
 	[Serializable]
 	public class ArchiveIsEmptyException : Exception
 	{

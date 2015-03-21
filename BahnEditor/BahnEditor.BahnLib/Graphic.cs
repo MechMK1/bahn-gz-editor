@@ -7,7 +7,9 @@ using System.Text;
 
 namespace BahnEditor.BahnLib
 {
-	// TODO Write doc for class
+	/// <summary>
+	/// Represents a graphic used in BAHN
+	/// </summary>
 	public class Graphic
 	{
 		#region Fields and Properties

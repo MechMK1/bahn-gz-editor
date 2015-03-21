@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace BahnEditor.BahnLib
 {
+	/// <summary>
+	/// The exception is thrown when the element of a graphic is empty (transparent)
+	/// </summary>
 	[Serializable]
 	public class ElementIsEmptyException : Exception
 	{

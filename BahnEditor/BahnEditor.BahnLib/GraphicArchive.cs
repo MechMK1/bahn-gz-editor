@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace BahnEditor.BahnLib
 {
+	/// <summary>
+	/// Represents an archive that contains one or more graphics
+	/// </summary>
 	public class GraphicArchive
 	{
 		#region Fields and Properties
