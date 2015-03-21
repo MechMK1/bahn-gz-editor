@@ -48,6 +48,9 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Graphic.cs" />
     <Compile Include="GraphicArchive.cs" />
+    <Compile Include="GraphicClockProperties.cs" />
+    <Compile Include="GraphicCursorDirection.cs" />
+    <Compile Include="GraphicProperties.cs" />
     <Compile Include="Layer.cs" />
     <Compile Include="Pixel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

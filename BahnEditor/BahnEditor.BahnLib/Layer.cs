@@ -23,13 +23,13 @@ namespace BahnEditor.BahnLib
 			this.Element = element;
 		}
 
-		public void WriteLayerToStream(BinaryWriter bw)
+		public void WriteLayerToStream(BinaryWriter bw, ZoomFactor zoomFactor)
 		{
 			if (bw == null)
 				throw new ArgumentNullException("bw");
 			short x0;
 			short y0;
-			Pixel[,] element = TrimElement(out x0, out y0, this.Element);
+			Pixel[,] element = TrimElement(out x0, out y0, this.Element, zoomFactor);
 			bw.Write(this.LayerID); //layer
 			bw.Write(x0); //x0
 			bw.Write(y0); //y0
@@ -38,7 +38,7 @@ namespace BahnEditor.BahnLib
 			WriteElementToStream(element, bw);
 		}
 
-		public static Layer ReadLayerFromStream(BinaryReader br)
+		public static Layer ReadLayerFromStream(BinaryReader br, ZoomFactor zoomFactor)
 		{
 			if (br == null)
 				throw new ArgumentNullException("br");
@@ -49,7 +49,7 @@ namespace BahnEditor.BahnLib
 			short width = br.ReadInt16();
 			short height = br.ReadInt16();
 			Pixel[,] element = ReadElementFromStream(br, width, height);
-			layer.Element = LoadElement(x0, y0, element);
+			layer.Element = LoadElement(x0, y0, element, zoomFactor);
 			return layer;
 		}
 
@@ -130,10 +130,10 @@ namespace BahnEditor.BahnLib
 			{
 				uint item = br.ReadUInt32();
 				int count = 0;
-				if((item & Constants.FARBE_ZUSATZ) == Constants.FARBE_KOMPRIMIERT)
+				if ((item & Constants.FARBE_ZUSATZ) == Constants.FARBE_KOMPRIMIERT)
 				{
 					count = (int)(item & Constants.FARBMASK_KOMPR_ZAHL) + 2;
-					if((item & Constants.FARBMASK_KOMPR_TR) != 0)
+					if ((item & Constants.FARBMASK_KOMPR_TR) != 0)
 					{
 						// item is transparent
 						for (int k = 0; k < count; k++)
@@ -141,12 +141,12 @@ namespace BahnEditor.BahnLib
 							colors.Add(Pixel.TransparentPixel());
 						}
 					}
-					else if((item & Constants.FARBMASK_KOMPR_SYS) != 0)
+					else if ((item & Constants.FARBMASK_KOMPR_SYS) != 0)
 					{
 						// item is a system-color
 						for (int k = 0; k < count; k++)
 						{
-							colors.Add(Pixel.SpecialPixelWithoutRGB((Pixel.SpecialColorWithoutRGB) (((item & Constants.FARBMASK_KOMPR_SFB) >> 8) + Constants.FARBE_WIE_MIN)));
+							colors.Add(Pixel.SpecialPixelWithoutRGB((Pixel.SpecialColorWithoutRGB)(((item & Constants.FARBMASK_KOMPR_SFB) >> 8) + Constants.FARBE_WIE_MIN)));
 						}
 					}
 					else
@@ -190,12 +190,11 @@ namespace BahnEditor.BahnLib
 			return element;
 		}
 
-		private static Pixel[,] LoadElement(int x0, int y0, Pixel[,] element)
+		private static Pixel[,] LoadElement(int x0, int y0, Pixel[,] element, ZoomFactor zoomFactor)
 		{
-			Pixel[,] newElement = new Pixel[Constants.SYMHOEHE * 8, Constants.SYMBREITE * 3];
-			//Layer layer = this.graphic.Layers[0];
-			x0 = (int)(x0 + Constants.SYMBREITE);
-			y0 = (int)(y0 + Constants.SYMHOEHE);
+			Pixel[,] newElement = new Pixel[Constants.SYMHOEHE * 8 * (int)zoomFactor, Constants.SYMBREITE * 3 * (int)zoomFactor];
+			x0 = (int)(x0 + Constants.SYMBREITE * (int)zoomFactor);
+			y0 = (int)(y0 + Constants.SYMHOEHE * (int)zoomFactor);
 			for (int i = 0; i < newElement.GetLength(0); i++)
 			{
 				for (int j = 0; j < newElement.GetLength(1); j++)
@@ -213,7 +212,7 @@ namespace BahnEditor.BahnLib
 			return newElement;
 		}
 
-		internal static Pixel[,] TrimElement(out short x0, out short y0, Pixel[,] element)
+		private static Pixel[,] TrimElement(out short x0, out short y0, Pixel[,] element, ZoomFactor zoomFactor)
 		{
 			int minx = element.GetLength(1);
 			int miny = element.GetLength(0);
@@ -244,7 +243,7 @@ namespace BahnEditor.BahnLib
 					}
 				}
 			}
-			if(maxx == 0 && maxy == 0)
+			if (maxx == 0 && maxy == 0)
 			{
 				throw new ElementIsEmptyException("Element is Empty");
 			}
@@ -258,8 +257,8 @@ namespace BahnEditor.BahnLib
 					newElement[i, j] = element[i + miny, j + minx];
 				}
 			}
-			x0 = (short)(minx - Constants.SYMBREITE);
-			y0 = (short)(miny - Constants.SYMHOEHE);
+			x0 = (short)(minx - Constants.SYMBREITE * (int)zoomFactor);
+			y0 = (short)(miny - Constants.SYMHOEHE * (int)zoomFactor);
 			return newElement;
 		}
 	}

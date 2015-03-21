@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -120,7 +121,10 @@ namespace BahnEditor.BahnLib
 					{
 						break;
 					}
-					br.BaseStream.Seek(16, SeekOrigin.Current);
+					br.ReadInt32(); //skipping redundant data (bauform)
+					br.ReadInt32(); //skipping redundant data (fwSig)
+					br.ReadInt32(); //skipping redundant data (phase)
+					br.ReadInt32(); //skipping redundant data (alt)
 					seekList.Add((int)(br.BaseStream.Position + 4 + br.ReadInt32()));
 				}
 
@@ -135,10 +139,12 @@ namespace BahnEditor.BahnLib
 					int alt = br.ReadInt32();
 					int length = br.ReadInt32();
 					int date = br.ReadInt32();
-					MemoryStream ms = new MemoryStream();
-					br.BaseStream.CopyTo(ms, length);
-					ms.Position = 0;
-					graphics.Add(Tuple.Create(elementNumber, bauform, fwSig, phase, alt, Graphic.Load(ms)));
+					using (MemoryStream ms = new MemoryStream())
+					{
+						br.BaseStream.CopyTo(ms, length);
+						ms.Position = 0;
+						graphics.Add(Tuple.Create(elementNumber, bauform, fwSig, phase, alt, Graphic.Load(ms)));
+					}
 				}
 				GraphicArchive archive;
 				switch (zoomFactor)
@@ -146,7 +152,7 @@ namespace BahnEditor.BahnLib
 					case 1:
 					case 2:
 					case 4:
-						ZoomFactor f = (ZoomFactor)Enum.Parse(typeof(ZoomFactor), zoomFactor.ToString());
+						ZoomFactor f = (ZoomFactor)Enum.Parse(typeof(ZoomFactor), zoomFactor.ToString(CultureInfo.InvariantCulture));
 						archive = new GraphicArchive(f);
 						break;
 					default:
@@ -214,12 +220,13 @@ namespace BahnEditor.BahnLib
 					bw.Write(item.Item3); //FwSig
 					bw.Write(item.Item4); //Phase
 					bw.Write(item.Item5); //Alt
-					MemoryStream ms = new MemoryStream();
-					item.Item6.Save(ms);
-					bw.Write((int)ms.Length); //Länge der Einzeldatei in Byte
-					bw.Write(0x46646E7C); //Datum
-					ms.WriteTo(bw.BaseStream);
-					ms.Dispose();
+					using (MemoryStream ms = new MemoryStream())
+					{
+						item.Item6.Save(ms);
+						bw.Write((int)ms.Length); //Länge der Einzeldatei in Byte
+						bw.Write(0x46646E7C); //Datum
+						ms.WriteTo(bw.BaseStream);
+					}
 					i++;
 				}
 				foreach (var item in offsetList)
@@ -232,7 +239,7 @@ namespace BahnEditor.BahnLib
 			}
 		}
 
-		private int GetTime()
+		private static int GetTime()
 		{
 			// TODO do actual stuff
 			return 0;

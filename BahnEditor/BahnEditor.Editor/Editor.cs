@@ -16,7 +16,7 @@ namespace BahnEditor.Editor
 		private GraphicArchive zoom1Archive;
 		private GraphicArchive zoom2Archive;
 		private GraphicArchive zoom4Archive;
-		private int actualGraphic = 0;
+		private int actualGraphic;
 		private int actualLayer;
 		private ZoomFactor actualZoomFactor = ZoomFactor.Zoom1;
 		private string lastPath = "";
@@ -53,9 +53,10 @@ namespace BahnEditor.Editor
 			this.zoom1Archive = new GraphicArchive(ZoomFactor.Zoom1);
 			this.zoom2Archive = new GraphicArchive(ZoomFactor.Zoom2);
 			this.zoom4Archive = new GraphicArchive(ZoomFactor.Zoom4);
-			Graphic graphic = new Graphic("Kein Text", Pixel.RGBPixel(100, 100, 100), ZoomFactor.Zoom1);
+			Graphic graphic = new Graphic("Kein Text");
 			graphic.AddTransparentLayer(Constants.LAYER_VG);
 			this.zoom1Archive.AddGraphic(graphic);
+			this.actualGraphic = 0;
 			this.drawPanel.Visible = true;
 			this.overviewPanel.Visible = true;
 			this.tabControl.Visible = true;
@@ -99,11 +100,24 @@ namespace BahnEditor.Editor
 				{
 					this.zoom4Archive = new GraphicArchive(ZoomFactor.Zoom4);
 				}
+				if (this.zoom2Archive[this.actualGraphic] != null)
+				{
+					this.tabControl.TabPages.Add(this.zoom2Tab);
+					this.zoom2CheckBoxCancel = true;
+					this.zoom2CheckBox.Checked = true;
+				}
+				if(this.zoom4Archive[this.actualGraphic] != null)
+				{
+					this.tabControl.TabPages.Add(this.zoom4Tab);
+					this.zoom4CheckBoxCancel = true;
+					this.zoom4CheckBox.Checked = true;
+				}
 				this.hasLoadedGraphic = true;
 				this.drawPanel.Visible = true;
 				this.overviewPanel.Visible = true;
 				this.tabControl.Visible = true;
 				this.userMadeChanges = false;
+				this.actualGraphic = 0;
 				this.ResizeDrawPanel();
 				this.drawPanel.AutoScrollPosition = new Point(this.drawPanel.HorizontalScroll.Maximum, this.drawPanel.VerticalScroll.Maximum / 2);
 				this.drawPanel.Invalidate();
@@ -322,7 +336,7 @@ namespace BahnEditor.Editor
 					this.zoom1Archive[this.actualGraphic].AddTransparentLayer(layerID);
 					this.actualLayer = this.zoom1Archive[this.actualGraphic].GetIndexByLayerID(layerID);
 				}
-				Graphic graphic = new Graphic("Kein Text", Pixel.RGBPixel(100, 100, 100), ZoomFactor.Zoom1);
+				Graphic graphic = new Graphic("Kein Text");
 				graphic.AddTransparentLayer(Constants.LAYER_VG);
 				this.zoom1Archive.AddGraphic(this.actualGraphic, graphic);
 				this.actualLayer = this.zoom1Archive[this.actualGraphic].GetIndexByLayerID(Constants.LAYER_VG);
@@ -402,6 +416,30 @@ namespace BahnEditor.Editor
 			if (element != -1)
 			{
 				this.actualGraphic = (element * 2 + overviewAlternative) + ((overviewLine) * 18);
+				if (this.zoom2Archive[this.actualGraphic] != null && !this.tabControl.TabPages.Contains(this.zoom2Tab))
+				{
+					this.tabControl.TabPages.Insert(1, this.zoom2Tab);
+					this.zoom2CheckBoxCancel = true;
+					this.zoom2CheckBox.Checked = true;
+				}
+				else if (this.zoom2Archive[this.actualGraphic] == null && this.tabControl.TabPages.Contains(this.zoom2Tab))
+				{
+					this.tabControl.TabPages.Remove(this.zoom2Tab);
+					this.zoom2CheckBoxCancel = true;
+					this.zoom2CheckBox.Checked = false;
+				}
+				if (this.zoom4Archive[this.actualGraphic] != null && !this.tabControl.TabPages.Contains(this.zoom4Tab))
+				{
+					this.tabControl.TabPages.Add(this.zoom4Tab);
+					this.zoom4CheckBoxCancel = true;
+					this.zoom4CheckBox.Checked = true;
+				}
+				else if (this.zoom4Archive[this.actualGraphic] == null && this.tabControl.TabPages.Contains(this.zoom4Tab))
+				{
+					this.tabControl.TabPages.Remove(this.zoom4Tab);
+					this.zoom4CheckBoxCancel = true;
+					this.zoom4CheckBox.Checked = false;
+				}
 				this.drawPanel.Invalidate();
 			}
 		}
@@ -849,15 +887,15 @@ namespace BahnEditor.Editor
 
 		private void tabControl_Selecting(object sender, TabControlCancelEventArgs e)
 		{
-			switch (e.TabPageIndex)
+			switch (e.TabPage.Name)
 			{
-				case 0:
+				case "zoom1Tab":
 					this.actualZoomFactor = ZoomFactor.Zoom1;
 					break;
-				case 1:
+				case "zoom2Tab":
 					this.actualZoomFactor = ZoomFactor.Zoom2;
 					break;
-				case 2:
+				case "zoom4Tab":
 					this.actualZoomFactor = ZoomFactor.Zoom4;
 					break;
 				default:
@@ -906,7 +944,7 @@ namespace BahnEditor.Editor
 					DialogResult result = MessageBox.Show("Soll wirklich eine Zoom2-Grafik erstellt werden?", "Zoom2", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 					if (result == DialogResult.Yes)
 					{
-						Graphic graphic = new Graphic("Kein Text", Pixel.RGBPixel(100, 100, 100), ZoomFactor.Zoom2);
+						Graphic graphic = new Graphic("Kein Text", ZoomFactor.Zoom2);
 						graphic.AddTransparentLayer(Constants.LAYER_VG);
 						this.zoom2Archive.AddGraphic(this.actualGraphic, graphic);
 						this.actualLayer = this.zoom2Archive[this.actualGraphic].GetIndexByLayerID(Constants.LAYER_VG);
@@ -954,7 +992,7 @@ namespace BahnEditor.Editor
 					DialogResult result = MessageBox.Show("Soll wirklich eine Zoom4-Grafik erstellt werden?", "Zoom4", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 					if (result == DialogResult.Yes)
 					{
-						Graphic graphic = new Graphic("Kein Text", Pixel.RGBPixel(100, 100, 100), ZoomFactor.Zoom4);
+						Graphic graphic = new Graphic("Kein Text", ZoomFactor.Zoom4);
 						graphic.AddTransparentLayer(Constants.LAYER_VG);
 						this.zoom4Archive.AddGraphic(this.actualGraphic, graphic);
 						this.actualLayer = this.zoom4Archive[this.actualGraphic].GetIndexByLayerID(Constants.LAYER_VG);

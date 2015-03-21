@@ -39,7 +39,8 @@ namespace BahnEditor.Test
 			}
 			Layer layer = new Layer((short)Constants.LAYER_VG, elementExpected);
 
-			Graphic graphic = new Graphic(infoTextExpected, colorInSchematicModeExpected, ZoomFactor.Zoom1);
+			Graphic graphic = new Graphic(infoTextExpected, ZoomFactor.Zoom1);
+			
 			graphic.AddLayer(layer);
 			graphic.Save("test.gz1", true);
 			Graphic newGraphic = Graphic.Load("test.gz1");
@@ -50,8 +51,8 @@ namespace BahnEditor.Test
 		[TestMethod]
 		public void TestGraphicArchive()
 		{
-			Graphic expectedGraphic1 = new Graphic("test1", Pixel.RGBPixel(50, 50, 50), ZoomFactor.Zoom1);
-			Graphic expectedGraphic2 = new Graphic("test2", Pixel.RGBPixel(60, 60, 60), ZoomFactor.Zoom1);
+			Graphic expectedGraphic1 = new Graphic("test1", ZoomFactor.Zoom1);
+			Graphic expectedGraphic2 = new Graphic("test2", ZoomFactor.Zoom1);
 
 			expectedGraphic1.AddTransparentLayer(Constants.LAYER_VG);
 			expectedGraphic2.AddTransparentLayer(Constants.LAYER_VG);
@@ -70,6 +71,44 @@ namespace BahnEditor.Test
 
 			CompareGraphic(expectedGraphic1, archive[0]);
 			CompareGraphic(expectedGraphic2, archive[1]);
+		}
+
+		[TestMethod]
+		public void TestGraphicProperties()
+		{
+			Graphic expectedGraphic = new Graphic("test");
+			expectedGraphic.AddTransparentLayer(Constants.LAYER_VG);
+			expectedGraphic.GetLayer(0).Element[10, 10] = Pixel.RGBPixel(123, 123, 123);
+			expectedGraphic.Properties = GraphicProperties.Clock | GraphicProperties.ColorSchematicMode | GraphicProperties.Smoke;
+			expectedGraphic.SteamXPosition = 10;
+			expectedGraphic.SteamYPosition = 10;
+			expectedGraphic.SteamWidth = 5;
+			expectedGraphic.ColorInSchematicMode = Pixel.RGBPixel(100, 100, 100);
+			expectedGraphic.ClockXPosition = 10;
+			expectedGraphic.ClockYPosition = 10;
+			expectedGraphic.ClockZPosition = Constants.LAYER_VG;
+			expectedGraphic.ClockWidth = 5;
+			expectedGraphic.ClockHeight = 5;
+			expectedGraphic.ClockColorHoursPointer = Pixel.SpecialPixelWithRGB(Pixel.SpecialColorWithRGB.Always_Bright, 200, 0, 0);
+			expectedGraphic.ClockColorMinutesPointer = Pixel.RGBPixel(0, 0, 255);
+			expectedGraphic.ClockProperties = GraphicClockProperties.Display24h | GraphicClockProperties.MinutePointer;
+			expectedGraphic.Save("testProperties.gz1", true);
+
+			Graphic graphic = Graphic.Load("testProperties.gz1");
+			Assert.AreEqual(expectedGraphic.Properties, graphic.Properties);
+			Assert.AreEqual(expectedGraphic.SteamXPosition, graphic.SteamXPosition);
+			Assert.AreEqual(expectedGraphic.SteamYPosition, graphic.SteamYPosition);
+			Assert.AreEqual(expectedGraphic.SteamWidth, graphic.SteamWidth);
+			Assert.AreEqual(expectedGraphic.ColorInSchematicMode, graphic.ColorInSchematicMode);
+			Assert.AreEqual(expectedGraphic.ClockXPosition, graphic.ClockXPosition);
+			Assert.AreEqual(expectedGraphic.ClockYPosition, graphic.ClockYPosition);
+			Assert.AreEqual(expectedGraphic.ClockZPosition,graphic.ClockZPosition);
+			Assert.AreEqual(expectedGraphic.ClockProperties, graphic.ClockProperties);
+			Assert.AreEqual(expectedGraphic.ClockHeight, graphic.ClockHeight);
+			Assert.AreEqual(expectedGraphic.ClockWidth, graphic.ClockWidth);
+			Assert.AreEqual(expectedGraphic.ClockColorHoursPointer, graphic.ClockColorHoursPointer);
+			Assert.AreEqual(expectedGraphic.ClockColorMinutesPointer, graphic.ClockColorMinutesPointer);
+			CompareGraphic(expectedGraphic, graphic);
 		}
 
 		private void CompareGraphic(Graphic expectedGraphic, Graphic graphic)
