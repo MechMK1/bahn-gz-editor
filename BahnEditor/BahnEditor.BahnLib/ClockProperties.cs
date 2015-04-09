@@ -1,5 +1,8 @@
 ﻿namespace BahnEditor.BahnLib
 {
+	/// <summary>
+	/// Enum of properties of a clock on a graphic
+	/// </summary>
 	[System.Flags]
 	public enum ClockProperties : int
 	{

@@ -44,14 +44,19 @@
   <ItemGroup>
     <Compile Include="ArchiveIsEmptyException.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="DrivingWay.cs" />
+    <Compile Include="DrivingWayElement.cs" />
+    <Compile Include="DrivingWayFunction.cs" />
     <Compile Include="ElementIsEmptyException.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Graphic.cs" />
     <Compile Include="GraphicArchive.cs" />
     <Compile Include="ClockProperties.cs" />
-    <Compile Include="CursorDirection.cs" />
+    <Compile Include="Direction.cs" />
     <Compile Include="GraphicProperties.cs" />
+    <Compile Include="GraphicVersion.cs" />
     <Compile Include="Layer.cs" />
+    <Compile Include="LayerId.cs" />
     <Compile Include="Pixel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ZoomFactor.cs" />

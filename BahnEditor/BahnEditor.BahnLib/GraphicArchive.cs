@@ -4,7 +4,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace BahnEditor.BahnLib
 {
@@ -39,7 +38,7 @@ namespace BahnEditor.BahnLib
 
 		#region Constructor
 		/// <summary>
-		/// Initializes a new Instance of BahnEditor.GraphicArchive class
+		/// Initializes a new Instance of BahnEditor.BahnLib.GraphicArchive class
 		/// </summary>
 		/// <param name="zoomFactor">Zoom factor of the graphics</param>
 		public GraphicArchive(ZoomFactor zoomFactor)
@@ -76,7 +75,7 @@ namespace BahnEditor.BahnLib
 		/// <exception cref="System.ArgumentOutOfRangeException"/>
 		public void AddGraphic(int elementNumber, Graphic graphic)
 		{
-			this.AddGraphic(elementNumber, 0, 1, graphic);
+			this.AddGraphic(elementNumber, Constants.MIN_ANIMATIONPHASE, Constants.NO_ALTERNATIVE, graphic);
 		}
 
 		/// <summary>
@@ -113,7 +112,15 @@ namespace BahnEditor.BahnLib
 				try
 				{
 					IEnumerable<Tuple<int, int, int, int, int, Graphic>> e = graphics.Where(x => x.Item1 == index);
-					return e.Single(x => x.Item4 == 0 && x.Item5 == 1).Item6;
+					for (int i = 0; i < 4; i++)
+					{
+						Tuple<int, int, int, int, int, Graphic> tuple = e.SingleOrDefault(x => x.Item4 == 0 && x.Item5 == i);
+						if (tuple != null)
+						{
+							return tuple.Item6;
+						}
+					}
+					return null;
 				}
 				catch (InvalidOperationException)
 				{
@@ -196,7 +203,7 @@ namespace BahnEditor.BahnLib
 			}
 			else throw new FileNotFoundException("File not found", path);
 		}
-#		endregion Static Methods
+		#endregion Static Methods
 
 		#region Private Methods
 		private static GraphicArchive Load(FileStream path)
@@ -204,7 +211,7 @@ namespace BahnEditor.BahnLib
 			// TODO remove magic numbers
 			using (BinaryReader br = new BinaryReader(path, Encoding.Unicode))
 			{
-				while (br.ReadByte() != 26) { }
+				while (br.ReadByte() != Constants.HEADERTEXT_TERMINATOR) { }
 				byte[] read = br.ReadBytes(3);
 				if (read[0] != 85 || read[1] != 90 || read[2] != 88)
 				{
@@ -280,7 +287,6 @@ namespace BahnEditor.BahnLib
 			{
 				List<Tuple<long, long>> offsetList = new List<Tuple<long, long>>();
 				bw.Write(Constants.HEADERTEXT.ToArray()); //Headertext 
-				bw.Write((byte)26); // text end
 				bw.Write(new byte[] { 85, 90, 88 }); //identification string UZX ASCII
 				bw.Write((byte)(48 + this.ZoomFactor)); //Zoom faktor ASCII
 				foreach (var item in this.graphics)

@@ -1,5 +1,8 @@
 ﻿namespace BahnEditor.BahnLib
 {
+	/// <summary>
+	/// Enum of properties of a graphic
+	/// </summary>
 	[System.Flags]
 	public enum GraphicProperties : int
 	{

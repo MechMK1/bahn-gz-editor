@@ -76,7 +76,7 @@ namespace BahnEditor.BahnLib
 		/// Gets or sets the z position (layer) of the center of the clock
 		/// <para>Makes only sense if clock is set in properties, else data is ignored</para>
 		/// </summary>
-		public int ClockZPosition { get; set; }
+		public LayerId ClockZPosition { get; set; }
 
 		/// <summary>
 		/// Gets or sets the width of the clock
@@ -107,32 +107,40 @@ namespace BahnEditor.BahnLib
 		/// Gets or sets the normal cursor direction
 		/// <para>Makes only sense if cursor is set in properties, else data is ignored</para>
 		/// </summary>
-		public CursorDirection CursorNormalDirection { get; set; }
+		public Direction CursorNormalDirection { get; set; }
 
 		/// <summary>
 		/// Gets or sets the reverse cursor direction
-		/// <para>Mostly, this is the opposite direction</para>
+		/// <para>Mostly, this is the opposite of CursorNormalDirection</para>
 		/// <para>Makes only sense if cursor is set in properties, else data is ignored</para>
 		/// </summary>
-		public CursorDirection CursorReverseDirection { get; set; }
+		public Direction CursorReverseDirection { get; set; }
+
+		/// <summary>
+		/// Gets or sets the version of the graphic
+		/// </summary>
+		public GraphicVersion Version { get; set; }
+
+		/// <summary>
+		/// Gets the list of driving ways
+		/// </summary>
+		public List<DrivingWayElement> DrivingWay { get; private set; }
 		#endregion Fields and Properties
 
 		#region Constructors
 
 		/// <summary>
-		/// Initializes a new Instance of BahnEditor.Graphic class
+		/// Initializes a new Instance of BahnEditor.BahnLib.Graphic class
 		/// </summary>
 		/// <param name="infoText">Infotext</param>
 		/// <param name="zoomFactor">Zoom factor of the graphic</param>
 		public Graphic(string infoText, ZoomFactor zoomFactor)
+			: this(infoText, zoomFactor, GraphicVersion.Version2)
 		{
-			this.ZoomFactor = zoomFactor;
-			this.InfoText = infoText;
-			layers = new List<Layer>();
 		}
 
 		/// <summary>
-		/// Initializes a new Instance of BahnEditor.Graphic class
+		/// Initializes a new Instance of BahnEditor.BahnLib.Graphic class
 		/// </summary>
 		/// <param name="infoText">Infotext</param>
 		public Graphic(string infoText)
@@ -141,11 +149,37 @@ namespace BahnEditor.BahnLib
 		}
 
 		/// <summary>
-		/// Initializes a new Instance of BahnEditor.Graphic class, used in Load-Function
+		/// Initializes a new Instance of BahnEditor.BahnLib.Graphic class
+		/// </summary>
+		/// <param name="infoText">InfoText</param>
+		/// <param name="version">Version</param>
+		public Graphic(string infoText, GraphicVersion version)
+			: this(infoText, ZoomFactor.Zoom1, version)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new Instance of BahnEditor.BahnLib.Graphic class
+		/// </summary>
+		/// <param name="infoText">InfoText</param>
+		/// <param name="zoomFactor">Zoom factor</param>
+		/// <param name="version">Version</param>
+		public Graphic(string infoText, ZoomFactor zoomFactor, GraphicVersion version)
+			:this()
+		{
+			this.Version = version;
+			this.ZoomFactor = zoomFactor;
+			this.InfoText = infoText;
+			
+		}
+
+		/// <summary>
+		/// Initializes a new Instance of BahnEditor.BahnLib.Graphic class, used in Load-Function
 		/// </summary>
 		private Graphic()
 		{
-			layers = new List<Layer>();
+			this.layers = new List<Layer>();
+			this.DrivingWay = new List<DrivingWayElement>();
 		}
 		#endregion Constructors
 
@@ -154,10 +188,10 @@ namespace BahnEditor.BahnLib
 		/// <summary>
 		/// Adds a transparent layer (every pixel of layer is transparent) to the graphic
 		/// </summary>
-		/// <param name="layerID">LayerId (Defined in Constants)</param>
-		public void AddTransparentLayer(short layerID)
+		/// <param name="layerID">LayerId</param>
+		public void AddTransparentLayer(LayerId layerID)
 		{
-			Pixel[,] element = new Pixel[Constants.SYMHOEHE * 8 * (byte)this.ZoomFactor, Constants.SYMBREITE * 3 * (byte)this.ZoomFactor];
+			Pixel[,] element = new Pixel[Constants.ELEMENTHEIGHT * 8 * (byte)this.ZoomFactor, Constants.ELEMENTWIDTH * 3 * (byte)this.ZoomFactor];
 			for (int i = 0; i < element.GetLength(0); i++)
 			{
 				for (int j = 0; j < element.GetLength(1); j++)
@@ -184,18 +218,13 @@ namespace BahnEditor.BahnLib
 		}
 
 		/// <summary>
-		/// Get layer
+		/// Gets a layer of the graphic
 		/// </summary>
-		/// <param name="id">LayerId (defined in Constants)</param>
+		/// <param name="id">LayerId</param>
 		/// <returns>Layer</returns>
-		/// <exception cref="System.ArgumentOutOfRangeException"/>
-		public Layer GetLayer(short id)
+		public Layer GetLayer(LayerId id)
 		{
-			if(id < Constants.LAYER_MIN || id > Constants.LAYER_MAX)
-			{
-				throw new ArgumentOutOfRangeException("id");
-			}
-			return layers.SingleOrDefault(x => x.LayerID == id);
+			return layers.SingleOrDefault(x => x.LayerId == id);
 		}
 
 		/// <summary>
@@ -246,17 +275,26 @@ namespace BahnEditor.BahnLib
 		}
 
 		/// <summary>
-		/// TODO write doc
+		/// Gets a preview of the graphic how it would be in the game
 		/// </summary>
 		/// <returns>Element</returns>
 		public Pixel[,] ElementPreview()
 		{
-			Pixel[,] element = new Pixel[Constants.SYMHOEHE, Constants.SYMBREITE];
+			Pixel[,] element = new Pixel[Constants.ELEMENTHEIGHT, Constants.ELEMENTWIDTH];
 			for (int i = 0; i < element.GetLength(0); i++)
 			{
 				for (int j = 0; j < element.GetLength(1); j++)
 				{
-					element[i, j] = this.GetLayer(Constants.LAYER_VG).Element[i + Constants.SYMHOEHE, j + Constants.SYMBREITE];
+					if (this.GetLayer(LayerId.ForegroundAbove) != null)
+						element[i, j] = this.GetLayer(LayerId.ForegroundAbove).Element[i + Constants.ELEMENTHEIGHT, j + Constants.ELEMENTWIDTH];
+					else if (this.GetLayer(LayerId.Foreground) != null)
+						element[i, j] = this.GetLayer(LayerId.Foreground).Element[i + Constants.ELEMENTHEIGHT, j + Constants.ELEMENTWIDTH];
+					else if (this.GetLayer(LayerId.Front) != null)
+						element[i, j] = this.GetLayer(LayerId.Front).Element[i + Constants.ELEMENTHEIGHT, j + Constants.ELEMENTWIDTH];
+					else if (this.GetLayer(LayerId.Background) != null)
+						element[i, j] = this.GetLayer(LayerId.Background).Element[i + Constants.ELEMENTHEIGHT, j + Constants.ELEMENTWIDTH];
+					else
+						element[i, j] = Pixel.TransparentPixel();
 				}
 			}
 			return element;
@@ -290,14 +328,14 @@ namespace BahnEditor.BahnLib
 			using (BinaryReader br = new BinaryReader(path, Encoding.Unicode))
 			{
 				Graphic graphic = new Graphic();
-				while (br.ReadByte() != 26) { }
+				while (br.ReadByte() != Constants.HEADERTEXT_TERMINATOR) { } //Headertext, can be skipped
 				byte[] read = br.ReadBytes(3);
-				if (read[0] != 71 || read[1] != 90 || read[2] != 71)
+				if (read[0] != 71 || read[1] != 90 || read[2] != 71) //identification string "GZG" ASCII-format
 				{
 					throw new InvalidDataException("wrong identification string");
 				}
 
-				byte zoomFactor = (byte)(br.ReadByte() - 48);
+				byte zoomFactor = (byte)(br.ReadByte() - 48); //zoomfactor, as ASCII-text
 				switch (zoomFactor)
 				{
 					case 1:
@@ -308,14 +346,24 @@ namespace BahnEditor.BahnLib
 					default:
 						throw new InvalidDataException("unknown zoom factor");
 				}
-
+				ushort readVersion = br.ReadUInt16();
 				read = null;
-				read = br.ReadBytes(4);
-				if (read[0] != 0x03 || read[1] != 0x84 || read[2] != 0x00 || read[3] != 0x05)
+				read = br.ReadBytes(2);
+				GraphicVersion version;
+				if (readVersion != Constants.GRAPHIC_FILE_FORMAT || read[0] != 0x00)
 				{
 					throw new InvalidDataException("wrong version");
 				}
-				int p = br.ReadInt32();
+				try
+				{
+					version = (GraphicVersion)Enum.Parse(typeof(GraphicVersion), read[1].ToString(CultureInfo.InvariantCulture));
+				}
+				catch (ArgumentException)
+				{
+					throw new InvalidDataException("wrong version");
+				}
+
+				int p = br.ReadInt32(); //Properties
 				graphic.Properties = (GraphicProperties)Enum.Parse(typeof(GraphicProperties), p.ToString(CultureInfo.InvariantCulture));
 				if (((graphic.Properties & GraphicProperties.Smoke) == GraphicProperties.Smoke) || ((graphic.Properties & GraphicProperties.Steam) == GraphicProperties.Steam))
 				{
@@ -325,12 +373,17 @@ namespace BahnEditor.BahnLib
 				}
 				if ((graphic.Properties & GraphicProperties.Clock) == GraphicProperties.Clock)
 				{
+					if (version == GraphicVersion.Version0)
+					{
+						throw new InvalidDataException("Clock is set, but invalid for the version of the graphic");
+					}
 					br.ReadInt32(); //skipping unused data (for future use)
 					int clockProperties = br.ReadInt32();
 					graphic.ClockProperties = (ClockProperties)Enum.Parse(typeof(ClockProperties), clockProperties.ToString(CultureInfo.InvariantCulture));
 					graphic.ClockXPosition = br.ReadInt32();
 					graphic.ClockYPosition = br.ReadInt32();
-					graphic.ClockZPosition = br.ReadInt32();
+					int clockZPosition = br.ReadInt32();
+					graphic.ClockZPosition = (LayerId)Enum.Parse(typeof(LayerId), clockZPosition.ToString(CultureInfo.InvariantCulture));
 					graphic.ClockWidth = br.ReadInt32();
 					graphic.ClockHeight = br.ReadInt32();
 					graphic.ClockColorHoursPointer = Pixel.FromUInt(br.ReadUInt32());
@@ -339,27 +392,37 @@ namespace BahnEditor.BahnLib
 				}
 				if ((graphic.Properties & GraphicProperties.Cursor) == GraphicProperties.Cursor)
 				{
+					if (version < GraphicVersion.Version2)
+					{
+						throw new InvalidDataException("Cursor is set, but invalid for the version of the graphic");
+					}
 					int cursorNormalDirection = br.ReadInt32();
 					int cursorReverseDirection = br.ReadInt32();
-					graphic.CursorNormalDirection = (CursorDirection)Enum.Parse(typeof(CursorDirection), cursorNormalDirection.ToString(CultureInfo.InvariantCulture));
-					graphic.CursorReverseDirection = (CursorDirection)Enum.Parse(typeof(CursorDirection), cursorReverseDirection.ToString(CultureInfo.InvariantCulture));
+					graphic.CursorNormalDirection = (Direction)Enum.Parse(typeof(Direction), cursorNormalDirection.ToString(CultureInfo.InvariantCulture));
+					graphic.CursorReverseDirection = (Direction)Enum.Parse(typeof(Direction), cursorReverseDirection.ToString(CultureInfo.InvariantCulture));
 				}
 				if ((graphic.Properties & GraphicProperties.ColorSchematicMode) == GraphicProperties.ColorSchematicMode)
 				{
+					if (version < GraphicVersion.Version2)
+					{
+						throw new InvalidDataException("ColorSchematicMode is set, but invalid for the version of the graphic");
+					}
 					graphic.ColorInSchematicMode = Pixel.FromUInt(br.ReadUInt32());
-					br.ReadUInt32();
+					br.ReadUInt32(); //skipping unused data
 				}
 				if ((graphic.Properties & GraphicProperties.DrivingWay) == GraphicProperties.DrivingWay)
 				{
-					// TODO implement driving-way
+					if(version < GraphicVersion.Version2)
+						throw new InvalidDataException("DrivingWay is set, but invalid for the version of the graphic");
+					graphic.DrivingWay = new List<DrivingWayElement>();
 					int count = br.ReadInt32();
 					for (int i = 0; i < count; i++)
 					{
-						br.ReadInt32();
+						graphic.DrivingWay.Add(DrivingWayElement.FromBytes(br.ReadBytes(12)));
 					}
 				}
 				short layer = br.ReadInt16();
-				br.ReadUInt16();
+				br.ReadUInt16(); //skipping unknown data, see more in save-method
 				char c;
 				StringBuilder sb = new StringBuilder();
 				while ((c = br.ReadChar()) != Constants.UNICODE_NULL)
@@ -371,7 +434,7 @@ namespace BahnEditor.BahnLib
 
 				for (int i = 0; i < layer; i++)
 				{
-					graphic.AddLayer(Layer.ReadLayerFromStream(br, graphic.ZoomFactor));
+					graphic.AddLayer(Layer.ReadLayerFromStream(br, graphic.ZoomFactor, version));
 				}
 				return graphic;
 			}
@@ -388,14 +451,13 @@ namespace BahnEditor.BahnLib
 			BinaryWriter bw = new BinaryWriter(path, Encoding.Unicode);
 			int layer = this.layers.Count;
 			bw.Write(Constants.HEADERTEXT.ToArray()); //Headertext 
-			bw.Write((byte)26); // text end, defined in doc
-			bw.Write(new byte[] { 71, 90, 71 }); //identification string GZG ASCII
-			bw.Write((byte)(48 + this.ZoomFactor)); //Zoom faktor ASCII
-			bw.Write((byte)0x03); //version
-			bw.Write((byte)0x84); //version
-			bw.Write((byte)0x00); //subversion
-			bw.Write((byte)0x05); //subversion
-			this.Properties |= GraphicProperties.ColorFormat24BPP;
+			bw.Write(new byte[] { 71, 90, 71 }); //identification string "GZG" ASCII-format
+			bw.Write((byte)(48 + this.ZoomFactor)); //Zoomfactor, as ASCII-format
+			bw.Write(Constants.GRAPHIC_FILE_FORMAT); //version
+			bw.Write((byte)0); //subversion, normally a byte[2] array, but first element of the array is empty
+			bw.Write((byte)this.Version); //subversion
+			if (this.Version >= GraphicVersion.Version2 && ((this.Properties & GraphicProperties.ColorFormat24BPP) != GraphicProperties.ColorFormat24BPP))
+				this.Properties |= GraphicProperties.ColorFormat24BPP;
 			bw.Write((int)this.Properties); //Properties 
 			if (((this.Properties & GraphicProperties.Smoke) == GraphicProperties.Smoke) || ((this.Properties & GraphicProperties.Steam) == GraphicProperties.Steam))
 			{
@@ -409,12 +471,12 @@ namespace BahnEditor.BahnLib
 				bw.Write((int)this.ClockProperties);
 				bw.Write(this.ClockXPosition);
 				bw.Write(this.ClockYPosition);
-				bw.Write(this.ClockZPosition);
+				bw.Write((int)this.ClockZPosition);
 				bw.Write(this.ClockWidth);
 				bw.Write(this.ClockHeight);
-				bw.Write(this.ClockColorHoursPointer.ConvertToUInt());
-				bw.Write(this.ClockColorMinutesPointer.ConvertToUInt());
-				bw.Write(this.ClockColorHoursPointer.ConvertToUInt()); //reserved for future use
+				bw.Write(this.ClockColorHoursPointer.ToUInt());
+				bw.Write(this.ClockColorMinutesPointer.ToUInt());
+				bw.Write(this.ClockColorHoursPointer.ToUInt()); //reserved for future use
 			}
 			if ((this.Properties & GraphicProperties.Cursor) == GraphicProperties.Cursor)
 			{
@@ -423,11 +485,19 @@ namespace BahnEditor.BahnLib
 			}
 			if ((this.Properties & GraphicProperties.ColorSchematicMode) == GraphicProperties.ColorSchematicMode)
 			{
-				bw.Write(this.ColorInSchematicMode.ConvertToUInt());
-				bw.Write(Constants.FARBE_TRANSPARENT); //Not used, reserved for future use
+				bw.Write(this.ColorInSchematicMode.ToUInt());
+				bw.Write(Constants.COLOR_TRANSPARENT); //Not used, reserved for future use
+			}
+			if((this.Properties & GraphicProperties.DrivingWay) == GraphicProperties.DrivingWay)
+			{
+				bw.Write(this.DrivingWay.Count);
+				foreach (var item in this.DrivingWay)
+				{
+					bw.Write(item.ToBytes());
+				}
 			}
 			bw.Write((short)layer); //layer
-			bw.Write((ushort)0xFFFE);
+			bw.Write((ushort)0xFFFE); //unknown, got data through analysis of existing files, doesn't work without
 			bw.Write(this.InfoText.ToCharArray());
 			bw.Write(Constants.UNICODE_NULL);
 			for (int i = 0; i < layer; i++)

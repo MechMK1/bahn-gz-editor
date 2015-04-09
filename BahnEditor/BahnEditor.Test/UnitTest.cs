@@ -8,36 +8,36 @@ namespace BahnEditor.Test
 	[TestClass]
 	public class UnitTest
 	{
-
+		#region Tests
 		[TestMethod]
 		public void TestSaveAndLoad()
 		{
 			string infoTextExpected = "Test";
-			short heightExpected = (short)(Constants.SYMHOEHE * 8);
-			short widthExpected = (short)(Constants.SYMBREITE * 3);
+			short heightExpected = (short)(Constants.ELEMENTHEIGHT * 8);
+			short widthExpected = (short)(Constants.ELEMENTWIDTH * 3);
 			//short x0Expected = 7;
 			//short y0Expected = 5;
-			Pixel colorInSchematicModeExpected = Pixel.RGBPixel(50, 50, 50);
+			Pixel colorInSchematicModeExpected = new Pixel(50, 50, 50);
 			Pixel[,] elementExpected = new Pixel[heightExpected, widthExpected];
 			for (int i = 0; i < elementExpected.GetLength(0); i++)
 			{
 				for (int j = 0; j < elementExpected.GetLength(1); j++)
 				{
 					if (i == 2)
-						elementExpected[i, j] = Pixel.RGBPixel(200, 200, 200);
+						elementExpected[i, j] = new Pixel(200, 200, 200);
 					else if (i == 3)
-						elementExpected[i, j] = Pixel.SpecialPixelWithoutRGB(Pixel.SpecialColorWithoutRGB.BehindGlass);
+						elementExpected[i, j] = new Pixel(Pixel.SpecialPixelWithoutRGB.BehindGlass);
 					else if (i == 5)
-						elementExpected[i, j] = Pixel.SpecialPixelWithoutRGB(Pixel.SpecialColorWithoutRGB.As_Marking_Point_Bus0);
+						elementExpected[i, j] = new Pixel(Pixel.SpecialPixelWithoutRGB.As_Marking_Point_Bus0);
 					else if (i == 4)
-						elementExpected[i, j] = Pixel.SpecialPixelWithRGB(Pixel.SpecialColorWithRGB.Always_Bright, 100, 100, 100);
+						elementExpected[i, j] = new Pixel(Pixel.SpecialPixelWithRGB.Always_Bright, 100, 100, 100);
 					else if (i == 6)
-						elementExpected[i, j] = Pixel.SpecialPixelWithRGB(Pixel.SpecialColorWithRGB.Lamp_Red, 0, 100, 100);
+						elementExpected[i, j] = new Pixel(Pixel.SpecialPixelWithRGB.Lamp_Red, 0, 100, 100);
 					else
 						elementExpected[i, j] = Pixel.TransparentPixel();
 				}
 			}
-			Layer layer = new Layer((short)Constants.LAYER_VG, elementExpected);
+			Layer layer = new Layer(LayerId.Foreground, elementExpected);
 
 			Graphic graphic = new Graphic(infoTextExpected, ZoomFactor.Zoom1);
 			
@@ -46,6 +46,10 @@ namespace BahnEditor.Test
 			Graphic newGraphic = Graphic.Load("test.gz1");
 
 			CompareGraphic(graphic, newGraphic);
+			if((newGraphic.Properties & GraphicProperties.ColorFormat24BPP) != GraphicProperties.ColorFormat24BPP)
+			{
+				throw new Microsoft.VisualStudio.TestTools.UnitTesting.AssertFailedException("Graphic has not set ColorFormat24BPP");
+			}
 		}
 
 		[TestMethod]
@@ -54,11 +58,11 @@ namespace BahnEditor.Test
 			Graphic expectedGraphic1 = new Graphic("test1", ZoomFactor.Zoom1);
 			Graphic expectedGraphic2 = new Graphic("test2", ZoomFactor.Zoom1);
 
-			expectedGraphic1.AddTransparentLayer(Constants.LAYER_VG);
-			expectedGraphic2.AddTransparentLayer(Constants.LAYER_VG);
+			expectedGraphic1.AddTransparentLayer(LayerId.Foreground);
+			expectedGraphic2.AddTransparentLayer(LayerId.Foreground);
 
-			expectedGraphic1.GetLayer(0).Element[10, 10] = Pixel.RGBPixel(100, 50, 20);
-			expectedGraphic2.GetLayer(0).Element[50, 40] = Pixel.RGBPixel(150, 63, 123);
+			expectedGraphic1.GetLayer(LayerId.Foreground).Element[10, 10] = new Pixel(100, 50, 20);
+			expectedGraphic2.GetLayer(LayerId.Foreground).Element[50, 40] = new Pixel(150, 63, 123);
 
 			GraphicArchive expectedArchive = new GraphicArchive(ZoomFactor.Zoom1);
 			expectedArchive.AddGraphic(expectedGraphic1);
@@ -77,20 +81,20 @@ namespace BahnEditor.Test
 		public void TestGraphicProperties()
 		{
 			Graphic expectedGraphic = new Graphic("test");
-			expectedGraphic.AddTransparentLayer(Constants.LAYER_VG);
-			expectedGraphic.GetLayer(0).Element[10, 10] = Pixel.RGBPixel(123, 123, 123);
+			expectedGraphic.AddTransparentLayer(LayerId.Foreground);
+			expectedGraphic.GetLayer(LayerId.Foreground).Element[10, 10] = new Pixel(123, 123, 123);
 			expectedGraphic.Properties = GraphicProperties.Clock | GraphicProperties.ColorSchematicMode | GraphicProperties.Smoke;
 			expectedGraphic.SteamXPosition = 10;
 			expectedGraphic.SteamYPosition = 10;
 			expectedGraphic.SteamWidth = 5;
-			expectedGraphic.ColorInSchematicMode = Pixel.RGBPixel(100, 100, 100);
+			expectedGraphic.ColorInSchematicMode = new Pixel(100, 100, 100);
 			expectedGraphic.ClockXPosition = 10;
 			expectedGraphic.ClockYPosition = 10;
-			expectedGraphic.ClockZPosition = Constants.LAYER_VG;
+			expectedGraphic.ClockZPosition = LayerId.Foreground;
 			expectedGraphic.ClockWidth = 5;
 			expectedGraphic.ClockHeight = 5;
-			expectedGraphic.ClockColorHoursPointer = Pixel.SpecialPixelWithRGB(Pixel.SpecialColorWithRGB.Always_Bright, 200, 0, 0);
-			expectedGraphic.ClockColorMinutesPointer = Pixel.RGBPixel(0, 0, 255);
+			expectedGraphic.ClockColorHoursPointer = new Pixel(Pixel.SpecialPixelWithRGB.Always_Bright, 200, 0, 0);
+			expectedGraphic.ClockColorMinutesPointer = new Pixel(0, 0, 255);
 			expectedGraphic.ClockProperties = ClockProperties.Display24h | ClockProperties.MinutePointer;
 			expectedGraphic.Save("testProperties.gz1", true);
 
@@ -111,19 +115,54 @@ namespace BahnEditor.Test
 			CompareGraphic(expectedGraphic, graphic);
 		}
 
+		[TestMethod]
+		public void TestDrivingWay()
+		{
+			Graphic expectedGraphic = new Graphic("TestDrivingWay");
+			expectedGraphic.AddTransparentLayer(LayerId.Foreground);
+			expectedGraphic.GetLayer(LayerId.Foreground).Element[10, 10] = new Pixel(123, 123, 123);
+			expectedGraphic.Properties = GraphicProperties.Cursor | GraphicProperties.DrivingWay | GraphicProperties.ColorSchematicMode | GraphicProperties.ColorFormat24BPP;
+			expectedGraphic.CursorNormalDirection = Direction.South;
+			expectedGraphic.CursorReverseDirection = Direction.South;
+			expectedGraphic.ColorInSchematicMode = new Pixel(0, 0, 0);
+			expectedGraphic.DrivingWay.Add(new DrivingWayElement(DrivingWay.Rail, DrivingWayFunction.Crossing, Direction.North, Direction.North));
+			expectedGraphic.DrivingWay.Add(new DrivingWayElement(DrivingWay.Rail, DrivingWayFunction.Crossing, Direction.South, Direction.South));
+			expectedGraphic.Save("testDrivingWay.gz1", true);
+
+			Graphic graphic = Graphic.Load("testDrivingWay.gz1");
+			Assert.AreEqual(expectedGraphic.Properties | GraphicProperties.ColorFormat24BPP, graphic.Properties);
+			CompareGraphic(expectedGraphic, graphic);
+			Assert.AreEqual(expectedGraphic.DrivingWay.Count, graphic.DrivingWay.Count);
+			for (int i = 0; i < expectedGraphic.DrivingWay.Count; i++)
+			{
+				CompareDrivingWay(expectedGraphic.DrivingWay[i], graphic.DrivingWay[i]);
+			}
+		}
+		#endregion Tests
+
+		#region Private Methods
 		private void CompareGraphic(Graphic expectedGraphic, Graphic graphic)
 		{
 			Assert.AreEqual<string>(expectedGraphic.InfoText, graphic.InfoText);
 			Assert.AreEqual<ZoomFactor>(expectedGraphic.ZoomFactor, graphic.ZoomFactor);
 			Assert.AreEqual<Pixel>(expectedGraphic.ColorInSchematicMode, graphic.ColorInSchematicMode);
 
-			for (int i = 0; i < expectedGraphic.GetLayer(Constants.LAYER_VG).Element.GetLength(0); i++)
+			for (int i = 0; i < expectedGraphic.GetLayer(LayerId.Foreground).Element.GetLength(0); i++)
 			{
-				for (int j = 0; j < expectedGraphic.GetLayer(Constants.LAYER_VG).Element.GetLength(1); j++)
+				for (int j = 0; j < expectedGraphic.GetLayer(LayerId.Foreground).Element.GetLength(1); j++)
 				{
-					Assert.AreEqual<Pixel>(expectedGraphic.GetLayer(Constants.LAYER_VG).Element[i, j], graphic.GetLayer(Constants.LAYER_VG).Element[i, j]);
+					Assert.AreEqual<Pixel>(expectedGraphic.GetLayer(LayerId.Foreground).Element[i, j], graphic.GetLayer(LayerId.Foreground).Element[i, j]);
 				}
 			}
 		}
+
+		private void CompareDrivingWay(DrivingWayElement expectedDrivingWayElement, DrivingWayElement drivingWayElement)
+		{
+			Assert.AreEqual<DrivingWay>(expectedDrivingWayElement.DrivingWay, drivingWayElement.DrivingWay);
+			Assert.AreEqual<DrivingWayFunction>(expectedDrivingWayElement.Function, drivingWayElement.Function);
+			Assert.AreEqual<Direction>(expectedDrivingWayElement.Arrival, drivingWayElement.Arrival);
+			Assert.AreEqual<Direction>(expectedDrivingWayElement.Departure, drivingWayElement.Departure);
+		}
+		#endregion Private Methods
 	}
 }
