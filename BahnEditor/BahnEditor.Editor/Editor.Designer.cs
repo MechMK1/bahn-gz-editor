@@ -274,6 +274,7 @@
 			this.layerComboBox.Items.AddRange(new object[] {
             "Vordergrund",
             "Hintergrund und flach nach vorn",
+            "Hintergrund und flach nach vorn (2)",
             "Flach nach hinten",
             "Vordergrund, oben",
             "Vorn, auf Brücken"});

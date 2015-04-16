@@ -14,16 +14,20 @@
 		/// </summary>
 		Foreground = 2,
 		/// <summary>
-		/// background (behind train)
+		/// Background (behind train; first layer)
 		/// </summary>
-		Background = 3,
+		Background_0 = 3,
 		/// <summary>
-		/// front (used especially for bridges 45 degrees)
+		/// Front (used especially for bridges 45 degrees)
 		/// </summary>
 		Front = 4,
 		/// <summary>
 		/// Foreground above (use e.g. for overhead wires)
 		/// </summary>
-		ForegroundAbove = 5
+		ForegroundAbove = 5,
+		/// <summary>
+		/// Background (behind train; second layer)
+		/// </summary>
+		Background_1 = 6
 	}
 }

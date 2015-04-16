@@ -477,7 +477,7 @@ namespace BahnEditor.Editor
 					case LayerId.Foreground:
 						index = 0;
 						break;
-					case LayerId.Background:
+					case LayerId.Background_0:
 						index = 1;
 						break;
 					case LayerId.Front:
@@ -517,12 +517,14 @@ namespace BahnEditor.Editor
 				case 0:
 					return LayerId.Foreground;
 				case 1:
-					return LayerId.Background;
+					return LayerId.Background_0;
 				case 2:
-					return LayerId.ToBackground;
+					return LayerId.Background_1;
 				case 3:
-					return LayerId.ForegroundAbove;
+					return LayerId.ToBackground;
 				case 4:
+					return LayerId.ForegroundAbove;
+				case 5:
 					return LayerId.Front;
 				default:
 					throw new Exception("Internal Error");

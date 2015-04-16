@@ -14,6 +14,7 @@ namespace BahnEditor.BahnLib
 	{
 		#region Fields and Properties
 		private List<Layer> layers;
+		private int layercount;
 
 		/// <summary>
 		/// Gets the zoom factor
@@ -165,12 +166,12 @@ namespace BahnEditor.BahnLib
 		/// <param name="zoomFactor">Zoom factor</param>
 		/// <param name="version">Version</param>
 		public Graphic(string infoText, ZoomFactor zoomFactor, GraphicVersion version)
-			:this()
+			: this()
 		{
 			this.Version = version;
 			this.ZoomFactor = zoomFactor;
 			this.InfoText = infoText;
-			
+
 		}
 
 		/// <summary>
@@ -285,14 +286,16 @@ namespace BahnEditor.BahnLib
 			{
 				for (int j = 0; j < element.GetLength(1); j++)
 				{
-					if (this.GetLayer(LayerId.ForegroundAbove) != null)
+					if (this.GetLayer(LayerId.ForegroundAbove) != null && !this.GetLayer(LayerId.ForegroundAbove).Element[i + Constants.ELEMENTHEIGHT, j + Constants.ELEMENTWIDTH].IsTransparent)
 						element[i, j] = this.GetLayer(LayerId.ForegroundAbove).Element[i + Constants.ELEMENTHEIGHT, j + Constants.ELEMENTWIDTH];
-					else if (this.GetLayer(LayerId.Foreground) != null)
+					else if (this.GetLayer(LayerId.Foreground) != null && !this.GetLayer(LayerId.Foreground).Element[i + Constants.ELEMENTHEIGHT, j + Constants.ELEMENTWIDTH].IsTransparent)
 						element[i, j] = this.GetLayer(LayerId.Foreground).Element[i + Constants.ELEMENTHEIGHT, j + Constants.ELEMENTWIDTH];
-					else if (this.GetLayer(LayerId.Front) != null)
+					else if (this.GetLayer(LayerId.Front) != null && !this.GetLayer(LayerId.Front).Element[i + Constants.ELEMENTHEIGHT, j + Constants.ELEMENTWIDTH].IsTransparent)
 						element[i, j] = this.GetLayer(LayerId.Front).Element[i + Constants.ELEMENTHEIGHT, j + Constants.ELEMENTWIDTH];
-					else if (this.GetLayer(LayerId.Background) != null)
-						element[i, j] = this.GetLayer(LayerId.Background).Element[i + Constants.ELEMENTHEIGHT, j + Constants.ELEMENTWIDTH];
+					else if (this.GetLayer(LayerId.Background_1) != null && !this.GetLayer(LayerId.Background_1).Element[i + Constants.ELEMENTHEIGHT, j + Constants.ELEMENTWIDTH].IsTransparent)
+						element[i, j] = this.GetLayer(LayerId.Background_1).Element[i + Constants.ELEMENTHEIGHT, j + Constants.ELEMENTWIDTH];
+					else if (this.GetLayer(LayerId.Background_0) != null && !this.GetLayer(LayerId.Background_0).Element[i + Constants.ELEMENTHEIGHT, j + Constants.ELEMENTWIDTH].IsTransparent)
+						element[i, j] = this.GetLayer(LayerId.Background_0).Element[i + Constants.ELEMENTHEIGHT, j + Constants.ELEMENTWIDTH];
 					else
 						element[i, j] = Pixel.TransparentPixel();
 				}
@@ -325,119 +328,137 @@ namespace BahnEditor.BahnLib
 		// TODO Remove magic numbers
 		internal static Graphic Load(Stream path)
 		{
+
 			using (BinaryReader br = new BinaryReader(path, Encoding.Unicode))
 			{
-				Graphic graphic = new Graphic();
-				while (br.ReadByte() != Constants.HEADERTEXT_TERMINATOR) { } //Headertext, can be skipped
-				byte[] read = br.ReadBytes(3);
-				if (read[0] != 71 || read[1] != 90 || read[2] != 71) //identification string "GZG" ASCII-format
+				Graphic graphic = LoadHeader(br);
+				bool backgroundLayerExists = false;
+				for (int i = 0; i < graphic.layercount; i++)
 				{
-					throw new InvalidDataException("wrong identification string");
-				}
-
-				byte zoomFactor = (byte)(br.ReadByte() - 48); //zoomfactor, as ASCII-text
-				switch (zoomFactor)
-				{
-					case 1:
-					case 2:
-					case 4:
-						graphic.ZoomFactor = (ZoomFactor)Enum.Parse(typeof(ZoomFactor), zoomFactor.ToString(CultureInfo.InvariantCulture));
-						break;
-					default:
-						throw new InvalidDataException("unknown zoom factor");
-				}
-				ushort readVersion = br.ReadUInt16();
-				read = null;
-				read = br.ReadBytes(2);
-				GraphicVersion version;
-				if (readVersion != Constants.GRAPHIC_FILE_FORMAT || read[0] != 0x00)
-				{
-					throw new InvalidDataException("wrong version");
-				}
-				try
-				{
-					version = (GraphicVersion)Enum.Parse(typeof(GraphicVersion), read[1].ToString(CultureInfo.InvariantCulture));
-				}
-				catch (ArgumentException)
-				{
-					throw new InvalidDataException("wrong version");
-				}
-
-				int p = br.ReadInt32(); //Properties
-				graphic.Properties = (GraphicProperties)Enum.Parse(typeof(GraphicProperties), p.ToString(CultureInfo.InvariantCulture));
-				if (((graphic.Properties & GraphicProperties.Smoke) == GraphicProperties.Smoke) || ((graphic.Properties & GraphicProperties.Steam) == GraphicProperties.Steam))
-				{
-					graphic.SteamXPosition = br.ReadInt32();
-					graphic.SteamYPosition = br.ReadInt32();
-					graphic.SteamWidth = br.ReadInt32();
-				}
-				if ((graphic.Properties & GraphicProperties.Clock) == GraphicProperties.Clock)
-				{
-					if (version == GraphicVersion.Version0)
+					Layer l = Layer.ReadLayerFromStream(br, graphic.ZoomFactor, graphic.Version);
+					if (l.LayerId == LayerId.Background_0)
 					{
-						throw new InvalidDataException("Clock is set, but invalid for the version of the graphic");
+						if (!backgroundLayerExists)
+						{
+							backgroundLayerExists = true;
+						}
+						else
+						{
+							l.LayerId = LayerId.Background_1;
+						}
 					}
-					br.ReadInt32(); //skipping unused data (for future use)
-					int clockProperties = br.ReadInt32();
-					graphic.ClockProperties = (ClockProperties)Enum.Parse(typeof(ClockProperties), clockProperties.ToString(CultureInfo.InvariantCulture));
-					graphic.ClockXPosition = br.ReadInt32();
-					graphic.ClockYPosition = br.ReadInt32();
-					int clockZPosition = br.ReadInt32();
-					graphic.ClockZPosition = (LayerId)Enum.Parse(typeof(LayerId), clockZPosition.ToString(CultureInfo.InvariantCulture));
-					graphic.ClockWidth = br.ReadInt32();
-					graphic.ClockHeight = br.ReadInt32();
-					graphic.ClockColorHoursPointer = Pixel.FromUInt(br.ReadUInt32());
-					graphic.ClockColorMinutesPointer = Pixel.FromUInt(br.ReadUInt32());
-					br.ReadInt32(); //skipping unused data (for future use)
-				}
-				if ((graphic.Properties & GraphicProperties.Cursor) == GraphicProperties.Cursor)
-				{
-					if (version < GraphicVersion.Version2)
-					{
-						throw new InvalidDataException("Cursor is set, but invalid for the version of the graphic");
-					}
-					int cursorNormalDirection = br.ReadInt32();
-					int cursorReverseDirection = br.ReadInt32();
-					graphic.CursorNormalDirection = (Direction)Enum.Parse(typeof(Direction), cursorNormalDirection.ToString(CultureInfo.InvariantCulture));
-					graphic.CursorReverseDirection = (Direction)Enum.Parse(typeof(Direction), cursorReverseDirection.ToString(CultureInfo.InvariantCulture));
-				}
-				if ((graphic.Properties & GraphicProperties.ColorSchematicMode) == GraphicProperties.ColorSchematicMode)
-				{
-					if (version < GraphicVersion.Version2)
-					{
-						throw new InvalidDataException("ColorSchematicMode is set, but invalid for the version of the graphic");
-					}
-					graphic.ColorInSchematicMode = Pixel.FromUInt(br.ReadUInt32());
-					br.ReadUInt32(); //skipping unused data
-				}
-				if ((graphic.Properties & GraphicProperties.DrivingWay) == GraphicProperties.DrivingWay)
-				{
-					if(version < GraphicVersion.Version2)
-						throw new InvalidDataException("DrivingWay is set, but invalid for the version of the graphic");
-					graphic.DrivingWay = new List<DrivingWayElement>();
-					int count = br.ReadInt32();
-					for (int i = 0; i < count; i++)
-					{
-						graphic.DrivingWay.Add(DrivingWayElement.FromBytes(br.ReadBytes(12)));
-					}
-				}
-				short layer = br.ReadInt16();
-				br.ReadUInt16(); //skipping unknown data, see more in save-method
-				char c;
-				StringBuilder sb = new StringBuilder();
-				while ((c = br.ReadChar()) != Constants.UNICODE_NULL)
-				{
-					sb.Append(c);
-				}
-				graphic.InfoText = sb.ToString();
-
-
-				for (int i = 0; i < layer; i++)
-				{
-					graphic.AddLayer(Layer.ReadLayerFromStream(br, graphic.ZoomFactor, version));
+					graphic.AddLayer(l);
 				}
 				return graphic;
 			}
+		}
+
+		internal static Graphic LoadHeader(BinaryReader br)
+		{
+			Graphic graphic = new Graphic();
+			while (br.ReadByte() != Constants.HEADERTEXT_TERMINATOR) { } //Headertext, can be skipped
+			byte[] readIdentification = br.ReadBytes(3);
+			if (readIdentification[0] != 71 || readIdentification[1] != 90 || readIdentification[2] != 71) //identification string "GZG" ASCII-format
+			{
+				throw new InvalidDataException("wrong identification string");
+			}
+
+			byte zoomFactor = (byte)(br.ReadByte() - 48); //zoomfactor, as ASCII-text
+			switch (zoomFactor)
+			{
+				case 1:
+				case 2:
+				case 4:
+					graphic.ZoomFactor = (ZoomFactor)Enum.Parse(typeof(ZoomFactor), zoomFactor.ToString(CultureInfo.InvariantCulture));
+					break;
+				default:
+					throw new InvalidDataException("unknown zoom factor");
+			}
+			ushort readVersion = br.ReadUInt16();
+			byte[] readSubversion = br.ReadBytes(2);
+			if (readVersion != Constants.GRAPHIC_FILE_FORMAT || readSubversion[0] != 0x00)
+			{
+				throw new InvalidDataException("wrong version");
+			}
+			switch (readSubversion[1])
+			{
+				case (byte)GraphicVersion.Version0:
+				case (byte)GraphicVersion.Version1:
+				case (byte)GraphicVersion.Version2:
+					graphic.Version = (GraphicVersion)Enum.Parse(typeof(GraphicVersion), readSubversion[1].ToString(CultureInfo.InvariantCulture));
+					break;
+				default:
+					throw new InvalidDataException("wrong version");
+			}
+
+			int p = br.ReadInt32(); //Properties
+			graphic.Properties = (GraphicProperties)Enum.Parse(typeof(GraphicProperties), p.ToString(CultureInfo.InvariantCulture));
+			if (((graphic.Properties & GraphicProperties.Smoke) == GraphicProperties.Smoke) || ((graphic.Properties & GraphicProperties.Steam) == GraphicProperties.Steam))
+			{
+				graphic.SteamXPosition = br.ReadInt32();
+				graphic.SteamYPosition = br.ReadInt32();
+				graphic.SteamWidth = br.ReadInt32();
+			}
+			if ((graphic.Properties & GraphicProperties.Clock) == GraphicProperties.Clock)
+			{
+				if (graphic.Version == GraphicVersion.Version0)
+				{
+					throw new InvalidDataException("Clock is set, but invalid for the version of the graphic");
+				}
+				br.ReadInt32(); //skipping unused data (for future use)
+				int clockProperties = br.ReadInt32();
+				graphic.ClockProperties = (ClockProperties)Enum.Parse(typeof(ClockProperties), clockProperties.ToString(CultureInfo.InvariantCulture));
+				graphic.ClockXPosition = br.ReadInt32();
+				graphic.ClockYPosition = br.ReadInt32();
+				int clockZPosition = br.ReadInt32();
+				graphic.ClockZPosition = (LayerId)Enum.Parse(typeof(LayerId), clockZPosition.ToString(CultureInfo.InvariantCulture));
+				graphic.ClockWidth = br.ReadInt32();
+				graphic.ClockHeight = br.ReadInt32();
+				graphic.ClockColorHoursPointer = Pixel.FromUInt(br.ReadUInt32());
+				graphic.ClockColorMinutesPointer = Pixel.FromUInt(br.ReadUInt32());
+				br.ReadInt32(); //skipping unused data (for future use)
+			}
+			if ((graphic.Properties & GraphicProperties.Cursor) == GraphicProperties.Cursor)
+			{
+				if (graphic.Version < GraphicVersion.Version2)
+				{
+					throw new InvalidDataException("Cursor is set, but invalid for the version of the graphic");
+				}
+				int cursorNormalDirection = br.ReadInt32();
+				int cursorReverseDirection = br.ReadInt32();
+				graphic.CursorNormalDirection = (Direction)Enum.Parse(typeof(Direction), cursorNormalDirection.ToString(CultureInfo.InvariantCulture));
+				graphic.CursorReverseDirection = (Direction)Enum.Parse(typeof(Direction), cursorReverseDirection.ToString(CultureInfo.InvariantCulture));
+			}
+			if ((graphic.Properties & GraphicProperties.ColorSchematicMode) == GraphicProperties.ColorSchematicMode)
+			{
+				if (graphic.Version < GraphicVersion.Version2)
+				{
+					throw new InvalidDataException("ColorSchematicMode is set, but invalid for the version of the graphic");
+				}
+				graphic.ColorInSchematicMode = Pixel.FromUInt(br.ReadUInt32());
+				br.ReadUInt32(); //skipping unused data
+			}
+			if ((graphic.Properties & GraphicProperties.DrivingWay) == GraphicProperties.DrivingWay)
+			{
+				if (graphic.Version < GraphicVersion.Version2)
+					throw new InvalidDataException("DrivingWay is set, but invalid for the version of the graphic");
+				graphic.DrivingWay = new List<DrivingWayElement>();
+				int count = br.ReadInt32();
+				for (int i = 0; i < count; i++)
+				{
+					graphic.DrivingWay.Add(DrivingWayElement.FromBytes(br.ReadBytes(12)));
+				}
+			}
+			graphic.layercount = br.ReadInt16();
+			br.ReadUInt16(); //skipping unknown data, see more in save-method
+			char c;
+			StringBuilder sb = new StringBuilder();
+			while ((c = br.ReadChar()) != Constants.UNICODE_NULL)
+			{
+				sb.Append(c);
+			}
+			graphic.InfoText = sb.ToString();
+			return graphic;
 		}
 		#endregion Static Methods
 
@@ -488,7 +509,7 @@ namespace BahnEditor.BahnLib
 				bw.Write(this.ColorInSchematicMode.ToUInt());
 				bw.Write(Constants.COLOR_TRANSPARENT); //Not used, reserved for future use
 			}
-			if((this.Properties & GraphicProperties.DrivingWay) == GraphicProperties.DrivingWay)
+			if ((this.Properties & GraphicProperties.DrivingWay) == GraphicProperties.DrivingWay)
 			{
 				bw.Write(this.DrivingWay.Count);
 				foreach (var item in this.DrivingWay)

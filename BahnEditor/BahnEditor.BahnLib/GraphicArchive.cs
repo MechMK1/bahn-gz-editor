@@ -14,10 +14,9 @@ namespace BahnEditor.BahnLib
 	{
 		#region Fields and Properties
 		/// <summary>
-		/// Tuple: Element number, Bauform, FwSig, Phase, Alt, Graphic
+		/// List of graphics in the archive
 		/// </summary>
-		private List<Tuple<int, int, int, int, int, Graphic>> graphics; // TODO Create class from tuple
-		// TODO Use Dictionary<int, Graphic>
+		private List<ArchiveElement> graphics; 
 
 		/// <summary>
 		/// Gets the zoom factor
@@ -43,7 +42,7 @@ namespace BahnEditor.BahnLib
 		/// <param name="zoomFactor">Zoom factor of the graphics</param>
 		public GraphicArchive(ZoomFactor zoomFactor)
 		{
-			graphics = new List<Tuple<int, int, int, int, int, Graphic>>();
+			graphics = new List<ArchiveElement>();
 			this.ZoomFactor = zoomFactor;
 		}
 		#endregion Constructor
@@ -62,7 +61,7 @@ namespace BahnEditor.BahnLib
 			if (this.graphics.Count == 0)
 				elementNumber = 0;
 			else
-				elementNumber = this.graphics.OrderBy(x => x.Item1).Last().Item1 + 1;
+				elementNumber = this.graphics.OrderBy(x => x.ElementNumber).Last().ElementNumber + 1;
 			this.AddGraphic(elementNumber, graphic);
 		}
 
@@ -73,6 +72,7 @@ namespace BahnEditor.BahnLib
 		/// <param name="graphic">Graphic</param>
 		/// <exception cref="System.ArgumentNullException"/>
 		/// <exception cref="System.ArgumentOutOfRangeException"/>
+		/// <exception cref="System.ArgumentException"/>
 		public void AddGraphic(int elementNumber, Graphic graphic)
 		{
 			this.AddGraphic(elementNumber, Constants.MIN_ANIMATIONPHASE, Constants.NO_ALTERNATIVE, graphic);
@@ -100,9 +100,9 @@ namespace BahnEditor.BahnLib
 				throw new ArgumentOutOfRangeException("alternative");
 			if (graphic.ZoomFactor != this.ZoomFactor)
 				throw new ArgumentException("Zoomfactor not matching");
-			if (this.graphics.Count(x => x.Item1 == elementNumber && x.Item4 == phase && x.Item5 == alternative) > 0)
+			if (this.graphics.Count(x => x.ElementNumber == elementNumber && x.AnimationPhase == phase && x.Alternative == alternative) > 0)
 				throw new ArgumentException("Graphic is already existing at this position");
-			this.graphics.Add(Tuple.Create(elementNumber, 0, 0, phase, alternative, graphic));
+			this.graphics.Add(new ArchiveElement(elementNumber, 0, 0, phase, alternative, graphic));
 		}
 
 		public Graphic this[int index]
@@ -111,14 +111,19 @@ namespace BahnEditor.BahnLib
 			{
 				try
 				{
-					IEnumerable<Tuple<int, int, int, int, int, Graphic>> e = graphics.Where(x => x.Item1 == index);
-					for (int i = 0; i < 4; i++)
+					IEnumerable<ArchiveElement> enumerable = graphics.Where(x => x.ElementNumber == index);
+					for (int i = 1; i < 4; i++)
 					{
-						Tuple<int, int, int, int, int, Graphic> tuple = e.SingleOrDefault(x => x.Item4 == 0 && x.Item5 == i);
-						if (tuple != null)
+						ArchiveElement archiveElement = enumerable.SingleOrDefault(x => x.AnimationPhase == 0 && x.Alternative == i);
+						if (archiveElement != null)
 						{
-							return tuple.Item6;
+							return archiveElement.Graphic;
 						}
+					}
+					ArchiveElement element = enumerable.SingleOrDefault(x => x.AnimationPhase == 0 && x.Alternative == 0);
+					if (element != null)
+					{
+						return element.Graphic;
 					}
 					return null;
 				}
@@ -143,17 +148,17 @@ namespace BahnEditor.BahnLib
 		/// Removes a graphic from the archive
 		/// </summary>
 		/// <param name="elementNumber">Position in the archive</param>
-		/// <param name="phase">Phase</param>
+		/// <param name="phase">Animationphase</param>
 		/// <param name="alternative">Alternative</param>
 		/// <exception cref="System.ArgumentException"/>
 		public void RemoveGraphic(int elementNumber, int phase, int alternative)
 		{
-			int result = this.graphics.Count(x => x.Item1 == elementNumber && x.Item4 == phase && x.Item5 == alternative);
+			int result = this.graphics.Count(x => x.ElementNumber == elementNumber && x.AnimationPhase == phase && x.Alternative == alternative);
 			if (result > 1)
 				throw new ArgumentException("Too many graphics found");
 			if (result == 0)
 				throw new ArgumentException("Graphic not found");
-			this.graphics.RemoveAll(x => x.Item1 == elementNumber && x.Item4 == phase && x.Item5 == alternative);
+			this.graphics.RemoveAll(x => x.ElementNumber == elementNumber && x.AnimationPhase == phase && x.Alternative == alternative);
 		}
 
 		/// <summary>
@@ -234,22 +239,24 @@ namespace BahnEditor.BahnLib
 					seekList.Add((int)(br.BaseStream.Position + 4 + br.ReadInt32()));
 				}
 
-				List<Tuple<int, int, int, int, int, Graphic>> graphics = new List<Tuple<int, int, int, int, int, Graphic>>();
+				List<ArchiveElement> graphics = new List<ArchiveElement>();
 				foreach (var item in seekList)
 				{
 					br.BaseStream.Seek(item, SeekOrigin.Begin);
-					int elementNumber = br.ReadInt32();
-					int bauform = br.ReadInt32();
-					int fwSig = br.ReadInt32();
-					int phase = br.ReadInt32();
-					int alt = br.ReadInt32();
+					ArchiveElement element = new ArchiveElement();
+					element.ElementNumber = br.ReadInt32();
+					element.Bauform = br.ReadInt32();
+					element.DrivingWay_Signal = br.ReadInt32();
+					element.AnimationPhase = br.ReadInt32();
+					element.Alternative = br.ReadInt32();
 					int length = br.ReadInt32();
 					int date = br.ReadInt32();
 					using (MemoryStream ms = new MemoryStream())
 					{
 						br.BaseStream.CopyTo(ms, length);
 						ms.Position = 0;
-						graphics.Add(Tuple.Create(elementNumber, bauform, fwSig, phase, alt, Graphic.Load(ms)));
+						element.Graphic = Graphic.Load(ms);
+						graphics.Add(element);
 					}
 				}
 				GraphicArchive archive;
@@ -277,7 +284,7 @@ namespace BahnEditor.BahnLib
 			}
 			foreach (var item in this.graphics)
 			{
-				if (item.Item6.IsElementEmpty())
+				if (item.Graphic.IsElementEmpty())
 				{
 					throw new ElementIsEmptyException("a graphic is empty");
 				}
@@ -291,11 +298,11 @@ namespace BahnEditor.BahnLib
 				bw.Write((byte)(48 + this.ZoomFactor)); //Zoom faktor ASCII
 				foreach (var item in this.graphics)
 				{
-					bw.Write(item.Item1); //Elementnummer
-					bw.Write(item.Item2); //Bauform
-					bw.Write(item.Item3); //FwSig
-					bw.Write(item.Item4); //Phase
-					bw.Write(item.Item5); //Alt
+					bw.Write(item.ElementNumber); //Elementnummer
+					bw.Write(item.Bauform); //Bauform
+					bw.Write(item.DrivingWay_Signal); //FwSig
+					bw.Write(item.AnimationPhase); //Phase
+					bw.Write(item.Alternative); //Alt
 					offsetList.Add(Tuple.Create<long, long>(bw.BaseStream.Position, 0));
 					bw.Write(0); //Offset
 
@@ -304,15 +311,15 @@ namespace BahnEditor.BahnLib
 				int i = 0;
 				foreach (var item in this.graphics)
 				{
-					bw.Write(item.Item1); //Elementnummer
+					bw.Write(item.ElementNumber); //Elementnummer
 					offsetList[i] = Tuple.Create(offsetList[i].Item1, bw.BaseStream.Position);
-					bw.Write(item.Item2); //Bauform
-					bw.Write(item.Item3); //FwSig
-					bw.Write(item.Item4); //Phase
-					bw.Write(item.Item5); //Alt
+					bw.Write(item.Bauform); //Bauform
+					bw.Write(item.DrivingWay_Signal); //FwSig
+					bw.Write(item.AnimationPhase); //Phase
+					bw.Write(item.Alternative); //Alt
 					using (MemoryStream ms = new MemoryStream())
 					{
-						item.Item6.Save(ms);
+						item.Graphic.Save(ms);
 						bw.Write((int)ms.Length); //Länge der Einzeldatei in Byte
 						bw.Write(0x46646E7C); //Datum
 						ms.WriteTo(bw.BaseStream);

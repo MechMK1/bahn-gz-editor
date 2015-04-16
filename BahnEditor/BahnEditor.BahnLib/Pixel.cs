@@ -212,7 +212,7 @@ namespace BahnEditor.BahnLib
 				case SpecialPixelWithoutRGB.As_Marking_Point_Water:
 					return Color.FromArgb(84, 252, 252);
 				case SpecialPixelWithoutRGB.As_Gravel:
-					return Color.FromArgb(84, 84, 84);
+					return Color.FromArgb(60, 60, 60);
 				case SpecialPixelWithoutRGB.As_Small_Gravel:
 					return Color.FromArgb(168, 136, 0);
 				case SpecialPixelWithoutRGB.As_Grassy:

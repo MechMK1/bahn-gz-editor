@@ -54,7 +54,10 @@ namespace BahnEditor.BahnLib
 			short x0;
 			short y0;
 			Pixel[,] element = TrimElement(out x0, out y0, this.Element, zoomFactor);
-			bw.Write((short)this.LayerId); //layer
+			if (this.LayerId == LayerId.Background_1)
+				bw.Write((short)LayerId.Background_0);
+			else
+				bw.Write((short)this.LayerId); //layer
 			bw.Write(x0); //x0
 			bw.Write(y0); //y0
 			bw.Write((short)element.GetLength(1)); //width
@@ -89,7 +92,7 @@ namespace BahnEditor.BahnLib
 			{
 				element = ReadElementFromStreamVersion2(br, width, height);
 			}
-			else if(version < GraphicVersion.Version2)
+			else if (version < GraphicVersion.Version2)
 			{
 				element = ReadElementFromStreamVersion0(br, width, height);
 			}
