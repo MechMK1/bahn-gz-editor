@@ -118,9 +118,9 @@ namespace BahnEditor.BahnLib
 		#endregion Constructor
 
 		#region Public Methods
-		//HACK Convert what to uint
 		/// <summary>
 		/// Converts the pixel to uint
+		/// <para>Used for serialization</para>
 		/// </summary>
 		/// <returns>Returns the data in format RGB with special data in the last two bits.</returns>
 		public uint ToUInt()
