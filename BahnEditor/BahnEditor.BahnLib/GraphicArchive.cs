@@ -75,7 +75,7 @@ namespace BahnEditor.BahnLib
 		/// <exception cref="System.ArgumentException"/>
 		public void AddGraphic(int elementNumber, Graphic graphic)
 		{
-			this.AddGraphic(elementNumber, Constants.MIN_ANIMATIONPHASE, Constants.NO_ALTERNATIVE, graphic);
+			this.AddGraphic(elementNumber, Constants.MinAnimationPhase, Constants.NoAlternative, graphic);
 		}
 
 		/// <summary>
@@ -102,7 +102,7 @@ namespace BahnEditor.BahnLib
 				throw new ArgumentException("Zoomfactor not matching");
 			if (this.graphics.Count(x => x.ElementNumber == elementNumber && x.AnimationPhase == phase && x.Alternative == alternative) > 0)
 				throw new ArgumentException("Graphic is already existing at this position");
-			this.graphics.Add(new ArchiveElement(elementNumber, 0, 0, phase, alternative, graphic));
+			this.graphics.Add(new ArchiveElement(elementNumber, phase, alternative, graphic));
 		}
 
 		public Graphic this[int index]
@@ -216,7 +216,7 @@ namespace BahnEditor.BahnLib
 			// TODO remove magic numbers
 			using (BinaryReader br = new BinaryReader(path, Encoding.Unicode))
 			{
-				while (br.ReadByte() != Constants.HEADERTEXT_TERMINATOR) { }
+				while (br.ReadByte() != Constants.HeaderTextTerminator) { }
 				byte[] read = br.ReadBytes(3);
 				if (read[0] != 85 || read[1] != 90 || read[2] != 88)
 				{
@@ -245,8 +245,8 @@ namespace BahnEditor.BahnLib
 					br.BaseStream.Seek(item, SeekOrigin.Begin);
 					ArchiveElement element = new ArchiveElement();
 					element.ElementNumber = br.ReadInt32();
-					element.Bauform = br.ReadInt32();
-					element.DrivingWay_Signal = br.ReadInt32();
+					br.ReadInt32(); //skip bauform
+					br.ReadInt32(); //skip fwSig
 					element.AnimationPhase = br.ReadInt32();
 					element.Alternative = br.ReadInt32();
 					int length = br.ReadInt32();
@@ -293,14 +293,14 @@ namespace BahnEditor.BahnLib
 			using (BinaryWriter bw = new BinaryWriter(path, Encoding.Unicode))
 			{
 				List<Tuple<long, long>> offsetList = new List<Tuple<long, long>>();
-				bw.Write(Constants.HEADERTEXT.ToArray()); //Headertext 
+				bw.Write(Constants.HeaderText.ToArray()); //Headertext 
 				bw.Write(new byte[] { 85, 90, 88 }); //identification string UZX ASCII
 				bw.Write((byte)(48 + this.ZoomFactor)); //Zoom faktor ASCII
 				foreach (var item in this.graphics)
 				{
 					bw.Write(item.ElementNumber); //Elementnummer
-					bw.Write(item.Bauform); //Bauform
-					bw.Write(item.DrivingWay_Signal); //FwSig
+					bw.Write(0); //Bauform
+					bw.Write(0); //FwSig
 					bw.Write(item.AnimationPhase); //Phase
 					bw.Write(item.Alternative); //Alt
 					offsetList.Add(Tuple.Create<long, long>(bw.BaseStream.Position, 0));
@@ -313,8 +313,8 @@ namespace BahnEditor.BahnLib
 				{
 					bw.Write(item.ElementNumber); //Elementnummer
 					offsetList[i] = Tuple.Create(offsetList[i].Item1, bw.BaseStream.Position);
-					bw.Write(item.Bauform); //Bauform
-					bw.Write(item.DrivingWay_Signal); //FwSig
+					bw.Write(0); //Bauform
+					bw.Write(0); //FwSig
 					bw.Write(item.AnimationPhase); //Phase
 					bw.Write(item.Alternative); //Alt
 					using (MemoryStream ms = new MemoryStream())

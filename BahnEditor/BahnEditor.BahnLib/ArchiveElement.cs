@@ -6,20 +6,36 @@ using System.Threading.Tasks;
 
 namespace BahnEditor.BahnLib
 {
-	public class ArchiveElement
+	/// <summary>
+	/// Represents an element in a graphic archive
+	/// </summary>
+	internal class ArchiveElement
 	{
 		#region Properties
+		/// <summary>
+		/// Index in the archive
+		/// </summary>
 		public int ElementNumber { get; set; }
 
-		public int Bauform { get; set; }
-
-		public int DrivingWay_Signal { get; set; }
-
+		/// <summary>
+		/// Animationphase
+		/// </summary>
 		public int AnimationPhase { get; set; }
 
+		/// <summary>
+		/// Alternative
+		/// </summary>
 		public int Alternative { get; set; }
 
+		/// <summary>
+		/// Graphic
+		/// </summary>
 		public Graphic Graphic { get; set; }
+
+		/// <summary>
+		/// Seekposition in the archive-file (prepared for later)
+		/// </summary>
+		public int SeekPosition { get; set; }
 		#endregion Properties
 
 		#region Constructor
@@ -28,11 +44,9 @@ namespace BahnEditor.BahnLib
 
 		}
 
-		internal ArchiveElement(int elementNumber, int bauform, int drivingWay_Signal, int animationPhase, int alternative, Graphic graphic)
+		internal ArchiveElement(int elementNumber, int animationPhase, int alternative, Graphic graphic)
 		{
 			this.ElementNumber = elementNumber;
-			this.Bauform = bauform;
-			this.DrivingWay_Signal = drivingWay_Signal;
 			this.AnimationPhase = animationPhase;
 			this.Alternative = alternative;
 			this.Graphic = graphic;

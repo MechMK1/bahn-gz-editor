@@ -192,7 +192,7 @@ namespace BahnEditor.BahnLib
 		/// <param name="layerID">LayerId</param>
 		public void AddTransparentLayer(LayerId layerID)
 		{
-			Pixel[,] element = new Pixel[Constants.ELEMENTHEIGHT * 8 * (byte)this.ZoomFactor, Constants.ELEMENTWIDTH * 3 * (byte)this.ZoomFactor];
+			Pixel[,] element = new Pixel[Constants.ElementHeight * 8 * (byte)this.ZoomFactor, Constants.ElementWidth * 3 * (byte)this.ZoomFactor];
 			for (int i = 0; i < element.GetLength(0); i++)
 			{
 				for (int j = 0; j < element.GetLength(1); j++)
@@ -281,21 +281,21 @@ namespace BahnEditor.BahnLib
 		/// <returns>Element</returns>
 		public Pixel[,] ElementPreview()
 		{
-			Pixel[,] element = new Pixel[Constants.ELEMENTHEIGHT, Constants.ELEMENTWIDTH];
+			Pixel[,] element = new Pixel[Constants.ElementHeight, Constants.ElementWidth];
 			for (int i = 0; i < element.GetLength(0); i++)
 			{
 				for (int j = 0; j < element.GetLength(1); j++)
 				{
-					if (this.GetLayer(LayerId.ForegroundAbove) != null && !this.GetLayer(LayerId.ForegroundAbove).Element[i + Constants.ELEMENTHEIGHT, j + Constants.ELEMENTWIDTH].IsTransparent)
-						element[i, j] = this.GetLayer(LayerId.ForegroundAbove).Element[i + Constants.ELEMENTHEIGHT, j + Constants.ELEMENTWIDTH];
-					else if (this.GetLayer(LayerId.Foreground) != null && !this.GetLayer(LayerId.Foreground).Element[i + Constants.ELEMENTHEIGHT, j + Constants.ELEMENTWIDTH].IsTransparent)
-						element[i, j] = this.GetLayer(LayerId.Foreground).Element[i + Constants.ELEMENTHEIGHT, j + Constants.ELEMENTWIDTH];
-					else if (this.GetLayer(LayerId.Front) != null && !this.GetLayer(LayerId.Front).Element[i + Constants.ELEMENTHEIGHT, j + Constants.ELEMENTWIDTH].IsTransparent)
-						element[i, j] = this.GetLayer(LayerId.Front).Element[i + Constants.ELEMENTHEIGHT, j + Constants.ELEMENTWIDTH];
-					else if (this.GetLayer(LayerId.Background_1) != null && !this.GetLayer(LayerId.Background_1).Element[i + Constants.ELEMENTHEIGHT, j + Constants.ELEMENTWIDTH].IsTransparent)
-						element[i, j] = this.GetLayer(LayerId.Background_1).Element[i + Constants.ELEMENTHEIGHT, j + Constants.ELEMENTWIDTH];
-					else if (this.GetLayer(LayerId.Background_0) != null && !this.GetLayer(LayerId.Background_0).Element[i + Constants.ELEMENTHEIGHT, j + Constants.ELEMENTWIDTH].IsTransparent)
-						element[i, j] = this.GetLayer(LayerId.Background_0).Element[i + Constants.ELEMENTHEIGHT, j + Constants.ELEMENTWIDTH];
+					if (this.GetLayer(LayerId.ForegroundAbove) != null && !this.GetLayer(LayerId.ForegroundAbove).Element[i + Constants.ElementHeight, j + Constants.ElementWidth].IsTransparent)
+						element[i, j] = this.GetLayer(LayerId.ForegroundAbove).Element[i + Constants.ElementHeight, j + Constants.ElementWidth];
+					else if (this.GetLayer(LayerId.Foreground) != null && !this.GetLayer(LayerId.Foreground).Element[i + Constants.ElementHeight, j + Constants.ElementWidth].IsTransparent)
+						element[i, j] = this.GetLayer(LayerId.Foreground).Element[i + Constants.ElementHeight, j + Constants.ElementWidth];
+					else if (this.GetLayer(LayerId.Front) != null && !this.GetLayer(LayerId.Front).Element[i + Constants.ElementHeight, j + Constants.ElementWidth].IsTransparent)
+						element[i, j] = this.GetLayer(LayerId.Front).Element[i + Constants.ElementHeight, j + Constants.ElementWidth];
+					else if (this.GetLayer(LayerId.Background_1) != null && !this.GetLayer(LayerId.Background_1).Element[i + Constants.ElementHeight, j + Constants.ElementWidth].IsTransparent)
+						element[i, j] = this.GetLayer(LayerId.Background_1).Element[i + Constants.ElementHeight, j + Constants.ElementWidth];
+					else if (this.GetLayer(LayerId.Background_0) != null && !this.GetLayer(LayerId.Background_0).Element[i + Constants.ElementHeight, j + Constants.ElementWidth].IsTransparent)
+						element[i, j] = this.GetLayer(LayerId.Background_0).Element[i + Constants.ElementHeight, j + Constants.ElementWidth];
 					else
 						element[i, j] = Pixel.TransparentPixel();
 				}
@@ -328,36 +328,40 @@ namespace BahnEditor.BahnLib
 		// TODO Remove magic numbers
 		internal static Graphic Load(Stream path)
 		{
-
 			using (BinaryReader br = new BinaryReader(path, Encoding.Unicode))
 			{
 				Graphic graphic = LoadHeader(br);
-				bool backgroundLayerExists = false;
-				for (int i = 0; i < graphic.layercount; i++)
-				{
-					Layer l = Layer.ReadLayerFromStream(br, graphic.ZoomFactor, graphic.Version);
-					if (l.LayerId == LayerId.Background_0)
-					{
-						if (!backgroundLayerExists)
-						{
-							backgroundLayerExists = true;
-						}
-						else
-						{
-							l.LayerId = LayerId.Background_1;
-						}
-					}
-					graphic.AddLayer(l);
-				}
+				graphic.LoadData(br);
 				return graphic;
+			}
+		}
+
+		internal void LoadData(BinaryReader br)
+		{
+			bool backgroundLayerExists = false;
+			for (int i = 0; i < this.layercount; i++)
+			{
+				Layer l = Layer.ReadLayerFromStream(br, this.ZoomFactor, this.Version);
+				if (l.LayerId == LayerId.Background_0)
+				{
+					if (!backgroundLayerExists)
+					{
+						backgroundLayerExists = true;
+					}
+					else
+					{
+						l.LayerId = LayerId.Background_1;
+					}
+				}
+				this.AddLayer(l);
 			}
 		}
 
 		internal static Graphic LoadHeader(BinaryReader br)
 		{
 			Graphic graphic = new Graphic();
-			while (br.ReadByte() != Constants.HEADERTEXT_TERMINATOR) { } //Headertext, can be skipped
-			byte[] readIdentification = br.ReadBytes(3);
+			while (br.ReadByte() != Constants.HeaderTextTerminator) { } //Headertext, can be skipped
+			byte[] readIdentification = br.ReadBytes(3); //Read indentification string
 			if (readIdentification[0] != 71 || readIdentification[1] != 90 || readIdentification[2] != 71) //identification string "GZG" ASCII-format
 			{
 				throw new InvalidDataException("wrong identification string");
@@ -376,7 +380,7 @@ namespace BahnEditor.BahnLib
 			}
 			ushort readVersion = br.ReadUInt16();
 			byte[] readSubversion = br.ReadBytes(2);
-			if (readVersion != Constants.GRAPHIC_FILE_FORMAT || readSubversion[0] != 0x00)
+			if (readVersion != Constants.GraphicFileFormat || readSubversion[0] != 0x00)
 			{
 				throw new InvalidDataException("wrong version");
 			}
@@ -453,7 +457,7 @@ namespace BahnEditor.BahnLib
 			br.ReadUInt16(); //skipping unknown data, see more in save-method
 			char c;
 			StringBuilder sb = new StringBuilder();
-			while ((c = br.ReadChar()) != Constants.UNICODE_NULL)
+			while ((c = br.ReadChar()) != Constants.UnicodeNull)
 			{
 				sb.Append(c);
 			}
@@ -471,10 +475,10 @@ namespace BahnEditor.BahnLib
 
 			BinaryWriter bw = new BinaryWriter(path, Encoding.Unicode);
 			int layer = this.layers.Count;
-			bw.Write(Constants.HEADERTEXT.ToArray()); //Headertext 
+			bw.Write(Constants.HeaderText.ToArray()); //Headertext 
 			bw.Write(new byte[] { 71, 90, 71 }); //identification string "GZG" ASCII-format
 			bw.Write((byte)(48 + this.ZoomFactor)); //Zoomfactor, as ASCII-format
-			bw.Write(Constants.GRAPHIC_FILE_FORMAT); //version
+			bw.Write(Constants.GraphicFileFormat); //version
 			bw.Write((byte)0); //subversion, normally a byte[2] array, but first element of the array is empty
 			bw.Write((byte)this.Version); //subversion
 			if (this.Version >= GraphicVersion.Version2 && ((this.Properties & GraphicProperties.ColorFormat24BPP) != GraphicProperties.ColorFormat24BPP))
@@ -507,7 +511,7 @@ namespace BahnEditor.BahnLib
 			if ((this.Properties & GraphicProperties.ColorSchematicMode) == GraphicProperties.ColorSchematicMode)
 			{
 				bw.Write(this.ColorInSchematicMode.ToUInt());
-				bw.Write(Constants.COLOR_TRANSPARENT); //Not used, reserved for future use
+				bw.Write(Constants.ColorTransparent); //Not used, reserved for future use
 			}
 			if ((this.Properties & GraphicProperties.DrivingWay) == GraphicProperties.DrivingWay)
 			{
@@ -520,7 +524,7 @@ namespace BahnEditor.BahnLib
 			bw.Write((short)layer); //layer
 			bw.Write((ushort)0xFFFE); //unknown, got data through analysis of existing files, doesn't work without
 			bw.Write(this.InfoText.ToCharArray());
-			bw.Write(Constants.UNICODE_NULL);
+			bw.Write(Constants.UnicodeNull);
 			for (int i = 0; i < layer; i++)
 			{
 				this.layers[i].WriteLayerToStream(bw, this.ZoomFactor);

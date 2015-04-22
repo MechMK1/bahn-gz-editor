@@ -6,60 +6,59 @@
 	public static class Constants
 	{
 		//TODO Write Doc for every constant
-		//TODO Constants in english
 
 		//Coordinates
 		/// <summary>
 		/// Basic element width in pixels for scale 1:1
 		/// </summary>
-		public const int ELEMENTWIDTH = 32;
+		public const int ElementWidth = 32;
 		/// <summary>
 		/// Basic element height in pixels for scale 1:1
 		/// </summary>
-		public const int ELEMENTHEIGHT = 16;
+		public const int ElementHeight = 16;
 
 		//Variants
-		public const int NO_ALTERNATIVE = 0;
-		public const int MIN_ALTERNATIVE = 1;
-		public const int MAX_ALTERNATIVE = 4;
+		public const int NoAlternative = 0;
+		public const int MinAlternative = 1;
+		public const int MaxAlternative = 4;
 
 		//Animations
-		public const int MIN_ANIMATIONPHASE = 0;
-		public const int MAX_ANIMATIONPHASE = 0;
+		public const int MinAnimationPhase = 0;
+		public const int MaxAnimationPhase = 0;
 
 		//File format versions
-		public const ushort GRAPHIC_FILE_FORMAT = 0x8403;
+		public const ushort GraphicFileFormat = 0x8403;
 
 		//Headertext
-		public static System.Collections.ObjectModel.ReadOnlyCollection<byte> HEADERTEXT = new System.Collections.ObjectModel.ReadOnlyCollection<byte>(new System.Collections.Generic.List<byte>() { 67, 114, 101, 97, 116, 101, 100, 32, 98, 121, 32, 66, 97, 104, 110, 32, 71, 114, 97, 112, 104, 105, 99, 32, 69, 100, 105, 116, 111, 114, Constants.HEADERTEXT_TERMINATOR });
-		public const byte HEADERTEXT_TERMINATOR = 26;
+		public static System.Collections.ObjectModel.ReadOnlyCollection<byte> HeaderText = new System.Collections.ObjectModel.ReadOnlyCollection<byte>(new System.Collections.Generic.List<byte>() { 67, 114, 101, 97, 116, 101, 100, 32, 98, 121, 32, 66, 97, 104, 110, 32, 71, 114, 97, 112, 104, 105, 99, 32, 69, 100, 105, 116, 111, 114, Constants.HeaderTextTerminator });
+		public const byte HeaderTextTerminator = 26;
 
 		//Unicode-Constants
-		public const ushort UNICODE_NULL = 0x0000;
+		public const ushort UnicodeNull = 0x0000;
 
 		//Colors
-		public const uint COLOR_LOGIC = 0x80000000;
-		public const uint COLOR_TRANSPARENT = (COLOR_LOGIC | 0x00000001);
-		public const uint COLOR_LAMP = 0x50000000;
-		public const uint COLOR_ADDITIONAL_DATA_MASK = 0xFf000000;
-		public const uint COLOR_ALWAYSBRIGHT = 0x40000000;
-		public const uint COLOR_WINDOW = 0x60000000;
-		public const uint COLOR_WINDOW_0 = COLOR_WINDOW;
-		public const uint COLOR_WINDOW_1 = (COLOR_WINDOW | 0x01000000);
-		public const uint COLOR_WINDOW_2 = (COLOR_WINDOW | 0x02000000);
+		public const uint ColorLogic = 0x80000000;
+		public const uint ColorTransparent = (ColorLogic | 0x00000001);
+		public const uint ColorLamp = 0x50000000;
+		public const uint ColorAdditionalDataMask = 0xFf000000;
+		public const uint ColorAlwaysBright = 0x40000000;
+		public const uint ColorWindow = 0x60000000;
+		public const uint ColorWindow0 = ColorWindow;
+		public const uint ColorWindow1 = (ColorWindow | 0x01000000);
+		public const uint ColorWindow2 = (ColorWindow | 0x02000000);
 
-		public const uint COLOR_AS_MINIMUM = (COLOR_LOGIC | 0x00000100);
-		public const uint COLOR_AS_MAXIMUM = (COLOR_LOGIC | 0x00000116);
-		public const uint COLOR_COMPRESSED = (COLOR_LOGIC | 0x40000000);
-		public const uint COLORMASK_COMPRESSED_TRANSPARENT = 0x00010000;
-		public const uint COLOR_COMPRESSED_TRANSPARENT = (COLOR_COMPRESSED | COLORMASK_COMPRESSED_TRANSPARENT);
-		public const uint COLORMASK_COMPRESSED_SYSTEMCOLOR = 0x00040000;
-		public const uint COLOR_COMPRESSED_SYSTEMCOLOR = (COLOR_COMPRESSED | COLORMASK_COMPRESSED_SYSTEMCOLOR);
-		public const uint COLORMASK_COMPRESSED_SFB = 0x0000ff00;
-		public const uint COLORMASK_COMPRESSED_COUNT = 0x000000Ff;
-		public const uint MAX_REPEATED_COLORS = 257;
-		public const uint COLORMASK_COMPRESSED_LENGTH = 0x0000Ff00;
-		public const uint MAX_REPEATED_COLORS_LENGTH = 4;
+		public const uint ColorAsMin = (ColorLogic | 0x00000100);
+		public const uint ColorAsMax = (ColorLogic | 0x00000116);
+		public const uint ColorCompressed = (ColorLogic | 0x40000000);
+		public const uint ColorMaskCompressedTransparent = 0x00010000;
+		public const uint ColorCompressedTransparent = (ColorCompressed | ColorMaskCompressedTransparent);
+		public const uint ColorMaskCompressedSystemcolor = 0x00040000;
+		public const uint ColorCompressedSystemcolor = (ColorCompressed | ColorMaskCompressedSystemcolor);
+		public const uint ColorMaskCompressedSFB = 0x0000ff00;
+		public const uint ColorMaskCompressedCount = 0x000000Ff;
+		public const uint MaxRepeatedColors = 257;
+		public const uint ColorMaskCompressedLength = 0x0000Ff00;
+		public const uint MaxRepeatedColorsLength = 4;
 
 	}
 }

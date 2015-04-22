@@ -88,14 +88,14 @@ namespace BahnEditor.Editor
 				this.zoom1Archive = GraphicArchive.Load(this.loadFileDialog.FileName);
 				if (this.zoom1Archive.ZoomFactor != ZoomFactor.Zoom1)
 				{
-					throw new Exception("Zoomfactor not 1");
+					throw new InvalidDataException("Zoomfactor not 1");
 				}
 				try
 				{
 					this.zoom2Archive = GraphicArchive.Load(this.loadFileDialog.FileName.Remove(this.loadFileDialog.FileName.Length - 3) + "uz2");
 					if (this.zoom2Archive.ZoomFactor != ZoomFactor.Zoom2)
 					{
-						throw new Exception("Zoom2-file found, internal zoomfactor not 2");
+						throw new InvalidDataException("Zoom2-file found, internal zoomfactor not 2");
 					}
 				}
 				catch (FileNotFoundException)
@@ -107,7 +107,7 @@ namespace BahnEditor.Editor
 					this.zoom4Archive = GraphicArchive.Load(this.loadFileDialog.FileName.Remove(this.loadFileDialog.FileName.Length - 3) + "uz4");
 					if (this.zoom4Archive.ZoomFactor != ZoomFactor.Zoom4)
 					{
-						throw new Exception("Zoom4-file found, internal zoomfactor not 4");
+						throw new InvalidDataException("Zoom4-file found, internal zoomfactor not 4");
 					}
 				}
 				catch (FileNotFoundException)
@@ -192,7 +192,7 @@ namespace BahnEditor.Editor
 
 		private void ResizeDrawPanel()
 		{
-			this.drawPanel.AutoScrollMinSize = new Size((int)((this.zoomLevel) * Constants.ELEMENTWIDTH * 3 + 30), (int)((this.zoomLevel) * Constants.ELEMENTHEIGHT * 8 + 30));
+			this.drawPanel.AutoScrollMinSize = new Size((int)((this.zoomLevel) * Constants.ElementWidth * 3 + 30), (int)((this.zoomLevel) * Constants.ElementHeight * 8 + 30));
 		}
 
 		private void PaintGraphic(Graphics g)
@@ -205,7 +205,7 @@ namespace BahnEditor.Editor
 				{
 					g.TranslateTransform(drawPanel.AutoScrollPosition.X, drawPanel.AutoScrollPosition.Y);
 					//g.FillRectangle(transparentBrush, 20, 20, Constants.SYMBREITE * this.zoomLevel * 3, Constants.SYMHOEHE * this.zoomLevel * 8); //transparent 0, 112, 0
-					g.DrawImage(global::BahnEditor.Editor.Properties.Resources.background, 20.0f, 20.0f, Constants.ELEMENTWIDTH * this.zoomLevel * 3, Constants.ELEMENTHEIGHT * this.zoomLevel * 8);
+					g.DrawImage(global::BahnEditor.Editor.Properties.Resources.background, 20.0f, 20.0f, Constants.ElementWidth * this.zoomLevel * 3, Constants.ElementHeight * this.zoomLevel * 8);
 				}
 				else
 				{
@@ -224,23 +224,23 @@ namespace BahnEditor.Editor
 							{
 								x = 20;
 							}
-							else if (x - 20 - drawPanel.AutoScrollPosition.X + this.zoomLevel * 2 >= Constants.ELEMENTWIDTH * 3 * this.zoomLevel)
+							else if (x - 20 - drawPanel.AutoScrollPosition.X + this.zoomLevel * 2 >= Constants.ElementWidth * 3 * this.zoomLevel)
 							{
-								diffX = (int)((x - 20 - drawPanel.AutoScrollPosition.X + this.zoomLevel * 2) - (Constants.ELEMENTWIDTH * 3 * this.zoomLevel));
+								diffX = (int)((x - 20 - drawPanel.AutoScrollPosition.X + this.zoomLevel * 2) - (Constants.ElementWidth * 3 * this.zoomLevel));
 							}
 							if (y - drawPanel.AutoScrollPosition.Y < 20)
 							{
 								y = 20;
 							}
-							else if (y - 20 - drawPanel.AutoScrollPosition.Y + this.zoomLevel * 2 >= Constants.ELEMENTHEIGHT * 8 * this.zoomLevel)
+							else if (y - 20 - drawPanel.AutoScrollPosition.Y + this.zoomLevel * 2 >= Constants.ElementHeight * 8 * this.zoomLevel)
 							{
-								diffY = (int)((y - 20 - drawPanel.AutoScrollPosition.Y + this.zoomLevel * 2) - (Constants.ELEMENTHEIGHT * 8 * this.zoomLevel));
+								diffY = (int)((y - 20 - drawPanel.AutoScrollPosition.Y + this.zoomLevel * 2) - (Constants.ElementHeight * 8 * this.zoomLevel));
 							}
 							int xElement = (int)(((x - 20 - drawPanel.AutoScrollPosition.X) / (float)this.zoomLevel) * (int)this.actualZoomFactor);
 							int yElement = (int)(((20 + this.zoomLevel * element.GetLength(0) / (int)this.actualZoomFactor + drawPanel.AutoScrollPosition.Y - y) / (float)this.zoomLevel) * (int)this.actualZoomFactor);
 
 							//g.FillRectangle(transparentBrush, x, y, this.zoomLevel * 2 - diffX, this.zoomLevel * 2 - diffY);
-							g.DrawImage(global::BahnEditor.Editor.Properties.Resources.background, 20.0f, 20.0f, Constants.ELEMENTWIDTH * this.zoomLevel * 3, Constants.ELEMENTHEIGHT * this.zoomLevel * 8);
+							g.DrawImage(global::BahnEditor.Editor.Properties.Resources.background, 20.0f, 20.0f, Constants.ElementWidth * this.zoomLevel * 3, Constants.ElementHeight * this.zoomLevel * 8);
 							g.TranslateTransform(drawPanel.AutoScrollPosition.X, drawPanel.AutoScrollPosition.Y);
 
 							if (yElement >= element.GetLength(0))
@@ -282,10 +282,10 @@ namespace BahnEditor.Editor
 				{
 					for (int j = 0; j < 8; j++)
 					{
-						g.DrawRectangle(Pens.Gray, 20 + (i * Constants.ELEMENTWIDTH) * (this.zoomLevel), 20 + (j * Constants.ELEMENTHEIGHT) * (this.zoomLevel), Constants.ELEMENTWIDTH * (this.zoomLevel), Constants.ELEMENTHEIGHT * (this.zoomLevel));
+						g.DrawRectangle(Pens.Gray, 20 + (i * Constants.ElementWidth) * (this.zoomLevel), 20 + (j * Constants.ElementHeight) * (this.zoomLevel), Constants.ElementWidth * (this.zoomLevel), Constants.ElementHeight * (this.zoomLevel));
 					}
 				}
-				g.DrawRectangle(Pens.DarkGray, 20 + Constants.ELEMENTWIDTH * (this.zoomLevel), 20 + (6 * Constants.ELEMENTHEIGHT) * (this.zoomLevel), Constants.ELEMENTWIDTH * (this.zoomLevel), Constants.ELEMENTHEIGHT * (this.zoomLevel));
+				g.DrawRectangle(Pens.DarkGray, 20 + Constants.ElementWidth * (this.zoomLevel), 20 + (6 * Constants.ElementHeight) * (this.zoomLevel), Constants.ElementWidth * (this.zoomLevel), Constants.ElementHeight * (this.zoomLevel));
 			}
 			catch (IndexOutOfRangeException)
 			{
@@ -306,10 +306,10 @@ namespace BahnEditor.Editor
 					}
 					else
 					{
-						g.FillRectangle(transparentBrush, 0, 0, Constants.ELEMENTWIDTH, Constants.ELEMENTHEIGHT);
+						g.FillRectangle(transparentBrush, 0, 0, Constants.ElementWidth, Constants.ElementHeight);
 					}
 					g.DrawString(String.Format("{0} - {1}", j, i), DefaultFont, Brushes.Black, 1, 20);
-					g.TranslateTransform(Constants.ELEMENTWIDTH + 10, 0);
+					g.TranslateTransform(Constants.ElementWidth + 10, 0);
 				}
 			}
 		}
@@ -687,7 +687,6 @@ namespace BahnEditor.Editor
 		{
 			if (ExitEditor())
 				return;
-			this.loadFileDialog.Filter = "uz1-files|*.uz1";
 			this.loadFileDialog.ShowDialog();
 		}
 
@@ -710,7 +709,6 @@ namespace BahnEditor.Editor
 		{
 			if (ExitEditor())
 				return;
-			this.loadFileDialog.Filter = "uz1-files|*.uz1";
 			this.loadFileDialog.ShowDialog();
 		}
 

@@ -127,7 +127,7 @@ namespace BahnEditor.BahnLib
 		{
 			if (this.IsTransparent)
 			{
-				return Constants.COLOR_TRANSPARENT;
+				return Constants.ColorTransparent;
 			}
 			else if (this.IsSpecialColorWithoutRGB)
 			{
@@ -305,11 +305,13 @@ namespace BahnEditor.BahnLib
 		/// <returns>Pixel</returns>
 		public static Pixel FromUInt(uint data) //TODO Remove magic numbers
 		{
-			if ((data & Constants.COLOR_LOGIC) != 0)
+			if ((data & Constants.ColorLogic) != 0)
 			{
+				if (data == Constants.ColorTransparent)
+					return Pixel.TransparentPixel();
 				return new Pixel((SpecialPixelWithoutRGB)data);
 			}
-			else if (((data & Constants.COLOR_LAMP) != 0) || ((data & Constants.COLOR_ALWAYSBRIGHT) != 0) || ((data & Constants.COLOR_WINDOW) != 0))
+			else if (((data & Constants.ColorLamp) != 0) || ((data & Constants.ColorAlwaysBright) != 0) || ((data & Constants.ColorWindow) != 0))
 			{
 				return new Pixel((SpecialPixelWithRGB)(data & 0xFF000000), blue:(byte)data, green:(byte)(data >> 8), red:(byte)(data >> 16));
 			}
@@ -337,31 +339,31 @@ namespace BahnEditor.BahnLib
 		public enum SpecialPixelWithoutRGB : uint
 		{ //Magic numbers copied from doc: http://www.jbss.de/exe/gfx_386.zip
 			None = 0,
-			Transparent = (Constants.COLOR_LOGIC | 0x00000001),
-			BehindGlass = (Constants.COLOR_LOGIC),
-			As_BG = (Constants.COLOR_LOGIC | 0x00000100),
-			As_Sleepers0 = (Constants.COLOR_LOGIC | 0x00000101),
-			As_Sleepers1 = (Constants.COLOR_LOGIC | 0x00000102),
-			As_Sleepers3 = (Constants.COLOR_LOGIC | 0x00000103),
-			As_Rails_Road0 = (Constants.COLOR_LOGIC | 0x00000104),
-			As_Rails_Road1 = (Constants.COLOR_LOGIC | 0x00000105),
-			As_Rails_Road2 = (Constants.COLOR_LOGIC | 0x00000106),
-			As_Rails_Road3 = (Constants.COLOR_LOGIC | 0x00000107),
-			As_Rails_Trackbed0 = (Constants.COLOR_LOGIC | 0x00000108),
-			As_Rails_Trackbed1 = (Constants.COLOR_LOGIC | 0x00000109),
-			As_Rails_Trackbed2 = (Constants.COLOR_LOGIC | 0x0000010A),
-			As_Rails_Trackbed3 = (Constants.COLOR_LOGIC | 0x0000010B),
-			As_Marking_Point_Bus0 = (Constants.COLOR_LOGIC | 0x0000010C),
-			As_Marking_Point_Bus1 = (Constants.COLOR_LOGIC | 0x0000010D),
-			As_Marking_Point_Bus2 = (Constants.COLOR_LOGIC | 0x0000010E),
-			As_Marking_Point_Bus3 = (Constants.COLOR_LOGIC | 0x0000010F),
-			As_Marking_Point_Water = (Constants.COLOR_LOGIC | 0x00000110),
-			As_Gravel = (Constants.COLOR_LOGIC | 0x00000111),
-			As_Small_Gravel = (Constants.COLOR_LOGIC | 0x00000112),
-			As_Grassy = (Constants.COLOR_LOGIC | 0x00000113),
-			As_Path_BG = (Constants.COLOR_LOGIC | 0x00000114),
-			As_Path_FG = (Constants.COLOR_LOGIC | 0x00000115),
-			As_Text = (Constants.COLOR_LOGIC | 0x00000116)
+			Transparent = (Constants.ColorLogic | 0x00000001),
+			BehindGlass = (Constants.ColorLogic),
+			As_BG = (Constants.ColorLogic | 0x00000100),
+			As_Sleepers0 = (Constants.ColorLogic | 0x00000101),
+			As_Sleepers1 = (Constants.ColorLogic | 0x00000102),
+			As_Sleepers3 = (Constants.ColorLogic | 0x00000103),
+			As_Rails_Road0 = (Constants.ColorLogic | 0x00000104),
+			As_Rails_Road1 = (Constants.ColorLogic | 0x00000105),
+			As_Rails_Road2 = (Constants.ColorLogic | 0x00000106),
+			As_Rails_Road3 = (Constants.ColorLogic | 0x00000107),
+			As_Rails_Trackbed0 = (Constants.ColorLogic | 0x00000108),
+			As_Rails_Trackbed1 = (Constants.ColorLogic | 0x00000109),
+			As_Rails_Trackbed2 = (Constants.ColorLogic | 0x0000010A),
+			As_Rails_Trackbed3 = (Constants.ColorLogic | 0x0000010B),
+			As_Marking_Point_Bus0 = (Constants.ColorLogic | 0x0000010C),
+			As_Marking_Point_Bus1 = (Constants.ColorLogic | 0x0000010D),
+			As_Marking_Point_Bus2 = (Constants.ColorLogic | 0x0000010E),
+			As_Marking_Point_Bus3 = (Constants.ColorLogic | 0x0000010F),
+			As_Marking_Point_Water = (Constants.ColorLogic | 0x00000110),
+			As_Gravel = (Constants.ColorLogic | 0x00000111),
+			As_Small_Gravel = (Constants.ColorLogic | 0x00000112),
+			As_Grassy = (Constants.ColorLogic | 0x00000113),
+			As_Path_BG = (Constants.ColorLogic | 0x00000114),
+			As_Path_FG = (Constants.ColorLogic | 0x00000115),
+			As_Text = (Constants.ColorLogic | 0x00000116)
 		}
 
 		/// <summary>
@@ -370,18 +372,18 @@ namespace BahnEditor.BahnLib
 		public enum SpecialPixelWithRGB : uint
 		{ //Magic numbers copied from doc: http://www.jbss.de/exe/gfx_386.zip
 			None = 0,
-			Always_Bright = Constants.COLOR_ALWAYSBRIGHT,
-			Lamp_Yellow = (Constants.COLOR_LAMP | 0x00000000),
-			Lamp_Red = (Constants.COLOR_LAMP | 0x01000000),
-			Lamp_ColdWhite = (Constants.COLOR_LAMP | 0x02000000),
-			Lamp_YellowWhite = (Constants.COLOR_LAMP | 0x03000000),
-			Lamp_Gas_Yellow = (Constants.COLOR_LAMP | 0x04000000),
-			Window_Yellow_0 = Constants.COLOR_WINDOW_0,
-			Window_Yellow_1 = Constants.COLOR_WINDOW_1,
-			Window_Yellow_2 = Constants.COLOR_WINDOW_2,
-			Window_Neon_0 = (Constants.COLOR_WINDOW_0 | 0x04000000),
-			Window_Neon_1 = (Constants.COLOR_WINDOW_1 | 0x04000000),
-			Window_Neon_2 = (Constants.COLOR_WINDOW_2 | 0x04000000)
+			Always_Bright = Constants.ColorAlwaysBright,
+			Lamp_Yellow = (Constants.ColorLamp | 0x00000000),
+			Lamp_Red = (Constants.ColorLamp | 0x01000000),
+			Lamp_ColdWhite = (Constants.ColorLamp | 0x02000000),
+			Lamp_YellowWhite = (Constants.ColorLamp | 0x03000000),
+			Lamp_Gas_Yellow = (Constants.ColorLamp | 0x04000000),
+			Window_Yellow_0 = Constants.ColorWindow0,
+			Window_Yellow_1 = Constants.ColorWindow1,
+			Window_Yellow_2 = Constants.ColorWindow2,
+			Window_Neon_0 = (Constants.ColorWindow0 | 0x04000000),
+			Window_Neon_1 = (Constants.ColorWindow1 | 0x04000000),
+			Window_Neon_2 = (Constants.ColorWindow2 | 0x04000000)
 		}
 		#endregion Enums
 	}

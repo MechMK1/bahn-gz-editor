@@ -361,6 +361,7 @@
 			// 
 			// loadFileDialog
 			// 
+			this.loadFileDialog.Filter = "Archive files|*.uz1";
 			this.loadFileDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.loadFileDialog_FileOk);
 			// 
 			// menuStrip
@@ -434,6 +435,7 @@
 			// 
 			// saveFileDialog
 			// 
+			this.saveFileDialog.Filter = "Archive files|*.uz1";
 			this.saveFileDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog_FileOk);
 			// 
 			// colorDialog

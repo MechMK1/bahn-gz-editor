@@ -138,20 +138,20 @@ namespace BahnEditor.BahnLib
 				{
 					colors.Add(lastcolor);
 				}
-				else if (lastcolor == Constants.COLOR_TRANSPARENT)
+				else if (lastcolor == Constants.ColorTransparent)
 				{
-					colors.Add(Constants.COLOR_COMPRESSED_TRANSPARENT | (uint)(length - 2));
+					colors.Add(Constants.ColorCompressedTransparent | (uint)(length - 2));
 				}
-				else if (((lastcolor & Constants.COLOR_LOGIC) != 0) && lastcolor != (uint)Pixel.SpecialPixelWithoutRGB.BehindGlass)
+				else if (((lastcolor & Constants.ColorLogic) != 0) && lastcolor != (uint)Pixel.SpecialPixelWithoutRGB.BehindGlass)
 				{
-					uint color = lastcolor - Constants.COLOR_AS_MINIMUM;
+					uint color = lastcolor - Constants.ColorAsMin;
 					color = color << 8;
-					color = color | Constants.COLOR_COMPRESSED_SYSTEMCOLOR;
+					color = color | Constants.ColorCompressedSystemcolor;
 					colors.Add(color | (uint)(length - 2));
 				}
 				else
 				{
-					colors.Add(Constants.COLOR_COMPRESSED | (uint)(length - 2));
+					colors.Add(Constants.ColorCompressed | (uint)(length - 2));
 					colors.Add(lastcolor);
 				}
 
@@ -182,10 +182,10 @@ namespace BahnEditor.BahnLib
 			while (elementSize > 0)
 			{
 				uint item = br.ReadUInt32();
-				if ((item & Constants.COLOR_ADDITIONAL_DATA_MASK) == Constants.COLOR_COMPRESSED)
+				if ((item & Constants.ColorAdditionalDataMask) == Constants.ColorCompressed)
 				{
-					int count = (int)(item & Constants.COLORMASK_COMPRESSED_COUNT) + 2;
-					if ((item & Constants.COLORMASK_COMPRESSED_TRANSPARENT) != 0)
+					int count = (int)(item & Constants.ColorMaskCompressedCount) + 2;
+					if ((item & Constants.ColorMaskCompressedTransparent) != 0)
 					{
 						// item is transparent
 						for (int k = 0; k < count; k++)
@@ -241,10 +241,10 @@ namespace BahnEditor.BahnLib
 			{
 				uint item = br.ReadUInt32();
 				int count = 0;
-				if ((item & Constants.COLOR_ADDITIONAL_DATA_MASK) == Constants.COLOR_COMPRESSED)
+				if ((item & Constants.ColorAdditionalDataMask) == Constants.ColorCompressed)
 				{
-					count = (int)(item & Constants.COLORMASK_COMPRESSED_COUNT) + 2;
-					if ((item & Constants.COLORMASK_COMPRESSED_TRANSPARENT) != 0)
+					count = (int)(item & Constants.ColorMaskCompressedCount) + 2;
+					if ((item & Constants.ColorMaskCompressedTransparent) != 0)
 					{
 						// item is transparent
 						for (int k = 0; k < count; k++)
@@ -252,19 +252,19 @@ namespace BahnEditor.BahnLib
 							colors.Add(Pixel.TransparentPixel());
 						}
 					}
-					else if ((item & Constants.COLORMASK_COMPRESSED_SYSTEMCOLOR) != 0)
+					else if ((item & Constants.ColorMaskCompressedSystemcolor) != 0)
 					{
 						// item is a system-color
 						for (int k = 0; k < count; k++)
 						{
-							colors.Add(new Pixel((Pixel.SpecialPixelWithoutRGB)(((item & Constants.COLORMASK_COMPRESSED_SFB) >> 8) + Constants.COLOR_AS_MINIMUM)));
+							colors.Add(new Pixel((Pixel.SpecialPixelWithoutRGB)(((item & Constants.ColorMaskCompressedSFB) >> 8) + Constants.ColorAsMin)));
 						}
 					}
 					else
 					{
 						// item is a color, may be a set of colors
-						uint wdhlen = ((item & Constants.COLORMASK_COMPRESSED_LENGTH) >> 8) + 1;
-						if (wdhlen > Constants.MAX_REPEATED_COLORS_LENGTH)
+						uint wdhlen = ((item & Constants.ColorMaskCompressedLength) >> 8) + 1;
+						if (wdhlen > Constants.MaxRepeatedColorsLength)
 							throw new InvalidDataException("color repetition length out of range");
 						List<uint> buffer = new List<uint>();
 						for (int j = 0; j < wdhlen; j++)
@@ -312,9 +312,9 @@ namespace BahnEditor.BahnLib
 		/// <returns>Upscaled element</returns>
 		private static Pixel[,] LoadElement(int x0, int y0, Pixel[,] element, ZoomFactor zoomFactor)
 		{
-			Pixel[,] newElement = new Pixel[Constants.ELEMENTHEIGHT * 8 * (int)zoomFactor, Constants.ELEMENTWIDTH * 3 * (int)zoomFactor];
-			x0 = (int)(x0 + Constants.ELEMENTWIDTH * (int)zoomFactor);
-			y0 = (int)(y0 + Constants.ELEMENTHEIGHT * (int)zoomFactor);
+			Pixel[,] newElement = new Pixel[Constants.ElementHeight * 8 * (int)zoomFactor, Constants.ElementWidth * 3 * (int)zoomFactor];
+			x0 = (int)(x0 + Constants.ElementWidth * (int)zoomFactor);
+			y0 = (int)(y0 + Constants.ElementHeight * (int)zoomFactor);
 			for (int i = 0; i < newElement.GetLength(0); i++)
 			{
 				for (int j = 0; j < newElement.GetLength(1); j++)
@@ -385,8 +385,8 @@ namespace BahnEditor.BahnLib
 					newElement[i, j] = element[i + miny, j + minx];
 				}
 			}
-			x0 = (short)(minx - Constants.ELEMENTWIDTH * (int)zoomFactor);
-			y0 = (short)(miny - Constants.ELEMENTHEIGHT * (int)zoomFactor);
+			x0 = (short)(minx - Constants.ElementWidth * (int)zoomFactor);
+			y0 = (short)(miny - Constants.ElementHeight * (int)zoomFactor);
 			return newElement;
 		}
 		#endregion Private Methods

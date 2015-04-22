@@ -13,8 +13,8 @@ namespace BahnEditor.Test
 		public void TestSaveAndLoad()
 		{
 			string infoTextExpected = "Test";
-			short heightExpected = (short)(Constants.ELEMENTHEIGHT * 8);
-			short widthExpected = (short)(Constants.ELEMENTWIDTH * 3);
+			short heightExpected = (short)(Constants.ElementHeight * 8);
+			short widthExpected = (short)(Constants.ElementWidth * 3);
 			//short x0Expected = 7;
 			//short y0Expected = 5;
 			Pixel colorInSchematicModeExpected = new Pixel(50, 50, 50);
