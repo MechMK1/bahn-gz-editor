@@ -28,10 +28,10 @@ namespace BahnEditor.Editor
 		private bool layerSelectBoxCodeChanged = false;
 		private bool zoom2CheckBoxCodeChanged = false;
 		private bool zoom4CheckBoxCodeChanged = false;
-		private Pixel leftPixel = new Pixel(0, 0, 0);
-		private Pixel lastLeftPixel = null;
-		private Pixel rightPixel = new Pixel(255, 255, 255);
-		private Pixel lastRightPixel = null;
+		private NeoPixel leftPixel = new NeoPixel(0, 0, 0);
+		private NeoPixel lastLeftPixel = null;
+		private NeoPixel rightPixel = new NeoPixel(255, 255, 255);
+		private NeoPixel lastRightPixel = null;
 
 		private static Brush transparentBrush = new HatchBrush(HatchStyle.Percent20, Color.FromArgb(140, 140, 140), Color.FromArgb(0, 112, 0)); //transparent 0, 112, 0
 
@@ -209,7 +209,7 @@ namespace BahnEditor.Editor
 				}
 				else
 				{
-					Pixel[,] element = this.GetElement();
+					NeoPixel[,] element = this.GetElement();
 					if (element != null)
 					{
 
@@ -259,10 +259,8 @@ namespace BahnEditor.Editor
 									if (element[i, j].IsTransparent != true)
 									{
 										Brush brush;
-										if (element[i, j].IsSpecialColorWithoutRGB)
+										if (element[i, j].IsSpecial)
 											brush = new HatchBrush(HatchStyle.Percent20, Color.FromArgb(140, 140, 140), element[i, j].ToColor());
-										else if (element[i, j].IsSpecialColorWithRGB)
-											brush = new HatchBrush(HatchStyle.Percent10, Color.FromArgb(140, 140, 140), element[i, j].ToColor());
 										else
 											brush = new SolidBrush(element[i, j].ToColor());
 										g.FillRectangle(brush, j * (this.zoomLevel) / (int)this.actualZoomFactor + 20, (int)((((this.zoomLevel) * element.GetLength(0) / (float)this.actualZoomFactor) - ((this.zoomLevel) / (float)this.actualZoomFactor * (i + 1))) + 20), this.zoomLevel / (float)this.actualZoomFactor, this.zoomLevel / (float)this.actualZoomFactor);
@@ -314,7 +312,7 @@ namespace BahnEditor.Editor
 			}
 		}
 
-		private static void PaintElement(Graphics g, Pixel[,] element, int zoomLevel, bool withHatchBrush, ZoomFactor zoomfactor)
+		private static void PaintElement(Graphics g, NeoPixel[,] element, int zoomLevel, bool withHatchBrush, ZoomFactor zoomfactor)
 		{
 			if (withHatchBrush)
 				//g.FillRectangle(transparentBrush, 0, 0, element.GetLength(1) * zoomLevel / (int)zoomfactor, element.GetLength(0) * zoomLevel / (int)zoomfactor);
@@ -330,10 +328,8 @@ namespace BahnEditor.Editor
 						Brush brush;
 						if (!withHatchBrush)
 							brush = new SolidBrush(element[i, j].ToColor());
-						else if (element[i, j].IsSpecialColorWithoutRGB)
+						else if (element[i, j].IsSpecial)
 							brush = new HatchBrush(HatchStyle.Percent20, Color.FromArgb(140, 140, 140), element[i, j].ToColor());
-						else if (element[i, j].IsSpecialColorWithRGB)
-							brush = new HatchBrush(HatchStyle.Percent10, Color.FromArgb(140, 140, 140), element[i, j].ToColor());
 						else
 							brush = new SolidBrush(element[i, j].ToColor());
 						g.FillRectangle(brush, (j * zoomLevel) / (int)zoomfactor, ((zoomLevel * element.GetLength(0)) - (zoomLevel * (i + 1))) / (int)zoomfactor, zoomLevel / (float)zoomfactor, zoomLevel / (float)zoomfactor);
@@ -380,7 +376,7 @@ namespace BahnEditor.Editor
 			}
 			try
 			{
-				Pixel[,] element = this.GetElement();
+				NeoPixel[,] element = this.GetElement();
 
 				if (e.X - drawPanel.AutoScrollPosition.X >= 20 && e.Y - drawPanel.AutoScrollPosition.Y >= 20 && (20 + this.zoomLevel * element.GetLength(0) + drawPanel.AutoScrollPosition.Y - e.Y) > 0)
 				{
@@ -388,11 +384,11 @@ namespace BahnEditor.Editor
 					int yElement = (int)(((20 + this.zoomLevel * element.GetLength(0) / (int)this.actualZoomFactor + drawPanel.AutoScrollPosition.Y - e.Y) / (float)this.zoomLevel) * (int)this.actualZoomFactor);
 					if (xElement >= 0 && yElement >= 0 && xElement < element.GetLength(1) && yElement < element.GetLength(0))
 					{
-						if (e.Button == MouseButtons.Left && element[yElement, xElement] != leftPixel)
+						if (e.Button == MouseButtons.Left && !element[yElement, xElement].Equals(leftPixel))
 						{
 							element[yElement, xElement] = leftPixel;
 						}
-						else if (e.Button == MouseButtons.Right && element[yElement, xElement] != rightPixel)
+						else if (e.Button == MouseButtons.Right && !element[yElement, xElement].Equals(rightPixel))
 						{
 							element[yElement, xElement] = rightPixel;
 						}
@@ -548,12 +544,12 @@ namespace BahnEditor.Editor
 			return false;
 		}
 
-		private Pixel GetPixelFromComboBox(int index, Pixel lastPixel)
+		private NeoPixel GetPixelFromComboBox(int index, NeoPixel lastPixel)
 		{
 			byte r = 0;
 			byte g = 0;
 			byte b = 0;
-			if (lastPixel != null && !lastPixel.IsTransparent && !lastPixel.IsSpecialColorWithoutRGB)
+			if (lastPixel != null && !lastPixel.IsTransparent && !lastPixel.IsSpecial && lastPixel.UsesRGB)
 			{
 				r = lastPixel.Red;
 				g = lastPixel.Green;
@@ -562,83 +558,83 @@ namespace BahnEditor.Editor
 			switch (index)
 			{
 				case 2:
-					return new Pixel(Pixel.SpecialPixelWithoutRGB.BehindGlass);
+					return new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.BehindGlass);
 				case 3:
-					return new Pixel(Pixel.SpecialPixelWithRGB.Always_Bright, r, g, b);
+					return new NeoPixel(r, g, b, NeoPixel.PixelProperty.AlwaysBright);
 				case 4:
-					return new Pixel(Pixel.SpecialPixelWithRGB.Lamp_Yellow, r, g, b);
+					return new NeoPixel(r, g, b, NeoPixel.PixelProperty.LampYellow);
 				case 5:
-					return new Pixel(Pixel.SpecialPixelWithRGB.Lamp_ColdWhite, r, g, b);
+					return new NeoPixel(r, g, b, NeoPixel.PixelProperty.LampColdWhite);
 				case 6:
-					return new Pixel(Pixel.SpecialPixelWithRGB.Lamp_Red, r, g, b);
+					return new NeoPixel(r, g, b, NeoPixel.PixelProperty.LampRed);
 				case 7:
-					return new Pixel(Pixel.SpecialPixelWithRGB.Lamp_YellowWhite, r, g, b);
+					return new NeoPixel(r, g, b, NeoPixel.PixelProperty.LampYellowWhite);
 				case 8:
-					return new Pixel(Pixel.SpecialPixelWithRGB.Lamp_Gas_Yellow, r, g, b);
+					return new NeoPixel(r, g, b, NeoPixel.PixelProperty.LampGasYellow);
 				case 9:
-					return new Pixel(Pixel.SpecialPixelWithRGB.Window_Yellow_0, r, g, b);
+					return new NeoPixel(r, g, b, NeoPixel.PixelProperty.WindowYellow0);
 				case 10:
-					return new Pixel(Pixel.SpecialPixelWithRGB.Window_Yellow_1, r, g, b);
+					return new NeoPixel(r, g, b, NeoPixel.PixelProperty.WindowYellow1);
 				case 11:
-					return new Pixel(Pixel.SpecialPixelWithRGB.Window_Yellow_2, r, g, b);
+					return new NeoPixel(r, g, b, NeoPixel.PixelProperty.WindowYellow2);
 				case 12:
-					return new Pixel(Pixel.SpecialPixelWithRGB.Window_Neon_0, r, g, b);
+					return new NeoPixel(r, g, b, NeoPixel.PixelProperty.WindowNeon0);
 				case 13:
-					return new Pixel(Pixel.SpecialPixelWithRGB.Window_Neon_1, r, g, b);
+					return new NeoPixel(r, g, b, NeoPixel.PixelProperty.WindowNeon1);
 				case 14:
-					return new Pixel(Pixel.SpecialPixelWithRGB.Window_Neon_2, r, g, b);
+					return new NeoPixel(r, g, b, NeoPixel.PixelProperty.WindowNeon2);
 				case 15:
-					return new Pixel(Pixel.SpecialPixelWithoutRGB.As_BG);
+					return new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.AsBG);
 				case 16:
-					return new Pixel(Pixel.SpecialPixelWithoutRGB.As_Sleepers0);
+					return new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.AsSleepers0);
 				case 17:
-					return new Pixel(Pixel.SpecialPixelWithoutRGB.As_Sleepers1);
+					return new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.AsSleepers1);
 				case 18:
-					return new Pixel(Pixel.SpecialPixelWithoutRGB.As_Sleepers3);
+					return new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.AsSleepers3);
 				case 19:
-					return new Pixel(Pixel.SpecialPixelWithoutRGB.As_Rails_Road0);
+					return new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.AsRailsRoad0);
 				case 20:
-					return new Pixel(Pixel.SpecialPixelWithoutRGB.As_Rails_Road1);
+					return new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.AsRailsRoad1);
 				case 21:
-					return new Pixel(Pixel.SpecialPixelWithoutRGB.As_Rails_Road2);
+					return new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.AsRailsRoad2);
 				case 22:
-					return new Pixel(Pixel.SpecialPixelWithoutRGB.As_Rails_Road3);
+					return new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.AsRailsRoad3);
 				case 23:
-					return new Pixel(Pixel.SpecialPixelWithoutRGB.As_Rails_Trackbed0);
+					return new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.AsRailsTrackbed0);
 				case 24:
-					return new Pixel(Pixel.SpecialPixelWithoutRGB.As_Rails_Trackbed1);
+					return new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.AsRailsTrackbed1);
 				case 25:
-					return new Pixel(Pixel.SpecialPixelWithoutRGB.As_Rails_Trackbed2);
+					return new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.AsRailsTrackbed2);
 				case 26:
-					return new Pixel(Pixel.SpecialPixelWithoutRGB.As_Rails_Trackbed3);
+					return new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.AsRailsTrackbed3);
 				case 27:
-					return new Pixel(Pixel.SpecialPixelWithoutRGB.As_Marking_Point_Bus0);
+					return new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.AsMarkingPointBus0);
 				case 28:
-					return new Pixel(Pixel.SpecialPixelWithoutRGB.As_Marking_Point_Bus1);
+					return new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.AsMarkingPointBus1);
 				case 29:
-					return new Pixel(Pixel.SpecialPixelWithoutRGB.As_Marking_Point_Bus2);
+					return new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.AsMarkingPointBus2);
 				case 30:
-					return new Pixel(Pixel.SpecialPixelWithoutRGB.As_Marking_Point_Bus3);
+					return new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.AsMarkingPointBus3);
 				case 31:
-					return new Pixel(Pixel.SpecialPixelWithoutRGB.As_Marking_Point_Water);
+					return new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.AsMarkingPointWater);
 				case 32:
-					return new Pixel(Pixel.SpecialPixelWithoutRGB.As_Gravel);
+					return new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.AsGravel);
 				case 33:
-					return new Pixel(Pixel.SpecialPixelWithoutRGB.As_Small_Gravel);
+					return new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.AsSmallGravel);
 				case 34:
-					return new Pixel(Pixel.SpecialPixelWithoutRGB.As_Grassy);
+					return new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.AsGrassy);
 				case 35:
-					return new Pixel(Pixel.SpecialPixelWithoutRGB.As_Path_BG);
+					return new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.AsPathBG);
 				case 36:
-					return new Pixel(Pixel.SpecialPixelWithoutRGB.As_Path_FG);
+					return new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.AsPathFG);
 				case 37:
-					return new Pixel(Pixel.SpecialPixelWithoutRGB.As_Text);
+					return new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.AsText);
 				default:
 					return null;
 			}
 		}
 
-		private Pixel[,] GetElement()
+		private NeoPixel[,] GetElement()
 		{
 			switch (this.actualZoomFactor)
 			{
@@ -739,13 +735,13 @@ namespace BahnEditor.Editor
 			if (dr == DialogResult.OK)
 			{
 				Color c = this.colorDialog.Color;
-				if (this.leftPixel.IsSpecialColorWithRGB == true)
+				if (this.leftPixel.IsSpecial && this.leftPixel.UsesRGB)
 				{
-					this.leftPixel = new Pixel(this.leftPixel.SpecialColorWithRGB, c.R, c.G, c.B);
+					this.leftPixel = new NeoPixel(c.R, c.G, c.B, this.leftPixel.Property);
 				}
 				else
 				{
-					this.leftPixel = Pixel.FromColor(c);
+					this.leftPixel = NeoPixel.FromColor(c);
 					this.leftComboBox.SelectedIndex = 0;
 				}
 				this.leftColorButton.BackColor = c;
@@ -758,13 +754,13 @@ namespace BahnEditor.Editor
 			if (dr == DialogResult.OK)
 			{
 				Color c = this.colorDialog.Color;
-				if (this.rightPixel.IsSpecialColorWithRGB == true)
+				if (this.rightPixel.IsSpecial && this.rightPixel.UsesRGB)
 				{
-					this.rightPixel = new Pixel(this.rightPixel.SpecialColorWithRGB, c.R, c.G, c.B);
+					this.rightPixel = new NeoPixel(c.R, c.G, c.B, this.rightPixel.Property);
 				}
 				else
 				{
-					this.rightPixel = Pixel.FromColor(c);
+					this.rightPixel = NeoPixel.FromColor(c);
 					this.rightComboBox.SelectedIndex = 0;
 				}
 				this.rightColorButton.BackColor = c;
@@ -785,11 +781,11 @@ namespace BahnEditor.Editor
 		{
 			if (this.rightComboBox.SelectedIndex == 0)
 			{
-				if (this.lastRightPixel != null && !this.lastRightPixel.IsTransparent && !this.lastRightPixel.IsSpecialColorWithoutRGB)
+				if (this.lastRightPixel != null && !this.lastRightPixel.IsTransparent && this.lastRightPixel.UsesRGB)
 				{
-					if (this.lastRightPixel.IsSpecialColorWithRGB)
+					if (this.lastRightPixel.IsSpecial)
 					{
-						this.rightPixel = new Pixel(this.lastRightPixel.Red, this.lastRightPixel.Green, this.lastRightPixel.Blue);
+						this.rightPixel = new NeoPixel(this.lastRightPixel.Red, this.lastRightPixel.Green, this.lastRightPixel.Blue);
 					}
 					else
 					{
@@ -798,7 +794,7 @@ namespace BahnEditor.Editor
 				}
 				else
 				{
-					this.rightPixel = new Pixel(0, 0, 0);
+					this.rightPixel = new NeoPixel(0, 0, 0);
 				}
 			}
 			else if (this.rightComboBox.SelectedIndex == 1)
@@ -806,24 +802,24 @@ namespace BahnEditor.Editor
 				if (!this.rightPixel.IsTransparent)
 				{
 					this.lastRightPixel = this.rightPixel;
-					this.rightPixel = Pixel.TransparentPixel();
+					this.rightPixel = new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.Transparent);
 				}
 			}
 			else
 			{
-				Pixel lastPixel = null;
-				if (this.rightPixel != null && !this.rightPixel.IsTransparent && !this.rightPixel.IsSpecialColorWithoutRGB)
+				NeoPixel lastPixel = null;
+				if (this.rightPixel != null && !this.rightPixel.IsTransparent && this.rightPixel.UsesRGB)
 				{
 					lastPixel = this.rightPixel;
 				}
-				else if (this.lastRightPixel != null && !this.lastRightPixel.IsTransparent && !this.lastRightPixel.IsSpecialColorWithoutRGB)
+				else if (this.lastRightPixel != null && !this.lastRightPixel.IsTransparent && this.lastRightPixel.UsesRGB)
 				{
 					lastPixel = this.lastRightPixel;
 				}
-				Pixel pixel = this.GetPixelFromComboBox(this.rightComboBox.SelectedIndex, lastPixel);
+				NeoPixel pixel = this.GetPixelFromComboBox(this.rightComboBox.SelectedIndex, lastPixel);
 				if (pixel != null)
 				{
-					if (!this.rightPixel.IsTransparent && !this.rightPixel.IsSpecialColorWithoutRGB)
+					if (!this.rightPixel.IsTransparent && this.rightPixel.UsesRGB)
 					{
 						this.lastRightPixel = this.rightPixel;
 					}
@@ -841,11 +837,11 @@ namespace BahnEditor.Editor
 		{
 			if (this.leftComboBox.SelectedIndex == 0)
 			{
-				if (this.lastLeftPixel != null && !this.lastLeftPixel.IsTransparent && !this.lastLeftPixel.IsSpecialColorWithoutRGB)
+				if (this.lastLeftPixel != null && !this.lastLeftPixel.IsTransparent && this.lastLeftPixel.UsesRGB)
 				{
-					if (this.lastLeftPixel.IsSpecialColorWithRGB)
+					if (this.lastLeftPixel.IsSpecial)
 					{
-						this.leftPixel = new Pixel(this.lastLeftPixel.Red, this.lastLeftPixel.Green, this.lastLeftPixel.Blue);
+						this.leftPixel = new NeoPixel(this.lastLeftPixel.Red, this.lastLeftPixel.Green, this.lastLeftPixel.Blue);
 					}
 					else
 					{
@@ -854,7 +850,7 @@ namespace BahnEditor.Editor
 				}
 				else
 				{
-					this.leftPixel = new Pixel(0, 0, 0);
+					this.leftPixel = new NeoPixel(0, 0, 0);
 				}
 			}
 			else if (this.leftComboBox.SelectedIndex == 1)
@@ -862,24 +858,24 @@ namespace BahnEditor.Editor
 				if (this.leftPixel.IsTransparent != true)
 				{
 					this.lastLeftPixel = this.leftPixel;
-					this.leftPixel = Pixel.TransparentPixel();
+					this.leftPixel = new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.Transparent);
 				}
 			}
 			else
 			{
-				Pixel lastPixel = null;
-				if (this.leftPixel != null && !this.leftPixel.IsTransparent && !this.leftPixel.IsSpecialColorWithoutRGB)
+				NeoPixel lastPixel = null;
+				if (this.leftPixel != null && !this.leftPixel.IsTransparent && this.leftPixel.UsesRGB)
 				{
 					lastPixel = this.leftPixel;
 				}
-				else if (this.lastLeftPixel != null && !this.lastLeftPixel.IsTransparent && !this.lastLeftPixel.IsSpecialColorWithoutRGB)
+				else if (this.lastLeftPixel != null && !this.lastLeftPixel.IsTransparent && this.lastLeftPixel.UsesRGB)
 				{
 					lastPixel = this.lastLeftPixel;
 				}
-				Pixel pixel = this.GetPixelFromComboBox(this.leftComboBox.SelectedIndex, lastPixel);
+				NeoPixel pixel = this.GetPixelFromComboBox(this.leftComboBox.SelectedIndex, lastPixel);
 				if (pixel != null)
 				{
-					if (!this.leftPixel.IsTransparent && !this.leftPixel.IsSpecialColorWithoutRGB)
+					if (!this.leftPixel.IsTransparent && this.leftPixel.UsesRGB)
 					{
 						this.lastLeftPixel = this.leftPixel;
 					}

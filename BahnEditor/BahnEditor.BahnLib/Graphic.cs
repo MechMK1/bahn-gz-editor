@@ -30,7 +30,7 @@ namespace BahnEditor.BahnLib
 		/// Gets or sets the color in map / schematic view
 		/// <para>Makes only sense if ColorSchematicMode is set in properties, else data is ignored</para>
 		/// </summary>
-		public Pixel ColorInSchematicMode { get; set; }
+		public NeoPixel ColorInSchematicMode { get; set; }
 
 		/// <summary>
 		/// Gets or sets the properties of the graphic
@@ -96,13 +96,13 @@ namespace BahnEditor.BahnLib
 		/// <para>Colors that light at night are possible</para>
 		/// <para>Makes only sense if clock is set in properties, else data is ignored</para>
 		/// </summary>
-		public Pixel ClockColorHoursPointer { get; set; }
+		public NeoPixel ClockColorHoursPointer { get; set; }
 
 		/// <summary>
 		/// Gets or sets the color of the minutes pointer
 		/// <para>Makes only sense if clock is set in properties, else data is ignored</para>
 		/// </summary>
-		public Pixel ClockColorMinutesPointer { get; set; }
+		public NeoPixel ClockColorMinutesPointer { get; set; }
 
 		/// <summary>
 		/// Gets or sets the normal cursor direction
@@ -192,12 +192,12 @@ namespace BahnEditor.BahnLib
 		/// <param name="layerID">LayerId</param>
 		public void AddTransparentLayer(LayerId layerID)
 		{
-			Pixel[,] element = new Pixel[Constants.ElementHeight * 8 * (byte)this.ZoomFactor, Constants.ElementWidth * 3 * (byte)this.ZoomFactor];
+			NeoPixel[,] element = new NeoPixel[Constants.ElementHeight * 8 * (byte)this.ZoomFactor, Constants.ElementWidth * 3 * (byte)this.ZoomFactor];
 			for (int i = 0; i < element.GetLength(0); i++)
 			{
 				for (int j = 0; j < element.GetLength(1); j++)
 				{
-					element[i, j] = Pixel.TransparentPixel();
+					element[i, j] = new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.Transparent);
 				}
 			}
 			Layer layer = new Layer(layerID, element);
@@ -279,9 +279,9 @@ namespace BahnEditor.BahnLib
 		/// Gets a preview of the graphic how it would be in the game
 		/// </summary>
 		/// <returns>Element</returns>
-		public Pixel[,] ElementPreview()
+		public NeoPixel[,] ElementPreview()
 		{
-			Pixel[,] element = new Pixel[Constants.ElementHeight, Constants.ElementWidth];
+			NeoPixel[,] element = new NeoPixel[Constants.ElementHeight, Constants.ElementWidth];
 			for (int i = 0; i < element.GetLength(0); i++)
 			{
 				for (int j = 0; j < element.GetLength(1); j++)
@@ -297,7 +297,7 @@ namespace BahnEditor.BahnLib
 					else if (this.GetLayer(LayerId.Background_0) != null && !this.GetLayer(LayerId.Background_0).Element[i + Constants.ElementHeight, j + Constants.ElementWidth].IsTransparent)
 						element[i, j] = this.GetLayer(LayerId.Background_0).Element[i + Constants.ElementHeight, j + Constants.ElementWidth];
 					else
-						element[i, j] = Pixel.TransparentPixel();
+						element[i, j] = new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.Transparent);
 				}
 			}
 			return element;
@@ -370,7 +370,7 @@ namespace BahnEditor.BahnLib
 			}
 
 			byte zoomFactor = (byte)(br.ReadByte() - 48); //Zoomfactor is read as ASCII-character, then "converted" to a byte
-														  //ASCII 0 => 48, ASCII 1 => 49, etc...
+			//ASCII 0 => 48, ASCII 1 => 49, etc...
 			switch (zoomFactor)
 			{
 				case 1:
@@ -421,8 +421,8 @@ namespace BahnEditor.BahnLib
 				graphic.ClockZPosition = (LayerId)clockZPosition;
 				graphic.ClockWidth = br.ReadInt32();
 				graphic.ClockHeight = br.ReadInt32();
-				graphic.ClockColorHoursPointer = Pixel.FromUInt(br.ReadUInt32());
-				graphic.ClockColorMinutesPointer = Pixel.FromUInt(br.ReadUInt32());
+				graphic.ClockColorHoursPointer = NeoPixel.FromUInt(br.ReadUInt32());
+				graphic.ClockColorMinutesPointer = NeoPixel.FromUInt(br.ReadUInt32());
 				br.ReadInt32(); //skipping unused data (for future use)
 			}
 			if ((graphic.Properties & GraphicProperties.Cursor) == GraphicProperties.Cursor)
@@ -442,7 +442,7 @@ namespace BahnEditor.BahnLib
 				{
 					throw new InvalidDataException("ColorSchematicMode is set, but invalid for the version of the graphic");
 				}
-				graphic.ColorInSchematicMode = Pixel.FromUInt(br.ReadUInt32());
+				graphic.ColorInSchematicMode = NeoPixel.FromUInt(br.ReadUInt32());
 				br.ReadUInt32(); //skipping unused data
 			}
 			if ((graphic.Properties & GraphicProperties.DrivingWay) == GraphicProperties.DrivingWay)

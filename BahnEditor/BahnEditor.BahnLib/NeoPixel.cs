@@ -30,6 +30,14 @@ namespace BahnEditor.BahnLib
 				return (this.Property != PixelProperty.None); // If Property is anything but None, it is special
 			}
 		}
+
+		public bool IsTransparent
+		{
+			get
+			{
+				return this.Property == PixelProperty.Transparent;
+			}
+		}
 		#endregion Helpers
 
 		#region Constructors
