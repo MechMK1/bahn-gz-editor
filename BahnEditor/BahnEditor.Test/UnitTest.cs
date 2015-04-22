@@ -17,24 +17,24 @@ namespace BahnEditor.Test
 			short widthExpected = (short)(Constants.ElementWidth * 3);
 			//short x0Expected = 7;
 			//short y0Expected = 5;
-			NeoPixel colorInSchematicModeExpected = new NeoPixel(50, 50, 50);
-			NeoPixel[,] elementExpected = new NeoPixel[heightExpected, widthExpected];
+			Pixel colorInSchematicModeExpected = new Pixel(50, 50, 50);
+			Pixel[,] elementExpected = new Pixel[heightExpected, widthExpected];
 			for (int i = 0; i < elementExpected.GetLength(0); i++)
 			{
 				for (int j = 0; j < elementExpected.GetLength(1); j++)
 				{
 					if (i == 2)
-						elementExpected[i, j] = new NeoPixel(200, 200, 200);
+						elementExpected[i, j] = new Pixel(200, 200, 200);
 					else if (i == 3)
-						elementExpected[i, j] = new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.BehindGlass);
+						elementExpected[i, j] = new Pixel(0, 0, 0, Pixel.PixelProperty.BehindGlass);
 					else if (i == 5)
-						elementExpected[i, j] = new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.AsMarkingPointBus0);
+						elementExpected[i, j] = new Pixel(0, 0, 0, Pixel.PixelProperty.AsMarkingPointBus0);
 					else if (i == 4)
-						elementExpected[i, j] = new NeoPixel(100, 100, 100, NeoPixel.PixelProperty.AlwaysBright);
+						elementExpected[i, j] = new Pixel(100, 100, 100, Pixel.PixelProperty.AlwaysBright);
 					else if (i == 6)
-						elementExpected[i, j] = new NeoPixel(0, 100, 100, NeoPixel.PixelProperty.LampRed);
+						elementExpected[i, j] = new Pixel(0, 100, 100, Pixel.PixelProperty.LampRed);
 					else
-						elementExpected[i, j] = new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.Transparent); ;
+						elementExpected[i, j] = new Pixel(0, 0, 0, Pixel.PixelProperty.Transparent); ;
 				}
 			}
 			Layer layer = new Layer(LayerId.Foreground, elementExpected);
@@ -61,8 +61,8 @@ namespace BahnEditor.Test
 			expectedGraphic1.AddTransparentLayer(LayerId.Foreground);
 			expectedGraphic2.AddTransparentLayer(LayerId.Foreground);
 
-			expectedGraphic1.GetLayer(LayerId.Foreground).Element[10, 10] = new NeoPixel(100, 50, 20);
-			expectedGraphic2.GetLayer(LayerId.Foreground).Element[50, 40] = new NeoPixel(150, 63, 123);
+			expectedGraphic1.GetLayer(LayerId.Foreground).Element[10, 10] = new Pixel(100, 50, 20);
+			expectedGraphic2.GetLayer(LayerId.Foreground).Element[50, 40] = new Pixel(150, 63, 123);
 
 			GraphicArchive expectedArchive = new GraphicArchive(ZoomFactor.Zoom1);
 			expectedArchive.AddGraphic(expectedGraphic1);
@@ -82,19 +82,19 @@ namespace BahnEditor.Test
 		{
 			Graphic expectedGraphic = new Graphic("test");
 			expectedGraphic.AddTransparentLayer(LayerId.Foreground);
-			expectedGraphic.GetLayer(LayerId.Foreground).Element[10, 10] = new NeoPixel(123, 123, 123);
+			expectedGraphic.GetLayer(LayerId.Foreground).Element[10, 10] = new Pixel(123, 123, 123);
 			expectedGraphic.Properties = GraphicProperties.Clock | GraphicProperties.ColorSchematicMode | GraphicProperties.Smoke;
 			expectedGraphic.SteamXPosition = 10;
 			expectedGraphic.SteamYPosition = 10;
 			expectedGraphic.SteamWidth = 5;
-			expectedGraphic.ColorInSchematicMode = new NeoPixel(100, 100, 100);
+			expectedGraphic.ColorInSchematicMode = new Pixel(100, 100, 100);
 			expectedGraphic.ClockXPosition = 10;
 			expectedGraphic.ClockYPosition = 10;
 			expectedGraphic.ClockZPosition = LayerId.Foreground;
 			expectedGraphic.ClockWidth = 5;
 			expectedGraphic.ClockHeight = 5;
-			expectedGraphic.ClockColorHoursPointer = new NeoPixel(200, 0, 0, NeoPixel.PixelProperty.AlwaysBright);
-			expectedGraphic.ClockColorMinutesPointer = new NeoPixel(0, 0, 255);
+			expectedGraphic.ClockColorHoursPointer = new Pixel(200, 0, 0, Pixel.PixelProperty.AlwaysBright);
+			expectedGraphic.ClockColorMinutesPointer = new Pixel(0, 0, 255);
 			expectedGraphic.ClockProperties = ClockProperties.Display24h | ClockProperties.MinutePointer;
 			expectedGraphic.Save("testProperties.gz1", true);
 
@@ -120,11 +120,11 @@ namespace BahnEditor.Test
 		{
 			Graphic expectedGraphic = new Graphic("TestDrivingWay");
 			expectedGraphic.AddTransparentLayer(LayerId.Foreground);
-			expectedGraphic.GetLayer(LayerId.Foreground).Element[10, 10] = new NeoPixel(123, 123, 123);
+			expectedGraphic.GetLayer(LayerId.Foreground).Element[10, 10] = new Pixel(123, 123, 123);
 			expectedGraphic.Properties = GraphicProperties.Cursor | GraphicProperties.DrivingWay | GraphicProperties.ColorSchematicMode | GraphicProperties.ColorFormat24BPP;
 			expectedGraphic.CursorNormalDirection = Direction.South;
 			expectedGraphic.CursorReverseDirection = Direction.South;
-			expectedGraphic.ColorInSchematicMode = new NeoPixel(0, 0, 0);
+			expectedGraphic.ColorInSchematicMode = new Pixel(0, 0, 0);
 			expectedGraphic.DrivingWay.Add(new DrivingWayElement(DrivingWay.Rail, DrivingWayFunction.Crossing, Direction.North, Direction.North));
 			expectedGraphic.DrivingWay.Add(new DrivingWayElement(DrivingWay.Rail, DrivingWayFunction.Crossing, Direction.South, Direction.South));
 			expectedGraphic.Save("testDrivingWay.gz1", true);
@@ -145,13 +145,13 @@ namespace BahnEditor.Test
 		{
 			Assert.AreEqual<string>(expectedGraphic.InfoText, graphic.InfoText);
 			Assert.AreEqual<ZoomFactor>(expectedGraphic.ZoomFactor, graphic.ZoomFactor);
-			Assert.AreEqual<NeoPixel>(expectedGraphic.ColorInSchematicMode, graphic.ColorInSchematicMode);
+			Assert.AreEqual<Pixel>(expectedGraphic.ColorInSchematicMode, graphic.ColorInSchematicMode);
 
 			for (int i = 0; i < expectedGraphic.GetLayer(LayerId.Foreground).Element.GetLength(0); i++)
 			{
 				for (int j = 0; j < expectedGraphic.GetLayer(LayerId.Foreground).Element.GetLength(1); j++)
 				{
-					Assert.AreEqual<NeoPixel>(expectedGraphic.GetLayer(LayerId.Foreground).Element[i, j], graphic.GetLayer(LayerId.Foreground).Element[i, j]);
+					Assert.AreEqual<Pixel>(expectedGraphic.GetLayer(LayerId.Foreground).Element[i, j], graphic.GetLayer(LayerId.Foreground).Element[i, j]);
 				}
 			}
 		}

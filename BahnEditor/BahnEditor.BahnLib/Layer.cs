@@ -19,7 +19,7 @@ namespace BahnEditor.BahnLib
 		/// <summary>
 		/// Gets the element of the layer
 		/// </summary>
-		public NeoPixel[,] Element { get; private set; }
+		public Pixel[,] Element { get; private set; }
 		#endregion Fields and Properties
 
 		#region Constructors
@@ -33,7 +33,7 @@ namespace BahnEditor.BahnLib
 		/// </summary>
 		/// <param name="layerID">Layer id</param>
 		/// <param name="element">Element</param>
-		public Layer(LayerId layerID, NeoPixel[,] element)
+		public Layer(LayerId layerID, Pixel[,] element)
 		{
 			this.LayerId = layerID;
 			this.Element = element;
@@ -53,7 +53,7 @@ namespace BahnEditor.BahnLib
 				throw new ArgumentNullException("bw");
 			short x0;
 			short y0;
-			NeoPixel[,] element = TrimElement(out x0, out y0, this.Element, zoomFactor);
+			Pixel[,] element = TrimElement(out x0, out y0, this.Element, zoomFactor);
 			if (this.LayerId == LayerId.Background_1)
 				bw.Write((short)LayerId.Background_0);
 			else
@@ -87,7 +87,7 @@ namespace BahnEditor.BahnLib
 			short y0 = br.ReadInt16();
 			short width = br.ReadInt16();
 			short height = br.ReadInt16();
-			NeoPixel[,] element = null;
+			Pixel[,] element = null;
 			if (version == GraphicVersion.Version2)
 			{
 				element = ReadElementFromStreamVersion2(br, width, height);
@@ -109,7 +109,7 @@ namespace BahnEditor.BahnLib
 		/// </summary>
 		/// <param name="element">Element</param>
 		/// <param name="bw">BinaryWriter</param>
-		private static void WriteElementToStreamVersion2(NeoPixel[,] element, BinaryWriter bw)
+		private static void WriteElementToStreamVersion2(Pixel[,] element, BinaryWriter bw)
 		{
 			List<uint> pixels = new List<uint>();
 			for (int j = 0; j <= element.GetLength(0) - 1; j++)
@@ -142,7 +142,7 @@ namespace BahnEditor.BahnLib
 				{
 					colors.Add(Constants.ColorCompressedTransparent | (uint)(length - 2));
 				}
-				else if (((lastcolor & Constants.ColorLogic) != 0) && lastcolor != (uint)NeoPixel.PixelProperty.BehindGlass)
+				else if (((lastcolor & Constants.ColorLogic) != 0) && lastcolor != (uint)Pixel.PixelProperty.BehindGlass)
 				{
 					uint color = lastcolor - Constants.ColorAsMin;
 					color = color << 8;
@@ -175,9 +175,9 @@ namespace BahnEditor.BahnLib
 		/// <param name="width">Width of the element</param>
 		/// <param name="height">Height of the element</param>
 		/// <returns>Element</returns>
-		private static NeoPixel[,] ReadElementFromStreamVersion0(BinaryReader br, short width, short height)
+		private static Pixel[,] ReadElementFromStreamVersion0(BinaryReader br, short width, short height)
 		{
-			List<NeoPixel> colors = new List<NeoPixel>();
+			List<Pixel> colors = new List<Pixel>();
 			int elementSize = width * height;
 			while (elementSize > 0)
 			{
@@ -190,7 +190,7 @@ namespace BahnEditor.BahnLib
 						// item is transparent
 						for (int k = 0; k < count; k++)
 						{
-							colors.Add(new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.Transparent));
+							colors.Add(new Pixel(0, 0, 0, Pixel.PixelProperty.Transparent));
 						}
 					}
 					else
@@ -199,7 +199,7 @@ namespace BahnEditor.BahnLib
 						uint color = br.ReadUInt32();
 						for (int k = 0; k < count; k++)
 						{
-							colors.Add(NeoPixel.FromUInt(color));
+							colors.Add(Pixel.FromUInt(color));
 						}
 					}
 					elementSize -= count;
@@ -208,11 +208,11 @@ namespace BahnEditor.BahnLib
 				{
 					// not packed, single pixel
 					elementSize--;
-					colors.Add(NeoPixel.FromUInt(item));
+					colors.Add(Pixel.FromUInt(item));
 				}
 			}
 
-			NeoPixel[,] element = new NeoPixel[height, width];
+			Pixel[,] element = new Pixel[height, width];
 			int position = 0;
 			for (int i = 0; i < height; i++)
 			{
@@ -233,9 +233,9 @@ namespace BahnEditor.BahnLib
 		/// <param name="height">Height of the element</param>
 		/// <returns>Element</returns>
 		/// <exception cref="System.IO.InvalidDataException"/>
-		private static NeoPixel[,] ReadElementFromStreamVersion2(BinaryReader br, short width, short height)
+		private static Pixel[,] ReadElementFromStreamVersion2(BinaryReader br, short width, short height)
 		{
-			List<NeoPixel> colors = new List<NeoPixel>();
+			List<Pixel> colors = new List<Pixel>();
 			int elementSize = br.ReadInt32();
 			for (int i = 0; i < elementSize; i++)
 			{
@@ -249,7 +249,7 @@ namespace BahnEditor.BahnLib
 						// item is transparent
 						for (int k = 0; k < count; k++)
 						{
-							colors.Add(new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.Transparent));
+							colors.Add(new Pixel(0, 0, 0, Pixel.PixelProperty.Transparent));
 						}
 					}
 					else if ((item & Constants.ColorMaskCompressedSystemcolor) != 0)
@@ -257,7 +257,7 @@ namespace BahnEditor.BahnLib
 						// item is a system-color
 						for (int k = 0; k < count; k++)
 						{
-							colors.Add(new NeoPixel(0, 0, 0, (NeoPixel.PixelProperty)(((item & Constants.ColorMaskCompressedSFB) >> 8) + Constants.ColorAsMin)));
+							colors.Add(new Pixel(0, 0, 0, (Pixel.PixelProperty)(((item & Constants.ColorMaskCompressedSFB) >> 8) + Constants.ColorAsMin)));
 						}
 					}
 					else
@@ -276,7 +276,7 @@ namespace BahnEditor.BahnLib
 						{
 							foreach (var b in buffer)
 							{
-								colors.Add(NeoPixel.FromUInt(b));
+								colors.Add(Pixel.FromUInt(b));
 							}
 						}
 					}
@@ -285,11 +285,11 @@ namespace BahnEditor.BahnLib
 				{
 					// not packed, single pixel
 					count = 1;
-					colors.Add(NeoPixel.FromUInt(item));
+					colors.Add(Pixel.FromUInt(item));
 				}
 			}
 
-			NeoPixel[,] element = new NeoPixel[height, width];
+			Pixel[,] element = new Pixel[height, width];
 			int position = 0;
 			for (int i = 0; i < height; i++)
 			{
@@ -310,9 +310,9 @@ namespace BahnEditor.BahnLib
 		/// <param name="element">Element</param>
 		/// <param name="zoomFactor">Zoomfactor for upscaling</param>
 		/// <returns>Upscaled element</returns>
-		private static NeoPixel[,] LoadElement(int x0, int y0, NeoPixel[,] element, ZoomFactor zoomFactor)
+		private static Pixel[,] LoadElement(int x0, int y0, Pixel[,] element, ZoomFactor zoomFactor)
 		{
-			NeoPixel[,] newElement = new NeoPixel[Constants.ElementHeight * 8 * (int)zoomFactor, Constants.ElementWidth * 3 * (int)zoomFactor];
+			Pixel[,] newElement = new Pixel[Constants.ElementHeight * 8 * (int)zoomFactor, Constants.ElementWidth * 3 * (int)zoomFactor];
 			x0 = (int)(x0 + Constants.ElementWidth * (int)zoomFactor);
 			y0 = (int)(y0 + Constants.ElementHeight * (int)zoomFactor);
 			for (int i = 0; i < newElement.GetLength(0); i++)
@@ -325,7 +325,7 @@ namespace BahnEditor.BahnLib
 					}
 					else
 					{
-						newElement[i, j] = new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.Transparent);
+						newElement[i, j] = new Pixel(0, 0, 0, Pixel.PixelProperty.Transparent);
 					}
 				}
 			}
@@ -340,7 +340,7 @@ namespace BahnEditor.BahnLib
 		/// <param name="element">Element</param>
 		/// <param name="zoomFactor">Zoomfactor for downscaling</param>
 		/// <returns>Donwscaled Element</returns>
-		private static NeoPixel[,] TrimElement(out short x0, out short y0, NeoPixel[,] element, ZoomFactor zoomFactor)
+		private static Pixel[,] TrimElement(out short x0, out short y0, Pixel[,] element, ZoomFactor zoomFactor)
 		{
 			int minx = element.GetLength(1);
 			int miny = element.GetLength(0);
@@ -377,7 +377,7 @@ namespace BahnEditor.BahnLib
 			}
 			maxx++;
 			maxy++;
-			NeoPixel[,] newElement = new NeoPixel[maxy - miny, maxx - minx];
+			Pixel[,] newElement = new Pixel[maxy - miny, maxx - minx];
 			for (int i = 0; i < newElement.GetLength(0); i++)
 			{
 				for (int j = 0; j < newElement.GetLength(1); j++)

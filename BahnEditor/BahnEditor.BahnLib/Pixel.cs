@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BahnEditor.BahnLib
 {
-	public class NeoPixel
+	public class Pixel
 	{
 		#region Properties
 		public byte Red { get; set; }
@@ -41,7 +41,7 @@ namespace BahnEditor.BahnLib
 		#endregion Helpers
 
 		#region Constructors
-		public NeoPixel(byte red, byte green, byte blue, PixelProperty property = PixelProperty.None)
+		public Pixel(byte red, byte green, byte blue, PixelProperty property = PixelProperty.None)
 		{
 			this.Red = red;
 			this.Green = green;
@@ -143,38 +143,38 @@ namespace BahnEditor.BahnLib
 			}			
 		}
 
-		public static NeoPixel FromUInt(uint data)
+		public static Pixel FromUInt(uint data)
 		{
 			//If ColorLogic is set, RGB data is not needed and "data" is interpreted as PixelProperty
 			if ((data & Constants.ColorLogic) != 0)
 			{
-				return new NeoPixel(0, 0, 0, (PixelProperty)data);
+				return new Pixel(0, 0, 0, (PixelProperty)data);
 			}
 
 			//If either ColorLamp, ColorAlwaysBright or ColorWindow are set, data is interpreted as R, G, B and PixelProperty
 			//All PixelProperty values which use RGB values have either of these set
 			else if (((data & Constants.ColorLamp) != 0) || ((data & Constants.ColorAlwaysBright) != 0) || ((data & Constants.ColorWindow) != 0))
 			{
-				return new NeoPixel((byte)(data >> 16), (byte)(data >> 8), (byte)data, (PixelProperty)(data & 0xFF000000));
+				return new Pixel((byte)(data >> 16), (byte)(data >> 8), (byte)data, (PixelProperty)(data & 0xFF000000));
 			}
 
 			//Else, R, G and B are interpreted normally
 			else
 			{
-				return new NeoPixel((byte)(data >> 16), (byte)(data >> 8), (byte)data);
+				return new Pixel((byte)(data >> 16), (byte)(data >> 8), (byte)data);
 			}
 		}
 
-		public static NeoPixel FromColor(Color color)
+		public static Pixel FromColor(Color color)
 		{
-			return new NeoPixel(color.R, color.G, color.B);
+			return new Pixel(color.R, color.G, color.B);
 		}
 		#endregion Converters
 
 		#region Comparison
 		public override bool Equals(object obj)
 		{
-			NeoPixel p = obj as NeoPixel;
+			Pixel p = obj as Pixel;
 			if (p == null)
 				return false;
 
@@ -191,7 +191,7 @@ namespace BahnEditor.BahnLib
 			return (this.Red ^ this.Green ^ this.Blue ^ (int)this.Property);
 		} 
 
-		private bool CompareRGBOnly(NeoPixel p)
+		private bool CompareRGBOnly(Pixel p)
 		{
 			if (this.Red   != p.Red  ) return false;
 			if (this.Green != p.Green) return false;
