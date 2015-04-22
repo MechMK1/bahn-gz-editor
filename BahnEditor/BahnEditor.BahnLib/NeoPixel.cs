@@ -129,8 +129,28 @@ namespace BahnEditor.BahnLib
 
 				default:
 					throw new ArgumentOutOfRangeException("property", "A property which was not defined here was encountered");
+			}			
+		}
+
+		public static NeoPixel FromUInt(uint data) //TODO Remove magic numbers
+		{
+			if ((data & Constants.COLOR_LOGIC) != 0)
+			{
+				return new NeoPixel(0, 0, 0, (PixelProperty)data);
 			}
-			
+			else if (((data & Constants.COLOR_LAMP) != 0) || ((data & Constants.COLOR_ALWAYSBRIGHT) != 0) || ((data & Constants.COLOR_WINDOW) != 0))
+			{
+				return new NeoPixel((byte)(data >> 16), (byte)(data >> 8), (byte)data, (PixelProperty)(data & 0xFF000000));
+			}
+			else
+			{
+				return new NeoPixel((byte)(data >> 16), (byte)(data >> 8), (byte)data);
+			}
+		}
+
+		public static NeoPixel FromColor(Color color)
+		{
+			return new NeoPixel(color.R, color.G, color.B);
 		}
 		#endregion Converters
 
