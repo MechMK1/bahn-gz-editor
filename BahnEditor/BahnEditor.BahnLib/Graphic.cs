@@ -324,8 +324,7 @@ namespace BahnEditor.BahnLib
 			else throw new FileNotFoundException("File not found", path);
 		}
 
-		//TODO Reduce complexity (optional)
-		// TODO Remove magic numbers
+
 		internal static Graphic Load(Stream path)
 		{
 			using (BinaryReader br = new BinaryReader(path, Encoding.Unicode))
@@ -357,6 +356,9 @@ namespace BahnEditor.BahnLib
 			}
 		}
 
+
+		//TODO Reduce complexity (optional)
+		//TODO Remove magic numbers
 		internal static Graphic LoadHeader(BinaryReader br)
 		{
 			Graphic graphic = new Graphic();
@@ -367,13 +369,14 @@ namespace BahnEditor.BahnLib
 				throw new InvalidDataException("wrong identification string");
 			}
 
-			byte zoomFactor = (byte)(br.ReadByte() - 48); //zoomfactor, as ASCII-text
+			byte zoomFactor = (byte)(br.ReadByte() - 48); //Zoomfactor is read as ASCII-character, then "converted" to a byte
+														  //ASCII 0 => 48, ASCII 1 => 49, etc...
 			switch (zoomFactor)
 			{
 				case 1:
 				case 2:
 				case 4:
-					graphic.ZoomFactor = (ZoomFactor)Enum.Parse(typeof(ZoomFactor), zoomFactor.ToString(CultureInfo.InvariantCulture));
+					graphic.ZoomFactor = (ZoomFactor)zoomFactor; //HACK Could be shit. Who knows?
 					break;
 				default:
 					throw new InvalidDataException("unknown zoom factor");
@@ -389,14 +392,14 @@ namespace BahnEditor.BahnLib
 				case (byte)GraphicVersion.Version0:
 				case (byte)GraphicVersion.Version1:
 				case (byte)GraphicVersion.Version2:
-					graphic.Version = (GraphicVersion)Enum.Parse(typeof(GraphicVersion), readSubversion[1].ToString(CultureInfo.InvariantCulture));
+					graphic.Version = (GraphicVersion)readSubversion[1];
 					break;
 				default:
 					throw new InvalidDataException("wrong version");
 			}
 
 			int p = br.ReadInt32(); //Properties
-			graphic.Properties = (GraphicProperties)Enum.Parse(typeof(GraphicProperties), p.ToString(CultureInfo.InvariantCulture));
+			graphic.Properties = (GraphicProperties)p;
 			if (((graphic.Properties & GraphicProperties.Smoke) == GraphicProperties.Smoke) || ((graphic.Properties & GraphicProperties.Steam) == GraphicProperties.Steam))
 			{
 				graphic.SteamXPosition = br.ReadInt32();
@@ -411,11 +414,11 @@ namespace BahnEditor.BahnLib
 				}
 				br.ReadInt32(); //skipping unused data (for future use)
 				int clockProperties = br.ReadInt32();
-				graphic.ClockProperties = (ClockProperties)Enum.Parse(typeof(ClockProperties), clockProperties.ToString(CultureInfo.InvariantCulture));
+				graphic.ClockProperties = (ClockProperties)clockProperties;
 				graphic.ClockXPosition = br.ReadInt32();
 				graphic.ClockYPosition = br.ReadInt32();
 				int clockZPosition = br.ReadInt32();
-				graphic.ClockZPosition = (LayerId)Enum.Parse(typeof(LayerId), clockZPosition.ToString(CultureInfo.InvariantCulture));
+				graphic.ClockZPosition = (LayerId)clockZPosition;
 				graphic.ClockWidth = br.ReadInt32();
 				graphic.ClockHeight = br.ReadInt32();
 				graphic.ClockColorHoursPointer = Pixel.FromUInt(br.ReadUInt32());
@@ -430,8 +433,8 @@ namespace BahnEditor.BahnLib
 				}
 				int cursorNormalDirection = br.ReadInt32();
 				int cursorReverseDirection = br.ReadInt32();
-				graphic.CursorNormalDirection = (Direction)Enum.Parse(typeof(Direction), cursorNormalDirection.ToString(CultureInfo.InvariantCulture));
-				graphic.CursorReverseDirection = (Direction)Enum.Parse(typeof(Direction), cursorReverseDirection.ToString(CultureInfo.InvariantCulture));
+				graphic.CursorNormalDirection = (Direction)cursorNormalDirection;
+				graphic.CursorReverseDirection = (Direction)cursorReverseDirection;
 			}
 			if ((graphic.Properties & GraphicProperties.ColorSchematicMode) == GraphicProperties.ColorSchematicMode)
 			{

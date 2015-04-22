@@ -138,6 +138,82 @@ namespace BahnEditor.Test
 				CompareDrivingWay(expectedGraphic.DrivingWay[i], graphic.DrivingWay[i]);
 			}
 		}
+
+		[TestMethod]
+		public void TestPixelEnum()
+		{
+			NeoPixel np = new NeoPixel(10, 0, 0);
+			Assert.IsFalse(np.IsSpecial);
+			Assert.IsTrue(np.UsesRGB);
+
+			np = new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.Transparent);
+			Assert.IsTrue(np.IsSpecial);
+			Assert.IsFalse(np.UsesRGB);
+
+			np = new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.Always_Bright);
+			Assert.IsTrue(np.IsSpecial);
+			Assert.IsTrue(np.UsesRGB);
+		}
+
+		[TestMethod]
+		public void TestPixelOldNew()
+		{
+			NeoPixel np1 = new NeoPixel(123, 221, 90);
+			Pixel px1 = new Pixel(123, 221, 90);
+			Assert.AreEqual<uint>(np1.ToUInt(), px1.ToUInt());
+
+			NeoPixel np2 = new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.As_Rails_Trackbed0);
+			Pixel px2 = new Pixel(Pixel.SpecialPixelWithoutRGB.As_Rails_Trackbed0);
+			Assert.AreEqual<uint>(np2.ToUInt(), px2.ToUInt());
+
+			NeoPixel np3 = new NeoPixel(123, 221, 90, NeoPixel.PixelProperty.Always_Bright);
+			Pixel px3 = new Pixel(Pixel.SpecialPixelWithRGB.Always_Bright, 123, 221, 90);
+			Assert.AreEqual<uint>(np3.ToUInt(), px3.ToUInt());
+		}
+
+		[TestMethod]
+		public void TestPixelNewEqualsSimpleTrue()
+		{
+			NeoPixel np1a = new NeoPixel(123, 221, 90);
+			NeoPixel np1b = new NeoPixel(123, 221, 90);
+			Assert.IsTrue(np1a.Equals(np1b));
+		}
+
+		[TestMethod]
+		public void TestPixelNewEqualsSimpleFalse()
+		{
+			NeoPixel np1a = new NeoPixel(123, 221, 90);
+			NeoPixel np1b = new NeoPixel(123, 221, 0);
+			Assert.IsFalse(np1a.Equals(np1b));
+		}
+
+		[TestMethod]
+		public void TestPixelNewEqualsPropertyDifferent()
+		{
+			NeoPixel np1a = new NeoPixel(123, 221, 90);
+			NeoPixel np1b = new NeoPixel(123, 221, 90, NeoPixel.PixelProperty.Transparent);
+			Assert.IsFalse(np1a.Equals(np1b));
+		}
+
+		[TestMethod]
+		public void TestPixelNewEqualsNoRGB()
+		{
+			NeoPixel np1a = new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.Transparent);
+			NeoPixel np1b = new NeoPixel(123, 221, 90, NeoPixel.PixelProperty.Transparent);
+			Assert.IsTrue(np1a.Equals(np1b));
+		}
+
+		[TestMethod]
+		public void TestPixelNewEqualsPropertyAndRGB()
+		{
+			NeoPixel np1a = new NeoPixel(123, 221, 90, NeoPixel.PixelProperty.Always_Bright);
+			NeoPixel np1b = new NeoPixel(123, 221, 90, NeoPixel.PixelProperty.Always_Bright);
+			Assert.IsTrue(np1a.Equals(np1b));
+
+			var test1 = (int)np1b.Property;
+			var test2 = (uint)np1b.Property;
+			Console.WriteLine("AA");
+		}
 		#endregion Tests
 
 		#region Private Methods
