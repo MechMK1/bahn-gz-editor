@@ -132,16 +132,22 @@ namespace BahnEditor.BahnLib
 			}			
 		}
 
-		public static NeoPixel FromUInt(uint data) //TODO Remove magic numbers
+		public static NeoPixel FromUInt(uint data)
 		{
+			//If COLOR_LOGIC is set, RGB data is not needed and "data" is interpreted as PixelProperty
 			if ((data & Constants.COLOR_LOGIC) != 0)
 			{
 				return new NeoPixel(0, 0, 0, (PixelProperty)data);
 			}
+
+			//If either COLOR_LAMP, COLOR_ALWAYSBRIGHT or COLOR_WINDOW are set, data is interpreted as R, G, B and PixelProperty
+			//All PixelProperty values which use RGB values have either of these set
 			else if (((data & Constants.COLOR_LAMP) != 0) || ((data & Constants.COLOR_ALWAYSBRIGHT) != 0) || ((data & Constants.COLOR_WINDOW) != 0))
 			{
 				return new NeoPixel((byte)(data >> 16), (byte)(data >> 8), (byte)data, (PixelProperty)(data & 0xFF000000));
 			}
+
+			//Else, R, G and B are interpreted normally
 			else
 			{
 				return new NeoPixel((byte)(data >> 16), (byte)(data >> 8), (byte)data);
