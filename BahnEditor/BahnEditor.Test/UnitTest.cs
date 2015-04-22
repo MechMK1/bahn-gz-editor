@@ -150,7 +150,7 @@ namespace BahnEditor.Test
 			Assert.IsTrue(np.IsSpecial);
 			Assert.IsFalse(np.UsesRGB);
 
-			np = new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.Always_Bright);
+			np = new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.AlwaysBright);
 			Assert.IsTrue(np.IsSpecial);
 			Assert.IsTrue(np.UsesRGB);
 		}
@@ -162,11 +162,11 @@ namespace BahnEditor.Test
 			Pixel px1 = new Pixel(123, 221, 90);
 			Assert.AreEqual<uint>(np1.ToUInt(), px1.ToUInt());
 
-			NeoPixel np2 = new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.As_Rails_Trackbed0);
+			NeoPixel np2 = new NeoPixel(0, 0, 0, NeoPixel.PixelProperty.AsRailsTrackbed0);
 			Pixel px2 = new Pixel(Pixel.SpecialPixelWithoutRGB.As_Rails_Trackbed0);
 			Assert.AreEqual<uint>(np2.ToUInt(), px2.ToUInt());
 
-			NeoPixel np3 = new NeoPixel(123, 221, 90, NeoPixel.PixelProperty.Always_Bright);
+			NeoPixel np3 = new NeoPixel(123, 221, 90, NeoPixel.PixelProperty.AlwaysBright);
 			Pixel px3 = new Pixel(Pixel.SpecialPixelWithRGB.Always_Bright, 123, 221, 90);
 			Assert.AreEqual<uint>(np3.ToUInt(), px3.ToUInt());
 		}
@@ -206,8 +206,8 @@ namespace BahnEditor.Test
 		[TestMethod]
 		public void TestPixelNewEqualsPropertyAndRGB()
 		{
-			NeoPixel np1a = new NeoPixel(123, 221, 90, NeoPixel.PixelProperty.Always_Bright);
-			NeoPixel np1b = new NeoPixel(123, 221, 90, NeoPixel.PixelProperty.Always_Bright);
+			NeoPixel np1a = new NeoPixel(123, 221, 90, NeoPixel.PixelProperty.AlwaysBright);
+			NeoPixel np1b = new NeoPixel(123, 221, 90, NeoPixel.PixelProperty.AlwaysBright);
 			Assert.IsTrue(np1a.Equals(np1b));
 
 			var test1 = (int)np1b.Property;

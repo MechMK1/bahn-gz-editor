@@ -15,11 +15,12 @@ namespace BahnEditor.BahnLib
 		public byte Blue { get; set; }
 		public PixelProperty Property { get; set; }
 		#endregion Properties
+
 		#region Helpers
 		public bool UsesRGB {
 			get {
 				if (!this.IsSpecial) return true;  // If Property is null or None, RGB is used
-				else return ((uint)this.Property & Constants.COLOR_LOGIC) == 0; // If Property does nor have COLOR_LOGIC set, RGB is used
+				else return ((uint)this.Property & Constants.ColorLogic) == 0; // If Property does not have ColorLogic set, RGB is used
 			}
 		}
 
@@ -30,6 +31,7 @@ namespace BahnEditor.BahnLib
 			}
 		}
 		#endregion Helpers
+
 		#region Constructors
 		public NeoPixel(byte red, byte green, byte blue, PixelProperty property = PixelProperty.None)
 		{
@@ -39,6 +41,7 @@ namespace BahnEditor.BahnLib
 			this.Property = property;
 		}
 		#endregion Constructors
+
 		#region Converters
 		public uint ToUInt()
 		{
@@ -61,18 +64,18 @@ namespace BahnEditor.BahnLib
 			{
 				//With RGB
 				case PixelProperty.None:
-				case PixelProperty.Always_Bright:
-				case PixelProperty.Lamp_Yellow:
-				case PixelProperty.Lamp_Red:
-				case PixelProperty.Lamp_ColdWhite:
-				case PixelProperty.Lamp_YellowWhite:
-				case PixelProperty.Lamp_Gas_Yellow:
-				case PixelProperty.Window_Yellow_0:
-				case PixelProperty.Window_Yellow_1:
-				case PixelProperty.Window_Yellow_2:
-				case PixelProperty.Window_Neon_0:
-				case PixelProperty.Window_Neon_1:
-				case PixelProperty.Window_Neon_2:
+				case PixelProperty.AlwaysBright:
+				case PixelProperty.LampYellow:
+				case PixelProperty.LampRed:
+				case PixelProperty.LampColdWhite:
+				case PixelProperty.LampYellowWhite:
+				case PixelProperty.LampGasYellow:
+				case PixelProperty.WindowYellow0:
+				case PixelProperty.WindowYellow1:
+				case PixelProperty.WindowYellow2:
+				case PixelProperty.WindowNeon0:
+				case PixelProperty.WindowNeon1:
+				case PixelProperty.WindowNeon2:
 					return Color.FromArgb(this.Red, this.Green, this.Blue);
 
 				//Without RGB
@@ -80,51 +83,51 @@ namespace BahnEditor.BahnLib
 					return Color.FromArgb(0, 112, 0);
 				case PixelProperty.BehindGlass:
 					return Color.FromArgb(0, 50, 100);
-				case PixelProperty.As_BG:
+				case PixelProperty.AsBG:
 					return Color.FromArgb(0, 112, 0);
-				case PixelProperty.As_Sleepers0:
+				case PixelProperty.AsSleepers0:
 					return Color.FromArgb(188, 188, 188);
-				case PixelProperty.As_Sleepers1:
+				case PixelProperty.AsSleepers1:
 					return Color.FromArgb(84, 40, 0);
-				case PixelProperty.As_Sleepers3:
+				case PixelProperty.AsSleepers3:
 					return Color.FromArgb(84, 40, 0);
-				case PixelProperty.As_Rails_Road0:
+				case PixelProperty.AsRailsRoad0:
 					return Color.FromArgb(168, 168, 168);
-				case PixelProperty.As_Rails_Road1:
+				case PixelProperty.AsRailsRoad1:
 					return Color.FromArgb(60, 60, 60);
-				case PixelProperty.As_Rails_Road2:
+				case PixelProperty.AsRailsRoad2:
 					return Color.FromArgb(168, 168, 168);
-				case PixelProperty.As_Rails_Road3:
+				case PixelProperty.AsRailsRoad3:
 					return Color.FromArgb(104, 104, 104);
-				case PixelProperty.As_Rails_Trackbed0:
+				case PixelProperty.AsRailsTrackbed0:
 					return Color.FromArgb(104, 104, 104);
-				case PixelProperty.As_Rails_Trackbed1:
+				case PixelProperty.AsRailsTrackbed1:
 					return Color.FromArgb(148, 148, 148);
-				case PixelProperty.As_Rails_Trackbed2:
+				case PixelProperty.AsRailsTrackbed2:
 					return Color.FromArgb(148, 148, 148);
-				case PixelProperty.As_Rails_Trackbed3:
+				case PixelProperty.AsRailsTrackbed3:
 					return Color.FromArgb(104, 104, 104);
-				case PixelProperty.As_Marking_Point_Bus0:
+				case PixelProperty.AsMarkingPointBus0:
 					return Color.FromArgb(252, 252, 252);
-				case PixelProperty.As_Marking_Point_Bus1:
+				case PixelProperty.AsMarkingPointBus1:
 					return Color.FromArgb(252, 252, 252);
-				case PixelProperty.As_Marking_Point_Bus2:
+				case PixelProperty.AsMarkingPointBus2:
 					return Color.FromArgb(252, 252, 252);
-				case PixelProperty.As_Marking_Point_Bus3:
+				case PixelProperty.AsMarkingPointBus3:
 					return Color.FromArgb(252, 252, 252);
-				case PixelProperty.As_Marking_Point_Water:
+				case PixelProperty.AsMarkingPointWater:
 					return Color.FromArgb(84, 252, 252);
-				case PixelProperty.As_Gravel:
+				case PixelProperty.AsGravel:
 					return Color.FromArgb(60, 60, 60);
-				case PixelProperty.As_Small_Gravel:
+				case PixelProperty.AsSmallGravel:
 					return Color.FromArgb(168, 136, 0);
-				case PixelProperty.As_Grassy:
+				case PixelProperty.AsGrassy:
 					return Color.FromArgb(0, 168, 0);
-				case PixelProperty.As_Path_BG:
+				case PixelProperty.AsPathBG:
 					return Color.FromArgb(30, 180, 20);
-				case PixelProperty.As_Path_FG:
+				case PixelProperty.AsPathFG:
 					return Color.FromArgb(168, 140, 0);
-				case PixelProperty.As_Text:
+				case PixelProperty.AsText:
 					return Color.FromArgb(252, 252, 252);
 
 				default:
@@ -134,15 +137,15 @@ namespace BahnEditor.BahnLib
 
 		public static NeoPixel FromUInt(uint data)
 		{
-			//If COLOR_LOGIC is set, RGB data is not needed and "data" is interpreted as PixelProperty
-			if ((data & Constants.COLOR_LOGIC) != 0)
+			//If ColorLogic is set, RGB data is not needed and "data" is interpreted as PixelProperty
+			if ((data & Constants.ColorLogic) != 0)
 			{
 				return new NeoPixel(0, 0, 0, (PixelProperty)data);
 			}
 
-			//If either COLOR_LAMP, COLOR_ALWAYSBRIGHT or COLOR_WINDOW are set, data is interpreted as R, G, B and PixelProperty
+			//If either ColorLamp, ColorAlwaysBright or ColorWindow are set, data is interpreted as R, G, B and PixelProperty
 			//All PixelProperty values which use RGB values have either of these set
-			else if (((data & Constants.COLOR_LAMP) != 0) || ((data & Constants.COLOR_ALWAYSBRIGHT) != 0) || ((data & Constants.COLOR_WINDOW) != 0))
+			else if (((data & Constants.ColorLamp) != 0) || ((data & Constants.ColorAlwaysBright) != 0) || ((data & Constants.ColorWindow) != 0))
 			{
 				return new NeoPixel((byte)(data >> 16), (byte)(data >> 8), (byte)data, (PixelProperty)(data & 0xFF000000));
 			}
@@ -195,44 +198,44 @@ namespace BahnEditor.BahnLib
 		{
 			None = 0,
 			//With RGB
-			Always_Bright = Constants.COLOR_ALWAYSBRIGHT,
-			Lamp_Yellow = (Constants.COLOR_LAMP | 0x00000000),
-			Lamp_Red = (Constants.COLOR_LAMP | 0x01000000),
-			Lamp_ColdWhite = (Constants.COLOR_LAMP | 0x02000000),
-			Lamp_YellowWhite = (Constants.COLOR_LAMP | 0x03000000),
-			Lamp_Gas_Yellow = (Constants.COLOR_LAMP | 0x04000000),
-			Window_Yellow_0 = Constants.COLOR_WINDOW_0,
-			Window_Yellow_1 = Constants.COLOR_WINDOW_1,
-			Window_Yellow_2 = Constants.COLOR_WINDOW_2,
-			Window_Neon_0 = (Constants.COLOR_WINDOW_0 | 0x04000000),
-			Window_Neon_1 = (Constants.COLOR_WINDOW_1 | 0x04000000),
-			Window_Neon_2 = (Constants.COLOR_WINDOW_2 | 0x04000000),
+			AlwaysBright = Constants.ColorAlwaysBright,
+			LampYellow = (Constants.ColorLamp | 0x00000000),
+			LampRed = (Constants.ColorLamp | 0x01000000),
+			LampColdWhite = (Constants.ColorLamp | 0x02000000),
+			LampYellowWhite = (Constants.ColorLamp | 0x03000000),
+			LampGasYellow = (Constants.ColorLamp | 0x04000000),
+			WindowYellow0 = Constants.ColorWindow0,
+			WindowYellow1 = Constants.ColorWindow1,
+			WindowYellow2 = Constants.ColorWindow2,
+			WindowNeon0 = (Constants.ColorWindow0 | 0x04000000),
+			WindowNeon1 = (Constants.ColorWindow1 | 0x04000000),
+			WindowNeon2 = (Constants.ColorWindow2 | 0x04000000),
 			//Without RGB
-			Transparent = Constants.COLOR_TRANSPARENT,
-			BehindGlass = (Constants.COLOR_LOGIC),
-			As_BG = (Constants.COLOR_LOGIC | 0x00000100),
-			As_Sleepers0 = (Constants.COLOR_LOGIC | 0x00000101),
-			As_Sleepers1 = (Constants.COLOR_LOGIC | 0x00000102),
-			As_Sleepers3 = (Constants.COLOR_LOGIC | 0x00000103),
-			As_Rails_Road0 = (Constants.COLOR_LOGIC | 0x00000104),
-			As_Rails_Road1 = (Constants.COLOR_LOGIC | 0x00000105),
-			As_Rails_Road2 = (Constants.COLOR_LOGIC | 0x00000106),
-			As_Rails_Road3 = (Constants.COLOR_LOGIC | 0x00000107),
-			As_Rails_Trackbed0 = (Constants.COLOR_LOGIC | 0x00000108),
-			As_Rails_Trackbed1 = (Constants.COLOR_LOGIC | 0x00000109),
-			As_Rails_Trackbed2 = (Constants.COLOR_LOGIC | 0x0000010A),
-			As_Rails_Trackbed3 = (Constants.COLOR_LOGIC | 0x0000010B),
-			As_Marking_Point_Bus0 = (Constants.COLOR_LOGIC | 0x0000010C),
-			As_Marking_Point_Bus1 = (Constants.COLOR_LOGIC | 0x0000010D),
-			As_Marking_Point_Bus2 = (Constants.COLOR_LOGIC | 0x0000010E),
-			As_Marking_Point_Bus3 = (Constants.COLOR_LOGIC | 0x0000010F),
-			As_Marking_Point_Water = (Constants.COLOR_LOGIC | 0x00000110),
-			As_Gravel = (Constants.COLOR_LOGIC | 0x00000111),
-			As_Small_Gravel = (Constants.COLOR_LOGIC | 0x00000112),
-			As_Grassy = (Constants.COLOR_LOGIC | 0x00000113),
-			As_Path_BG = (Constants.COLOR_LOGIC | 0x00000114),
-			As_Path_FG = (Constants.COLOR_LOGIC | 0x00000115),
-			As_Text = (Constants.COLOR_LOGIC | 0x00000116)
+			Transparent = Constants.ColorTransparent,
+			BehindGlass = (Constants.ColorLogic),
+			AsBG = (Constants.ColorLogic | 0x00000100),
+			AsSleepers0 = (Constants.ColorLogic | 0x00000101),
+			AsSleepers1 = (Constants.ColorLogic | 0x00000102),
+			AsSleepers3 = (Constants.ColorLogic | 0x00000103),
+			AsRailsRoad0 = (Constants.ColorLogic | 0x00000104),
+			AsRailsRoad1 = (Constants.ColorLogic | 0x00000105),
+			AsRailsRoad2 = (Constants.ColorLogic | 0x00000106),
+			AsRailsRoad3 = (Constants.ColorLogic | 0x00000107),
+			AsRailsTrackbed0 = (Constants.ColorLogic | 0x00000108),
+			AsRailsTrackbed1 = (Constants.ColorLogic | 0x00000109),
+			AsRailsTrackbed2 = (Constants.ColorLogic | 0x0000010A),
+			AsRailsTrackbed3 = (Constants.ColorLogic | 0x0000010B),
+			AsMarkingPointBus0 = (Constants.ColorLogic | 0x0000010C),
+			AsMarkingPointBus1 = (Constants.ColorLogic | 0x0000010D),
+			AsMarkingPointBus2 = (Constants.ColorLogic | 0x0000010E),
+			AsMarkingPointBus3 = (Constants.ColorLogic | 0x0000010F),
+			AsMarkingPointWater = (Constants.ColorLogic | 0x00000110),
+			AsGravel = (Constants.ColorLogic | 0x00000111),
+			AsSmallGravel = (Constants.ColorLogic | 0x00000112),
+			AsGrassy = (Constants.ColorLogic | 0x00000113),
+			AsPathBG = (Constants.ColorLogic | 0x00000114),
+			AsPathFG = (Constants.ColorLogic | 0x00000115),
+			AsText = (Constants.ColorLogic | 0x00000116)
 		}
 		#endregion Enums
 	}
