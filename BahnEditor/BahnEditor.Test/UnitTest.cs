@@ -159,6 +159,20 @@ namespace BahnEditor.Test
 			Pixel b = new Pixel(0, 0, 0, Pixel.PixelProperty.Transparent);
 			Assert.IsTrue(a.Equals(b));
 			Assert.IsTrue(b.Equals(a));
+
+			b.Property = Pixel.PixelProperty.AlwaysBright;
+			Assert.IsFalse(a.Equals(b));
+			Assert.IsFalse(b.Equals(a));
+
+			a.Property = Pixel.PixelProperty.AlwaysBright;
+			Assert.IsFalse(a.Equals(b));
+			Assert.IsFalse(b.Equals(a));
+
+			a.Red = 0;
+			a.Green = 0;
+			a.Blue = 0;
+			Assert.IsTrue(a.Equals(b));
+			Assert.IsTrue(b.Equals(a));
 		}
 		#endregion Tests
 
