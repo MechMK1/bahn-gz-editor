@@ -138,6 +138,28 @@ namespace BahnEditor.Test
 				CompareDrivingWay(expectedGraphic.DrivingWay[i], graphic.DrivingWay[i]);
 			}
 		}
+
+		[TestMethod]
+		public void TestPixelToUInt()
+		{
+			Pixel rgbOnly = new Pixel(1, 2, 3);
+			Assert.AreEqual<uint>(66051, rgbOnly.ToUInt());
+
+			Pixel rgbWithProperty = new Pixel(1, 2, 3, Pixel.PixelProperty.AlwaysBright);
+			Assert.AreEqual<uint>(66051 | Constants.ColorAlwaysBright, rgbWithProperty.ToUInt());
+
+			Pixel propertyOnly = new Pixel(0, 0, 0, Pixel.PixelProperty.Transparent);
+			Assert.AreEqual<uint>(Constants.ColorTransparent, propertyOnly.ToUInt());
+		}
+
+		[TestMethod]
+		public void TestPixelEquals()
+		{
+			Pixel a = new Pixel(1, 2, 3, Pixel.PixelProperty.Transparent);
+			Pixel b = new Pixel(0, 0, 0, Pixel.PixelProperty.Transparent);
+			Assert.IsTrue(a.Equals(b));
+			Assert.IsTrue(b.Equals(a));
+		}
 		#endregion Tests
 
 		#region Private Methods
