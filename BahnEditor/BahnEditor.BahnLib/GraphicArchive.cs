@@ -16,7 +16,9 @@ namespace BahnEditor.BahnLib
 		/// <summary>
 		/// List of graphics in the archive
 		/// </summary>
-		private List<ArchiveElement> graphics; 
+		private List<ArchiveElement> graphics;
+
+		public string FileName { get; private set; }
 
 		/// <summary>
 		/// Gets the zoom factor
@@ -117,12 +119,34 @@ namespace BahnEditor.BahnLib
 						ArchiveElement archiveElement = enumerable.SingleOrDefault(x => x.AnimationPhase == 0 && x.Alternative == i);
 						if (archiveElement != null)
 						{
+							if (archiveElement.Graphic.IsLayerEmpty && this.FileName != null)
+							{
+								using (FileStream stream = File.Open(this.FileName, FileMode.Open))
+								{
+									stream.Seek(archiveElement.SeekPositionGraphicData, SeekOrigin.Begin);
+									using (BinaryReader br = new BinaryReader(stream))
+									{
+										archiveElement.Graphic.LoadData(br);
+									}
+								}
+							}
 							return archiveElement.Graphic;
 						}
 					}
 					ArchiveElement element = enumerable.SingleOrDefault(x => x.AnimationPhase == 0 && x.Alternative == 0);
 					if (element != null)
 					{
+						if (element.Graphic.IsLayerEmpty && this.FileName != null)
+						{
+							using (FileStream stream = File.Open(this.FileName, FileMode.Open))
+							{
+								stream.Seek(element.SeekPositionGraphicData, SeekOrigin.Begin);
+								using (BinaryReader br = new BinaryReader(stream))
+								{
+									element.Graphic.LoadData(br);
+								}
+							}
+						}
 						return element.Graphic;
 					}
 					return null;
@@ -203,7 +227,9 @@ namespace BahnEditor.BahnLib
 			{
 				using (FileStream stream = File.OpenRead(path))
 				{
-					return Load(stream);
+					GraphicArchive archive = Load(stream);
+					archive.FileName = path;
+					return archive;
 				}
 			}
 			else throw new FileNotFoundException("File not found", path);
@@ -223,41 +249,31 @@ namespace BahnEditor.BahnLib
 					throw new InvalidDataException("wrong identification string");
 				}
 				byte zoomFactor = (byte)(br.ReadByte() - 48);
-				int elementNummer;
-				List<int> seekList = new List<int>();
+				int elementNumber;
+				List<ArchiveElement> graphics = new List<ArchiveElement>();
 				while (true)
 				{
-					elementNummer = br.ReadInt32();
-					if (elementNummer == -1)
+					elementNumber = br.ReadInt32();
+					if (elementNumber == -1)
 					{
 						break;
 					}
-					br.ReadInt32(); //skipping redundant data (bauform)
-					br.ReadInt32(); //skipping redundant data (fwSig)
-					br.ReadInt32(); //skipping redundant data (phase)
-					br.ReadInt32(); //skipping redundant data (alt)
-					seekList.Add((int)(br.BaseStream.Position + 4 + br.ReadInt32()));
-				}
-
-				List<ArchiveElement> graphics = new List<ArchiveElement>();
-				foreach (var item in seekList)
-				{
-					br.BaseStream.Seek(item, SeekOrigin.Begin);
 					ArchiveElement element = new ArchiveElement();
-					element.ElementNumber = br.ReadInt32();
-					br.ReadInt32(); //skip bauform
-					br.ReadInt32(); //skip fwSig
-					element.AnimationPhase = br.ReadInt32();
-					element.Alternative = br.ReadInt32();
+					element.ElementNumber = elementNumber;
+					br.ReadInt32(); //skipping data (bauform)
+					br.ReadInt32(); //skipping data (fwSig)
+					element.AnimationPhase = br.ReadInt32(); //AnimationPhase
+					element.Alternative = br.ReadInt32(); //Alternative
+					element.SeekPosition = ((int)(br.BaseStream.Position + 4 + br.ReadInt32()));
+					graphics.Add(element);
+				}
+				foreach (var item in graphics)
+				{
+					br.BaseStream.Seek(item.SeekPosition + sizeof(int) * 5, SeekOrigin.Begin);
 					int length = br.ReadInt32();
 					int date = br.ReadInt32();
-					using (MemoryStream ms = new MemoryStream())
-					{
-						br.BaseStream.CopyTo(ms, length);
-						ms.Position = 0;
-						element.Graphic = Graphic.Load(ms);
-						graphics.Add(element);
-					}
+					item.Graphic = Graphic.LoadHeader(br);
+					item.SeekPositionGraphicData = br.BaseStream.Position;
 				}
 				GraphicArchive archive;
 				switch (zoomFactor)
@@ -265,13 +281,14 @@ namespace BahnEditor.BahnLib
 					case 1:
 					case 2:
 					case 4:
-						ZoomFactor f = (ZoomFactor)Enum.Parse(typeof(ZoomFactor), zoomFactor.ToString(CultureInfo.InvariantCulture));
+						ZoomFactor f = (ZoomFactor)zoomFactor;
 						archive = new GraphicArchive(f);
 						break;
 					default:
 						throw new InvalidDataException("Invalid ZoomFactor");
 				}
 				archive.graphics = graphics;
+
 				return archive;
 			}
 		}

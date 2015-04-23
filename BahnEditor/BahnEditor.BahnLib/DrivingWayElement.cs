@@ -61,10 +61,10 @@ namespace BahnEditor.BahnLib
 			byte arrivalByte = (byte)(data[8] & 0xF);
 			byte departureByte = (byte)((data[8] & 0xF0) >> 4);
 
-			DrivingWay drivingWay = (DrivingWay)Enum.Parse(typeof(DrivingWay), drivingWayByte.ToString(CultureInfo.InvariantCulture));
-			DrivingWayFunction function = (DrivingWayFunction)Enum.Parse(typeof(DrivingWayFunction), drivingWayFunctionByte.ToString(CultureInfo.InvariantCulture));
-			Direction arrival = (Direction)Enum.Parse(typeof(Direction), arrivalByte.ToString(CultureInfo.InvariantCulture));
-			Direction departure = (Direction)Enum.Parse(typeof(Direction), departureByte.ToString(CultureInfo.InvariantCulture));
+			DrivingWay drivingWay = (DrivingWay)drivingWayByte;
+			DrivingWayFunction function = (DrivingWayFunction)drivingWayFunctionByte;
+			Direction arrival = (Direction)arrivalByte;
+			Direction departure = (Direction)departureByte;
 
 			return new DrivingWayElement(drivingWay, function, arrival, departure);
 		}

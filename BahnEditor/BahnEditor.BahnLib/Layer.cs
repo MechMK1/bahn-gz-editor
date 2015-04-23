@@ -54,8 +54,8 @@ namespace BahnEditor.BahnLib
 			short x0;
 			short y0;
 			Pixel[,] element = TrimElement(out x0, out y0, this.Element, zoomFactor);
-			if (this.LayerId == LayerId.Background_1)
-				bw.Write((short)LayerId.Background_0);
+			if (this.LayerId == LayerId.Background1)
+				bw.Write((short)LayerId.Background0);
 			else
 				bw.Write((short)this.LayerId); //layer
 			bw.Write(x0); //x0
@@ -82,7 +82,7 @@ namespace BahnEditor.BahnLib
 				throw new ArgumentNullException("br");
 			Layer layer = new Layer();
 			short layerId = br.ReadInt16();
-			layer.LayerId = (LayerId)Enum.Parse(typeof(LayerId), layerId.ToString(CultureInfo.InvariantCulture));
+			layer.LayerId = (LayerId)layerId;
 			short x0 = br.ReadInt16();
 			short y0 = br.ReadInt16();
 			short width = br.ReadInt16();
