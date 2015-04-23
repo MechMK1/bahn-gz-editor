@@ -16,7 +16,7 @@
 		/// <summary>
 		/// Background (behind train; first layer)
 		/// </summary>
-		Background_0 = 3,
+		Background0 = 3,
 		/// <summary>
 		/// Front (used especially for bridges 45 degrees)
 		/// </summary>
@@ -28,6 +28,6 @@
 		/// <summary>
 		/// Background (behind train; second layer)
 		/// </summary>
-		Background_1 = 6
+		Background1 = 6
 	}
 }

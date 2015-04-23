@@ -292,10 +292,10 @@ namespace BahnEditor.BahnLib
 						element[i, j] = this.GetLayer(LayerId.Foreground).Element[i + Constants.ElementHeight, j + Constants.ElementWidth];
 					else if (this.GetLayer(LayerId.Front) != null && !this.GetLayer(LayerId.Front).Element[i + Constants.ElementHeight, j + Constants.ElementWidth].IsTransparent)
 						element[i, j] = this.GetLayer(LayerId.Front).Element[i + Constants.ElementHeight, j + Constants.ElementWidth];
-					else if (this.GetLayer(LayerId.Background_1) != null && !this.GetLayer(LayerId.Background_1).Element[i + Constants.ElementHeight, j + Constants.ElementWidth].IsTransparent)
-						element[i, j] = this.GetLayer(LayerId.Background_1).Element[i + Constants.ElementHeight, j + Constants.ElementWidth];
-					else if (this.GetLayer(LayerId.Background_0) != null && !this.GetLayer(LayerId.Background_0).Element[i + Constants.ElementHeight, j + Constants.ElementWidth].IsTransparent)
-						element[i, j] = this.GetLayer(LayerId.Background_0).Element[i + Constants.ElementHeight, j + Constants.ElementWidth];
+					else if (this.GetLayer(LayerId.Background1) != null && !this.GetLayer(LayerId.Background1).Element[i + Constants.ElementHeight, j + Constants.ElementWidth].IsTransparent)
+						element[i, j] = this.GetLayer(LayerId.Background1).Element[i + Constants.ElementHeight, j + Constants.ElementWidth];
+					else if (this.GetLayer(LayerId.Background0) != null && !this.GetLayer(LayerId.Background0).Element[i + Constants.ElementHeight, j + Constants.ElementWidth].IsTransparent)
+						element[i, j] = this.GetLayer(LayerId.Background0).Element[i + Constants.ElementHeight, j + Constants.ElementWidth];
 					else
 						element[i, j] = new Pixel(0, 0, 0, Pixel.PixelProperty.Transparent);
 				}
@@ -334,28 +334,6 @@ namespace BahnEditor.BahnLib
 				return graphic;
 			}
 		}
-
-		internal void LoadData(BinaryReader br)
-		{
-			bool backgroundLayerExists = false;
-			for (int i = 0; i < this.layercount; i++)
-			{
-				Layer l = Layer.ReadLayerFromStream(br, this.ZoomFactor, this.Version);
-				if (l.LayerId == LayerId.Background_0)
-				{
-					if (!backgroundLayerExists)
-					{
-						backgroundLayerExists = true;
-					}
-					else
-					{
-						l.LayerId = LayerId.Background_1;
-					}
-				}
-				this.AddLayer(l);
-			}
-		}
-
 
 		//TODO Reduce complexity (optional)
 		//TODO Remove magic numbers
@@ -535,6 +513,39 @@ namespace BahnEditor.BahnLib
 			bw.Flush();
 			return true;
 		}
+
+		internal void LoadData(BinaryReader br)
+		{
+			if (br == null)
+				throw new ArgumentNullException();
+			bool backgroundLayerExists = false;
+			for (int i = 0; i < this.layercount; i++)
+			{
+				Layer l = Layer.ReadLayerFromStream(br, this.ZoomFactor, this.Version);
+				if (l.LayerId == LayerId.Background0)
+				{
+					if (!backgroundLayerExists)
+					{
+						backgroundLayerExists = true;
+					}
+					else
+					{
+						l.LayerId = LayerId.Background1;
+					}
+				}
+				this.AddLayer(l);
+			}
+		}
 		#endregion Internal Methods
+
+		#region Helper
+		internal bool IsLayerEmpty
+		{
+			get
+			{
+				return this.layers.Count == 0;
+			}
+		}
+		#endregion Helper
 	}
 }

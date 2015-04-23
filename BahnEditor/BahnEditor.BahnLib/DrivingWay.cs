@@ -16,7 +16,7 @@
 		/// <summary>
 		/// Driving way on rails and road (e.g. tram tracks on a road)
 		/// </summary>
-		Rail_and_Road = Rail | Road,
+		RailAndRoad = Rail | Road,
 		/// <summary>
 		/// Driving way on water
 		/// </summary>

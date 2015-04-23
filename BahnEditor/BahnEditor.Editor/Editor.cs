@@ -345,7 +345,9 @@ namespace BahnEditor.Editor
 				this.hasLoadedGraphic = false;
 				return;
 			}
-			if (this.actualZoomFactor == ZoomFactor.Zoom1 && e.Button != MouseButtons.None)
+			if (e.Button == MouseButtons.None)
+				return;
+			if (this.actualZoomFactor == ZoomFactor.Zoom1)
 			{
 				if (this.zoom1Archive[this.actualGraphic] == null)
 				{
@@ -362,13 +364,13 @@ namespace BahnEditor.Editor
 					this.ChangeLayer(layerID);
 				}
 			}
-			else if (this.actualZoomFactor == ZoomFactor.Zoom2 && this.zoom2Archive[this.actualGraphic] != null && this.zoom1Archive[this.actualGraphic] != null && this.zoom2Archive[this.actualGraphic].GetLayer(this.actualLayer) == null && e.Button != MouseButtons.None)
+			else if (this.actualZoomFactor == ZoomFactor.Zoom2 && this.zoom2Archive[this.actualGraphic] != null && this.zoom1Archive[this.actualGraphic] != null && this.zoom2Archive[this.actualGraphic].GetLayer(this.actualLayer) == null)
 			{
 				LayerId layerID = GetLayerIDBySelectedIndex();
 				this.zoom2Archive[this.actualGraphic].AddTransparentLayer(layerID);
 				this.ChangeLayer(layerID);
 			}
-			else if (this.actualZoomFactor == ZoomFactor.Zoom4 && this.zoom4Archive[this.actualGraphic] != null && this.zoom1Archive[this.actualGraphic] != null && this.zoom4Archive[this.actualGraphic].GetLayer(this.actualLayer) == null && e.Button != MouseButtons.None)
+			else if (this.actualZoomFactor == ZoomFactor.Zoom4 && this.zoom4Archive[this.actualGraphic] != null && this.zoom1Archive[this.actualGraphic] != null && this.zoom4Archive[this.actualGraphic].GetLayer(this.actualLayer) == null)
 			{
 				LayerId layerID = GetLayerIDBySelectedIndex();
 				this.zoom4Archive[this.actualGraphic].AddTransparentLayer(layerID);
@@ -473,7 +475,7 @@ namespace BahnEditor.Editor
 					case LayerId.Foreground:
 						index = 0;
 						break;
-					case LayerId.Background_0:
+					case LayerId.Background0:
 						index = 1;
 						break;
 					case LayerId.Front:
@@ -513,9 +515,9 @@ namespace BahnEditor.Editor
 				case 0:
 					return LayerId.Foreground;
 				case 1:
-					return LayerId.Background_0;
+					return LayerId.Background0;
 				case 2:
-					return LayerId.Background_1;
+					return LayerId.Background1;
 				case 3:
 					return LayerId.ToBackground;
 				case 4:

@@ -36,6 +36,8 @@ namespace BahnEditor.BahnLib
 		/// Seekposition in the archive-file (prepared for later)
 		/// </summary>
 		public int SeekPosition { get; set; }
+
+		public long SeekPositionGraphicData { get; set; }
 		#endregion Properties
 
 		#region Constructor
