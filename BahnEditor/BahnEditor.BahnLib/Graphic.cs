@@ -129,43 +129,13 @@ namespace BahnEditor.BahnLib
 		#endregion Fields and Properties
 
 		#region Constructors
-
-		/// <summary>
-		/// Initializes a new Instance of BahnEditor.BahnLib.Graphic class
-		/// </summary>
-		/// <param name="infoText">Infotext</param>
-		/// <param name="zoomFactor">Zoom factor of the graphic</param>
-		public Graphic(string infoText, ZoomFactor zoomFactor)
-			: this(infoText, zoomFactor, GraphicVersion.Version2)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new Instance of BahnEditor.BahnLib.Graphic class
-		/// </summary>
-		/// <param name="infoText">Infotext</param>
-		public Graphic(string infoText)
-			: this(infoText, ZoomFactor.Zoom1)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new Instance of BahnEditor.BahnLib.Graphic class
-		/// </summary>
-		/// <param name="infoText">InfoText</param>
-		/// <param name="version">Version</param>
-		public Graphic(string infoText, GraphicVersion version)
-			: this(infoText, ZoomFactor.Zoom1, version)
-		{
-		}
-
 		/// <summary>
 		/// Initializes a new Instance of BahnEditor.BahnLib.Graphic class
 		/// </summary>
 		/// <param name="infoText">InfoText</param>
 		/// <param name="zoomFactor">Zoom factor</param>
 		/// <param name="version">Version</param>
-		public Graphic(string infoText, ZoomFactor zoomFactor, GraphicVersion version)
+		public Graphic(string infoText, ZoomFactor zoomFactor = ZoomFactor.Zoom1, GraphicVersion version = GraphicVersion.Version2)
 			: this()
 		{
 			this.Version = version;
