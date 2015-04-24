@@ -195,7 +195,7 @@ namespace BahnEditor.BahnLib
 		/// <returns>Layer</returns>
 		public Layer GetLayer(LayerId id)
 		{
-			return layers.SingleOrDefault(x => x.Key == id).Value;
+			return layers[id];
 		}
 
 		/// <summary>
