@@ -41,7 +41,7 @@ namespace BahnEditor.Test
 
 			Graphic graphic = new Graphic(infoTextExpected, ZoomFactor.Zoom1);
 
-			graphic.AddLayer(layer);
+			graphic.AddLayer(LayerId.Foreground, layer);
 			graphic.Save("test.gz1", true);
 			Graphic newGraphic = Graphic.Load("test.gz1");
 

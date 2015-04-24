@@ -13,7 +13,7 @@ namespace BahnEditor.BahnLib
 	public class Graphic
 	{
 		#region Fields and Properties
-		private List<Layer> layers;
+		private Dictionary<LayerId, Layer> layers;
 		private int layercount;
 
 		/// <summary>
@@ -149,7 +149,7 @@ namespace BahnEditor.BahnLib
 		/// </summary>
 		private Graphic()
 		{
-			this.layers = new List<Layer>();
+			this.layers = new Dictionary<LayerId, Layer>();
 			this.DrivingWay = new List<DrivingWayElement>();
 		}
 		#endregion Constructors
@@ -171,7 +171,7 @@ namespace BahnEditor.BahnLib
 				}
 			}
 			Layer layer = new Layer(layerID, element);
-			this.AddLayer(layer);
+			this.AddLayer(layerID, layer);
 		}
 
 		/// <summary>
@@ -179,13 +179,13 @@ namespace BahnEditor.BahnLib
 		/// </summary>
 		/// <param name="layer">Layer</param>
 		/// <exception cref="System.ArgumentNullException"/>
-		public void AddLayer(Layer layer)
+		public void AddLayer(LayerId layerId, Layer layer)
 		{
 			if (layer == null)
 			{
 				throw new ArgumentNullException("layer");
 			}
-			this.layers.Add(layer);
+			this.layers.Add(layerId, layer);
 		}
 
 		/// <summary>
@@ -195,7 +195,7 @@ namespace BahnEditor.BahnLib
 		/// <returns>Layer</returns>
 		public Layer GetLayer(LayerId id)
 		{
-			return layers.SingleOrDefault(x => x.LayerId == id);
+			return layers.SingleOrDefault(x => x.Key == id).Value;
 		}
 
 		/// <summary>
@@ -231,11 +231,11 @@ namespace BahnEditor.BahnLib
 		{
 			foreach (var item in layers)
 			{
-				for (int i = 0; i < item.Element.GetLength(0); i++)
+				for (int i = 0; i < item.Value.Element.GetLength(0); i++)
 				{
-					for (int j = 0; j < item.Element.GetLength(1); j++)
+					for (int j = 0; j < item.Value.Element.GetLength(1); j++)
 					{
-						if (item.Element[i, j].IsTransparent == false)
+						if (item.Value.Element[i, j].IsTransparent == false)
 						{
 							return false;
 						}
@@ -476,9 +476,9 @@ namespace BahnEditor.BahnLib
 			bw.Write((ushort)0xFFFE); //unknown, got data through analysis of existing files, doesn't work without
 			bw.Write(this.InfoText.ToCharArray());
 			bw.Write(Constants.UnicodeNull);
-			for (int i = 0; i < layer; i++)
+			foreach (var item in this.layers)
 			{
-				this.layers[i].WriteLayerToStream(bw, this.ZoomFactor);
+				item.Value.WriteLayerToStream(bw, this.ZoomFactor);
 			}
 			bw.Flush();
 			return true;
@@ -503,7 +503,7 @@ namespace BahnEditor.BahnLib
 						l.LayerId = LayerId.Background1;
 					}
 				}
-				this.AddLayer(l);
+				this.AddLayer(l.LayerId, l);
 			}
 		}
 		#endregion Internal Methods
