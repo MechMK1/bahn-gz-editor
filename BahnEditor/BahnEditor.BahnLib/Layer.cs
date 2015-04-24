@@ -19,7 +19,7 @@ namespace BahnEditor.BahnLib
 		/// <summary>
 		/// Gets the element of the layer
 		/// </summary>
-		public Pixel[,] Element { get; private set; }
+		public uint[,] Element { get; private set; }
 		#endregion Fields and Properties
 
 		#region Constructors
@@ -33,7 +33,7 @@ namespace BahnEditor.BahnLib
 		/// </summary>
 		/// <param name="layerID">Layer id</param>
 		/// <param name="element">Element</param>
-		public Layer(LayerId layerID, Pixel[,] element)
+		public Layer(LayerId layerID, uint[,] element)
 		{
 			this.LayerId = layerID;
 			this.Element = element;
@@ -53,7 +53,7 @@ namespace BahnEditor.BahnLib
 				throw new ArgumentNullException("bw");
 			short x0;
 			short y0;
-			Pixel[,] element = TrimElement(out x0, out y0, this.Element, zoomFactor);
+			uint[,] element = TrimElement(out x0, out y0, this.Element, zoomFactor);
 			if (this.LayerId == LayerId.Background1)
 				bw.Write((short)LayerId.Background0);
 			else
@@ -87,7 +87,7 @@ namespace BahnEditor.BahnLib
 			short y0 = br.ReadInt16();
 			short width = br.ReadInt16();
 			short height = br.ReadInt16();
-			Pixel[,] element = null;
+			uint[,] element = null;
 			if (version == GraphicVersion.Version2)
 			{
 				element = ReadElementFromStreamVersion2(br, width, height);
@@ -109,14 +109,14 @@ namespace BahnEditor.BahnLib
 		/// </summary>
 		/// <param name="element">Element</param>
 		/// <param name="bw">BinaryWriter</param>
-		private static void WriteElementToStreamVersion2(Pixel[,] element, BinaryWriter bw)
+		private static void WriteElementToStreamVersion2(uint[,] element, BinaryWriter bw)
 		{
 			List<uint> pixels = new List<uint>();
 			for (int j = 0; j <= element.GetLength(0) - 1; j++)
 			{
 				for (int k = 0; k <= element.GetLength(1) - (short)1; k++)
 				{
-					pixels.Add(element[j, k].ToUInt());
+					pixels.Add(element[j, k]);
 				}
 			}
 			List<uint> colors = new List<uint>();
@@ -175,9 +175,9 @@ namespace BahnEditor.BahnLib
 		/// <param name="width">Width of the element</param>
 		/// <param name="height">Height of the element</param>
 		/// <returns>Element</returns>
-		private static Pixel[,] ReadElementFromStreamVersion0(BinaryReader br, short width, short height)
+		private static uint[,] ReadElementFromStreamVersion0(BinaryReader br, short width, short height)
 		{
-			List<Pixel> colors = new List<Pixel>();
+			List<uint> colors = new List<uint>();
 			int elementSize = width * height;
 			while (elementSize > 0)
 			{
@@ -190,7 +190,8 @@ namespace BahnEditor.BahnLib
 						// item is transparent
 						for (int k = 0; k < count; k++)
 						{
-							colors.Add(new Pixel(0, 0, 0, Pixel.PixelProperty.Transparent));
+							// HACK Fail
+							//colors.Add(new uint(0, 0, 0, uint.uintProperty.Transparent));
 						}
 					}
 					else
@@ -199,7 +200,7 @@ namespace BahnEditor.BahnLib
 						uint color = br.ReadUInt32();
 						for (int k = 0; k < count; k++)
 						{
-							colors.Add(Pixel.FromUInt(color));
+							colors.Add(color);
 						}
 					}
 					elementSize -= count;
@@ -208,11 +209,11 @@ namespace BahnEditor.BahnLib
 				{
 					// not packed, single pixel
 					elementSize--;
-					colors.Add(Pixel.FromUInt(item));
+					colors.Add(item);
 				}
 			}
 
-			Pixel[,] element = new Pixel[height, width];
+			uint[,] element = new uint[height, width];
 			int position = 0;
 			for (int i = 0; i < height; i++)
 			{
@@ -233,9 +234,9 @@ namespace BahnEditor.BahnLib
 		/// <param name="height">Height of the element</param>
 		/// <returns>Element</returns>
 		/// <exception cref="System.IO.InvalidDataException"/>
-		private static Pixel[,] ReadElementFromStreamVersion2(BinaryReader br, short width, short height)
+		private static uint[,] ReadElementFromStreamVersion2(BinaryReader br, short width, short height)
 		{
-			List<Pixel> colors = new List<Pixel>();
+			List<uint> colors = new List<uint>();
 			int elementSize = br.ReadInt32();
 			for (int i = 0; i < elementSize; i++)
 			{
@@ -249,7 +250,7 @@ namespace BahnEditor.BahnLib
 						// item is transparent
 						for (int k = 0; k < count; k++)
 						{
-							colors.Add(new Pixel(0, 0, 0, Pixel.PixelProperty.Transparent));
+							colors.Add(Constants.ColorTransparent);
 						}
 					}
 					else if ((item & Constants.ColorMaskCompressedSystemcolor) != 0)
@@ -257,7 +258,7 @@ namespace BahnEditor.BahnLib
 						// item is a system-color
 						for (int k = 0; k < count; k++)
 						{
-							colors.Add(new Pixel(0, 0, 0, (Pixel.PixelProperty)(((item & Constants.ColorMaskCompressedSFB) >> 8) + Constants.ColorAsMin)));
+							colors.Add(((item & Constants.ColorMaskCompressedSFB) >> 8) + Constants.ColorAsMin);
 						}
 					}
 					else
@@ -276,7 +277,7 @@ namespace BahnEditor.BahnLib
 						{
 							foreach (var b in buffer)
 							{
-								colors.Add(Pixel.FromUInt(b));
+								colors.Add(b);
 							}
 						}
 					}
@@ -285,11 +286,11 @@ namespace BahnEditor.BahnLib
 				{
 					// not packed, single pixel
 					count = 1;
-					colors.Add(Pixel.FromUInt(item));
+					colors.Add(item);
 				}
 			}
 
-			Pixel[,] element = new Pixel[height, width];
+			uint[,] element = new uint[height, width];
 			int position = 0;
 			for (int i = 0; i < height; i++)
 			{
@@ -310,9 +311,9 @@ namespace BahnEditor.BahnLib
 		/// <param name="element">Element</param>
 		/// <param name="zoomFactor">Zoomfactor for upscaling</param>
 		/// <returns>Upscaled element</returns>
-		private static Pixel[,] LoadElement(int x0, int y0, Pixel[,] element, ZoomFactor zoomFactor)
+		private static uint[,] LoadElement(int x0, int y0, uint[,] element, ZoomFactor zoomFactor)
 		{
-			Pixel[,] newElement = new Pixel[Constants.ElementHeight * 8 * (int)zoomFactor, Constants.ElementWidth * 3 * (int)zoomFactor];
+			uint[,] newElement = new uint[Constants.ElementHeight * 8 * (int)zoomFactor, Constants.ElementWidth * 3 * (int)zoomFactor];
 			x0 = (int)(x0 + Constants.ElementWidth * (int)zoomFactor);
 			y0 = (int)(y0 + Constants.ElementHeight * (int)zoomFactor);
 			for (int i = 0; i < newElement.GetLength(0); i++)
@@ -325,7 +326,7 @@ namespace BahnEditor.BahnLib
 					}
 					else
 					{
-						newElement[i, j] = new Pixel(0, 0, 0, Pixel.PixelProperty.Transparent);
+						newElement[i, j] = Constants.ColorTransparent;
 					}
 				}
 			}
@@ -340,7 +341,7 @@ namespace BahnEditor.BahnLib
 		/// <param name="element">Element</param>
 		/// <param name="zoomFactor">Zoomfactor for downscaling</param>
 		/// <returns>Donwscaled Element</returns>
-		private static Pixel[,] TrimElement(out short x0, out short y0, Pixel[,] element, ZoomFactor zoomFactor)
+		private static uint[,] TrimElement(out short x0, out short y0, uint[,] element, ZoomFactor zoomFactor)
 		{
 			int minx = element.GetLength(1);
 			int miny = element.GetLength(0);
@@ -350,7 +351,7 @@ namespace BahnEditor.BahnLib
 			{
 				for (int j = 0; j < element.GetLength(1); j++)
 				{
-					if (element[i, j].IsTransparent == false)
+					if ((element[i, j] & Constants.ColorTransparent) != Constants.ColorTransparent)
 					{
 						if (minx > j)
 						{
@@ -377,7 +378,7 @@ namespace BahnEditor.BahnLib
 			}
 			maxx++;
 			maxy++;
-			Pixel[,] newElement = new Pixel[maxy - miny, maxx - minx];
+			uint[,] newElement = new uint[maxy - miny, maxx - minx];
 			for (int i = 0; i < newElement.GetLength(0); i++)
 			{
 				for (int j = 0; j < newElement.GetLength(1); j++)

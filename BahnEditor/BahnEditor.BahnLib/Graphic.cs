@@ -30,7 +30,7 @@ namespace BahnEditor.BahnLib
 		/// Gets or sets the color in map / schematic view
 		/// <para>Makes only sense if ColorSchematicMode is set in properties, else data is ignored</para>
 		/// </summary>
-		public Pixel ColorInSchematicMode { get; set; }
+		//public Pixel ColorInSchematicMode { get; set; }
 
 		/// <summary>
 		/// Gets or sets the properties of the graphic
@@ -96,13 +96,13 @@ namespace BahnEditor.BahnLib
 		/// <para>Colors that light at night are possible</para>
 		/// <para>Makes only sense if clock is set in properties, else data is ignored</para>
 		/// </summary>
-		public Pixel ClockColorHoursPointer { get; set; }
+		//public Pixel ClockColorHoursPointer { get; set; }
 
 		/// <summary>
 		/// Gets or sets the color of the minutes pointer
 		/// <para>Makes only sense if clock is set in properties, else data is ignored</para>
 		/// </summary>
-		public Pixel ClockColorMinutesPointer { get; set; }
+		//public Pixel ClockColorMinutesPointer { get; set; }
 
 		/// <summary>
 		/// Gets or sets the normal cursor direction
@@ -162,12 +162,12 @@ namespace BahnEditor.BahnLib
 		/// <param name="layerID">LayerId</param>
 		public void AddTransparentLayer(LayerId layerID)
 		{
-			Pixel[,] element = new Pixel[Constants.ElementHeight * 8 * (byte)this.ZoomFactor, Constants.ElementWidth * 3 * (byte)this.ZoomFactor];
+			uint[,] element = new uint[Constants.ElementHeight * 8 * (byte)this.ZoomFactor, Constants.ElementWidth * 3 * (byte)this.ZoomFactor];
 			for (int i = 0; i < element.GetLength(0); i++)
 			{
 				for (int j = 0; j < element.GetLength(1); j++)
 				{
-					element[i, j] = new Pixel(0, 0, 0, Pixel.PixelProperty.Transparent);
+					element[i, j] = Constants.ColorTransparent;
 				}
 			}
 			Layer layer = new Layer(layerID, element);
@@ -235,7 +235,7 @@ namespace BahnEditor.BahnLib
 				{
 					for (int j = 0; j < item.Value.Element.GetLength(1); j++)
 					{
-						if (item.Value.Element[i, j].IsTransparent == false)
+						if ((item.Value.Element[i, j] & Constants.ColorTransparent) != Constants.ColorTransparent)
 						{
 							return false;
 						}
@@ -249,25 +249,26 @@ namespace BahnEditor.BahnLib
 		/// Gets a preview of the graphic how it would be in the game
 		/// </summary>
 		/// <returns>Element</returns>
-		public Pixel[,] ElementPreview()
+		public uint[,] ElementPreview()
 		{
-			Pixel[,] element = new Pixel[Constants.ElementHeight, Constants.ElementWidth];
+			uint[,] element = new uint[Constants.ElementHeight, Constants.ElementWidth];
 			for (int i = 0; i < element.GetLength(0); i++)
 			{
 				for (int j = 0; j < element.GetLength(1); j++)
 				{
-					if (this.GetLayer(LayerId.ForegroundAbove) != null && !this.GetLayer(LayerId.ForegroundAbove).Element[i + Constants.ElementHeight, j + Constants.ElementWidth].IsTransparent)
-						element[i, j] = this.GetLayer(LayerId.ForegroundAbove).Element[i + Constants.ElementHeight, j + Constants.ElementWidth];
-					else if (this.GetLayer(LayerId.Foreground) != null && !this.GetLayer(LayerId.Foreground).Element[i + Constants.ElementHeight, j + Constants.ElementWidth].IsTransparent)
-						element[i, j] = this.GetLayer(LayerId.Foreground).Element[i + Constants.ElementHeight, j + Constants.ElementWidth];
-					else if (this.GetLayer(LayerId.Front) != null && !this.GetLayer(LayerId.Front).Element[i + Constants.ElementHeight, j + Constants.ElementWidth].IsTransparent)
-						element[i, j] = this.GetLayer(LayerId.Front).Element[i + Constants.ElementHeight, j + Constants.ElementWidth];
-					else if (this.GetLayer(LayerId.Background1) != null && !this.GetLayer(LayerId.Background1).Element[i + Constants.ElementHeight, j + Constants.ElementWidth].IsTransparent)
-						element[i, j] = this.GetLayer(LayerId.Background1).Element[i + Constants.ElementHeight, j + Constants.ElementWidth];
-					else if (this.GetLayer(LayerId.Background0) != null && !this.GetLayer(LayerId.Background0).Element[i + Constants.ElementHeight, j + Constants.ElementWidth].IsTransparent)
-						element[i, j] = this.GetLayer(LayerId.Background0).Element[i + Constants.ElementHeight, j + Constants.ElementWidth];
-					else
-						element[i, j] = new Pixel(0, 0, 0, Pixel.PixelProperty.Transparent);
+					// HACK Is transparent
+					//if (this.GetLayer(LayerId.ForegroundAbove) != null && !this.GetLayer(LayerId.ForegroundAbove).Element[i + Constants.ElementHeight, j + Constants.ElementWidth].IsTransparent)
+					//	element[i, j] = this.GetLayer(LayerId.ForegroundAbove).Element[i + Constants.ElementHeight, j + Constants.ElementWidth];
+					//else if (this.GetLayer(LayerId.Foreground) != null && !this.GetLayer(LayerId.Foreground).Element[i + Constants.ElementHeight, j + Constants.ElementWidth].IsTransparent)
+					//	element[i, j] = this.GetLayer(LayerId.Foreground).Element[i + Constants.ElementHeight, j + Constants.ElementWidth];
+					//else if (this.GetLayer(LayerId.Front) != null && !this.GetLayer(LayerId.Front).Element[i + Constants.ElementHeight, j + Constants.ElementWidth].IsTransparent)
+					//	element[i, j] = this.GetLayer(LayerId.Front).Element[i + Constants.ElementHeight, j + Constants.ElementWidth];
+					//else if (this.GetLayer(LayerId.Background1) != null && !this.GetLayer(LayerId.Background1).Element[i + Constants.ElementHeight, j + Constants.ElementWidth].IsTransparent)
+					//	element[i, j] = this.GetLayer(LayerId.Background1).Element[i + Constants.ElementHeight, j + Constants.ElementWidth];
+					//else if (this.GetLayer(LayerId.Background0) != null && !this.GetLayer(LayerId.Background0).Element[i + Constants.ElementHeight, j + Constants.ElementWidth].IsTransparent)
+					//	element[i, j] = this.GetLayer(LayerId.Background0).Element[i + Constants.ElementHeight, j + Constants.ElementWidth];
+					//else
+					//	element[i, j] = new Pixel(0, 0, 0, Pixel.PixelProperty.Transparent);
 				}
 			}
 			return element;
@@ -369,8 +370,11 @@ namespace BahnEditor.BahnLib
 				graphic.ClockZPosition = (LayerId)clockZPosition;
 				graphic.ClockWidth = br.ReadInt32();
 				graphic.ClockHeight = br.ReadInt32();
-				graphic.ClockColorHoursPointer = Pixel.FromUInt(br.ReadUInt32());
-				graphic.ClockColorMinutesPointer = Pixel.FromUInt(br.ReadUInt32());
+				uint hours = br.ReadUInt32();
+				uint minutes = br.ReadUInt32();
+				//HACK Fail
+				//graphic.ClockColorHoursPointer = Pixel.FromUInt(br.ReadUInt32());
+				//graphic.ClockColorMinutesPointer = Pixel.FromUInt(br.ReadUInt32());
 				br.ReadInt32(); //skipping unused data (for future use)
 			}
 			if ((graphic.Properties & GraphicProperties.Cursor) == GraphicProperties.Cursor)
@@ -390,7 +394,9 @@ namespace BahnEditor.BahnLib
 				{
 					throw new InvalidDataException("ColorSchematicMode is set, but invalid for the version of the graphic");
 				}
-				graphic.ColorInSchematicMode = Pixel.FromUInt(br.ReadUInt32());
+				uint schematicmode = br.ReadUInt32();
+				// HACK Fail
+				//graphic.ColorInSchematicMode = Pixel.FromUInt(br.ReadUInt32());
 				br.ReadUInt32(); //skipping unused data
 			}
 			if ((graphic.Properties & GraphicProperties.DrivingWay) == GraphicProperties.DrivingWay)
@@ -450,9 +456,10 @@ namespace BahnEditor.BahnLib
 				bw.Write((int)this.ClockZPosition);
 				bw.Write(this.ClockWidth);
 				bw.Write(this.ClockHeight);
-				bw.Write(this.ClockColorHoursPointer.ToUInt());
-				bw.Write(this.ClockColorMinutesPointer.ToUInt());
-				bw.Write(this.ClockColorHoursPointer.ToUInt()); //reserved for future use
+				// HACK Fail
+				//bw.Write(this.ClockColorHoursPointer.ToUInt());
+				//bw.Write(this.ClockColorMinutesPointer.ToUInt());
+				//bw.Write(this.ClockColorHoursPointer.ToUInt()); //reserved for future use
 			}
 			if ((this.Properties & GraphicProperties.Cursor) == GraphicProperties.Cursor)
 			{
@@ -461,7 +468,8 @@ namespace BahnEditor.BahnLib
 			}
 			if ((this.Properties & GraphicProperties.ColorSchematicMode) == GraphicProperties.ColorSchematicMode)
 			{
-				bw.Write(this.ColorInSchematicMode.ToUInt());
+				//HACK FAIL
+				//bw.Write(this.ColorInSchematicMode.ToUInt());
 				bw.Write(Constants.ColorTransparent); //Not used, reserved for future use
 			}
 			if ((this.Properties & GraphicProperties.DrivingWay) == GraphicProperties.DrivingWay)

@@ -28,10 +28,10 @@ namespace BahnEditor.Editor
 		private bool layerSelectBoxCodeChanged = false;
 		private bool zoom2CheckBoxCodeChanged = false;
 		private bool zoom4CheckBoxCodeChanged = false;
-		private Pixel leftPixel = new Pixel(0, 0, 0);
-		private Pixel lastLeftPixel = null;
-		private Pixel rightPixel = new Pixel(255, 255, 255);
-		private Pixel lastRightPixel = null;
+		private uint leftPixel = 0;
+		private uint lastLeftPixel = 0;
+		private uint rightPixel = 255 << 16 | 255 << 8 | 255;
+		private uint lastRightPixel = 0;
 
 		private static Brush transparentBrush = new HatchBrush(HatchStyle.Percent20, Color.FromArgb(140, 140, 140), Color.FromArgb(0, 112, 0)); //transparent 0, 112, 0
 
@@ -312,7 +312,7 @@ namespace BahnEditor.Editor
 			}
 		}
 
-		private static void PaintElement(Graphics g, Pixel[,] element, int zoomLevel, bool withHatchBrush, ZoomFactor zoomfactor)
+		private static void PaintElement(Graphics g, uint[,] element, int zoomLevel, bool withHatchBrush, ZoomFactor zoomfactor)
 		{
 			if (withHatchBrush)
 				//g.FillRectangle(transparentBrush, 0, 0, element.GetLength(1) * zoomLevel / (int)zoomfactor, element.GetLength(0) * zoomLevel / (int)zoomfactor);
@@ -546,7 +546,7 @@ namespace BahnEditor.Editor
 			return false;
 		}
 
-		private Pixel GetPixelFromComboBox(int index, Pixel lastPixel)
+		private uint GetPixelFromComboBox(int index, uint lastPixel)
 		{
 			byte r = 0;
 			byte g = 0;
