@@ -175,6 +175,13 @@ namespace BahnEditor.Test
 			Assert.IsTrue(a.Equals(b));
 			Assert.IsTrue(b.Equals(a));
 		}
+		[TestMethod]
+		public void TestPixelGetRed()
+		{
+			Pixel a = new Pixel(1, 2, 3);
+			Assert.AreEqual<byte>(1, a.Red);
+			Assert.AreEqual<byte>(1, (byte)((a.ToUInt()) >> 16));
+		}
 		#endregion Tests
 
 		#region Private Methods
