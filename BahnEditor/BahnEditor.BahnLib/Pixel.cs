@@ -65,6 +65,18 @@ namespace BahnEditor.BahnLib
 			return pixel == Constants.ColorTransparent;
 		}
 
+		public static uint Create(byte red, byte green, byte blue, PixelProperty property = PixelProperty.None)
+		{
+			uint result = (uint)property;
+			if (UsesRgb(result))
+			{
+				result |= ((uint)blue       );
+				result |= ((uint)green << 8 );
+				result |= ((uint)red   << 16);
+			}
+			return result;
+		}
+
 		#region Enums
 		// TODO Use Constants in Enum
 		public enum PixelProperty : uint
