@@ -9,12 +9,16 @@ namespace BahnEditor.BahnLib
 {
 	public static class Pixel
 	{
-		//#region Properties
+		public static byte GetRed(uint pixel)
+		{
+			return (byte)(pixel >> 16);
+		}
+		#region Properties
 		//public byte Red { get; set; }
 		//public byte Green { get; set; }
 		//public byte Blue { get; set; }
 		//public PixelProperty Property { get; set; }
-		//#endregion Properties
+		#endregion Properties
 
 		//#region Helpers
 		//public bool UsesRGB {
