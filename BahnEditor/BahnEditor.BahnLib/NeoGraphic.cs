@@ -206,5 +206,73 @@ namespace BahnEditor.BahnLib
 			graphic.InfoText = sb.ToString();
 			return graphic;
 		}
+
+		internal void LoadData(BinaryReader br)
+		{
+			if (br == null)
+				throw new ArgumentNullException();
+			bool backgroundLayerExists = false;
+			for (int i = 0; i < this.layercount; i++)
+			{
+				LayerId id = (LayerId)br.ReadInt16();
+				uint[,] layer = ReadLayerFromStream(br, this.ZoomFactor, this.Version);
+				if (id == LayerId.Background0)
+				{
+					if (!backgroundLayerExists)
+					{
+						backgroundLayerExists = true;
+					}
+					else
+					{
+						id = LayerId.Background1;
+					}
+				}
+				this.SetLayer(id, layer);
+			}
+		}
+
+		private static uint[,] ReadLayerFromStream(BinaryReader br, BahnLib.ZoomFactor zoomFactor, GraphicVersion graphicVersion)
+		{
+			if (br == null)
+				throw new ArgumentNullException("br");
+			
+			short x0 = br.ReadInt16();
+			short y0 = br.ReadInt16();
+			short width = br.ReadInt16();
+			short height = br.ReadInt16();
+			uint[,] layer = null;
+			if (graphicVersion == GraphicVersion.Version2)
+			{
+				layer = _ReadLayerFromSteamVersion2(br, width, height);
+			}
+			else if (graphicVersion < GraphicVersion.Version2)
+			{
+				layer = _ReadLayerFromSteamVersion0(br, width, height);
+			}
+			else
+			{
+				throw new ArgumentOutOfRangeException("version");
+			}
+			_FillLayer(layer, x0, y0, zoomFactor);
+			return layer;
+		}
+
+		private static uint[,] _ReadLayerFromSteamVersion2(BinaryReader br, short width, short height)
+		{
+			// TODO Make stuff happen
+			throw new NotImplementedException();
+		}
+
+		private static uint[,] _ReadLayerFromSteamVersion0(BinaryReader br, short width, short height)
+		{
+			// TODO Make stuff happen
+			throw new NotImplementedException();
+		}
+
+		private static void _FillLayer(uint[,] layer, int x0, int y0, ZoomFactor zoomFactor)
+		{
+			// TODO Make stuff happen
+			throw new NotImplementedException();
+		}
 	}
 }
