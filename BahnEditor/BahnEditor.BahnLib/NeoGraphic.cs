@@ -253,26 +253,149 @@ namespace BahnEditor.BahnLib
 			{
 				throw new ArgumentOutOfRangeException("version");
 			}
-			_FillLayer(layer, x0, y0, zoomFactor);
+			_FillLayer(ref layer, x0, y0, zoomFactor);
 			return layer;
 		}
 
 		private static uint[,] _ReadLayerFromSteamVersion2(BinaryReader br, short width, short height)
 		{
-			// TODO Make stuff happen
-			throw new NotImplementedException();
+			List<uint> colors = new List<uint>();
+			int elementSize = br.ReadInt32();
+			for (int i = 0; i < elementSize; i++)
+			{
+				uint item = br.ReadUInt32();
+				int count = 0;
+				if ((item & Constants.ColorAdditionalDataMask) == Constants.ColorCompressed)
+				{
+					count = (int)(item & Constants.ColorMaskCompressedCount) + 2;
+					if ((item & Constants.ColorMaskCompressedTransparent) != 0)
+					{
+						// item is transparent
+						for (int k = 0; k < count; k++)
+						{
+							colors.Add(Constants.ColorTransparent);
+						}
+					}
+					else if ((item & Constants.ColorMaskCompressedSystemcolor) != 0)
+					{
+						// item is a system-color
+						for (int k = 0; k < count; k++)
+						{
+							colors.Add(((item & Constants.ColorMaskCompressedSFB) >> 8) + Constants.ColorAsMin);
+						}
+					}
+					else
+					{
+						// item is a color, may be a set of colors
+						uint wdhlen = ((item & Constants.ColorMaskCompressedLength) >> 8) + 1;
+						if (wdhlen > Constants.MaxRepeatedColorsLength)
+							throw new InvalidDataException("color repetition length out of range");
+						List<uint> buffer = new List<uint>();
+						for (int j = 0; j < wdhlen; j++)
+						{
+							buffer.Add(br.ReadUInt32());
+							i++;
+						}
+						for (int j = 0; j < count; j++)
+						{
+							foreach (var b in buffer)
+							{
+								colors.Add(b);
+							}
+						}
+					}
+				}
+				else
+				{
+					// not packed, single pixel
+					count = 1;
+					colors.Add(item);
+				}
+			}
+
+			uint[,] element = new uint[height, width];
+			int position = 0;
+			for (int i = 0; i < height; i++)
+			{
+				for (int j = 0; j < width; j++)
+				{
+					element[i, j] = colors[position];
+					position++;
+				}
+			}
+			return element;
 		}
 
 		private static uint[,] _ReadLayerFromSteamVersion0(BinaryReader br, short width, short height)
 		{
-			// TODO Make stuff happen
-			throw new NotImplementedException();
+			List<uint> colors = new List<uint>();
+			int elementSize = width * height;
+			while (elementSize > 0)
+			{
+				uint item = br.ReadUInt32();
+				if ((item & Constants.ColorAdditionalDataMask) == Constants.ColorCompressed)
+				{
+					int count = (int)(item & Constants.ColorMaskCompressedCount) + 2;
+					if ((item & Constants.ColorMaskCompressedTransparent) != 0)
+					{
+						// item is transparent
+						for (int k = 0; k < count; k++)
+						{
+							colors.Add(Constants.ColorTransparent);
+						}
+					}
+					else
+					{
+						// item is a color
+						uint color = br.ReadUInt32();
+						for (int k = 0; k < count; k++)
+						{
+							colors.Add(color);
+						}
+					}
+					elementSize -= count;
+				}
+				else
+				{
+					// not packed, single pixel
+					elementSize--;
+					colors.Add(item);
+				}
+			}
+
+			uint[,] element = new uint[height, width];
+			int position = 0;
+			for (int i = 0; i < height; i++)
+			{
+				for (int j = 0; j < width; j++)
+				{
+					element[i, j] = colors[position];
+					position++;
+				}
+			}
+			return element;
 		}
 
-		private static void _FillLayer(uint[,] layer, int x0, int y0, ZoomFactor zoomFactor)
+		private static void _FillLayer(ref uint[,] layer, int x0, int y0, ZoomFactor zoomFactor)
 		{
-			// TODO Make stuff happen
-			throw new NotImplementedException();
+			uint[,] newLayer = new uint[Constants.ElementHeight * 8 * (int)zoomFactor, Constants.ElementWidth * 3 * (int)zoomFactor];
+			x0 = (int)(x0 + Constants.ElementWidth * (int)zoomFactor);
+			y0 = (int)(y0 + Constants.ElementHeight * (int)zoomFactor);
+			for (int i = 0; i < newLayer.GetLength(0); i++)
+			{
+				for (int j = 0; j < newLayer.GetLength(1); j++)
+				{
+					if (i >= y0 && i < y0 + layer.GetLength(0) && j >= x0 && j < x0 + layer.GetLength(1))
+					{
+						newLayer[i, j] = layer[i - y0, j - x0];
+					}
+					else
+					{
+						newLayer[i, j] = Constants.ColorTransparent;
+					}
+				}
+			}
+			layer = newLayer;
 		}
 	}
 }
