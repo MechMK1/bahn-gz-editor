@@ -9,7 +9,13 @@ namespace BahnEditor.BahnLib
 {
 	class NeoGraphic
 	{
+		/// <summary>
+		/// 0th Dimension
+		/// </summary>
 		private const int Height = 0;
+		/// <summary>
+		/// 1st Dimension
+		/// </summary>
 		private const int Width = 1;
 
 		private int layercount = 0;
@@ -463,14 +469,135 @@ namespace BahnEditor.BahnLib
 			bw.Write(Constants.UnicodeNull);
 			foreach (var item in this.layers)
 			{
-				WriteLayerToStream(item.Value, bw, this.ZoomFactor);
+				if (item.Key == LayerId.Background1)
+					bw.Write((short)LayerId.Background0);
+				else
+					bw.Write((short)item.Key); //layer
+				_WriteLayerToStream(item.Value, bw, this.ZoomFactor);
 			}
 			bw.Close();
 		}
 
-		private static void WriteLayerToStream(uint[,] layer, BinaryWriter bw, BahnLib.ZoomFactor zoomFactor)
+		private static void _WriteLayerToStream(uint[,] layer, BinaryWriter bw, BahnLib.ZoomFactor zoomFactor)
 		{
-			throw new NotImplementedException();
+			{
+				if (bw == null)
+					throw new ArgumentNullException("bw");
+				short x0;
+				short y0;
+				_TrimLayer(ref layer, out x0, out y0, zoomFactor);
+				bw.Write(x0); //x0
+				bw.Write(y0); //y0
+				bw.Write((short)layer.GetLength(Width)); //width
+				bw.Write((short)layer.GetLength(Height)); //height
+				_WriteElementToStreamVersion2(layer, bw);
+			}
+		}
+
+		private static void _TrimLayer(ref uint[,] layer, out short x0, out short y0, BahnLib.ZoomFactor zoomFactor)
+		{
+			int minx = layer.GetLength(Width);
+			int miny = layer.GetLength(Height);
+			int maxx = 0;
+			int maxy = 0;
+			for (int i = 0; i < layer.GetLength(Height); i++)
+			{
+				for (int j = 0; j < layer.GetLength(Width); j++)
+				{
+					if ((layer[i, j] & Constants.ColorTransparent) != Constants.ColorTransparent)
+					{
+						if (minx > j)
+						{
+							minx = j;
+						}
+						if (maxx < j)
+						{
+							maxx = j;
+						}
+						if (miny > i)
+						{
+							miny = i;
+						}
+						if (maxy < i)
+						{
+							maxy = i;
+						}
+					}
+				}
+			}
+			if (maxx == 0 && maxy == 0)
+			{
+				throw new ElementIsEmptyException("Element is Empty");
+			}
+			maxx++;
+			maxy++;
+			uint[,] newElement = new uint[maxy - miny, maxx - minx];
+			for (int i = 0; i < newElement.GetLength(Height); i++)
+			{
+				for (int j = 0; j < newElement.GetLength(Width); j++)
+				{
+					newElement[i, j] = layer[i + miny, j + minx];
+				}
+			}
+			x0 = (short)(minx - Constants.ElementWidth * (int)zoomFactor);
+			y0 = (short)(miny - Constants.ElementHeight * (int)zoomFactor);
+			layer = newElement;
+		}
+
+		private static void _WriteElementToStreamVersion2(uint[,] layer, BinaryWriter bw)
+		{
+			List<uint> pixels = new List<uint>();
+			for (int j = 0; j <= layer.GetLength(Height) - 1; j++)
+			{
+				for (int k = 0; k <= layer.GetLength(Width) - (short)1; k++)
+				{
+					pixels.Add(layer[j, k]);
+				}
+			}
+			List<uint> colors = new List<uint>();
+			int colorposition = 0;
+			while (colorposition < pixels.Count)
+			{
+				int length = 0;
+				uint lastcolor = pixels[colorposition];
+				for (; colorposition < pixels.Count; colorposition++)
+				{
+					if (lastcolor != pixels[colorposition] || length > 256)
+					{
+						break;
+					}
+					length++;
+					lastcolor = pixels[colorposition];
+				}
+				if (length <= 1)
+				{
+					colors.Add(lastcolor);
+				}
+				else if (lastcolor == Constants.ColorTransparent)
+				{
+					colors.Add(Constants.ColorCompressedTransparent | (uint)(length - 2));
+				}
+				else if (((lastcolor & Constants.ColorLogic) != 0) && lastcolor != (uint)Pixel.PixelProperty.BehindGlass)
+				{
+					uint color = lastcolor - Constants.ColorAsMin;
+					color = color << 8;
+					color = color | Constants.ColorCompressedSystemcolor;
+					colors.Add(color | (uint)(length - 2));
+				}
+				else
+				{
+					colors.Add(Constants.ColorCompressed | (uint)(length - 2));
+					colors.Add(lastcolor);
+				}
+
+
+			}
+			colors.Insert(0, (uint)(colors.Count));
+			uint[] compressed = colors.ToArray();
+			for (int j = 0; j < compressed.Length; j++)
+			{
+				bw.Write(compressed[j]);
+			}
 		}
 	}
 }
