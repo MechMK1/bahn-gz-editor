@@ -207,6 +207,7 @@ namespace BahnEditor.BahnLib
 			return graphic;
 		}
 
+		//CALL STACK: LoadData
 		internal void LoadData(BinaryReader br)
 		{
 			if (br == null)
@@ -231,6 +232,7 @@ namespace BahnEditor.BahnLib
 			}
 		}
 
+		//CALL STACK: LoadData -> ReadLayerFromStream
 		private static uint[,] ReadLayerFromStream(BinaryReader br, BahnLib.ZoomFactor zoomFactor, GraphicVersion graphicVersion)
 		{
 			if (br == null)
@@ -257,6 +259,7 @@ namespace BahnEditor.BahnLib
 			return layer;
 		}
 
+		//CALL STACK: LoadData -> ReadLayerFromStream -> _ReadLayerFromSteamVersion2
 		private static uint[,] _ReadLayerFromSteamVersion2(BinaryReader br, short width, short height)
 		{
 			List<uint> colors = new List<uint>();
@@ -326,6 +329,7 @@ namespace BahnEditor.BahnLib
 			return element;
 		}
 
+		//CALL STACK: LoadData -> ReadLayerFromStream -> _ReadLayerFromSteamVersion0
 		private static uint[,] _ReadLayerFromSteamVersion0(BinaryReader br, short width, short height)
 		{
 			List<uint> colors = new List<uint>();
@@ -390,7 +394,7 @@ namespace BahnEditor.BahnLib
 						newLayer[i, j] = layer[i - y0, j - x0];
 					}
 					else
-					{
+		{
 						newLayer[i, j] = Constants.ColorTransparent;
 					}
 				}
