@@ -9,8 +9,9 @@ namespace BahnEditor.BahnLib
 {
 	class NeoGraphic
 	{
-		private const int Height = 1;
-		private const int Width = 0;
+		private const int Height = 0;
+		private const int Width = 1;
+
 		private int layercount = 0;
 
 		private Dictionary<LayerId, uint[,]> layers;
@@ -23,6 +24,7 @@ namespace BahnEditor.BahnLib
 
 		public GraphicVersion Version { get; set; }
 
+		//TODO Move to NeoGraphicProperties
 		public List<DrivingWayElement> DrivingWay { get; private set; }
 
 		public NeoGraphic(string infoText, ZoomFactor zoomFactor = ZoomFactor.Zoom1, GraphicVersion version = GraphicVersion.Version2)
@@ -46,11 +48,11 @@ namespace BahnEditor.BahnLib
 		public void AddTransparentLayer(LayerId layerID)
 		{
 			uint[,] layer = new uint[Constants.ElementHeight * 8 * (byte)this.ZoomFactor, Constants.ElementWidth * 3 * (byte)this.ZoomFactor];
-			for (int y = 0; y < layer.GetLength(Height); y++)
+			for (int x = 0; x < layer.GetLength(Width); x++)
 			{
-				for (int x = 0; x < layer.GetLength(Width); x++)
+				for (int y = 0; y < layer.GetLength(Height); y++)
 				{
-					layer[x, y] = Constants.ColorTransparent;
+					layer[y, x] = Constants.ColorTransparent;
 				}
 			}
 			this.layers[layerID] = layer;
@@ -74,11 +76,11 @@ namespace BahnEditor.BahnLib
 		{
 			foreach (var layer in this.layers)
 			{
-				for (int y = 0; y < layer.Value.GetLength(Height); y++)
+				for (int x = 0; x < layer.Value.GetLength(Width); x++)
 				{
-					for (int x = 0; x < layer.Value.GetLength(Width); x++)
+					for (int y = 0; y < layer.Value.GetLength(Height); y++)
 					{
-						if ((layer.Value[x, y] & Constants.ColorTransparent) != Constants.ColorTransparent)
+						if ((layer.Value[y, x] & Constants.ColorTransparent) != Constants.ColorTransparent)
 							return false;
 					}
 				}

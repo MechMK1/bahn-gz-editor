@@ -8,6 +8,7 @@ namespace BahnEditor.BahnLib
 {
 	public class NeoGraphicProperties
 	{
+		//TODO Move RawData to ctor
 		public Flags RawData { get; set; }
 		public uint ColorInSchematicMode { get; set; }
 
@@ -42,6 +43,7 @@ namespace BahnEditor.BahnLib
 			} 
 		}
 
+		[System.Flags]
 		public enum Flags : short
 		{
 			/// <summary>
