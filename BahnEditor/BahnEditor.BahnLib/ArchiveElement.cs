@@ -30,7 +30,7 @@ namespace BahnEditor.BahnLib
 		/// <summary>
 		/// Graphic
 		/// </summary>
-		public Graphic Graphic { get; set; }
+		public NeoGraphic Graphic { get; set; }
 
 		/// <summary>
 		/// Seekposition in the archive-file (prepared for later)
@@ -46,7 +46,7 @@ namespace BahnEditor.BahnLib
 
 		}
 
-		internal ArchiveElement(int elementNumber, int animationPhase, int alternative, Graphic graphic)
+		internal ArchiveElement(int elementNumber, int animationPhase, int alternative, NeoGraphic graphic)
 		{
 			this.ElementNumber = elementNumber;
 			this.AnimationPhase = animationPhase;

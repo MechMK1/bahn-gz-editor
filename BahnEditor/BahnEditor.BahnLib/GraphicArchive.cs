@@ -55,7 +55,7 @@ namespace BahnEditor.BahnLib
 		/// </summary>
 		/// <param name="graphic">Graphic</param>
 		/// <exception cref="System.ArgumentNullException"/>
-		public void AddGraphic(Graphic graphic)
+		public void AddGraphic(NeoGraphic graphic)
 		{
 			if (graphic == null)
 				throw new ArgumentNullException("graphic");
@@ -75,7 +75,7 @@ namespace BahnEditor.BahnLib
 		/// <exception cref="System.ArgumentNullException"/>
 		/// <exception cref="System.ArgumentOutOfRangeException"/>
 		/// <exception cref="System.ArgumentException"/>
-		public void AddGraphic(int elementNumber, Graphic graphic)
+		public void AddGraphic(int elementNumber, NeoGraphic graphic)
 		{
 			this.AddGraphic(elementNumber, Constants.MinAnimationPhase, Constants.NoAlternative, graphic);
 		}
@@ -90,7 +90,7 @@ namespace BahnEditor.BahnLib
 		/// <exception cref="System.ArgumentNullException"/>
 		/// <exception cref="System.ArgumentOutOfRangeException"/>
 		/// <exception cref="System.ArgumentException"/>
-		public void AddGraphic(int elementNumber, int phase, int alternative, Graphic graphic)
+		public void AddGraphic(int elementNumber, int phase, int alternative, NeoGraphic graphic)
 		{
 			if (graphic == null)
 				throw new ArgumentNullException("graphic");
@@ -107,7 +107,7 @@ namespace BahnEditor.BahnLib
 			this.graphics.Add(new ArchiveElement(elementNumber, phase, alternative, graphic));
 		}
 
-		public Graphic this[int index]
+		public NeoGraphic this[int index]
 		{
 			get
 			{
@@ -119,7 +119,7 @@ namespace BahnEditor.BahnLib
 						ArchiveElement archiveElement = enumerable.SingleOrDefault(x => x.AnimationPhase == 0 && x.Alternative == i);
 						if (archiveElement != null)
 						{
-							if (archiveElement.Graphic.IsLayerEmpty && this.FileName != null)
+							if (archiveElement.Graphic.IsEmpty() && this.FileName != null)
 							{
 								using (FileStream stream = File.Open(this.FileName, FileMode.Open))
 								{
@@ -136,7 +136,7 @@ namespace BahnEditor.BahnLib
 					ArchiveElement element = enumerable.SingleOrDefault(x => x.AnimationPhase == 0 && x.Alternative == 0);
 					if (element != null)
 					{
-						if (element.Graphic.IsLayerEmpty && this.FileName != null)
+						if (element.Graphic.IsEmpty() && this.FileName != null)
 						{
 							using (FileStream stream = File.Open(this.FileName, FileMode.Open))
 							{
@@ -272,7 +272,7 @@ namespace BahnEditor.BahnLib
 					br.BaseStream.Seek(item.SeekPosition + sizeof(int) * 5, SeekOrigin.Begin);
 					int length = br.ReadInt32();
 					int date = br.ReadInt32();
-					item.Graphic = Graphic.LoadHeader(br);
+					item.Graphic = NeoGraphic.LoadHeader(br);
 					item.SeekPositionGraphicData = br.BaseStream.Position;
 				}
 				GraphicArchive archive;
@@ -301,7 +301,7 @@ namespace BahnEditor.BahnLib
 			}
 			foreach (var item in this.graphics)
 			{
-				if (item.Graphic.IsElementEmpty())
+				if (item.Graphic.IsTransparent())
 				{
 					throw new ElementIsEmptyException("a graphic is empty");
 				}

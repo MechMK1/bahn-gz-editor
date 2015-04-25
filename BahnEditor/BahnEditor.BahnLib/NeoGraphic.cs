@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BahnEditor.BahnLib
 {
-	class NeoGraphic
+	public class NeoGraphic
 	{
 		/// <summary>
 		/// 0th Dimension
@@ -78,7 +78,7 @@ namespace BahnEditor.BahnLib
 			return layers[layerID];
 		}
 
-		public bool IsEmpty()
+		public bool IsTransparent()
 		{
 			foreach (var layer in this.layers)
 			{
@@ -92,6 +92,11 @@ namespace BahnEditor.BahnLib
 				}
 			}
 			return true;
+		}
+
+		public bool IsEmpty()
+		{
+			return this.layercount == 0;
 		}
 
 		internal static NeoGraphic LoadHeader(BinaryReader br)
