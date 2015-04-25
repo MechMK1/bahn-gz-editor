@@ -380,6 +380,7 @@ namespace BahnEditor.BahnLib
 			return element;
 		}
 
+		//CALL STACK: LoadData -> ReadLayerFromStream -> _FillLayer
 		private static void _FillLayer(ref uint[,] layer, int x0, int y0, ZoomFactor zoomFactor)
 		{
 			uint[,] newLayer = new uint[Constants.ElementHeight * 8 * (int)zoomFactor, Constants.ElementWidth * 3 * (int)zoomFactor];
