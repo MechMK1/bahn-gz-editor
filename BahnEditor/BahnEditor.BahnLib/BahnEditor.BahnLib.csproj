@@ -58,6 +58,8 @@
     <Compile Include="GraphicVersion.cs" />
     <Compile Include="Layer.cs" />
     <Compile Include="LayerId.cs" />
+    <Compile Include="NeoGraphic.cs" />
+    <Compile Include="NeoGraphicProperties.cs" />
     <Compile Include="Pixel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ZoomFactor.cs" />
