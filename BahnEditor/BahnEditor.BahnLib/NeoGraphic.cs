@@ -72,7 +72,7 @@ namespace BahnEditor.BahnLib
 			return layers[layerID];
 		}
 
-		public bool IsElementEmpty()
+		public bool IsEmpty()
 		{
 			foreach (var layer in this.layers)
 			{
@@ -401,6 +401,76 @@ namespace BahnEditor.BahnLib
 				}
 			}
 			layer = newLayer;
+		}
+
+		internal void Save(Stream path)
+		{
+			if (this.IsEmpty())
+				return; //If there is nothing to do, just don't do anything. Duh.
+
+			BinaryWriter bw = new BinaryWriter(path, Encoding.Unicode);
+			bw.Write(Constants.HeaderText.ToArray()); //Headertext 
+			bw.Write(new byte[] { 71, 90, 71 });      //identification string "GZG" ASCII-format
+			bw.Write((byte)(48 + this.ZoomFactor));   //Zoomfactor, as ASCII-format
+			bw.Write(Constants.GraphicFileFormat);    //Major Version
+			bw.Write((byte)0);                        //Minor Version, normally a byte[2] array, but first element of the array is empty
+			bw.Write((byte)this.Version);             //Minor Version
+			this.Properties.RawData |= NeoGraphicProperties.Flags.ColorFormat24BPP; //Set ColorFormat24BPP in any case because of reasons. Reasons that prevent people from getting any sleep. So many reasons.
+			bw.Write((int)this.Properties.RawData); //Properties 
+			if (this.Properties.HasParticles)
+			{
+				bw.Write(this.Properties.ParticleX);
+				bw.Write(this.Properties.ParticleY);
+				bw.Write(this.Properties.ParticleWidth);
+			}
+			if (this.Properties.RawData.HasFlag(NeoGraphicProperties.Flags.Clock))
+			{
+				bw.Write(1); //reserved for future use
+				bw.Write((int)this.Properties.ClockProperties);
+				bw.Write(this.Properties.ClockX);
+				bw.Write(this.Properties.ClockY);
+				bw.Write((int)this.Properties.ClockZ);
+				bw.Write(this.Properties.ClockWidth);
+				bw.Write(this.Properties.ClockHeight);
+				bw.Write(this.Properties.ClockColorHoursPointer);
+				bw.Write(this.Properties.ClockColorMinutesPointer);
+				bw.Write(this.Properties.ClockColorHoursPointer); //HoursPointer is written twice because of reasons. So many reasons. Lord Inglip has been summoned.
+			}
+			
+			if (this.Properties.RawData.HasFlag(NeoGraphicProperties.Flags.Cursor))
+			{
+				bw.Write((int)this.Properties.CursorNormalDirection);
+				bw.Write((int)this.Properties.CursorReverseDirection);
+			}
+
+			if (this.Properties.RawData.HasFlag(NeoGraphicProperties.Flags.ColorSchematicMode))
+			{
+				bw.Write(this.Properties.ColorInSchematicMode);
+				bw.Write(Constants.ColorTransparent); //Not used, reserved for future use
+			}
+
+			if (this.Properties.RawData.HasFlag(NeoGraphicProperties.Flags.DrivingWay))
+			{
+				bw.Write(this.DrivingWay.Count);
+				foreach (var item in this.DrivingWay)
+				{
+					bw.Write(item.ToBytes());
+				}
+			}
+			bw.Write((short)this.layers.Count); //layer
+			bw.Write((ushort)0xFFFE); //unknown, got data through analysis of existing files, doesn't work without
+			bw.Write(this.InfoText.ToCharArray());
+			bw.Write(Constants.UnicodeNull);
+			foreach (var item in this.layers)
+			{
+				WriteLayerToStream(item.Value, bw, this.ZoomFactor);
+			}
+			bw.Flush();
+		}
+
+		private static void WriteLayerToStream(uint[,] layer, BinaryWriter bw, BahnLib.ZoomFactor zoomFactor)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }
