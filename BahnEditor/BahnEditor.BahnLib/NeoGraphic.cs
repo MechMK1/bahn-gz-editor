@@ -394,7 +394,7 @@ namespace BahnEditor.BahnLib
 						newLayer[i, j] = layer[i - y0, j - x0];
 					}
 					else
-		{
+					{
 						newLayer[i, j] = Constants.ColorTransparent;
 					}
 				}
