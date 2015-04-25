@@ -504,7 +504,7 @@ namespace BahnEditor.BahnLib
 			{
 				for (int j = 0; j < layer.GetLength(Width); j++)
 				{
-					if ((layer[i, j] & Constants.ColorTransparent) != Constants.ColorTransparent)
+					if (layer[i, j]  != Constants.ColorTransparent)
 					{
 						if (minx > j)
 						{
