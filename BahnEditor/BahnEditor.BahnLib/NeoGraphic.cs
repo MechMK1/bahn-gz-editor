@@ -465,7 +465,7 @@ namespace BahnEditor.BahnLib
 			{
 				WriteLayerToStream(item.Value, bw, this.ZoomFactor);
 			}
-			bw.Flush();
+			bw.Close();
 		}
 
 		private static void WriteLayerToStream(uint[,] layer, BinaryWriter bw, BahnLib.ZoomFactor zoomFactor)
