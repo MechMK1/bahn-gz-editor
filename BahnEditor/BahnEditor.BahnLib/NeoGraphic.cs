@@ -206,7 +206,8 @@ namespace BahnEditor.BahnLib
 			graphic.InfoText = sb.ToString();
 			return graphic;
 		}
-
+		
+		//CALL STACK: LoadData
 		internal void LoadData(BinaryReader br)
 		{
 			if (br == null)
@@ -231,6 +232,7 @@ namespace BahnEditor.BahnLib
 			}
 		}
 
+		//CALL STACK: LoadData -> ReadLayerFromStream
 		private static uint[,] ReadLayerFromStream(BinaryReader br, BahnLib.ZoomFactor zoomFactor, GraphicVersion graphicVersion)
 		{
 			if (br == null)
@@ -257,18 +259,21 @@ namespace BahnEditor.BahnLib
 			return layer;
 		}
 
+		//CALL STACK: LoadData -> ReadLayerFromStream -> _ReadLayerFromSteamVersion2
 		private static uint[,] _ReadLayerFromSteamVersion2(BinaryReader br, short width, short height)
 		{
 			// TODO Make stuff happen
 			throw new NotImplementedException();
 		}
 
+		//CALL STACK: LoadData -> ReadLayerFromStream -> _ReadLayerFromSteamVersion0
 		private static uint[,] _ReadLayerFromSteamVersion0(BinaryReader br, short width, short height)
 		{
 			// TODO Make stuff happen
 			throw new NotImplementedException();
 		}
 
+		//CALL STACK: LoadData -> ReadLayerFromStream -> _FillLayer
 		private static void _FillLayer(uint[,] layer, int x0, int y0, ZoomFactor zoomFactor)
 		{
 			// TODO Make stuff happen
