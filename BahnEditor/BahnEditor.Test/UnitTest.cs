@@ -39,11 +39,11 @@ namespace BahnEditor.Test
 			}
 			
 
-			NeoGraphic graphic = new NeoGraphic(infoTextExpected, ZoomFactor.Zoom1);
+			Graphic graphic = new Graphic(infoTextExpected, ZoomFactor.Zoom1);
 
 			graphic.SetLayer(LayerID.Foreground, elementExpected);
 			graphic.Save("test.gz1", true);
-			NeoGraphic newGraphic = NeoGraphic.Load("test.gz1");
+			Graphic newGraphic = Graphic.Load("test.gz1");
 
 			CompareGraphic(graphic, newGraphic);
 			if (!newGraphic.Properties.RawData.HasFlag(GraphicProperties.Flags.ColorFormat24BPP))
@@ -55,8 +55,8 @@ namespace BahnEditor.Test
 		[TestMethod]
 		public void TestGraphicArchive()
 		{
-			NeoGraphic expectedGraphic1 = new NeoGraphic("test1", ZoomFactor.Zoom1);
-			NeoGraphic expectedGraphic2 = new NeoGraphic("test2", ZoomFactor.Zoom1);
+			Graphic expectedGraphic1 = new Graphic("test1", ZoomFactor.Zoom1);
+			Graphic expectedGraphic2 = new Graphic("test2", ZoomFactor.Zoom1);
 
 			expectedGraphic1.AddTransparentLayer(LayerID.Foreground);
 			expectedGraphic2.AddTransparentLayer(LayerID.Foreground);
@@ -80,7 +80,7 @@ namespace BahnEditor.Test
 		[TestMethod]
 		public void TestGraphicProperties()
 		{
-			NeoGraphic expectedGraphic = new NeoGraphic("test");
+			Graphic expectedGraphic = new Graphic("test");
 			expectedGraphic.AddTransparentLayer(LayerID.Foreground);
 			expectedGraphic.GetLayer(LayerID.Foreground)[10, 10] = 123 << 16 | 123 << 8 | 123;
 			expectedGraphic.Properties.RawData = GraphicProperties.Flags.Clock | GraphicProperties.Flags.ColorSchematicMode | GraphicProperties.Flags.Smoke;
@@ -98,7 +98,7 @@ namespace BahnEditor.Test
 			expectedGraphic.Properties.ClockProperties = ClockProperties.Display24h | ClockProperties.MinutePointer;
 			expectedGraphic.Save("testProperties.gz1", true);
 
-			NeoGraphic graphic = NeoGraphic.Load("testProperties.gz1");
+			Graphic graphic = Graphic.Load("testProperties.gz1");
 			Assert.AreEqual(expectedGraphic.Properties.RawData, graphic.Properties.RawData);
 			Assert.AreEqual(expectedGraphic.Properties.ParticleX, graphic.Properties.ParticleX);
 			Assert.AreEqual(expectedGraphic.Properties.ParticleY, graphic.Properties.ParticleY);
@@ -118,7 +118,7 @@ namespace BahnEditor.Test
 		[TestMethod]
 		public void TestDrivingWay()
 		{
-			NeoGraphic expectedGraphic = new NeoGraphic("TestDrivingWay");
+			Graphic expectedGraphic = new Graphic("TestDrivingWay");
 			expectedGraphic.AddTransparentLayer(LayerID.Foreground);
 			expectedGraphic.GetLayer(LayerID.Foreground)[10, 10] = (uint)(123 << 16 | 123 << 8 | 123);
 
@@ -130,7 +130,7 @@ namespace BahnEditor.Test
 			expectedGraphic.DrivingWay.Add(new DrivingWayElement(DrivingWay.Rail, DrivingWayFunction.Crossing, Direction.South, Direction.South));
 			expectedGraphic.Save("testDrivingWay.gz1", true);
 
-			NeoGraphic graphic = NeoGraphic.Load("testDrivingWay.gz1");
+			Graphic graphic = Graphic.Load("testDrivingWay.gz1");
 			Assert.AreEqual(expectedGraphic.Properties.RawData | GraphicProperties.Flags.ColorFormat24BPP, graphic.Properties.RawData);
 			CompareGraphic(expectedGraphic, graphic);
 			Assert.AreEqual(expectedGraphic.DrivingWay.Count, graphic.DrivingWay.Count);
@@ -188,7 +188,7 @@ namespace BahnEditor.Test
 		#endregion Tests
 
 		#region Private Methods
-		private void CompareGraphic(NeoGraphic expectedGraphic, NeoGraphic graphic)
+		private void CompareGraphic(Graphic expectedGraphic, Graphic graphic)
 		{
 			Assert.AreEqual<string>(expectedGraphic.InfoText, graphic.InfoText);
 			Assert.AreEqual<ZoomFactor>(expectedGraphic.ZoomFactor, graphic.ZoomFactor);

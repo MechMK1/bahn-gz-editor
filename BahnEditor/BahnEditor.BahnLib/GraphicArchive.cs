@@ -55,7 +55,7 @@ namespace BahnEditor.BahnLib
 		/// </summary>
 		/// <param name="graphic">Graphic</param>
 		/// <exception cref="System.ArgumentNullException"/>
-		public void AddGraphic(NeoGraphic graphic)
+		public void AddGraphic(Graphic graphic)
 		{
 			if (graphic == null)
 				throw new ArgumentNullException("graphic");
@@ -75,7 +75,7 @@ namespace BahnEditor.BahnLib
 		/// <exception cref="System.ArgumentNullException"/>
 		/// <exception cref="System.ArgumentOutOfRangeException"/>
 		/// <exception cref="System.ArgumentException"/>
-		public void AddGraphic(int elementNumber, NeoGraphic graphic)
+		public void AddGraphic(int elementNumber, Graphic graphic)
 		{
 			this.AddGraphic(elementNumber, Constants.MinAnimationPhase, Constants.NoAlternative, graphic);
 		}
@@ -90,7 +90,7 @@ namespace BahnEditor.BahnLib
 		/// <exception cref="System.ArgumentNullException"/>
 		/// <exception cref="System.ArgumentOutOfRangeException"/>
 		/// <exception cref="System.ArgumentException"/>
-		public void AddGraphic(int elementNumber, int phase, int alternative, NeoGraphic graphic)
+		public void AddGraphic(int elementNumber, int phase, int alternative, Graphic graphic)
 		{
 			if (graphic == null)
 				throw new ArgumentNullException("graphic");
@@ -107,7 +107,7 @@ namespace BahnEditor.BahnLib
 			this.graphics.Add(new ArchiveElement(elementNumber, phase, alternative, graphic));
 		}
 
-		public NeoGraphic this[int index]
+		public Graphic this[int index]
 		{
 			get
 			{
@@ -272,7 +272,7 @@ namespace BahnEditor.BahnLib
 					br.BaseStream.Seek(item.SeekPosition + sizeof(int) * 5, SeekOrigin.Begin);
 					int length = br.ReadInt32();
 					int date = br.ReadInt32();
-					item.Graphic = NeoGraphic.LoadHeader(br);
+					item.Graphic = Graphic.LoadHeader(br);
 					item.SeekPositionGraphicData = br.BaseStream.Position;
 				}
 				GraphicArchive archive;

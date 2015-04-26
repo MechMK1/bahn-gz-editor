@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BahnEditor.BahnLib
 {
-	public class NeoGraphic
+	public class Graphic
 	{
 		/// <summary>
 		/// 0th Dimension
@@ -33,7 +33,7 @@ namespace BahnEditor.BahnLib
 		//TODO Move to NeoGraphicProperties
 		public List<DrivingWayElement> DrivingWay { get; private set; }
 
-		public NeoGraphic(string infoText, ZoomFactor zoomFactor = ZoomFactor.Zoom1, GraphicVersion version = GraphicVersion.Version2)
+		public Graphic(string infoText, ZoomFactor zoomFactor = ZoomFactor.Zoom1, GraphicVersion version = GraphicVersion.Version2)
 			: this()
 		{
 			this.Version = version;
@@ -45,7 +45,7 @@ namespace BahnEditor.BahnLib
 		/// <summary>
 		/// Initializes a new Instance of BahnEditor.BahnLib.Graphic class, used in Load-Function
 		/// </summary>
-		private NeoGraphic()
+		private Graphic()
 		{
 			this.layers = new Dictionary<LayerID, uint[,]>();
 			this.DrivingWay = new List<DrivingWayElement>();
@@ -117,7 +117,7 @@ namespace BahnEditor.BahnLib
 			}
 		}
 
-		public static NeoGraphic Load(string path)
+		public static Graphic Load(string path)
 		{
 			if (File.Exists(path))
 			{
@@ -130,19 +130,19 @@ namespace BahnEditor.BahnLib
 		}
 
 
-		internal static NeoGraphic Load(Stream path)
+		internal static Graphic Load(Stream path)
 		{
 			using (BinaryReader br = new BinaryReader(path, Encoding.Unicode))
 			{
-				NeoGraphic graphic = LoadHeader(br);
+				Graphic graphic = LoadHeader(br);
 				graphic.LoadData(br);
 				return graphic;
 			}
 		}
 		
-		internal static NeoGraphic LoadHeader(BinaryReader br)
+		internal static Graphic LoadHeader(BinaryReader br)
 		{
-			NeoGraphic graphic = new NeoGraphic();
+			Graphic graphic = new Graphic();
 			while (br.ReadByte() != Constants.HeaderTextTerminator) { } //Headertext, can be skipped
 			byte[] readIdentification = br.ReadBytes(3); //Read indentification string
 			if (readIdentification[0] != 71 || readIdentification[1] != 90 || readIdentification[2] != 71) //identification string "GZG" ASCII-format

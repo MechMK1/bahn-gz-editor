@@ -55,7 +55,7 @@
     <Compile Include="Direction.cs" />
     <Compile Include="GraphicVersion.cs" />
     <Compile Include="LayerID.cs" />
-    <Compile Include="NeoGraphic.cs" />
+    <Compile Include="Graphic.cs" />
     <Compile Include="GraphicProperties.cs" />
     <Compile Include="Pixel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
