@@ -99,6 +99,46 @@ namespace BahnEditor.BahnLib
 			return this.layercount == 0;
 		}
 
+		public void Save(string path, bool overwrite)
+		{
+			if (path == null)
+				throw new ArgumentNullException("path");
+			if (File.Exists(path) && !overwrite)
+			{
+				return;
+			}
+			else
+			{
+				using (FileStream stream = File.OpenWrite(path))
+				{
+					Save(stream);
+				}
+			}
+		}
+
+		public static NeoGraphic Load(string path)
+		{
+			if (File.Exists(path))
+			{
+				using (FileStream stream = File.OpenRead(path))
+				{
+					return Load(stream);
+				}
+			}
+			else throw new FileNotFoundException("File not found", path);
+		}
+
+
+		internal static NeoGraphic Load(Stream path)
+		{
+			using (BinaryReader br = new BinaryReader(path, Encoding.Unicode))
+			{
+				NeoGraphic graphic = LoadHeader(br);
+				graphic.LoadData(br);
+				return graphic;
+			}
+		}
+		
 		internal static NeoGraphic LoadHeader(BinaryReader br)
 		{
 			NeoGraphic graphic = new NeoGraphic();
