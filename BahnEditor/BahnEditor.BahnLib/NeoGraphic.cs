@@ -97,7 +97,7 @@ namespace BahnEditor.BahnLib
 
 		public bool IsEmpty()
 		{
-			return this.layercount == 0;
+			return this.layers.Count == 0;
 		}
 
 		public void Save(string path, bool overwrite)
@@ -521,7 +521,7 @@ namespace BahnEditor.BahnLib
 					bw.Write((short)item.Key); //layer
 				_WriteLayerToStream(item.Value, bw, this.ZoomFactor);
 			}
-			bw.Close();
+			bw.Flush();
 		}
 
 		private static void _WriteLayerToStream(uint[,] layer, BinaryWriter bw, BahnLib.ZoomFactor zoomFactor)
