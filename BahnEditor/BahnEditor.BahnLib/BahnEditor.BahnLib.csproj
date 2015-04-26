@@ -50,13 +50,11 @@
     <Compile Include="DrivingWayFunction.cs" />
     <Compile Include="ElementIsEmptyException.cs" />
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Graphic.cs" />
     <Compile Include="GraphicArchive.cs" />
     <Compile Include="ClockProperties.cs" />
     <Compile Include="Direction.cs" />
     <Compile Include="GraphicProperties.cs" />
     <Compile Include="GraphicVersion.cs" />
-    <Compile Include="Layer.cs" />
     <Compile Include="LayerId.cs" />
     <Compile Include="NeoGraphic.cs" />
     <Compile Include="NeoGraphicProperties.cs" />
