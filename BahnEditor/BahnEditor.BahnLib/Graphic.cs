@@ -30,7 +30,7 @@ namespace BahnEditor.BahnLib
 
 		public GraphicVersion Version { get; set; }
 
-		//TODO Move to NeoGraphicProperties
+		//TODO Move to GraphicProperties
 		public List<DrivingWayElement> DrivingWay { get; private set; }
 
 		public Graphic(string infoText, ZoomFactor zoomFactor = ZoomFactor.Zoom1, GraphicVersion version = GraphicVersion.Version2)
