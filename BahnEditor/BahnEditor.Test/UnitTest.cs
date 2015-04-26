@@ -121,6 +121,7 @@ namespace BahnEditor.Test
 			NeoGraphic expectedGraphic = new NeoGraphic("TestDrivingWay");
 			expectedGraphic.AddTransparentLayer(LayerId.Foreground);
 			expectedGraphic.GetLayer(LayerId.Foreground)[10, 10] = (uint)(123 << 16 | 123 << 8 | 123);
+
 			expectedGraphic.Properties.RawData = NeoGraphicProperties.Flags.Cursor | NeoGraphicProperties.Flags.DrivingWay | NeoGraphicProperties.Flags.ColorSchematicMode | NeoGraphicProperties.Flags.ColorFormat24BPP;
 			expectedGraphic.Properties.CursorNormalDirection = Direction.South;
 			expectedGraphic.Properties.CursorReverseDirection = Direction.South;

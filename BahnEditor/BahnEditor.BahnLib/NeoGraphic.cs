@@ -49,6 +49,7 @@ namespace BahnEditor.BahnLib
 		{
 			this.layers = new Dictionary<LayerId, uint[,]>();
 			this.DrivingWay = new List<DrivingWayElement>();
+			this.Properties = new NeoGraphicProperties();
 		}
 
 		public void AddTransparentLayer(LayerId layerID)
