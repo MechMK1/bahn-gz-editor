@@ -243,7 +243,7 @@ namespace BahnEditor.BahnLib
 			{
 				while (br.ReadByte() != Constants.HeaderTextTerminator) { }
 				byte[] read = br.ReadBytes(3);
-				if (read[0] != 85 || read[1] != 90 || read[2] != 88) // 'GZG' as ASCII characters
+				if (read[0] != 85 || read[1] != 90 || read[2] != 88) // 'UZX' as ASCII characters
 				{
 					throw new InvalidDataException("wrong identification string");
 				}
