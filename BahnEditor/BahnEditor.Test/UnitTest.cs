@@ -161,17 +161,18 @@ namespace BahnEditor.Test
 			Assert.IsTrue(a.Equals(b));
 			Assert.IsTrue(b.Equals(a));
 
-			Pixel.SetProperty(b, Pixel.PixelProperty.AlwaysBright);
+			b = Pixel.SetProperty(b, Pixel.PixelProperty.AlwaysBright);
 			Assert.IsFalse(a.Equals(b));
 			Assert.IsFalse(b.Equals(a));
 
-			Pixel.SetProperty(a, Pixel.PixelProperty.AlwaysBright);
-			Assert.IsFalse(a.Equals(b));
-			Assert.IsFalse(b.Equals(a));
+			a = Pixel.SetProperty(a, Pixel.PixelProperty.AlwaysBright);
+			b = Pixel.SetRed(b, 1);
+			b = Pixel.SetGreen(b, 2);
+			b = Pixel.SetBlue(b, 3);
 
-			Pixel.SetRed(a, 0);
-			Pixel.SetGreen(a, 0);
-			Pixel.SetBlue(a, 0);
+			a = Pixel.SetRed(a, 1);
+			a = Pixel.SetGreen(a, 2);
+			a = Pixel.SetBlue(a, 3);
 
 			Assert.IsTrue(a.Equals(b));
 			Assert.IsTrue(b.Equals(a));
