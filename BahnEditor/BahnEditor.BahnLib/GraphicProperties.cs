@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BahnEditor.BahnLib
 {
-	public class NeoGraphicProperties
+	public class GraphicProperties
 	{
 		//TODO Move RawData to ctor
 		public Flags RawData { get; set; }

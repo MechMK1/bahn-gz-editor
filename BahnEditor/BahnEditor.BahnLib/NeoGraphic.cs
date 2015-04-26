@@ -26,7 +26,7 @@ namespace BahnEditor.BahnLib
 
 		public string InfoText { get; set; }
 
-		public NeoGraphicProperties Properties { get; private set; }
+		public GraphicProperties Properties { get; private set; }
 
 		public GraphicVersion Version { get; set; }
 
@@ -49,7 +49,7 @@ namespace BahnEditor.BahnLib
 		{
 			this.layers = new Dictionary<LayerID, uint[,]>();
 			this.DrivingWay = new List<DrivingWayElement>();
-			this.Properties = new NeoGraphicProperties();
+			this.Properties = new GraphicProperties();
 		}
 
 		public void AddTransparentLayer(LayerID layerID)
@@ -180,7 +180,7 @@ namespace BahnEditor.BahnLib
 			}
 
 			int p = br.ReadInt32(); //Properties
-			graphic.Properties = new NeoGraphicProperties() { RawData = (NeoGraphicProperties.Flags)p };
+			graphic.Properties = new GraphicProperties() { RawData = (GraphicProperties.Flags)p };
 			
 			//If either Smoke or Steam is set in the GraphicProperties
 			if (graphic.Properties.HasParticles)
@@ -191,7 +191,7 @@ namespace BahnEditor.BahnLib
 			}
 
 			//If either Clock is set in the GraphicProperties
-			if (graphic.Properties.RawData.HasFlag(NeoGraphicProperties.Flags.Clock))
+			if (graphic.Properties.RawData.HasFlag(GraphicProperties.Flags.Clock))
 			{
 				if (graphic.Version == GraphicVersion.Version0)
 				{
@@ -212,7 +212,7 @@ namespace BahnEditor.BahnLib
 			}
 
 			//If Cursor is set in the GraphicProperties
-			if (graphic.Properties.RawData.HasFlag(NeoGraphicProperties.Flags.Cursor))
+			if (graphic.Properties.RawData.HasFlag(GraphicProperties.Flags.Cursor))
 			{
 				if (graphic.Version < GraphicVersion.Version2)
 				{
@@ -223,7 +223,7 @@ namespace BahnEditor.BahnLib
 			}
 
 			//If ColorInSchematicMode is set in the GraphicProperties
-			if (graphic.Properties.RawData.HasFlag(NeoGraphicProperties.Flags.ColorSchematicMode))
+			if (graphic.Properties.RawData.HasFlag(GraphicProperties.Flags.ColorSchematicMode))
 			{
 				if (graphic.Version < GraphicVersion.Version2)
 				{
@@ -234,7 +234,7 @@ namespace BahnEditor.BahnLib
 			}
 
 			//If DrivingWay is set in the GraphicProperties
-			if (graphic.Properties.RawData.HasFlag(NeoGraphicProperties.Flags.DrivingWay))
+			if (graphic.Properties.RawData.HasFlag(GraphicProperties.Flags.DrivingWay))
 			{
 				if (graphic.Version < GraphicVersion.Version2)
 					throw new InvalidDataException("DrivingWay is set, but invalid for the version of the graphic");
@@ -467,7 +467,7 @@ namespace BahnEditor.BahnLib
 			bw.Write(Constants.GraphicFileFormat);    //Major Version
 			bw.Write((byte)0);                        //Minor Version, normally a byte[2] array, but first element of the array is empty
 			bw.Write((byte)this.Version);             //Minor Version
-			this.Properties.RawData |= NeoGraphicProperties.Flags.ColorFormat24BPP; //Set ColorFormat24BPP in any case because of reasons. Reasons that prevent people from getting any sleep. So many reasons.
+			this.Properties.RawData |= GraphicProperties.Flags.ColorFormat24BPP; //Set ColorFormat24BPP in any case because of reasons. Reasons that prevent people from getting any sleep. So many reasons.
 			bw.Write((int)this.Properties.RawData); //Properties 
 			if (this.Properties.HasParticles)
 			{
@@ -475,7 +475,7 @@ namespace BahnEditor.BahnLib
 				bw.Write(this.Properties.ParticleY);
 				bw.Write(this.Properties.ParticleWidth);
 			}
-			if (this.Properties.RawData.HasFlag(NeoGraphicProperties.Flags.Clock))
+			if (this.Properties.RawData.HasFlag(GraphicProperties.Flags.Clock))
 			{
 				bw.Write(1); //reserved for future use
 				bw.Write((int)this.Properties.ClockProperties);
@@ -489,19 +489,19 @@ namespace BahnEditor.BahnLib
 				bw.Write(this.Properties.ClockColorHoursPointer); //HoursPointer is written twice because of reasons. So many reasons. Lord Inglip has been summoned.
 			}
 			
-			if (this.Properties.RawData.HasFlag(NeoGraphicProperties.Flags.Cursor))
+			if (this.Properties.RawData.HasFlag(GraphicProperties.Flags.Cursor))
 			{
 				bw.Write((int)this.Properties.CursorNormalDirection);
 				bw.Write((int)this.Properties.CursorReverseDirection);
 			}
 
-			if (this.Properties.RawData.HasFlag(NeoGraphicProperties.Flags.ColorSchematicMode))
+			if (this.Properties.RawData.HasFlag(GraphicProperties.Flags.ColorSchematicMode))
 			{
 				bw.Write(this.Properties.ColorInSchematicMode);
 				bw.Write(Constants.ColorTransparent); //Not used, reserved for future use
 			}
 
-			if (this.Properties.RawData.HasFlag(NeoGraphicProperties.Flags.DrivingWay))
+			if (this.Properties.RawData.HasFlag(GraphicProperties.Flags.DrivingWay))
 			{
 				bw.Write(this.DrivingWay.Count);
 				foreach (var item in this.DrivingWay)
