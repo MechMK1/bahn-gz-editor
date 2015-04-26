@@ -17,7 +17,7 @@ namespace BahnEditor.Test
 			short widthExpected = (short)(Constants.ElementWidth * 3);
 			//short x0Expected = 7;
 			//short y0Expected = 5;
-			uint colorInSchematicModeExpected = 50 << 16 | 50 << 8 | 50;
+			//uint colorInSchematicModeExpected = 50 << 16 | 50 << 8 | 50;
 			uint[,] elementExpected = new uint[heightExpected, widthExpected];
 			for (int i = 0; i < elementExpected.GetLength(0); i++)
 			{
