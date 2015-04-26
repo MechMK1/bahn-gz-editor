@@ -99,7 +99,7 @@ namespace BahnEditor.Test
 			expectedGraphic.Save("testProperties.gz1", true);
 
 			NeoGraphic graphic = NeoGraphic.Load("testProperties.gz1");
-			Assert.AreEqual(expectedGraphic.Properties, graphic.Properties);
+			Assert.AreEqual(expectedGraphic.Properties.RawData, graphic.Properties.RawData);
 			Assert.AreEqual(expectedGraphic.Properties.ParticleX, graphic.Properties.ParticleX);
 			Assert.AreEqual(expectedGraphic.Properties.ParticleY, graphic.Properties.ParticleY);
 			Assert.AreEqual(expectedGraphic.Properties.ParticleWidth, graphic.Properties.ParticleWidth);
