@@ -50,6 +50,7 @@ namespace BahnEditor.Test
 			{
 				Assert.Fail("Graphic has not set ColorFormat24BPP");
 			}
+			System.IO.File.Delete("test.gz1");
 		}
 
 		[TestMethod]
@@ -75,6 +76,8 @@ namespace BahnEditor.Test
 
 			CompareGraphic(expectedGraphic1, archive[0]);
 			CompareGraphic(expectedGraphic2, archive[1]);
+
+			System.IO.File.Delete("test2.uz1");
 		}
 
 		[TestMethod]
@@ -113,6 +116,8 @@ namespace BahnEditor.Test
 			Assert.AreEqual(expectedGraphic.Properties.ClockColorHoursPointer, graphic.Properties.ClockColorHoursPointer);
 			Assert.AreEqual(expectedGraphic.Properties.ClockColorMinutesPointer, graphic.Properties.ClockColorMinutesPointer);
 			CompareGraphic(expectedGraphic, graphic);
+
+			System.IO.File.Delete("testProperties.gz1");
 		}
 
 		[TestMethod]
@@ -138,6 +143,7 @@ namespace BahnEditor.Test
 			{
 				CompareDrivingWay(expectedGraphic.DrivingWay[i], graphic.DrivingWay[i]);
 			}
+			System.IO.File.Delete("testDrivingWay.gz1");
 		}
 
 		[TestMethod]

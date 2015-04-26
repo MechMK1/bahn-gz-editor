@@ -261,8 +261,9 @@ namespace BahnEditor.BahnLib
 					br.ReadInt32();                          //skipping data (fwSig)
 					int animationPhase = br.ReadInt32(); //AnimationPhase
 					int alternative = br.ReadInt32();    //Alternative
-					int seekPosition = ((int)(br.BaseStream.Position + 4 + br.ReadInt32())); // +4 Used for unknown reasons. Possibly because of C/C# incompatibility
-					graphics.Add(new ArchiveElement(elementNumber, animationPhase, alternative, null)); //Graphic loaded later
+					ArchiveElement archiveElement = new ArchiveElement(elementNumber, animationPhase, alternative, null); //Graphic loaded later
+					archiveElement.SeekPosition = ((int)(br.BaseStream.Position + 4 + br.ReadInt32())); // +4 Used for unknown reasons. Possibly because of C/C# incompatibility
+					graphics.Add(archiveElement);
 				}
 				foreach (var item in graphics)
 				{

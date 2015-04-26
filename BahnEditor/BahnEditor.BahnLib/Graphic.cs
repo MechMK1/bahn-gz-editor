@@ -76,6 +76,8 @@ namespace BahnEditor.BahnLib
 
 		public uint[,] GetLayer(LayerID layerID)
 		{
+			if (!layers.ContainsKey(layerID))
+				return null;
 			return layers[layerID];
 		}
 
