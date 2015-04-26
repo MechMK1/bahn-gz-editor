@@ -53,7 +53,6 @@
     <Compile Include="GraphicArchive.cs" />
     <Compile Include="ClockProperties.cs" />
     <Compile Include="Direction.cs" />
-    <Compile Include="GraphicProperties.cs" />
     <Compile Include="GraphicVersion.cs" />
     <Compile Include="LayerID.cs" />
     <Compile Include="NeoGraphic.cs" />
