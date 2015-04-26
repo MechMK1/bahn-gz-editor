@@ -257,14 +257,12 @@ namespace BahnEditor.BahnLib
 					{
 						break;
 					}
-					ArchiveElement element = new ArchiveElement();
-					element.ElementNumber = elementNumber;
 					br.ReadInt32();                          //skipping data (bauform)
 					br.ReadInt32();                          //skipping data (fwSig)
-					element.AnimationPhase = br.ReadInt32(); //AnimationPhase
-					element.Alternative = br.ReadInt32();    //Alternative
-					element.SeekPosition = ((int)(br.BaseStream.Position + 4 + br.ReadInt32())); // +4 Used for unknown reasons. Possibly because of C/C# incompatibility
-					graphics.Add(element);
+					int animationPhase = br.ReadInt32(); //AnimationPhase
+					int alternative = br.ReadInt32();    //Alternative
+					int seekPosition = ((int)(br.BaseStream.Position + 4 + br.ReadInt32())); // +4 Used for unknown reasons. Possibly because of C/C# incompatibility
+					graphics.Add(new ArchiveElement(elementNumber, animationPhase, alternative, null)); //Graphic loaded later
 				}
 				foreach (var item in graphics)
 				{
