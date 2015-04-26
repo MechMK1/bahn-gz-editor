@@ -20,7 +20,7 @@ namespace BahnEditor.BahnLib
 
 		private int layercount = 0;
 
-		private Dictionary<LayerId, uint[,]> layers;
+		private Dictionary<LayerID, uint[,]> layers;
 
 		public ZoomFactor ZoomFactor { get; private set; }
 
@@ -47,12 +47,12 @@ namespace BahnEditor.BahnLib
 		/// </summary>
 		private NeoGraphic()
 		{
-			this.layers = new Dictionary<LayerId, uint[,]>();
+			this.layers = new Dictionary<LayerID, uint[,]>();
 			this.DrivingWay = new List<DrivingWayElement>();
 			this.Properties = new NeoGraphicProperties();
 		}
 
-		public void AddTransparentLayer(LayerId layerID)
+		public void AddTransparentLayer(LayerID layerID)
 		{
 			uint[,] layer = new uint[Constants.ElementHeight * 8 * (byte)this.ZoomFactor, Constants.ElementWidth * 3 * (byte)this.ZoomFactor];
 			for (int x = 0; x < layer.GetLength(Width); x++)
@@ -65,7 +65,7 @@ namespace BahnEditor.BahnLib
 			this.layers[layerID] = layer;
 		}
 
-		public void SetLayer(LayerId layerID, uint[,] layer)
+		public void SetLayer(LayerID layerID, uint[,] layer)
 		{
 			if (layer == null)
 			{
@@ -74,7 +74,7 @@ namespace BahnEditor.BahnLib
 			this.layers[layerID] = layer;
 		}
 
-		public uint[,] GetLayer(LayerId layerID)
+		public uint[,] GetLayer(LayerID layerID)
 		{
 			return layers[layerID];
 		}
@@ -202,7 +202,7 @@ namespace BahnEditor.BahnLib
 				graphic.Properties.ClockProperties = (ClockProperties)br.ReadInt32();
 				graphic.Properties.ClockX = br.ReadInt32();
 				graphic.Properties.ClockY = br.ReadInt32();
-				graphic.Properties.ClockZ = (LayerId)br.ReadInt32();
+				graphic.Properties.ClockZ = (LayerID)br.ReadInt32();
 				graphic.Properties.ClockWidth = br.ReadInt32();
 				graphic.Properties.ClockHeight = br.ReadInt32();
 				
@@ -267,9 +267,9 @@ namespace BahnEditor.BahnLib
 			bool backgroundLayerExists = false;
 			for (int i = 0; i < this.layercount; i++)
 			{
-				LayerId id = (LayerId)br.ReadInt16();
+				LayerID id = (LayerID)br.ReadInt16();
 				uint[,] layer = ReadLayerFromStream(br, this.ZoomFactor, this.Version);
-				if (id == LayerId.Background0)
+				if (id == LayerID.Background0)
 				{
 					if (!backgroundLayerExists)
 					{
@@ -277,7 +277,7 @@ namespace BahnEditor.BahnLib
 					}
 					else
 					{
-						id = LayerId.Background1;
+						id = LayerID.Background1;
 					}
 				}
 				this.SetLayer(id, layer);
@@ -515,8 +515,8 @@ namespace BahnEditor.BahnLib
 			bw.Write(Constants.UnicodeNull);
 			foreach (var item in this.layers)
 			{
-				if (item.Key == LayerId.Background1)
-					bw.Write((short)LayerId.Background0);
+				if (item.Key == LayerID.Background1)
+					bw.Write((short)LayerID.Background0);
 				else
 					bw.Write((short)item.Key); //layer
 				_WriteLayerToStream(item.Value, bw, this.ZoomFactor);

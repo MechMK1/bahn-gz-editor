@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Enum of layer ids 
 	/// </summary>
-	public enum LayerId : int
+	public enum LayerID : int
 	{
 		/// <summary>
 		/// To background (=flat, not "upwards", i.e. platforms)

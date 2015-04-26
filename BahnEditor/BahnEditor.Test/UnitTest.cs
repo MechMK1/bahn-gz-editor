@@ -41,7 +41,7 @@ namespace BahnEditor.Test
 
 			NeoGraphic graphic = new NeoGraphic(infoTextExpected, ZoomFactor.Zoom1);
 
-			graphic.SetLayer(LayerId.Foreground, elementExpected);
+			graphic.SetLayer(LayerID.Foreground, elementExpected);
 			graphic.Save("test.gz1", true);
 			NeoGraphic newGraphic = NeoGraphic.Load("test.gz1");
 
@@ -58,11 +58,11 @@ namespace BahnEditor.Test
 			NeoGraphic expectedGraphic1 = new NeoGraphic("test1", ZoomFactor.Zoom1);
 			NeoGraphic expectedGraphic2 = new NeoGraphic("test2", ZoomFactor.Zoom1);
 
-			expectedGraphic1.AddTransparentLayer(LayerId.Foreground);
-			expectedGraphic2.AddTransparentLayer(LayerId.Foreground);
+			expectedGraphic1.AddTransparentLayer(LayerID.Foreground);
+			expectedGraphic2.AddTransparentLayer(LayerID.Foreground);
 
-			expectedGraphic1.GetLayer(LayerId.Foreground)[10, 10] = 100 << 16 | 50 << 8 | 20;
-			expectedGraphic2.GetLayer(LayerId.Foreground)[50, 40] = 150 << 16 | 63 << 8 | 123;
+			expectedGraphic1.GetLayer(LayerID.Foreground)[10, 10] = 100 << 16 | 50 << 8 | 20;
+			expectedGraphic2.GetLayer(LayerID.Foreground)[50, 40] = 150 << 16 | 63 << 8 | 123;
 
 			GraphicArchive expectedArchive = new GraphicArchive(ZoomFactor.Zoom1);
 			expectedArchive.AddGraphic(expectedGraphic1);
@@ -81,8 +81,8 @@ namespace BahnEditor.Test
 		public void TestGraphicProperties()
 		{
 			NeoGraphic expectedGraphic = new NeoGraphic("test");
-			expectedGraphic.AddTransparentLayer(LayerId.Foreground);
-			expectedGraphic.GetLayer(LayerId.Foreground)[10, 10] = 123 << 16 | 123 << 8 | 123;
+			expectedGraphic.AddTransparentLayer(LayerID.Foreground);
+			expectedGraphic.GetLayer(LayerID.Foreground)[10, 10] = 123 << 16 | 123 << 8 | 123;
 			expectedGraphic.Properties.RawData = NeoGraphicProperties.Flags.Clock | NeoGraphicProperties.Flags.ColorSchematicMode | NeoGraphicProperties.Flags.Smoke;
 			expectedGraphic.Properties.ParticleX = 10;
 			expectedGraphic.Properties.ParticleY = 10;
@@ -90,7 +90,7 @@ namespace BahnEditor.Test
 			expectedGraphic.Properties.ColorInSchematicMode = 100 << 16 | 100 << 8 | 100;
 			expectedGraphic.Properties.ClockX = 10;
 			expectedGraphic.Properties.ClockY = 10;
-			expectedGraphic.Properties.ClockZ = LayerId.Foreground;
+			expectedGraphic.Properties.ClockZ = LayerID.Foreground;
 			expectedGraphic.Properties.ClockWidth = 5;
 			expectedGraphic.Properties.ClockHeight = 5;
 			expectedGraphic.Properties.ClockColorHoursPointer = 200 << 16 | (uint)Pixel.PixelProperty.AlwaysBright;
@@ -119,8 +119,8 @@ namespace BahnEditor.Test
 		public void TestDrivingWay()
 		{
 			NeoGraphic expectedGraphic = new NeoGraphic("TestDrivingWay");
-			expectedGraphic.AddTransparentLayer(LayerId.Foreground);
-			expectedGraphic.GetLayer(LayerId.Foreground)[10, 10] = (uint)(123 << 16 | 123 << 8 | 123);
+			expectedGraphic.AddTransparentLayer(LayerID.Foreground);
+			expectedGraphic.GetLayer(LayerID.Foreground)[10, 10] = (uint)(123 << 16 | 123 << 8 | 123);
 
 			expectedGraphic.Properties.RawData = NeoGraphicProperties.Flags.Cursor | NeoGraphicProperties.Flags.DrivingWay | NeoGraphicProperties.Flags.ColorSchematicMode | NeoGraphicProperties.Flags.ColorFormat24BPP;
 			expectedGraphic.Properties.CursorNormalDirection = Direction.South;
@@ -194,11 +194,11 @@ namespace BahnEditor.Test
 			Assert.AreEqual<ZoomFactor>(expectedGraphic.ZoomFactor, graphic.ZoomFactor);
 			Assert.AreEqual<uint>(expectedGraphic.Properties.ColorInSchematicMode, graphic.Properties.ColorInSchematicMode);
 
-			for (int i = 0; i < expectedGraphic.GetLayer(LayerId.Foreground).GetLength(0); i++)
+			for (int i = 0; i < expectedGraphic.GetLayer(LayerID.Foreground).GetLength(0); i++)
 			{
-				for (int j = 0; j < expectedGraphic.GetLayer(LayerId.Foreground).GetLength(1); j++)
+				for (int j = 0; j < expectedGraphic.GetLayer(LayerID.Foreground).GetLength(1); j++)
 				{
-					Assert.AreEqual<uint>(expectedGraphic.GetLayer(LayerId.Foreground)[i, j], graphic.GetLayer(LayerId.Foreground)[i, j]);
+					Assert.AreEqual<uint>(expectedGraphic.GetLayer(LayerID.Foreground)[i, j], graphic.GetLayer(LayerID.Foreground)[i, j]);
 				}
 			}
 		}

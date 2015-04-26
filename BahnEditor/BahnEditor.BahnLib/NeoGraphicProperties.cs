@@ -17,7 +17,7 @@ namespace BahnEditor.BahnLib
 		public int ParticleWidth { get; set; }
 		public int ClockX { get; set; }
 		public int ClockY { get; set; }
-		public LayerId ClockZ { get; set; }
+		public LayerID ClockZ { get; set; }
 		public int ClockWidth { get; set; }
 		public int ClockHeight { get; set; }
 		
