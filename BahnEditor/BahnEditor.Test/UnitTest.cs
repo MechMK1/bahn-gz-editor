@@ -37,32 +37,32 @@ namespace BahnEditor.Test
 						elementExpected[i, j] = Constants.ColorTransparent;
 				}
 			}
-			Layer layer = new Layer(LayerId.Foreground, elementExpected);
+			
 
-			Graphic graphic = new Graphic(infoTextExpected, ZoomFactor.Zoom1);
+			NeoGraphic graphic = new NeoGraphic(infoTextExpected, ZoomFactor.Zoom1);
 
-			graphic.AddLayer(LayerId.Foreground, layer);
+			graphic.SetLayer(LayerId.Foreground, elementExpected);
 			graphic.Save("test.gz1", true);
-			Graphic newGraphic = Graphic.Load("test.gz1");
+			NeoGraphic newGraphic = NeoGraphic.Load("test.gz1");
 
 			CompareGraphic(graphic, newGraphic);
-			if ((newGraphic.Properties & GraphicProperties.ColorFormat24BPP) != GraphicProperties.ColorFormat24BPP)
+			if (!newGraphic.Properties.RawData.HasFlag(NeoGraphicProperties.Flags.ColorFormat24BPP))
 			{
-				throw new Microsoft.VisualStudio.TestTools.UnitTesting.AssertFailedException("Graphic has not set ColorFormat24BPP");
+				Assert.Fail("Graphic has not set ColorFormat24BPP");
 			}
 		}
 
 		[TestMethod]
 		public void TestGraphicArchive()
 		{
-			Graphic expectedGraphic1 = new Graphic("test1", ZoomFactor.Zoom1);
-			Graphic expectedGraphic2 = new Graphic("test2", ZoomFactor.Zoom1);
+			NeoGraphic expectedGraphic1 = new NeoGraphic("test1", ZoomFactor.Zoom1);
+			NeoGraphic expectedGraphic2 = new NeoGraphic("test2", ZoomFactor.Zoom1);
 
 			expectedGraphic1.AddTransparentLayer(LayerId.Foreground);
 			expectedGraphic2.AddTransparentLayer(LayerId.Foreground);
 
-			expectedGraphic1.GetLayer(LayerId.Foreground).Element[10, 10] = 100 << 16 | 50 << 8 | 20;
-			expectedGraphic2.GetLayer(LayerId.Foreground).Element[50, 40] = 150 << 16 | 63 << 8 | 123;
+			expectedGraphic1.GetLayer(LayerId.Foreground)[10, 10] = 100 << 16 | 50 << 8 | 20;
+			expectedGraphic2.GetLayer(LayerId.Foreground)[50, 40] = 150 << 16 | 63 << 8 | 123;
 
 			GraphicArchive expectedArchive = new GraphicArchive(ZoomFactor.Zoom1);
 			expectedArchive.AddGraphic(expectedGraphic1);
@@ -80,58 +80,57 @@ namespace BahnEditor.Test
 		[TestMethod]
 		public void TestGraphicProperties()
 		{
-			Graphic expectedGraphic = new Graphic("test");
+			NeoGraphic expectedGraphic = new NeoGraphic("test");
 			expectedGraphic.AddTransparentLayer(LayerId.Foreground);
-			expectedGraphic.GetLayer(LayerId.Foreground).Element[10, 10] = 123 << 16 | 123 << 8 | 123;
-			expectedGraphic.Properties = GraphicProperties.Clock | GraphicProperties.ColorSchematicMode | GraphicProperties.Smoke;
-			expectedGraphic.SteamXPosition = 10;
-			expectedGraphic.SteamYPosition = 10;
-			expectedGraphic.SteamWidth = 5;
-			//HACK FAIL
-			//expectedGraphic.ColorInSchematicMode = 100 << 16 | 100 << 8 | 100;
-			expectedGraphic.ClockXPosition = 10;
-			expectedGraphic.ClockYPosition = 10;
-			expectedGraphic.ClockZPosition = LayerId.Foreground;
-			expectedGraphic.ClockWidth = 5;
-			expectedGraphic.ClockHeight = 5;
-			//expectedGraphic.ClockColorHoursPointer = 200 << 16 | (uint)Pixel.PixelProperty.AlwaysBright;
-			//expectedGraphic.ClockColorMinutesPointer = 255;
-			expectedGraphic.ClockProperties = ClockProperties.Display24h | ClockProperties.MinutePointer;
+			expectedGraphic.GetLayer(LayerId.Foreground)[10, 10] = 123 << 16 | 123 << 8 | 123;
+			expectedGraphic.Properties.RawData = NeoGraphicProperties.Flags.Clock | NeoGraphicProperties.Flags.ColorSchematicMode | NeoGraphicProperties.Flags.Smoke;
+			expectedGraphic.Properties.ParticleX = 10;
+			expectedGraphic.Properties.ParticleY = 10;
+			expectedGraphic.Properties.ParticleWidth = 5;
+			expectedGraphic.Properties.ColorInSchematicMode = 100 << 16 | 100 << 8 | 100;
+			expectedGraphic.Properties.ClockX = 10;
+			expectedGraphic.Properties.ClockY = 10;
+			expectedGraphic.Properties.ClockZ = LayerId.Foreground;
+			expectedGraphic.Properties.ClockWidth = 5;
+			expectedGraphic.Properties.ClockHeight = 5;
+			expectedGraphic.Properties.ClockColorHoursPointer = 200 << 16 | (uint)Pixel.PixelProperty.AlwaysBright;
+			expectedGraphic.Properties.ClockColorMinutesPointer = 255;
+			expectedGraphic.Properties.ClockProperties = ClockProperties.Display24h | ClockProperties.MinutePointer;
 			expectedGraphic.Save("testProperties.gz1", true);
 
-			Graphic graphic = Graphic.Load("testProperties.gz1");
+			NeoGraphic graphic = NeoGraphic.Load("testProperties.gz1");
 			Assert.AreEqual(expectedGraphic.Properties, graphic.Properties);
-			Assert.AreEqual(expectedGraphic.SteamXPosition, graphic.SteamXPosition);
-			Assert.AreEqual(expectedGraphic.SteamYPosition, graphic.SteamYPosition);
-			Assert.AreEqual(expectedGraphic.SteamWidth, graphic.SteamWidth);
-			//Assert.AreEqual(expectedGraphic.ColorInSchematicMode, graphic.ColorInSchematicMode);
-			Assert.AreEqual(expectedGraphic.ClockXPosition, graphic.ClockXPosition);
-			Assert.AreEqual(expectedGraphic.ClockYPosition, graphic.ClockYPosition);
-			Assert.AreEqual(expectedGraphic.ClockZPosition, graphic.ClockZPosition);
-			Assert.AreEqual(expectedGraphic.ClockProperties, graphic.ClockProperties);
-			Assert.AreEqual(expectedGraphic.ClockHeight, graphic.ClockHeight);
-			Assert.AreEqual(expectedGraphic.ClockWidth, graphic.ClockWidth);
-			//Assert.AreEqual(expectedGraphic.ClockColorHoursPointer, graphic.ClockColorHoursPointer);
-			//Assert.AreEqual(expectedGraphic.ClockColorMinutesPointer, graphic.ClockColorMinutesPointer);
+			Assert.AreEqual(expectedGraphic.Properties.ParticleX, graphic.Properties.ParticleX);
+			Assert.AreEqual(expectedGraphic.Properties.ParticleY, graphic.Properties.ParticleY);
+			Assert.AreEqual(expectedGraphic.Properties.ParticleWidth, graphic.Properties.ParticleWidth);
+			Assert.AreEqual(expectedGraphic.Properties.ColorInSchematicMode, graphic.Properties.ColorInSchematicMode);
+			Assert.AreEqual(expectedGraphic.Properties.ClockX, graphic.Properties.ClockX);
+			Assert.AreEqual(expectedGraphic.Properties.ClockY, graphic.Properties.ClockY);
+			Assert.AreEqual(expectedGraphic.Properties.ClockZ, graphic.Properties.ClockZ);
+			Assert.AreEqual(expectedGraphic.Properties.ClockProperties, graphic.Properties.ClockProperties);
+			Assert.AreEqual(expectedGraphic.Properties.ClockHeight, graphic.Properties.ClockHeight);
+			Assert.AreEqual(expectedGraphic.Properties.ClockWidth, graphic.Properties.ClockWidth);
+			Assert.AreEqual(expectedGraphic.Properties.ClockColorHoursPointer, graphic.Properties.ClockColorHoursPointer);
+			Assert.AreEqual(expectedGraphic.Properties.ClockColorMinutesPointer, graphic.Properties.ClockColorMinutesPointer);
 			CompareGraphic(expectedGraphic, graphic);
 		}
 
 		[TestMethod]
 		public void TestDrivingWay()
 		{
-			Graphic expectedGraphic = new Graphic("TestDrivingWay");
+			NeoGraphic expectedGraphic = new NeoGraphic("TestDrivingWay");
 			expectedGraphic.AddTransparentLayer(LayerId.Foreground);
-			expectedGraphic.GetLayer(LayerId.Foreground).Element[10, 10] = new Pixel(123, 123, 123);
-			expectedGraphic.Properties = GraphicProperties.Cursor | GraphicProperties.DrivingWay | GraphicProperties.ColorSchematicMode | GraphicProperties.ColorFormat24BPP;
-			expectedGraphic.CursorNormalDirection = Direction.South;
-			expectedGraphic.CursorReverseDirection = Direction.South;
-			expectedGraphic.ColorInSchematicMode = new Pixel(0, 0, 0);
+			expectedGraphic.GetLayer(LayerId.Foreground)[10, 10] = (uint)(123 << 16 | 123 << 8 | 123);
+			expectedGraphic.Properties.RawData = NeoGraphicProperties.Flags.Cursor | NeoGraphicProperties.Flags.DrivingWay | NeoGraphicProperties.Flags.ColorSchematicMode | NeoGraphicProperties.Flags.ColorFormat24BPP;
+			expectedGraphic.Properties.CursorNormalDirection = Direction.South;
+			expectedGraphic.Properties.CursorReverseDirection = Direction.South;
+			expectedGraphic.Properties.ColorInSchematicMode = 0;
 			expectedGraphic.DrivingWay.Add(new DrivingWayElement(DrivingWay.Rail, DrivingWayFunction.Crossing, Direction.North, Direction.North));
 			expectedGraphic.DrivingWay.Add(new DrivingWayElement(DrivingWay.Rail, DrivingWayFunction.Crossing, Direction.South, Direction.South));
 			expectedGraphic.Save("testDrivingWay.gz1", true);
 
-			Graphic graphic = Graphic.Load("testDrivingWay.gz1");
-			Assert.AreEqual(expectedGraphic.Properties | GraphicProperties.ColorFormat24BPP, graphic.Properties);
+			NeoGraphic graphic = NeoGraphic.Load("testDrivingWay.gz1");
+			Assert.AreEqual(expectedGraphic.Properties.RawData | NeoGraphicProperties.Flags.ColorFormat24BPP, graphic.Properties.RawData);
 			CompareGraphic(expectedGraphic, graphic);
 			Assert.AreEqual(expectedGraphic.DrivingWay.Count, graphic.DrivingWay.Count);
 			for (int i = 0; i < expectedGraphic.DrivingWay.Count; i++)
@@ -143,59 +142,61 @@ namespace BahnEditor.Test
 		[TestMethod]
 		public void TestPixelToUInt()
 		{
-			Pixel rgbOnly = new Pixel(1, 2, 3);
-			Assert.AreEqual<uint>(66051, rgbOnly.ToUInt());
+			uint rgbOnly = (uint)(1 << 16 | 2 << 8 | 3);
+			Assert.AreEqual<uint>(66051, rgbOnly);
 
-			Pixel rgbWithProperty = new Pixel(1, 2, 3, Pixel.PixelProperty.AlwaysBright);
-			Assert.AreEqual<uint>(66051 | Constants.ColorAlwaysBright, rgbWithProperty.ToUInt());
+			uint rgbWithProperty = (uint)((1 << 16 | 2 << 8 | 3) | (uint)(Pixel.PixelProperty.AlwaysBright));
+			Assert.AreEqual<uint>(66051 | Constants.ColorAlwaysBright, rgbWithProperty);
 
-			Pixel propertyOnly = new Pixel(0, 0, 0, Pixel.PixelProperty.Transparent);
-			Assert.AreEqual<uint>(Constants.ColorTransparent, propertyOnly.ToUInt());
+			uint propertyOnly = (uint)Pixel.PixelProperty.Transparent;
+			Assert.AreEqual<uint>(Constants.ColorTransparent, propertyOnly);
 		}
 
 		[TestMethod]
 		public void TestPixelEquals()
 		{
-			Pixel a = new Pixel(1, 2, 3, Pixel.PixelProperty.Transparent);
-			Pixel b = new Pixel(0, 0, 0, Pixel.PixelProperty.Transparent);
+			uint a = Pixel.Create(1, 2, 3, Pixel.PixelProperty.Transparent);
+			uint b = Pixel.Create(0, 0, 0, Pixel.PixelProperty.Transparent);
 			Assert.IsTrue(a.Equals(b));
 			Assert.IsTrue(b.Equals(a));
 
-			b.Property = Pixel.PixelProperty.AlwaysBright;
+			Pixel.SetProperty(b, Pixel.PixelProperty.AlwaysBright);
 			Assert.IsFalse(a.Equals(b));
 			Assert.IsFalse(b.Equals(a));
 
-			a.Property = Pixel.PixelProperty.AlwaysBright;
+			Pixel.SetProperty(a, Pixel.PixelProperty.AlwaysBright);
 			Assert.IsFalse(a.Equals(b));
 			Assert.IsFalse(b.Equals(a));
 
-			a.Red = 0;
-			a.Green = 0;
-			a.Blue = 0;
+			Pixel.SetRed(a, 0);
+			Pixel.SetGreen(a, 0);
+			Pixel.SetBlue(a, 0);
+
 			Assert.IsTrue(a.Equals(b));
 			Assert.IsTrue(b.Equals(a));
 		}
+
 		[TestMethod]
 		public void TestPixelGetRed()
 		{
-			Pixel a = new Pixel(1, 2, 3);
-			Assert.AreEqual<byte>(1, a.Red);
-			Assert.AreEqual<byte>(1, (byte)((a.ToUInt()) >> 16));
+			uint a = Pixel.Create(1, 2, 3);
+			Assert.AreEqual<byte>(1, Pixel.GetRed(a));
+			Assert.AreEqual<byte>(1, (byte)(a >> 16));
 		}
 		#endregion Tests
 
 		#region Private Methods
-		private void CompareGraphic(Graphic expectedGraphic, Graphic graphic)
+		private void CompareGraphic(NeoGraphic expectedGraphic, NeoGraphic graphic)
 		{
 			Assert.AreEqual<string>(expectedGraphic.InfoText, graphic.InfoText);
 			Assert.AreEqual<ZoomFactor>(expectedGraphic.ZoomFactor, graphic.ZoomFactor);
-			Assert.AreEqual<Pixel>(expectedGraphic.ColorInSchematicMode, graphic.ColorInSchematicMode);
+			Assert.AreEqual<uint>(expectedGraphic.Properties.ColorInSchematicMode, graphic.Properties.ColorInSchematicMode);
 
-			for (int i = 0; i < expectedGraphic.GetLayer(LayerId.Foreground).Element.GetLength(0); i++)
+			for (int i = 0; i < expectedGraphic.GetLayer(LayerId.Foreground).GetLength(0); i++)
 			{
-				for (int j = 0; j < expectedGraphic.GetLayer(LayerId.Foreground).Element.GetLength(1); j++)
+				for (int j = 0; j < expectedGraphic.GetLayer(LayerId.Foreground).GetLength(1); j++)
 				{
-					Assert.AreEqual<Pixel>(expectedGraphic.GetLayer(LayerId.Foreground).Element[i, j], graphic.GetLayer(LayerId.Foreground).Element[i, j]);
+					Assert.AreEqual<uint>(expectedGraphic.GetLayer(LayerId.Foreground)[i, j], graphic.GetLayer(LayerId.Foreground)[i, j]);
 				}
 			}
 		}
