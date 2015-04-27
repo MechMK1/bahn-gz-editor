@@ -268,8 +268,8 @@ namespace BahnEditor.BahnLib
 				foreach (var item in graphics)
 				{
 					br.BaseStream.Seek(item.SeekPosition + sizeof(int) * 5, SeekOrigin.Begin); // sizeof(int) * 5 => Skip 5 integer-sized fields
-					int length = br.ReadInt32();
-					int date = br.ReadInt32();
+					br.ReadInt32(); //Length
+					br.ReadInt32(); //Date
 					item.Graphic = Graphic.LoadHeader(br);
 					item.SeekPositionGraphicData = br.BaseStream.Position;
 				}

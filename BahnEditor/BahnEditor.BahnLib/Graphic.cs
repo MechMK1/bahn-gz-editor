@@ -31,6 +31,7 @@ namespace BahnEditor.BahnLib
 		public GraphicVersion Version { get; set; }
 
 		//TODO Move to GraphicProperties
+		//TODO Remove direct access
 		public List<DrivingWayElement> DrivingWay { get; private set; }
 
 		public Graphic(string infoText, ZoomFactor zoomFactor = ZoomFactor.Zoom1, GraphicVersion version = GraphicVersion.Version2)
@@ -265,7 +266,7 @@ namespace BahnEditor.BahnLib
 		internal void LoadData(BinaryReader br)
 		{
 			if (br == null)
-				throw new ArgumentNullException();
+				throw new ArgumentNullException("br");
 			bool backgroundLayerExists = false;
 			for (int i = 0; i < this.layercount; i++)
 			{
@@ -307,7 +308,7 @@ namespace BahnEditor.BahnLib
 			}
 			else
 			{
-				throw new ArgumentOutOfRangeException("version");
+				throw new ArgumentOutOfRangeException("graphicVersion");
 			}
 			_FillLayer(ref layer, x0, y0, zoomFactor);
 			return layer;
