@@ -46,7 +46,7 @@ namespace BahnEditor.Test
 			Graphic newGraphic = Graphic.Load("test.gz1");
 
 			CompareGraphic(graphic, newGraphic);
-			if (!newGraphic.Properties.RawData.HasFlag(GraphicProperties.Flags.ColorFormat24BPP))
+			if (!newGraphic.Properties.RawData.HasFlag(GraphicProperties.Properties.ColorFormat24BPP))
 			{
 				Assert.Fail("Graphic has not set ColorFormat24BPP");
 			}
@@ -86,7 +86,7 @@ namespace BahnEditor.Test
 			Graphic expectedGraphic = new Graphic("test");
 			expectedGraphic.AddTransparentLayer(LayerID.Foreground);
 			expectedGraphic.GetLayer(LayerID.Foreground)[10, 10] = 123 << 16 | 123 << 8 | 123;
-			expectedGraphic.Properties.RawData = GraphicProperties.Flags.Clock | GraphicProperties.Flags.ColorSchematicMode | GraphicProperties.Flags.Smoke;
+			expectedGraphic.Properties.RawData = GraphicProperties.Properties.Clock | GraphicProperties.Properties.ColorSchematicMode | GraphicProperties.Properties.Smoke;
 			expectedGraphic.Properties.ParticleX = 10;
 			expectedGraphic.Properties.ParticleY = 10;
 			expectedGraphic.Properties.ParticleWidth = 5;
@@ -127,7 +127,7 @@ namespace BahnEditor.Test
 			expectedGraphic.AddTransparentLayer(LayerID.Foreground);
 			expectedGraphic.GetLayer(LayerID.Foreground)[10, 10] = (uint)(123 << 16 | 123 << 8 | 123);
 
-			expectedGraphic.Properties.RawData = GraphicProperties.Flags.Cursor | GraphicProperties.Flags.DrivingWay | GraphicProperties.Flags.ColorSchematicMode | GraphicProperties.Flags.ColorFormat24BPP;
+			expectedGraphic.Properties.RawData = GraphicProperties.Properties.Cursor | GraphicProperties.Properties.DrivingWay | GraphicProperties.Properties.ColorSchematicMode | GraphicProperties.Properties.ColorFormat24BPP;
 			expectedGraphic.Properties.CursorNormalDirection = Direction.South;
 			expectedGraphic.Properties.CursorReverseDirection = Direction.South;
 			expectedGraphic.Properties.ColorInSchematicMode = 0;
@@ -136,7 +136,7 @@ namespace BahnEditor.Test
 			expectedGraphic.Save("testDrivingWay.gz1", true);
 
 			Graphic graphic = Graphic.Load("testDrivingWay.gz1");
-			Assert.AreEqual(expectedGraphic.Properties.RawData | GraphicProperties.Flags.ColorFormat24BPP, graphic.Properties.RawData);
+			Assert.AreEqual(expectedGraphic.Properties.RawData | GraphicProperties.Properties.ColorFormat24BPP, graphic.Properties.RawData);
 			CompareGraphic(expectedGraphic, graphic);
 			Assert.AreEqual(expectedGraphic.DrivingWay.Count, graphic.DrivingWay.Count);
 			for (int i = 0; i < expectedGraphic.DrivingWay.Count; i++)

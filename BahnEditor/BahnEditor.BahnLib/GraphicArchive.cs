@@ -349,12 +349,6 @@ namespace BahnEditor.BahnLib
 				return true;
 			}
 		}
-
-		private static int GetTime()
-		{
-			// TODO do actual stuff
-			return 0;
-		}
 		#endregion Private Methods
 	}
 }

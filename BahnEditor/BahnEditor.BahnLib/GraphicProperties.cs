@@ -9,7 +9,7 @@ namespace BahnEditor.BahnLib
 	public class GraphicProperties
 	{
 		//TODO Move RawData to ctor
-		public Flags RawData { get; set; }
+		public Properties RawData { get; set; }
 		public uint ColorInSchematicMode { get; set; }
 
 		public int ParticleX { get; set; }
@@ -39,12 +39,12 @@ namespace BahnEditor.BahnLib
 
 		public bool HasParticles { 
 			get {
-				return this.RawData.HasFlag(Flags.Smoke) || this.RawData.HasFlag(Flags.Steam);
+				return this.RawData.HasFlag(Properties.Smoke) || this.RawData.HasFlag(Properties.Steam);
 			} 
 		}
 
 		[System.Flags]
-		public enum Flags : short
+		public enum Properties : short
 		{
 			/// <summary>
 			/// Graphic emits smoke (industry), more dark gray
