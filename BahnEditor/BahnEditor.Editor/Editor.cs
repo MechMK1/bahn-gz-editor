@@ -17,7 +17,7 @@ namespace BahnEditor.Editor
 		private GraphicArchive zoom2Archive;
 		private GraphicArchive zoom4Archive;
 		private int actualGraphic;
-		private LayerId actualLayer;// = LayerId.Foreground;
+		private LayerID actualLayer;// = LayerID.Foreground;
 		private ZoomFactor actualZoomFactor = ZoomFactor.Zoom1;
 		private string lastPath = "";
 		private int zoomLevel = 5;
@@ -28,10 +28,10 @@ namespace BahnEditor.Editor
 		private bool layerSelectBoxCodeChanged = false;
 		private bool zoom2CheckBoxCodeChanged = false;
 		private bool zoom4CheckBoxCodeChanged = false;
-		private Pixel leftPixel = new Pixel(0, 0, 0);
-		private Pixel lastLeftPixel = null;
-		private Pixel rightPixel = new Pixel(255, 255, 255);
-		private Pixel lastRightPixel = null;
+		private uint leftPixel = 0;
+		private uint lastLeftPixel = 0;
+		private uint rightPixel = 255 << 16 | 255 << 8 | 255;
+		private uint lastRightPixel = 0;
 
 		private static Brush transparentBrush = new HatchBrush(HatchStyle.Percent20, Color.FromArgb(140, 140, 140), Color.FromArgb(0, 112, 0)); //transparent 0, 112, 0
 
@@ -55,14 +55,14 @@ namespace BahnEditor.Editor
 			this.zoom2Archive = new GraphicArchive(ZoomFactor.Zoom2);
 			this.zoom4Archive = new GraphicArchive(ZoomFactor.Zoom4);
 			Graphic graphic = new Graphic("Kein Text");
-			graphic.AddTransparentLayer(LayerId.Foreground);
+			graphic.AddTransparentLayer(LayerID.Foreground);
 			this.zoom1Archive.AddGraphic(graphic);
 			this.actualGraphic = 0;
 			this.drawPanel.Visible = true;
 			this.overviewPanel.Visible = true;
 			this.tabControl.Visible = true;
 			this.settingsPanel.Visible = true;
-			this.ChangeLayer(LayerId.Foreground);
+			this.ChangeLayer(LayerID.Foreground);
 			if (this.tabControl.TabPages.Contains(this.zoom2Tab))
 			{
 				this.tabControl.TabPages.Remove(this.zoom2Tab);
@@ -133,7 +133,7 @@ namespace BahnEditor.Editor
 				this.tabControl.Visible = true;
 				this.settingsPanel.Visible = true;
 				this.userMadeChanges = false;
-				this.ChangeLayer(LayerId.Foreground);
+				this.ChangeLayer(LayerID.Foreground);
 				this.ResizeDrawPanel();
 				this.drawPanel.AutoScrollPosition = new Point(this.drawPanel.HorizontalScroll.Maximum, this.drawPanel.VerticalScroll.Maximum / 2);
 				this.drawPanel.Invalidate();
@@ -209,7 +209,7 @@ namespace BahnEditor.Editor
 				}
 				else
 				{
-					Pixel[,] element = this.GetElement();
+					uint[,] element = this.GetElement();
 					if (element != null)
 					{
 
@@ -256,13 +256,13 @@ namespace BahnEditor.Editor
 							{
 								for (int j = xElement; (j < xElement + 3) && j < element.GetLength(1); j++)
 								{
-									if (element[i, j].IsTransparent != true)
+									if (Pixel.IsTransparent(element[i, j]) != true)
 									{
 										Brush brush;
-										if (element[i, j].IsSpecial)
-											brush = new HatchBrush(HatchStyle.Percent20, Color.FromArgb(140, 140, 140), element[i, j].ToColor());
+										if (Pixel.IsSpecial(element[i, j]))
+											brush = new HatchBrush(HatchStyle.Percent20, Color.FromArgb(140, 140, 140), PixelToColor(element[i, j]));
 										else
-											brush = new SolidBrush(element[i, j].ToColor());
+											brush = new SolidBrush(PixelToColor(element[i, j]));
 										g.FillRectangle(brush, j * (this.zoomLevel) / (int)this.actualZoomFactor + 20, (int)((((this.zoomLevel) * element.GetLength(0) / (float)this.actualZoomFactor) - ((this.zoomLevel) / (float)this.actualZoomFactor * (i + 1))) + 20), this.zoomLevel / (float)this.actualZoomFactor, this.zoomLevel / (float)this.actualZoomFactor);
 									}
 								}
@@ -300,7 +300,7 @@ namespace BahnEditor.Editor
 				{
 					if (this.zoom1Archive[i] != null)
 					{
-						PaintElement(g, this.zoom1Archive[i].ElementPreview(), 1, false, ZoomFactor.Zoom1);
+						PaintElement(g, GraphicPreview(this.zoom1Archive[i]), 1, false, ZoomFactor.Zoom1);
 					}
 					else
 					{
@@ -312,7 +312,7 @@ namespace BahnEditor.Editor
 			}
 		}
 
-		private static void PaintElement(Graphics g, Pixel[,] element, int zoomLevel, bool withHatchBrush, ZoomFactor zoomfactor)
+		private static void PaintElement(Graphics g, uint[,] element, int zoomLevel, bool withHatchBrush, ZoomFactor zoomfactor)
 		{
 			if (withHatchBrush)
 				//g.FillRectangle(transparentBrush, 0, 0, element.GetLength(1) * zoomLevel / (int)zoomfactor, element.GetLength(0) * zoomLevel / (int)zoomfactor);
@@ -323,15 +323,15 @@ namespace BahnEditor.Editor
 			{
 				for (int j = 0; j < element.GetLength(1); j++)
 				{
-					if (element[i, j].IsTransparent != true)
+					if (Pixel.IsTransparent(element[i, j]) != true)
 					{
 						Brush brush;
 						if (!withHatchBrush)
-							brush = new SolidBrush(element[i, j].ToColor());
-						else if (element[i, j].IsSpecial)
-							brush = new HatchBrush(HatchStyle.Percent20, Color.FromArgb(140, 140, 140), element[i, j].ToColor());
+							brush = new SolidBrush(PixelToColor(element[i, j]));
+						else if (Pixel.IsSpecial(element[i, j]))
+							brush = new HatchBrush(HatchStyle.Percent20, Color.FromArgb(140, 140, 140), PixelToColor(element[i, j]));
 						else
-							brush = new SolidBrush(element[i, j].ToColor());
+							brush = new SolidBrush(PixelToColor(element[i, j]));
 						g.FillRectangle(brush, (j * zoomLevel) / (int)zoomfactor, ((zoomLevel * element.GetLength(0)) - (zoomLevel * (i + 1))) / (int)zoomfactor, zoomLevel / (float)zoomfactor, zoomLevel / (float)zoomfactor);
 					}
 				}
@@ -352,33 +352,33 @@ namespace BahnEditor.Editor
 				if (this.zoom1Archive[this.actualGraphic] == null)
 				{
 					Graphic graphic = new Graphic("Kein Text");
-					graphic.AddTransparentLayer(LayerId.Foreground);
+					graphic.AddTransparentLayer(LayerID.Foreground);
 					this.zoom1Archive.AddGraphic(this.actualGraphic, graphic);
-					this.ChangeLayer(LayerId.Foreground);
+					this.ChangeLayer(LayerID.Foreground);
 					this.overviewPanel.Invalidate();
 				}
 				else if (this.zoom1Archive[this.actualGraphic].GetLayer(this.actualLayer) == null)
 				{
-					LayerId layerID = GetLayerIDBySelectedIndex();
-					this.zoom1Archive[this.actualGraphic].AddTransparentLayer(layerID);
-					this.ChangeLayer(layerID);
+					LayerID LayerID = GetLayerIDBySelectedIndex();
+					this.zoom1Archive[this.actualGraphic].AddTransparentLayer(LayerID);
+					this.ChangeLayer(LayerID);
 				}
 			}
 			else if (this.actualZoomFactor == ZoomFactor.Zoom2 && this.zoom2Archive[this.actualGraphic] != null && this.zoom1Archive[this.actualGraphic] != null && this.zoom2Archive[this.actualGraphic].GetLayer(this.actualLayer) == null)
 			{
-				LayerId layerID = GetLayerIDBySelectedIndex();
-				this.zoom2Archive[this.actualGraphic].AddTransparentLayer(layerID);
-				this.ChangeLayer(layerID);
+				LayerID LayerID = GetLayerIDBySelectedIndex();
+				this.zoom2Archive[this.actualGraphic].AddTransparentLayer(LayerID);
+				this.ChangeLayer(LayerID);
 			}
 			else if (this.actualZoomFactor == ZoomFactor.Zoom4 && this.zoom4Archive[this.actualGraphic] != null && this.zoom1Archive[this.actualGraphic] != null && this.zoom4Archive[this.actualGraphic].GetLayer(this.actualLayer) == null)
 			{
-				LayerId layerID = GetLayerIDBySelectedIndex();
-				this.zoom4Archive[this.actualGraphic].AddTransparentLayer(layerID);
-				this.ChangeLayer(layerID);
+				LayerID LayerID = GetLayerIDBySelectedIndex();
+				this.zoom4Archive[this.actualGraphic].AddTransparentLayer(LayerID);
+				this.ChangeLayer(LayerID);
 			}
 			try
 			{
-				Pixel[,] element = this.GetElement();
+				uint[,] element = this.GetElement();
 
 				if (e.X - drawPanel.AutoScrollPosition.X >= 20 && e.Y - drawPanel.AutoScrollPosition.Y >= 20 && (20 + this.zoomLevel * element.GetLength(0) + drawPanel.AutoScrollPosition.Y - e.Y) > 0)
 				{
@@ -456,12 +456,12 @@ namespace BahnEditor.Editor
 					this.zoom4CheckBoxCodeChanged = true;
 					this.zoom4CheckBox.Checked = false;
 				}
-				this.ChangeLayer(LayerId.Foreground);
+				this.ChangeLayer(LayerID.Foreground);
 				this.drawPanel.Invalidate();
 			}
 		}
 
-		private void ChangeLayer(LayerId id)
+		private void ChangeLayer(LayerID id)
 		{
 			if (this.actualLayer != id)
 			{
@@ -469,19 +469,19 @@ namespace BahnEditor.Editor
 				int index;
 				switch (id)
 				{
-					case LayerId.ToBackground:
+					case LayerID.ToBackground:
 						index = 2;
 						break;
-					case LayerId.Foreground:
+					case LayerID.Foreground:
 						index = 0;
 						break;
-					case LayerId.Background0:
+					case LayerID.Background0:
 						index = 1;
 						break;
-					case LayerId.Front:
+					case LayerID.Front:
 						index = 4;
 						break;
-					case LayerId.ForegroundAbove:
+					case LayerID.ForegroundAbove:
 						index = 3;
 						break;
 					default:
@@ -508,22 +508,22 @@ namespace BahnEditor.Editor
 			}
 		}
 
-		private LayerId GetLayerIDBySelectedIndex()
+		private LayerID GetLayerIDBySelectedIndex()
 		{
 			switch (this.layerComboBox.SelectedIndex)
 			{
 				case 0:
-					return LayerId.Foreground;
+					return LayerID.Foreground;
 				case 1:
-					return LayerId.Background0;
+					return LayerID.Background0;
 				case 2:
-					return LayerId.Background1;
+					return LayerID.Background1;
 				case 3:
-					return LayerId.ToBackground;
+					return LayerID.ToBackground;
 				case 4:
-					return LayerId.ForegroundAbove;
+					return LayerID.ForegroundAbove;
 				case 5:
-					return LayerId.Front;
+					return LayerID.Front;
 				default:
 					throw new Exception("Internal Error");
 			}
@@ -546,122 +546,237 @@ namespace BahnEditor.Editor
 			return false;
 		}
 
-		private Pixel GetPixelFromComboBox(int index, Pixel lastPixel)
+		private uint GetPixelFromComboBox(int index, uint lastPixel)
 		{
 			byte r = 0;
 			byte g = 0;
 			byte b = 0;
-			if (lastPixel != null && !lastPixel.IsTransparent && !lastPixel.IsSpecial && lastPixel.UsesRGB)
+			if (lastPixel != 0 && !Pixel.IsTransparent(lastPixel) && !Pixel.IsSpecial(lastPixel) && Pixel.UsesRgb(lastPixel))
 			{
-				r = lastPixel.Red;
-				g = lastPixel.Green;
-				b = lastPixel.Blue;
+				r = Pixel.GetRed(lastPixel);
+				g = Pixel.GetGreen(lastPixel);
+				b = Pixel.GetBlue(lastPixel);
 			}
 			switch (index)
 			{
 				case 2:
-					return new Pixel(0, 0, 0, Pixel.PixelProperty.BehindGlass);
+					return Pixel.Create(0, 0, 0, Pixel.PixelProperty.BehindGlass);
 				case 3:
-					return new Pixel(r, g, b, Pixel.PixelProperty.AlwaysBright);
+					return Pixel.Create(r, g, b, Pixel.PixelProperty.AlwaysBright);
 				case 4:
-					return new Pixel(r, g, b, Pixel.PixelProperty.LampYellow);
+					return Pixel.Create(r, g, b, Pixel.PixelProperty.LampYellow);
 				case 5:
-					return new Pixel(r, g, b, Pixel.PixelProperty.LampColdWhite);
+					return Pixel.Create(r, g, b, Pixel.PixelProperty.LampColdWhite);
 				case 6:
-					return new Pixel(r, g, b, Pixel.PixelProperty.LampRed);
+					return Pixel.Create(r, g, b, Pixel.PixelProperty.LampRed);
 				case 7:
-					return new Pixel(r, g, b, Pixel.PixelProperty.LampYellowWhite);
+					return Pixel.Create(r, g, b, Pixel.PixelProperty.LampYellowWhite);
 				case 8:
-					return new Pixel(r, g, b, Pixel.PixelProperty.LampGasYellow);
+					return Pixel.Create(r, g, b, Pixel.PixelProperty.LampGasYellow);
 				case 9:
-					return new Pixel(r, g, b, Pixel.PixelProperty.WindowYellow0);
+					return Pixel.Create(r, g, b, Pixel.PixelProperty.WindowYellow0);
 				case 10:
-					return new Pixel(r, g, b, Pixel.PixelProperty.WindowYellow1);
+					return Pixel.Create(r, g, b, Pixel.PixelProperty.WindowYellow1);
 				case 11:
-					return new Pixel(r, g, b, Pixel.PixelProperty.WindowYellow2);
+					return Pixel.Create(r, g, b, Pixel.PixelProperty.WindowYellow2);
 				case 12:
-					return new Pixel(r, g, b, Pixel.PixelProperty.WindowNeon0);
+					return Pixel.Create(r, g, b, Pixel.PixelProperty.WindowNeon0);
 				case 13:
-					return new Pixel(r, g, b, Pixel.PixelProperty.WindowNeon1);
+					return Pixel.Create(r, g, b, Pixel.PixelProperty.WindowNeon1);
 				case 14:
-					return new Pixel(r, g, b, Pixel.PixelProperty.WindowNeon2);
+					return Pixel.Create(r, g, b, Pixel.PixelProperty.WindowNeon2);
 				case 15:
-					return new Pixel(0, 0, 0, Pixel.PixelProperty.AsBG);
+					return Pixel.Create(0, 0, 0, Pixel.PixelProperty.AsBG);
 				case 16:
-					return new Pixel(0, 0, 0, Pixel.PixelProperty.AsSleepers0);
+					return Pixel.Create(0, 0, 0, Pixel.PixelProperty.AsSleepers0);
 				case 17:
-					return new Pixel(0, 0, 0, Pixel.PixelProperty.AsSleepers1);
+					return Pixel.Create(0, 0, 0, Pixel.PixelProperty.AsSleepers1);
 				case 18:
-					return new Pixel(0, 0, 0, Pixel.PixelProperty.AsSleepers3);
+					return Pixel.Create(0, 0, 0, Pixel.PixelProperty.AsSleepers3);
 				case 19:
-					return new Pixel(0, 0, 0, Pixel.PixelProperty.AsRailsRoad0);
+					return Pixel.Create(0, 0, 0, Pixel.PixelProperty.AsRailsRoad0);
 				case 20:
-					return new Pixel(0, 0, 0, Pixel.PixelProperty.AsRailsRoad1);
+					return Pixel.Create(0, 0, 0, Pixel.PixelProperty.AsRailsRoad1);
 				case 21:
-					return new Pixel(0, 0, 0, Pixel.PixelProperty.AsRailsRoad2);
+					return Pixel.Create(0, 0, 0, Pixel.PixelProperty.AsRailsRoad2);
 				case 22:
-					return new Pixel(0, 0, 0, Pixel.PixelProperty.AsRailsRoad3);
+					return Pixel.Create(0, 0, 0, Pixel.PixelProperty.AsRailsRoad3);
 				case 23:
-					return new Pixel(0, 0, 0, Pixel.PixelProperty.AsRailsTrackbed0);
+					return Pixel.Create(0, 0, 0, Pixel.PixelProperty.AsRailsTrackbed0);
 				case 24:
-					return new Pixel(0, 0, 0, Pixel.PixelProperty.AsRailsTrackbed1);
+					return Pixel.Create(0, 0, 0, Pixel.PixelProperty.AsRailsTrackbed1);
 				case 25:
-					return new Pixel(0, 0, 0, Pixel.PixelProperty.AsRailsTrackbed2);
+					return Pixel.Create(0, 0, 0, Pixel.PixelProperty.AsRailsTrackbed2);
 				case 26:
-					return new Pixel(0, 0, 0, Pixel.PixelProperty.AsRailsTrackbed3);
+					return Pixel.Create(0, 0, 0, Pixel.PixelProperty.AsRailsTrackbed3);
 				case 27:
-					return new Pixel(0, 0, 0, Pixel.PixelProperty.AsMarkingPointBus0);
+					return Pixel.Create(0, 0, 0, Pixel.PixelProperty.AsMarkingPointBus0);
 				case 28:
-					return new Pixel(0, 0, 0, Pixel.PixelProperty.AsMarkingPointBus1);
+					return Pixel.Create(0, 0, 0, Pixel.PixelProperty.AsMarkingPointBus1);
 				case 29:
-					return new Pixel(0, 0, 0, Pixel.PixelProperty.AsMarkingPointBus2);
+					return Pixel.Create(0, 0, 0, Pixel.PixelProperty.AsMarkingPointBus2);
 				case 30:
-					return new Pixel(0, 0, 0, Pixel.PixelProperty.AsMarkingPointBus3);
+					return Pixel.Create(0, 0, 0, Pixel.PixelProperty.AsMarkingPointBus3);
 				case 31:
-					return new Pixel(0, 0, 0, Pixel.PixelProperty.AsMarkingPointWater);
+					return Pixel.Create(0, 0, 0, Pixel.PixelProperty.AsMarkingPointWater);
 				case 32:
-					return new Pixel(0, 0, 0, Pixel.PixelProperty.AsGravel);
+					return Pixel.Create(0, 0, 0, Pixel.PixelProperty.AsGravel);
 				case 33:
-					return new Pixel(0, 0, 0, Pixel.PixelProperty.AsSmallGravel);
+					return Pixel.Create(0, 0, 0, Pixel.PixelProperty.AsSmallGravel);
 				case 34:
-					return new Pixel(0, 0, 0, Pixel.PixelProperty.AsGrassy);
+					return Pixel.Create(0, 0, 0, Pixel.PixelProperty.AsGrassy);
 				case 35:
-					return new Pixel(0, 0, 0, Pixel.PixelProperty.AsPathBG);
+					return Pixel.Create(0, 0, 0, Pixel.PixelProperty.AsPathBG);
 				case 36:
-					return new Pixel(0, 0, 0, Pixel.PixelProperty.AsPathFG);
+					return Pixel.Create(0, 0, 0, Pixel.PixelProperty.AsPathFG);
 				case 37:
-					return new Pixel(0, 0, 0, Pixel.PixelProperty.AsText);
+					return Pixel.Create(0, 0, 0, Pixel.PixelProperty.AsText);
 				default:
-					return null;
+					throw new ArgumentOutOfRangeException();
 			}
 		}
 
-		private Pixel[,] GetElement()
+		private uint[,] GetElement()
 		{
 			switch (this.actualZoomFactor)
 			{
 				case ZoomFactor.Zoom1:
-					if (this.zoom1Archive != null && this.zoom1Archive[this.actualGraphic] != null && this.zoom1Archive[this.actualGraphic].GetLayer(this.actualLayer) != null && this.zoom1Archive[this.actualGraphic].GetLayer(this.actualLayer).Element != null)
+					if (this.zoom1Archive != null && this.zoom1Archive[this.actualGraphic] != null && this.zoom1Archive[this.actualGraphic].GetLayer(this.actualLayer) != null)
 					{
-						return this.zoom1Archive[this.actualGraphic].GetLayer(this.actualLayer).Element;
+						return this.zoom1Archive[this.actualGraphic].GetLayer(this.actualLayer);
 					}
 					break;
 				case ZoomFactor.Zoom2:
-					if (this.zoom2Archive != null && this.zoom2Archive[this.actualGraphic] != null && this.zoom2Archive[this.actualGraphic].GetLayer(this.actualLayer) != null && this.zoom2Archive[this.actualGraphic].GetLayer(this.actualLayer).Element != null)
+					if (this.zoom2Archive != null && this.zoom2Archive[this.actualGraphic] != null && this.zoom2Archive[this.actualGraphic].GetLayer(this.actualLayer) != null)
 					{
-						return this.zoom2Archive[this.actualGraphic].GetLayer(this.actualLayer).Element;
+						return this.zoom2Archive[this.actualGraphic].GetLayer(this.actualLayer);
 					}
 					break;
 				case ZoomFactor.Zoom4:
-					if (this.zoom4Archive != null && this.zoom4Archive[this.actualGraphic] != null && this.zoom4Archive[this.actualGraphic].GetLayer(this.actualLayer) != null && this.zoom4Archive[this.actualGraphic].GetLayer(this.actualLayer).Element != null)
+					if (this.zoom4Archive != null && this.zoom4Archive[this.actualGraphic] != null && this.zoom4Archive[this.actualGraphic].GetLayer(this.actualLayer) != null)
 					{
-						return this.zoom4Archive[this.actualGraphic].GetLayer(this.actualLayer).Element;
+						return this.zoom4Archive[this.actualGraphic].GetLayer(this.actualLayer);
 					}
 					break;
 				default:
 					break;
 			}
 			return null;
+		}
+
+		private static uint PixelFromColor(Color color)
+		{
+			return Pixel.Create(color.R, color.G, color.B);
+		}
+
+		private static Color PixelToColor(uint pixel)
+		{
+			Pixel.PixelProperty property = Pixel.PixelProperty.Transparent;
+			if (Pixel.UsesRgb(pixel))
+			{
+				property = Pixel.GetProperty(pixel);
+			}
+			else
+			{
+				property = (Pixel.PixelProperty)pixel;
+			}
+			switch (property)
+			{
+				//With RGB
+				case Pixel.PixelProperty.None:
+				case Pixel.PixelProperty.AlwaysBright:
+				case Pixel.PixelProperty.LampYellow:
+				case Pixel.PixelProperty.LampRed:
+				case Pixel.PixelProperty.LampColdWhite:
+				case Pixel.PixelProperty.LampYellowWhite:
+				case Pixel.PixelProperty.LampGasYellow:
+				case Pixel.PixelProperty.WindowYellow0:
+				case Pixel.PixelProperty.WindowYellow1:
+				case Pixel.PixelProperty.WindowYellow2:
+				case Pixel.PixelProperty.WindowNeon0:
+				case Pixel.PixelProperty.WindowNeon1:
+				case Pixel.PixelProperty.WindowNeon2:
+					return Color.FromArgb(Pixel.GetRed(pixel), Pixel.GetGreen(pixel), Pixel.GetBlue(pixel));
+
+				//Without RGB
+				case Pixel.PixelProperty.Transparent:
+					return Color.FromArgb(0, 112, 0);
+				case Pixel.PixelProperty.BehindGlass:
+					return Color.FromArgb(0, 50, 100);
+				case Pixel.PixelProperty.AsBG:
+					return Color.FromArgb(0, 112, 0);
+				case Pixel.PixelProperty.AsSleepers0:
+					return Color.FromArgb(188, 188, 188);
+				case Pixel.PixelProperty.AsSleepers1:
+					return Color.FromArgb(84, 40, 0);
+				case Pixel.PixelProperty.AsSleepers3:
+					return Color.FromArgb(84, 40, 0);
+				case Pixel.PixelProperty.AsRailsRoad0:
+					return Color.FromArgb(168, 168, 168);
+				case Pixel.PixelProperty.AsRailsRoad1:
+					return Color.FromArgb(60, 60, 60);
+				case Pixel.PixelProperty.AsRailsRoad2:
+					return Color.FromArgb(168, 168, 168);
+				case Pixel.PixelProperty.AsRailsRoad3:
+					return Color.FromArgb(104, 104, 104);
+				case Pixel.PixelProperty.AsRailsTrackbed0:
+					return Color.FromArgb(104, 104, 104);
+				case Pixel.PixelProperty.AsRailsTrackbed1:
+					return Color.FromArgb(148, 148, 148);
+				case Pixel.PixelProperty.AsRailsTrackbed2:
+					return Color.FromArgb(148, 148, 148);
+				case Pixel.PixelProperty.AsRailsTrackbed3:
+					return Color.FromArgb(104, 104, 104);
+				case Pixel.PixelProperty.AsMarkingPointBus0:
+					return Color.FromArgb(252, 252, 252);
+				case Pixel.PixelProperty.AsMarkingPointBus1:
+					return Color.FromArgb(252, 252, 252);
+				case Pixel.PixelProperty.AsMarkingPointBus2:
+					return Color.FromArgb(252, 252, 252);
+				case Pixel.PixelProperty.AsMarkingPointBus3:
+					return Color.FromArgb(252, 252, 252);
+				case Pixel.PixelProperty.AsMarkingPointWater:
+					return Color.FromArgb(84, 252, 252);
+				case Pixel.PixelProperty.AsGravel:
+					return Color.FromArgb(60, 60, 60);
+				case Pixel.PixelProperty.AsSmallGravel:
+					return Color.FromArgb(168, 136, 0);
+				case Pixel.PixelProperty.AsGrassy:
+					return Color.FromArgb(0, 168, 0);
+				case Pixel.PixelProperty.AsPathBG:
+					return Color.FromArgb(30, 180, 20);
+				case Pixel.PixelProperty.AsPathFG:
+					return Color.FromArgb(168, 140, 0);
+				case Pixel.PixelProperty.AsText:
+					return Color.FromArgb(252, 252, 252);
+
+				default:
+					throw new ArgumentOutOfRangeException("property", "A property which was not defined here was encountered");
+			}
+		}
+
+		private static uint[,] GraphicPreview(Graphic graphic)
+		{
+			uint[,] element = new uint[Constants.ElementHeight, Constants.ElementWidth];
+			for (int i = 0; i < element.GetLength(0); i++)
+			{
+				for (int j = 0; j < element.GetLength(1); j++)
+				{
+					if (graphic.GetLayer(LayerID.ForegroundAbove) != null && !Pixel.IsTransparent(graphic.GetLayer(LayerID.ForegroundAbove)[i + Constants.ElementHeight, j + Constants.ElementWidth]))
+						element[i, j] = graphic.GetLayer(LayerID.ForegroundAbove)[i + Constants.ElementHeight, j + Constants.ElementWidth];
+					else if (graphic.GetLayer(LayerID.Foreground) != null && !Pixel.IsTransparent(graphic.GetLayer(LayerID.Foreground)[i + Constants.ElementHeight, j + Constants.ElementWidth]))
+						element[i, j] = graphic.GetLayer(LayerID.Foreground)[i + Constants.ElementHeight, j + Constants.ElementWidth];
+					else if (graphic.GetLayer(LayerID.Front) != null && !Pixel.IsTransparent(graphic.GetLayer(LayerID.Front)[i + Constants.ElementHeight, j + Constants.ElementWidth]))
+						element[i, j] = graphic.GetLayer(LayerID.Front)[i + Constants.ElementHeight, j + Constants.ElementWidth];
+					else if (graphic.GetLayer(LayerID.Background1) != null && !Pixel.IsTransparent(graphic.GetLayer(LayerID.Background1)[i + Constants.ElementHeight, j + Constants.ElementWidth]))
+						element[i, j] = graphic.GetLayer(LayerID.Background1)[i + Constants.ElementHeight, j + Constants.ElementWidth];
+					else if (graphic.GetLayer(LayerID.Background0) != null && !Pixel.IsTransparent(graphic.GetLayer(LayerID.Background0)[i + Constants.ElementHeight, j + Constants.ElementWidth]))
+						element[i, j] = graphic.GetLayer(LayerID.Background0)[i + Constants.ElementHeight, j + Constants.ElementWidth];
+					else
+						element[i, j] = Pixel.Create(0, 0, 0, Pixel.PixelProperty.Transparent);
+				}
+			}
+			return element;
 		}
 
 
@@ -737,13 +852,13 @@ namespace BahnEditor.Editor
 			if (dr == DialogResult.OK)
 			{
 				Color c = this.colorDialog.Color;
-				if (this.leftPixel.IsSpecial && this.leftPixel.UsesRGB)
+				if (Pixel.IsSpecial(this.leftPixel) && Pixel.UsesRgb(this.leftPixel))
 				{
-					this.leftPixel = new Pixel(c.R, c.G, c.B, this.leftPixel.Property);
+					this.leftPixel = Pixel.Create(c.R, c.G, c.B, Pixel.GetProperty(this.leftPixel));
 				}
 				else
 				{
-					this.leftPixel = Pixel.FromColor(c);
+					this.leftPixel = PixelFromColor(c);
 					this.leftComboBox.SelectedIndex = 0;
 				}
 				this.leftColorButton.BackColor = c;
@@ -756,13 +871,13 @@ namespace BahnEditor.Editor
 			if (dr == DialogResult.OK)
 			{
 				Color c = this.colorDialog.Color;
-				if (this.rightPixel.IsSpecial && this.rightPixel.UsesRGB)
+				if (Pixel.IsSpecial(this.rightPixel) && Pixel.UsesRgb(this.rightPixel))
 				{
-					this.rightPixel = new Pixel(c.R, c.G, c.B, this.rightPixel.Property);
+					this.rightPixel = Pixel.Create(c.R, c.G, c.B, Pixel.GetProperty(this.rightPixel));
 				}
 				else
 				{
-					this.rightPixel = Pixel.FromColor(c);
+					this.rightPixel = PixelFromColor(c);
 					this.rightComboBox.SelectedIndex = 0;
 				}
 				this.rightColorButton.BackColor = c;
@@ -783,11 +898,11 @@ namespace BahnEditor.Editor
 		{
 			if (this.rightComboBox.SelectedIndex == 0)
 			{
-				if (this.lastRightPixel != null && !this.lastRightPixel.IsTransparent && this.lastRightPixel.UsesRGB)
+				if (this.lastRightPixel != 0 && !Pixel.IsTransparent(this.lastRightPixel) && Pixel.UsesRgb(this.lastRightPixel))
 				{
-					if (this.lastRightPixel.IsSpecial)
+					if (Pixel.IsSpecial(this.lastRightPixel))
 					{
-						this.rightPixel = new Pixel(this.lastRightPixel.Red, this.lastRightPixel.Green, this.lastRightPixel.Blue);
+						this.rightPixel = Pixel.Create(Pixel.GetRed(this.lastRightPixel), Pixel.GetGreen(this.lastRightPixel), Pixel.GetBlue(this.lastRightPixel));
 					}
 					else
 					{
@@ -796,32 +911,32 @@ namespace BahnEditor.Editor
 				}
 				else
 				{
-					this.rightPixel = new Pixel(0, 0, 0);
+					this.rightPixel = Pixel.Create(0, 0, 0);
 				}
 			}
 			else if (this.rightComboBox.SelectedIndex == 1)
 			{
-				if (!this.rightPixel.IsTransparent)
+				if (!Pixel.IsTransparent(this.rightPixel))
 				{
 					this.lastRightPixel = this.rightPixel;
-					this.rightPixel = new Pixel(0, 0, 0, Pixel.PixelProperty.Transparent);
+					this.rightPixel = Pixel.Create(0, 0, 0, Pixel.PixelProperty.Transparent);
 				}
 			}
 			else
 			{
-				Pixel lastPixel = null;
-				if (this.rightPixel != null && !this.rightPixel.IsTransparent && this.rightPixel.UsesRGB)
+				uint lastPixel = 0;
+				if (this.rightPixel != 0 && !Pixel.IsTransparent(this.rightPixel) && Pixel.UsesRgb(this.rightPixel))
 				{
 					lastPixel = this.rightPixel;
 				}
-				else if (this.lastRightPixel != null && !this.lastRightPixel.IsTransparent && this.lastRightPixel.UsesRGB)
+				else if (this.lastRightPixel != 0 && !Pixel.IsTransparent(this.lastRightPixel) && Pixel.UsesRgb(this.lastRightPixel))
 				{
 					lastPixel = this.lastRightPixel;
 				}
-				Pixel pixel = this.GetPixelFromComboBox(this.rightComboBox.SelectedIndex, lastPixel);
-				if (pixel != null)
+				uint pixel = this.GetPixelFromComboBox(this.rightComboBox.SelectedIndex, lastPixel);
+				if (pixel != 0)
 				{
-					if (!this.rightPixel.IsTransparent && this.rightPixel.UsesRGB)
+					if (!Pixel.IsTransparent(this.rightPixel) && Pixel.UsesRgb(this.rightPixel))
 					{
 						this.lastRightPixel = this.rightPixel;
 					}
@@ -832,18 +947,18 @@ namespace BahnEditor.Editor
 					MessageBox.Show("WTF");
 				}
 			}
-			this.rightColorButton.BackColor = this.rightPixel.ToColor();
+			this.rightColorButton.BackColor = PixelToColor(this.rightPixel);
 		}
 
 		private void leftComboBox_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			if (this.leftComboBox.SelectedIndex == 0)
 			{
-				if (this.lastLeftPixel != null && !this.lastLeftPixel.IsTransparent && this.lastLeftPixel.UsesRGB)
+				if (this.lastLeftPixel != 0 && !Pixel.IsTransparent(this.lastLeftPixel) && Pixel.UsesRgb(this.lastLeftPixel))
 				{
-					if (this.lastLeftPixel.IsSpecial)
+					if (Pixel.IsSpecial(this.lastLeftPixel))
 					{
-						this.leftPixel = new Pixel(this.lastLeftPixel.Red, this.lastLeftPixel.Green, this.lastLeftPixel.Blue);
+						this.leftPixel = Pixel.Create(Pixel.GetRed(this.lastLeftPixel), Pixel.GetGreen(this.lastLeftPixel), Pixel.GetBlue(this.lastLeftPixel));
 					}
 					else
 					{
@@ -852,32 +967,32 @@ namespace BahnEditor.Editor
 				}
 				else
 				{
-					this.leftPixel = new Pixel(0, 0, 0);
+					this.leftPixel = Pixel.Create(0, 0, 0);
 				}
 			}
 			else if (this.leftComboBox.SelectedIndex == 1)
 			{
-				if (this.leftPixel.IsTransparent != true)
+				if (Pixel.IsTransparent(this.leftPixel) != true)
 				{
 					this.lastLeftPixel = this.leftPixel;
-					this.leftPixel = new Pixel(0, 0, 0, Pixel.PixelProperty.Transparent);
+					this.leftPixel = Pixel.Create(0, 0, 0, Pixel.PixelProperty.Transparent);
 				}
 			}
 			else
 			{
-				Pixel lastPixel = null;
-				if (this.leftPixel != null && !this.leftPixel.IsTransparent && this.leftPixel.UsesRGB)
+				uint lastPixel = 0;
+				if (this.leftPixel != 0 && !Pixel.IsTransparent(this.leftPixel) && Pixel.UsesRgb(this.leftPixel))
 				{
 					lastPixel = this.leftPixel;
 				}
-				else if (this.lastLeftPixel != null && !this.lastLeftPixel.IsTransparent && this.lastLeftPixel.UsesRGB)
+				else if (this.lastLeftPixel != 0 && !Pixel.IsTransparent(this.lastLeftPixel) && Pixel.UsesRgb(this.lastLeftPixel))
 				{
 					lastPixel = this.lastLeftPixel;
 				}
-				Pixel pixel = this.GetPixelFromComboBox(this.leftComboBox.SelectedIndex, lastPixel);
-				if (pixel != null)
+				uint pixel = this.GetPixelFromComboBox(this.leftComboBox.SelectedIndex, lastPixel);
+				if (pixel != 0)
 				{
-					if (!this.leftPixel.IsTransparent && this.leftPixel.UsesRGB)
+					if (!Pixel.IsTransparent(this.leftPixel) && Pixel.UsesRgb(this.leftPixel))
 					{
 						this.lastLeftPixel = this.leftPixel;
 					}
@@ -888,7 +1003,7 @@ namespace BahnEditor.Editor
 					MessageBox.Show("WTF");
 				}
 			}
-			this.leftColorButton.BackColor = this.leftPixel.ToColor();
+			this.leftColorButton.BackColor = PixelToColor(this.leftPixel);
 		}
 
 		private void Editor_Load(object sender, EventArgs e)
@@ -1010,9 +1125,9 @@ namespace BahnEditor.Editor
 					if (result == DialogResult.Yes)
 					{
 						Graphic graphic = new Graphic("Kein Text", ZoomFactor.Zoom2);
-						graphic.AddTransparentLayer(LayerId.Foreground);
+						graphic.AddTransparentLayer(LayerID.Foreground);
 						this.zoom2Archive.AddGraphic(this.actualGraphic, graphic);
-						this.ChangeLayer(LayerId.Foreground);
+						this.ChangeLayer(LayerID.Foreground);
 						this.tabControl.TabPages.Insert(1, this.zoom2Tab);
 						this.tabControl.SelectedTab = this.zoom2Tab;
 						this.actualZoomFactor = ZoomFactor.Zoom2;
@@ -1058,9 +1173,9 @@ namespace BahnEditor.Editor
 					if (result == DialogResult.Yes)
 					{
 						Graphic graphic = new Graphic("Kein Text", ZoomFactor.Zoom4);
-						graphic.AddTransparentLayer(LayerId.Foreground);
+						graphic.AddTransparentLayer(LayerID.Foreground);
 						this.zoom4Archive.AddGraphic(this.actualGraphic, graphic);
-						this.ChangeLayer(LayerId.Foreground);
+						this.ChangeLayer(LayerID.Foreground);
 						this.tabControl.TabPages.Add(this.zoom4Tab);
 						this.tabControl.SelectedTab = this.zoom4Tab;
 						this.actualZoomFactor = ZoomFactor.Zoom4;

@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BahnEditor.BahnLib
+﻿namespace BahnEditor.BahnLib
 {
+	// TODO Refactor as nested class of GraphicArchive
 	/// <summary>
 	/// Represents an element in a graphic archive
 	/// </summary>
@@ -41,11 +36,6 @@ namespace BahnEditor.BahnLib
 		#endregion Properties
 
 		#region Constructor
-		internal ArchiveElement()
-		{
-
-		}
-
 		internal ArchiveElement(int elementNumber, int animationPhase, int alternative, Graphic graphic)
 		{
 			this.ElementNumber = elementNumber;

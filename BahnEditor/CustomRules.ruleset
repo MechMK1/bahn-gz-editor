@@ -2,8 +2,13 @@
 <RuleSet Name="Custom Ruleset for BahnEditor" Description="Custom rules (All)" ToolsVersion="12.0">
   <IncludeAll Action="Warning" />
   <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
+    <Rule Id="CA1026" Action="None" />
+    <Rule Id="CA1028" Action="None" />
+    <Rule Id="CA1702" Action="None" />
     <Rule Id="CA1704" Action="None" />
     <Rule Id="CA1707" Action="None" />
     <Rule Id="CA1709" Action="None" />
+    <Rule Id="CA1814" Action="None" />
+    <Rule Id="CA2204" Action="None" />
   </Rules>
 </RuleSet>

@@ -119,7 +119,7 @@ namespace BahnEditor.BahnLib
 						ArchiveElement archiveElement = enumerable.SingleOrDefault(x => x.AnimationPhase == 0 && x.Alternative == i);
 						if (archiveElement != null)
 						{
-							if (archiveElement.Graphic.IsLayerEmpty && this.FileName != null)
+							if (archiveElement.Graphic.IsEmpty() && this.FileName != null)
 							{
 								using (FileStream stream = File.Open(this.FileName, FileMode.Open))
 								{
@@ -136,7 +136,7 @@ namespace BahnEditor.BahnLib
 					ArchiveElement element = enumerable.SingleOrDefault(x => x.AnimationPhase == 0 && x.Alternative == 0);
 					if (element != null)
 					{
-						if (element.Graphic.IsLayerEmpty && this.FileName != null)
+						if (element.Graphic.IsEmpty() && this.FileName != null)
 						{
 							using (FileStream stream = File.Open(this.FileName, FileMode.Open))
 							{
@@ -239,16 +239,15 @@ namespace BahnEditor.BahnLib
 		#region Private Methods
 		private static GraphicArchive Load(FileStream path)
 		{
-			// TODO remove magic numbers
 			using (BinaryReader br = new BinaryReader(path, Encoding.Unicode))
 			{
 				while (br.ReadByte() != Constants.HeaderTextTerminator) { }
 				byte[] read = br.ReadBytes(3);
-				if (read[0] != 85 || read[1] != 90 || read[2] != 88)
+				if (read[0] != 85 || read[1] != 90 || read[2] != 88) // 'UZX' as ASCII characters
 				{
 					throw new InvalidDataException("wrong identification string");
 				}
-				byte zoomFactor = (byte)(br.ReadByte() - 48);
+				byte zoomFactor = (byte)(br.ReadByte() - 48); // zoomFactor number is stored as ASCII. -48 will 'convert' this to int
 				int elementNumber;
 				List<ArchiveElement> graphics = new List<ArchiveElement>();
 				while (true)
@@ -258,20 +257,19 @@ namespace BahnEditor.BahnLib
 					{
 						break;
 					}
-					ArchiveElement element = new ArchiveElement();
-					element.ElementNumber = elementNumber;
-					br.ReadInt32(); //skipping data (bauform)
-					br.ReadInt32(); //skipping data (fwSig)
-					element.AnimationPhase = br.ReadInt32(); //AnimationPhase
-					element.Alternative = br.ReadInt32(); //Alternative
-					element.SeekPosition = ((int)(br.BaseStream.Position + 4 + br.ReadInt32()));
-					graphics.Add(element);
+					br.ReadInt32();                          //skipping data (bauform)
+					br.ReadInt32();                          //skipping data (fwSig)
+					int animationPhase = br.ReadInt32(); //AnimationPhase
+					int alternative = br.ReadInt32();    //Alternative
+					ArchiveElement archiveElement = new ArchiveElement(elementNumber, animationPhase, alternative, null); //Graphic loaded later
+					archiveElement.SeekPosition = ((int)(br.BaseStream.Position + 4 + br.ReadInt32())); // +4 Used for unknown reasons. Possibly because of C/C# incompatibility
+					graphics.Add(archiveElement);
 				}
 				foreach (var item in graphics)
 				{
-					br.BaseStream.Seek(item.SeekPosition + sizeof(int) * 5, SeekOrigin.Begin);
-					int length = br.ReadInt32();
-					int date = br.ReadInt32();
+					br.BaseStream.Seek(item.SeekPosition + sizeof(int) * 5, SeekOrigin.Begin); // sizeof(int) * 5 => Skip 5 integer-sized fields
+					br.ReadInt32(); //Length
+					br.ReadInt32(); //Date
 					item.Graphic = Graphic.LoadHeader(br);
 					item.SeekPositionGraphicData = br.BaseStream.Position;
 				}
@@ -301,44 +299,43 @@ namespace BahnEditor.BahnLib
 			}
 			foreach (var item in this.graphics)
 			{
-				if (item.Graphic.IsElementEmpty())
+				if (item.Graphic.IsTransparent())
 				{
 					throw new ElementIsEmptyException("a graphic is empty");
 				}
 			}
-			// TODO remove magic numbers
 			using (BinaryWriter bw = new BinaryWriter(path, Encoding.Unicode))
 			{
 				List<Tuple<long, long>> offsetList = new List<Tuple<long, long>>();
 				bw.Write(Constants.HeaderText.ToArray()); //Headertext 
-				bw.Write(new byte[] { 85, 90, 88 }); //identification string UZX ASCII
-				bw.Write((byte)(48 + this.ZoomFactor)); //Zoom faktor ASCII
+				bw.Write(new byte[] { 85, 90, 88 });      //identification string UZX ASCII
+				bw.Write((byte)(48 + this.ZoomFactor));   //Zoom factor to ASCII
 				foreach (var item in this.graphics)
 				{
-					bw.Write(item.ElementNumber); //Elementnummer
-					bw.Write(0); //Bauform
-					bw.Write(0); //FwSig
+					bw.Write(item.ElementNumber);  //Elementnummer
+					bw.Write(0);                   //Bauform
+					bw.Write(0);                   //FwSig
 					bw.Write(item.AnimationPhase); //Phase
-					bw.Write(item.Alternative); //Alt
+					bw.Write(item.Alternative);    //Alternative
 					offsetList.Add(Tuple.Create<long, long>(bw.BaseStream.Position, 0));
 					bw.Write(0); //Offset
 
 				}
-				bw.Write(0xFFFFFFFF);
+				bw.Write(0xFFFFFFFF); //Terminator
 				int i = 0;
 				foreach (var item in this.graphics)
 				{
 					bw.Write(item.ElementNumber); //Elementnummer
 					offsetList[i] = Tuple.Create(offsetList[i].Item1, bw.BaseStream.Position);
-					bw.Write(0); //Bauform
-					bw.Write(0); //FwSig
+					bw.Write(0);                   //Bauform
+					bw.Write(0);                   //FwSig
 					bw.Write(item.AnimationPhase); //Phase
-					bw.Write(item.Alternative); //Alt
+					bw.Write(item.Alternative);    //Alt
 					using (MemoryStream ms = new MemoryStream())
 					{
 						item.Graphic.Save(ms);
 						bw.Write((int)ms.Length); //Länge der Einzeldatei in Byte
-						bw.Write(0x46646E7C); //Datum
+						bw.Write(0x46646E7C);     //Dummy data
 						ms.WriteTo(bw.BaseStream);
 					}
 					i++;
@@ -346,17 +343,11 @@ namespace BahnEditor.BahnLib
 				foreach (var item in offsetList)
 				{
 					bw.Seek((int)item.Item1, SeekOrigin.Begin);
-					bw.Write((int)(item.Item2 - item.Item1 - 8));
+					bw.Write((int)(item.Item2 - item.Item1 - 8)); // -8 Used for unknown reasons. Possibly because of C/C# incompatibility
 				}
 				bw.Flush();
 				return true;
 			}
-		}
-
-		private static int GetTime()
-		{
-			// TODO do actual stuff
-			return 0;
 		}
 		#endregion Private Methods
 	}

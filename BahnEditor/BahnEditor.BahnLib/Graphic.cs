@@ -1,287 +1,77 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 
 namespace BahnEditor.BahnLib
 {
-	/// <summary>
-	/// Represents a graphic used in BAHN
-	/// </summary>
 	public class Graphic
 	{
-		#region Fields and Properties
-		private List<Layer> layers;
-		private int layercount;
+		#region Private Fields
 
 		/// <summary>
-		/// Gets the zoom factor
+		/// 0th Dimension
 		/// </summary>
-		public ZoomFactor ZoomFactor { get; private set; }
+		private const int Height = 0;
 
 		/// <summary>
-		/// Gets or sets the info-text
+		/// 1st Dimension
 		/// </summary>
+		private const int Width = 1;
+
+		private int layercount = 0;
+
+		private Dictionary<LayerID, uint[,]> layers;
+
+		#endregion Private Fields
+
+		#region Public Properties
+
+		//TODO Move to GraphicProperties
+		//TODO Remove direct access
+		public List<DrivingWayElement> DrivingWay { get; private set; }
+
 		public string InfoText { get; set; }
 
-		/// <summary>
-		/// Gets or sets the color in map / schematic view
-		/// <para>Makes only sense if ColorSchematicMode is set in properties, else data is ignored</para>
-		/// </summary>
-		public Pixel ColorInSchematicMode { get; set; }
+		public GraphicProperties Properties { get; private set; }
 
-		/// <summary>
-		/// Gets or sets the properties of the graphic
-		/// </summary>
-		public GraphicProperties Properties { get; set; }
-
-		/// <summary>
-		/// Gets or sets the x position where steam/smoke begins
-		/// <para>Makes only sense if steam or smoke is set in properties, else data is ignored</para>
-		/// </summary>
-		public int SteamXPosition { get; set; }
-
-		/// <summary>
-		/// Gets or sets the y position where steam/smoke begins
-		/// <para>Makes only sense if steam or smoke is set in properties, else data is ignored</para>
-		/// </summary>
-		public int SteamYPosition { get; set; }
-
-		/// <summary>
-		/// Gets or sets the width (length) of steam/smoke
-		/// <para>Makes only sense if steam or smoke is set in properties, else data is ignored</para>
-		/// </summary>
-		public int SteamWidth { get; set; }
-
-		/// <summary>
-		/// Gets or sets the properties of the clock
-		/// <para>Makes only sense if clock is set in properties, else data is ignored</para>
-		/// </summary>
-		public ClockProperties ClockProperties { get; set; }
-
-		/// <summary>
-		/// Gets or sets the x position of the center of the clock
-		/// <para>Makes only sense if clock is set in properties, else data is ignored</para>
-		/// </summary>
-		public int ClockXPosition { get; set; }
-
-		/// <summary>
-		/// Gets or sets the y position of the center of the clock
-		/// <para>Makes only sense if clock is set in properties, else data is ignored</para>
-		/// </summary>
-		public int ClockYPosition { get; set; }
-
-		/// <summary>
-		/// Gets or sets the z position (layer) of the center of the clock
-		/// <para>Makes only sense if clock is set in properties, else data is ignored</para>
-		/// </summary>
-		public LayerId ClockZPosition { get; set; }
-
-		/// <summary>
-		/// Gets or sets the width of the clock
-		/// <para>Makes only sense if clock is set in properties, else data is ignored</para>
-		/// </summary>
-		public int ClockWidth { get; set; }
-
-		/// <summary>
-		/// Gets or sets the height of the clock
-		/// <para>Makes only sense if clock is set in properties, else data is ignored</para>
-		/// </summary>
-		public int ClockHeight { get; set; }
-
-		/// <summary>
-		/// Gets or sets the color of the hours pointer
-		/// <para>Colors that light at night are possible</para>
-		/// <para>Makes only sense if clock is set in properties, else data is ignored</para>
-		/// </summary>
-		public Pixel ClockColorHoursPointer { get; set; }
-
-		/// <summary>
-		/// Gets or sets the color of the minutes pointer
-		/// <para>Makes only sense if clock is set in properties, else data is ignored</para>
-		/// </summary>
-		public Pixel ClockColorMinutesPointer { get; set; }
-
-		/// <summary>
-		/// Gets or sets the normal cursor direction
-		/// <para>Makes only sense if cursor is set in properties, else data is ignored</para>
-		/// </summary>
-		public Direction CursorNormalDirection { get; set; }
-
-		/// <summary>
-		/// Gets or sets the reverse cursor direction
-		/// <para>Mostly, this is the opposite of CursorNormalDirection</para>
-		/// <para>Makes only sense if cursor is set in properties, else data is ignored</para>
-		/// </summary>
-		public Direction CursorReverseDirection { get; set; }
-
-		/// <summary>
-		/// Gets or sets the version of the graphic
-		/// </summary>
 		public GraphicVersion Version { get; set; }
 
-		/// <summary>
-		/// Gets the list of driving ways
-		/// </summary>
-		public List<DrivingWayElement> DrivingWay { get; private set; }
-		#endregion Fields and Properties
+		public ZoomFactor ZoomFactor { get; private set; }
 
-		#region Constructors
-		/// <summary>
-		/// Initializes a new Instance of BahnEditor.BahnLib.Graphic class
-		/// </summary>
-		/// <param name="infoText">InfoText</param>
-		/// <param name="zoomFactor">Zoom factor</param>
-		/// <param name="version">Version</param>
+		#endregion Public Properties
+
+
+		#region Public Constructors
+
 		public Graphic(string infoText, ZoomFactor zoomFactor = ZoomFactor.Zoom1, GraphicVersion version = GraphicVersion.Version2)
 			: this()
 		{
 			this.Version = version;
 			this.ZoomFactor = zoomFactor;
 			this.InfoText = infoText;
-
 		}
+
+		#endregion Public Constructors
+
+		#region Private Constructors
 
 		/// <summary>
 		/// Initializes a new Instance of BahnEditor.BahnLib.Graphic class, used in Load-Function
 		/// </summary>
 		private Graphic()
 		{
-			this.layers = new List<Layer>();
+			this.layers = new Dictionary<LayerID, uint[,]>();
 			this.DrivingWay = new List<DrivingWayElement>();
+			this.Properties = new GraphicProperties();
 		}
-		#endregion Constructors
+
+		#endregion Private Constructors
+
 
 		#region Public Methods
 
-		/// <summary>
-		/// Adds a transparent layer (every pixel of layer is transparent) to the graphic
-		/// </summary>
-		/// <param name="layerID">LayerId</param>
-		public void AddTransparentLayer(LayerId layerID)
-		{
-			Pixel[,] element = new Pixel[Constants.ElementHeight * 8 * (byte)this.ZoomFactor, Constants.ElementWidth * 3 * (byte)this.ZoomFactor];
-			for (int i = 0; i < element.GetLength(0); i++)
-			{
-				for (int j = 0; j < element.GetLength(1); j++)
-				{
-					element[i, j] = new Pixel(0, 0, 0, Pixel.PixelProperty.Transparent);
-				}
-			}
-			Layer layer = new Layer(layerID, element);
-			this.AddLayer(layer);
-		}
-
-		/// <summary>
-		/// Adds a layer to the graphic
-		/// </summary>
-		/// <param name="layer">Layer</param>
-		/// <exception cref="System.ArgumentNullException"/>
-		public void AddLayer(Layer layer)
-		{
-			if (layer == null)
-			{
-				throw new ArgumentNullException("layer");
-			}
-			this.layers.Add(layer);
-		}
-
-		/// <summary>
-		/// Gets a layer of the graphic
-		/// </summary>
-		/// <param name="id">LayerId</param>
-		/// <returns>Layer</returns>
-		public Layer GetLayer(LayerId id)
-		{
-			return layers.SingleOrDefault(x => x.LayerId == id);
-		}
-
-		/// <summary>
-		/// Saves the graphic into a file
-		/// </summary>
-		/// <param name="path">Path for the file</param>
-		/// <param name="overwrite">If the file should be overwritten when existing</param>
-		/// <returns>Returns true if succeeded, else false</returns>
-		/// <exception cref="BahnEditor.BahnLib.ElementIsEmptyException"/>
-		/// <exception cref="System.ArgumentNullException"/>
-		public bool Save(string path, bool overwrite)
-		{
-			if (path == null)
-				throw new ArgumentNullException("path");
-			if (File.Exists(path) && !overwrite)
-			{
-				return false;
-			}
-			else
-			{
-				using (FileStream stream = File.OpenWrite(path))
-				{
-					return Save(stream);
-				}
-			}
-		}
-
-		/// <summary>
-		/// Checks if the graphic is empty (every pixel is transparent)
-		/// </summary>
-		/// <returns>True if graphic is empty, else false</returns>
-		public bool IsElementEmpty()
-		{
-			foreach (var item in layers)
-			{
-				for (int i = 0; i < item.Element.GetLength(0); i++)
-				{
-					for (int j = 0; j < item.Element.GetLength(1); j++)
-					{
-						if (item.Element[i, j].IsTransparent == false)
-						{
-							return false;
-						}
-					}
-				}
-			}
-			return true;
-		}
-
-		/// <summary>
-		/// Gets a preview of the graphic how it would be in the game
-		/// </summary>
-		/// <returns>Element</returns>
-		public Pixel[,] ElementPreview()
-		{
-			Pixel[,] element = new Pixel[Constants.ElementHeight, Constants.ElementWidth];
-			for (int i = 0; i < element.GetLength(0); i++)
-			{
-				for (int j = 0; j < element.GetLength(1); j++)
-				{
-					if (this.GetLayer(LayerId.ForegroundAbove) != null && !this.GetLayer(LayerId.ForegroundAbove).Element[i + Constants.ElementHeight, j + Constants.ElementWidth].IsTransparent)
-						element[i, j] = this.GetLayer(LayerId.ForegroundAbove).Element[i + Constants.ElementHeight, j + Constants.ElementWidth];
-					else if (this.GetLayer(LayerId.Foreground) != null && !this.GetLayer(LayerId.Foreground).Element[i + Constants.ElementHeight, j + Constants.ElementWidth].IsTransparent)
-						element[i, j] = this.GetLayer(LayerId.Foreground).Element[i + Constants.ElementHeight, j + Constants.ElementWidth];
-					else if (this.GetLayer(LayerId.Front) != null && !this.GetLayer(LayerId.Front).Element[i + Constants.ElementHeight, j + Constants.ElementWidth].IsTransparent)
-						element[i, j] = this.GetLayer(LayerId.Front).Element[i + Constants.ElementHeight, j + Constants.ElementWidth];
-					else if (this.GetLayer(LayerId.Background1) != null && !this.GetLayer(LayerId.Background1).Element[i + Constants.ElementHeight, j + Constants.ElementWidth].IsTransparent)
-						element[i, j] = this.GetLayer(LayerId.Background1).Element[i + Constants.ElementHeight, j + Constants.ElementWidth];
-					else if (this.GetLayer(LayerId.Background0) != null && !this.GetLayer(LayerId.Background0).Element[i + Constants.ElementHeight, j + Constants.ElementWidth].IsTransparent)
-						element[i, j] = this.GetLayer(LayerId.Background0).Element[i + Constants.ElementHeight, j + Constants.ElementWidth];
-					else
-						element[i, j] = new Pixel(0, 0, 0, Pixel.PixelProperty.Transparent);
-				}
-			}
-			return element;
-		}
-		#endregion Public Methods
-
-		#region Static Methods
-		/// <summary>
-		/// Loads a Graphic from a file
-		/// </summary>
-		/// <param name="path">Path to the file</param>
-		/// <returns>Loaded Graphic</returns>
-		/// <exception cref="System.IO.FileNotFoundException"/>
-		/// <exception cref="System.IO.InvalidDataException"/>
 		public static Graphic Load(string path)
 		{
 			if (File.Exists(path))
@@ -294,6 +84,77 @@ namespace BahnEditor.BahnLib
 			else throw new FileNotFoundException("File not found", path);
 		}
 
+		public void AddTransparentLayer(LayerID layerID)
+		{
+			uint[,] layer = new uint[Constants.ElementHeight * 8 * (byte)this.ZoomFactor, Constants.ElementWidth * 3 * (byte)this.ZoomFactor];
+			for (int x = 0; x < layer.GetLength(Width); x++)
+			{
+				for (int y = 0; y < layer.GetLength(Height); y++)
+				{
+					layer[y, x] = Constants.ColorTransparent;
+				}
+			}
+			this.layers[layerID] = layer;
+		}
+
+		public uint[,] GetLayer(LayerID layerID)
+		{
+			if (!layers.ContainsKey(layerID))
+				return null;
+			return layers[layerID];
+		}
+
+		public bool IsEmpty()
+		{
+			return this.layers.Count == 0;
+		}
+
+		public bool IsTransparent()
+		{
+			foreach (var layer in this.layers)
+			{
+				for (int x = 0; x < layer.Value.GetLength(Width); x++)
+				{
+					for (int y = 0; y < layer.Value.GetLength(Height); y++)
+					{
+						if ((layer.Value[y, x] & Constants.ColorTransparent) != Constants.ColorTransparent)
+							return false;
+					}
+				}
+			}
+			return true;
+		}
+
+		public void Save(string path, bool overwrite)
+		{
+			if (path == null)
+				throw new ArgumentNullException("path");
+			if (File.Exists(path) && !overwrite)
+			{
+				return;
+			}
+			else
+			{
+				using (FileStream stream = File.OpenWrite(path))
+				{
+					Save(stream);
+				}
+			}
+		}
+
+		public void SetLayer(LayerID layerID, uint[,] layer)
+		{
+			if (layer == null)
+			{
+				throw new ArgumentNullException("layer");
+			}
+			this.layers[layerID] = layer;
+		}
+
+		#endregion Public Methods
+
+
+		#region Internal Methods
 
 		internal static Graphic Load(Stream path)
 		{
@@ -305,8 +166,6 @@ namespace BahnEditor.BahnLib
 			}
 		}
 
-		//TODO Reduce complexity (optional)
-		//TODO Remove magic numbers
 		internal static Graphic LoadHeader(BinaryReader br)
 		{
 			Graphic graphic = new Graphic();
@@ -324,76 +183,86 @@ namespace BahnEditor.BahnLib
 				case 1:
 				case 2:
 				case 4:
-					graphic.ZoomFactor = (ZoomFactor)zoomFactor; //HACK Could be shit. Who knows?
+					graphic.ZoomFactor = (ZoomFactor)zoomFactor;
 					break;
+
 				default:
 					throw new InvalidDataException("unknown zoom factor");
 			}
-			ushort readVersion = br.ReadUInt16();
-			byte[] readSubversion = br.ReadBytes(2);
-			if (readVersion != Constants.GraphicFileFormat || readSubversion[0] != 0x00)
+			ushort readMajorVersion = br.ReadUInt16();
+			byte[] readMinorVersion = br.ReadBytes(2);
+			if (readMajorVersion != Constants.GraphicFileFormat || readMinorVersion[0] != 0x00)
 			{
 				throw new InvalidDataException("wrong version");
 			}
-			switch (readSubversion[1])
+			switch (readMinorVersion[1])
 			{
 				case (byte)GraphicVersion.Version0:
 				case (byte)GraphicVersion.Version1:
 				case (byte)GraphicVersion.Version2:
-					graphic.Version = (GraphicVersion)readSubversion[1];
+					graphic.Version = (GraphicVersion)readMinorVersion[1];
 					break;
+
 				default:
 					throw new InvalidDataException("wrong version");
 			}
 
 			int p = br.ReadInt32(); //Properties
-			graphic.Properties = (GraphicProperties)p;
-			if (((graphic.Properties & GraphicProperties.Smoke) == GraphicProperties.Smoke) || ((graphic.Properties & GraphicProperties.Steam) == GraphicProperties.Steam))
+			graphic.Properties = new GraphicProperties() { RawData = (GraphicProperties.Properties)p };
+
+			//If either Smoke or Steam is set in the GraphicProperties
+			if (graphic.Properties.HasParticles)
 			{
-				graphic.SteamXPosition = br.ReadInt32();
-				graphic.SteamYPosition = br.ReadInt32();
-				graphic.SteamWidth = br.ReadInt32();
+				graphic.Properties.ParticleX = br.ReadInt32();
+				graphic.Properties.ParticleY = br.ReadInt32();
+				graphic.Properties.ParticleWidth = br.ReadInt32();
 			}
-			if ((graphic.Properties & GraphicProperties.Clock) == GraphicProperties.Clock)
+
+			//If either Clock is set in the GraphicProperties
+			if (graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Clock))
 			{
 				if (graphic.Version == GraphicVersion.Version0)
 				{
 					throw new InvalidDataException("Clock is set, but invalid for the version of the graphic");
 				}
 				br.ReadInt32(); //skipping unused data (for future use)
-				int clockProperties = br.ReadInt32();
-				graphic.ClockProperties = (ClockProperties)clockProperties;
-				graphic.ClockXPosition = br.ReadInt32();
-				graphic.ClockYPosition = br.ReadInt32();
-				int clockZPosition = br.ReadInt32();
-				graphic.ClockZPosition = (LayerId)clockZPosition;
-				graphic.ClockWidth = br.ReadInt32();
-				graphic.ClockHeight = br.ReadInt32();
-				graphic.ClockColorHoursPointer = Pixel.FromUInt(br.ReadUInt32());
-				graphic.ClockColorMinutesPointer = Pixel.FromUInt(br.ReadUInt32());
+
+				graphic.Properties.ClockProperties = (ClockProperties)br.ReadInt32();
+				graphic.Properties.ClockX = br.ReadInt32();
+				graphic.Properties.ClockY = br.ReadInt32();
+				graphic.Properties.ClockZ = (LayerID)br.ReadInt32();
+				graphic.Properties.ClockWidth = br.ReadInt32();
+				graphic.Properties.ClockHeight = br.ReadInt32();
+
+				graphic.Properties.ClockColorHoursPointer = br.ReadUInt32();
+				graphic.Properties.ClockColorMinutesPointer = br.ReadUInt32();
 				br.ReadInt32(); //skipping unused data (for future use)
 			}
-			if ((graphic.Properties & GraphicProperties.Cursor) == GraphicProperties.Cursor)
+
+			//If Cursor is set in the GraphicProperties
+			if (graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Cursor))
 			{
 				if (graphic.Version < GraphicVersion.Version2)
 				{
 					throw new InvalidDataException("Cursor is set, but invalid for the version of the graphic");
 				}
-				int cursorNormalDirection = br.ReadInt32();
-				int cursorReverseDirection = br.ReadInt32();
-				graphic.CursorNormalDirection = (Direction)cursorNormalDirection;
-				graphic.CursorReverseDirection = (Direction)cursorReverseDirection;
+				graphic.Properties.CursorNormalDirection = (Direction)br.ReadInt32();
+				graphic.Properties.CursorReverseDirection = (Direction)br.ReadInt32();
 			}
-			if ((graphic.Properties & GraphicProperties.ColorSchematicMode) == GraphicProperties.ColorSchematicMode)
+
+			//If ColorInSchematicMode is set in the GraphicProperties
+			if (graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.ColorSchematicMode))
 			{
 				if (graphic.Version < GraphicVersion.Version2)
 				{
 					throw new InvalidDataException("ColorSchematicMode is set, but invalid for the version of the graphic");
 				}
-				graphic.ColorInSchematicMode = Pixel.FromUInt(br.ReadUInt32());
+				graphic.Properties.ColorInSchematicMode = br.ReadUInt32();
 				br.ReadUInt32(); //skipping unused data
 			}
-			if ((graphic.Properties & GraphicProperties.DrivingWay) == GraphicProperties.DrivingWay)
+
+			//If DrivingWay is set in the GraphicProperties
+			if (graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.DrivingWay))
 			{
 				if (graphic.Version < GraphicVersion.Version2)
 					throw new InvalidDataException("DrivingWay is set, but invalid for the version of the graphic");
@@ -404,6 +273,7 @@ namespace BahnEditor.BahnLib
 					graphic.DrivingWay.Add(DrivingWayElement.FromBytes(br.ReadBytes(12)));
 				}
 			}
+
 			graphic.layercount = br.ReadInt16();
 			br.ReadUInt16(); //skipping unknown data, see more in save-method
 			char c;
@@ -415,84 +285,18 @@ namespace BahnEditor.BahnLib
 			graphic.InfoText = sb.ToString();
 			return graphic;
 		}
-		#endregion Static Methods
 
-		#region Internal Methods
-		//TODO Remove magic numbers
-		internal bool Save(Stream path)
-		{
-			if (this.IsElementEmpty())
-				throw new ElementIsEmptyException("element is empty");
-
-			BinaryWriter bw = new BinaryWriter(path, Encoding.Unicode);
-			int layer = this.layers.Count;
-			bw.Write(Constants.HeaderText.ToArray()); //Headertext 
-			bw.Write(new byte[] { 71, 90, 71 }); //identification string "GZG" ASCII-format
-			bw.Write((byte)(48 + this.ZoomFactor)); //Zoomfactor, as ASCII-format
-			bw.Write(Constants.GraphicFileFormat); //version
-			bw.Write((byte)0); //subversion, normally a byte[2] array, but first element of the array is empty
-			bw.Write((byte)this.Version); //subversion
-			if (this.Version >= GraphicVersion.Version2 && ((this.Properties & GraphicProperties.ColorFormat24BPP) != GraphicProperties.ColorFormat24BPP))
-				this.Properties |= GraphicProperties.ColorFormat24BPP;
-			bw.Write((int)this.Properties); //Properties 
-			if (((this.Properties & GraphicProperties.Smoke) == GraphicProperties.Smoke) || ((this.Properties & GraphicProperties.Steam) == GraphicProperties.Steam))
-			{
-				bw.Write(this.SteamXPosition);
-				bw.Write(this.SteamYPosition);
-				bw.Write(this.SteamWidth);
-			}
-			if ((this.Properties & GraphicProperties.Clock) == GraphicProperties.Clock)
-			{
-				bw.Write(1); //reserved for future use
-				bw.Write((int)this.ClockProperties);
-				bw.Write(this.ClockXPosition);
-				bw.Write(this.ClockYPosition);
-				bw.Write((int)this.ClockZPosition);
-				bw.Write(this.ClockWidth);
-				bw.Write(this.ClockHeight);
-				bw.Write(this.ClockColorHoursPointer.ToUInt());
-				bw.Write(this.ClockColorMinutesPointer.ToUInt());
-				bw.Write(this.ClockColorHoursPointer.ToUInt()); //reserved for future use
-			}
-			if ((this.Properties & GraphicProperties.Cursor) == GraphicProperties.Cursor)
-			{
-				bw.Write((int)this.CursorNormalDirection);
-				bw.Write((int)this.CursorReverseDirection);
-			}
-			if ((this.Properties & GraphicProperties.ColorSchematicMode) == GraphicProperties.ColorSchematicMode)
-			{
-				bw.Write(this.ColorInSchematicMode.ToUInt());
-				bw.Write(Constants.ColorTransparent); //Not used, reserved for future use
-			}
-			if ((this.Properties & GraphicProperties.DrivingWay) == GraphicProperties.DrivingWay)
-			{
-				bw.Write(this.DrivingWay.Count);
-				foreach (var item in this.DrivingWay)
-				{
-					bw.Write(item.ToBytes());
-				}
-			}
-			bw.Write((short)layer); //layer
-			bw.Write((ushort)0xFFFE); //unknown, got data through analysis of existing files, doesn't work without
-			bw.Write(this.InfoText.ToCharArray());
-			bw.Write(Constants.UnicodeNull);
-			for (int i = 0; i < layer; i++)
-			{
-				this.layers[i].WriteLayerToStream(bw, this.ZoomFactor);
-			}
-			bw.Flush();
-			return true;
-		}
-
+		//CALL STACK: LoadData
 		internal void LoadData(BinaryReader br)
 		{
 			if (br == null)
-				throw new ArgumentNullException();
+				throw new ArgumentNullException("br");
 			bool backgroundLayerExists = false;
 			for (int i = 0; i < this.layercount; i++)
 			{
-				Layer l = Layer.ReadLayerFromStream(br, this.ZoomFactor, this.Version);
-				if (l.LayerId == LayerId.Background0)
+				LayerID id = (LayerID)br.ReadInt16();
+				uint[,] layer = ReadLayerFromStream(br, this.ZoomFactor, this.Version);
+				if (id == LayerID.Background0)
 				{
 					if (!backgroundLayerExists)
 					{
@@ -500,22 +304,377 @@ namespace BahnEditor.BahnLib
 					}
 					else
 					{
-						l.LayerId = LayerId.Background1;
+						id = LayerID.Background1;
 					}
 				}
-				this.AddLayer(l);
+				this.SetLayer(id, layer);
 			}
 		}
+
+		internal void Save(Stream path)
+		{
+			if (this.IsEmpty())
+				return; //If there is nothing to do, just don't do anything. Duh.
+
+			BinaryWriter bw = new BinaryWriter(path, Encoding.Unicode);
+			bw.Write(Constants.HeaderText.ToArray()); //Headertext
+			bw.Write(new byte[] { 71, 90, 71 });      //identification string "GZG" ASCII-format
+			bw.Write((byte)(48 + this.ZoomFactor));   //Zoomfactor, as ASCII-format
+			bw.Write(Constants.GraphicFileFormat);    //Major Version
+			bw.Write((byte)0);                        //Minor Version, normally a byte[2] array, but first element of the array is empty
+			bw.Write((byte)this.Version);             //Minor Version
+			this.Properties.RawData |= GraphicProperties.Properties.ColorFormat24BPP; //Set ColorFormat24BPP in any case because of reasons. Reasons that prevent people from getting any sleep. So many reasons.
+			bw.Write((int)this.Properties.RawData); //Properties
+			if (this.Properties.HasParticles)
+			{
+				bw.Write(this.Properties.ParticleX);
+				bw.Write(this.Properties.ParticleY);
+				bw.Write(this.Properties.ParticleWidth);
+			}
+			if (this.Properties.RawData.HasFlag(GraphicProperties.Properties.Clock))
+			{
+				bw.Write(1); //reserved for future use
+				bw.Write((int)this.Properties.ClockProperties);
+				bw.Write(this.Properties.ClockX);
+				bw.Write(this.Properties.ClockY);
+				bw.Write((int)this.Properties.ClockZ);
+				bw.Write(this.Properties.ClockWidth);
+				bw.Write(this.Properties.ClockHeight);
+				bw.Write(this.Properties.ClockColorHoursPointer);
+				bw.Write(this.Properties.ClockColorMinutesPointer);
+				bw.Write(this.Properties.ClockColorHoursPointer); //HoursPointer is written twice because of reasons. So many reasons. Lord Inglip has been summoned.
+			}
+
+			if (this.Properties.RawData.HasFlag(GraphicProperties.Properties.Cursor))
+			{
+				bw.Write((int)this.Properties.CursorNormalDirection);
+				bw.Write((int)this.Properties.CursorReverseDirection);
+			}
+
+			if (this.Properties.RawData.HasFlag(GraphicProperties.Properties.ColorSchematicMode))
+			{
+				bw.Write(this.Properties.ColorInSchematicMode);
+				bw.Write(Constants.ColorTransparent); //Not used, reserved for future use
+			}
+
+			if (this.Properties.RawData.HasFlag(GraphicProperties.Properties.DrivingWay))
+			{
+				bw.Write(this.DrivingWay.Count);
+				foreach (var item in this.DrivingWay)
+				{
+					bw.Write(item.ToBytes());
+				}
+			}
+			bw.Write((short)this.layers.Count); //layer
+			bw.Write((ushort)0xFFFE); //unknown, got data through analysis of existing files, doesn't work without
+			bw.Write(this.InfoText.ToCharArray());
+			bw.Write(Constants.UnicodeNull);
+			foreach (var item in this.layers)
+			{
+				if (item.Key == LayerID.Background1)
+					bw.Write((short)LayerID.Background0);
+				else
+					bw.Write((short)item.Key); //layer
+				_WriteLayerToStream(item.Value, bw, this.ZoomFactor);
+			}
+			bw.Flush();
+		}
+
 		#endregion Internal Methods
 
-		#region Helper
-		internal bool IsLayerEmpty
+		#region Private Methods
+
+		//CALL STACK: LoadData -> ReadLayerFromStream -> _FillLayer
+		private static void _FillLayer(ref uint[,] layer, int x0, int y0, ZoomFactor zoomFactor)
 		{
-			get
+			uint[,] newLayer = new uint[Constants.ElementHeight * 8 * (int)zoomFactor, Constants.ElementWidth * 3 * (int)zoomFactor];
+			x0 = (int)(x0 + Constants.ElementWidth * (int)zoomFactor);
+			y0 = (int)(y0 + Constants.ElementHeight * (int)zoomFactor);
+			for (int i = 0; i < newLayer.GetLength(0); i++)
 			{
-				return this.layers.Count == 0;
+				for (int j = 0; j < newLayer.GetLength(1); j++)
+				{
+					if (i >= y0 && i < y0 + layer.GetLength(0) && j >= x0 && j < x0 + layer.GetLength(1))
+					{
+						newLayer[i, j] = layer[i - y0, j - x0];
+					}
+					else
+					{
+						newLayer[i, j] = Constants.ColorTransparent;
+					}
+				}
+			}
+			layer = newLayer;
+		}
+
+		//CALL STACK: LoadData -> ReadLayerFromStream -> _ReadLayerFromSteamVersion0
+		private static uint[,] _ReadLayerFromSteamVersion0(BinaryReader br, short width, short height)
+		{
+			List<uint> colors = new List<uint>();
+			int elementSize = width * height;
+			while (elementSize > 0)
+			{
+				uint item = br.ReadUInt32();
+				if ((item & Constants.ColorAdditionalDataMask) == Constants.ColorCompressed)
+				{
+					int count = (int)(item & Constants.ColorMaskCompressedCount) + 2;
+					if ((item & Constants.ColorMaskCompressedTransparent) != 0)
+					{
+						// item is transparent
+						for (int k = 0; k < count; k++)
+						{
+							colors.Add(Constants.ColorTransparent);
+						}
+					}
+					else
+					{
+						// item is a color
+						uint color = br.ReadUInt32();
+						for (int k = 0; k < count; k++)
+						{
+							colors.Add(color);
+						}
+					}
+					elementSize -= count;
+				}
+				else
+				{
+					// not packed, single pixel
+					elementSize--;
+					colors.Add(item);
+				}
+			}
+
+			uint[,] element = new uint[height, width];
+			int position = 0;
+			for (int i = 0; i < height; i++)
+			{
+				for (int j = 0; j < width; j++)
+				{
+					element[i, j] = colors[position];
+					position++;
+				}
+			}
+			return element;
+		}
+
+		//CALL STACK: LoadData -> ReadLayerFromStream -> _ReadLayerFromSteamVersion2
+		private static uint[,] _ReadLayerFromSteamVersion2(BinaryReader br, short width, short height)
+		{
+			List<uint> colors = new List<uint>();
+			int elementSize = br.ReadInt32();
+			for (int i = 0; i < elementSize; i++)
+			{
+				uint item = br.ReadUInt32();
+				int count = 0;
+				if ((item & Constants.ColorAdditionalDataMask) == Constants.ColorCompressed)
+				{
+					count = (int)(item & Constants.ColorMaskCompressedCount) + 2;
+					if ((item & Constants.ColorMaskCompressedTransparent) != 0)
+					{
+						// item is transparent
+						for (int k = 0; k < count; k++)
+						{
+							colors.Add(Constants.ColorTransparent);
+						}
+					}
+					else if ((item & Constants.ColorMaskCompressedSystemcolor) != 0)
+					{
+						// item is a system-color
+						for (int k = 0; k < count; k++)
+						{
+							colors.Add(((item & Constants.ColorMaskCompressedSFB) >> 8) + Constants.ColorAsMin);
+						}
+					}
+					else
+					{
+						// item is a color, may be a set of colors
+						uint wdhlen = ((item & Constants.ColorMaskCompressedLength) >> 8) + 1;
+						if (wdhlen > Constants.MaxRepeatedColorsLength)
+							throw new InvalidDataException("color repetition length out of range");
+						List<uint> buffer = new List<uint>();
+						for (int j = 0; j < wdhlen; j++)
+						{
+							buffer.Add(br.ReadUInt32());
+							i++;
+						}
+						for (int j = 0; j < count; j++)
+						{
+							foreach (var b in buffer)
+							{
+								colors.Add(b);
+							}
+						}
+					}
+				}
+				else
+				{
+					// not packed, single pixel
+					count = 1;
+					colors.Add(item);
+				}
+			}
+
+			uint[,] element = new uint[height, width];
+			int position = 0;
+			for (int i = 0; i < height; i++)
+			{
+				for (int j = 0; j < width; j++)
+				{
+					element[i, j] = colors[position];
+					position++;
+				}
+			}
+			return element;
+		}
+
+		private static void _TrimLayer(ref uint[,] layer, out short x0, out short y0, BahnLib.ZoomFactor zoomFactor)
+		{
+			int minx = layer.GetLength(Width);
+			int miny = layer.GetLength(Height);
+			int maxx = 0;
+			int maxy = 0;
+			for (int i = 0; i < layer.GetLength(Height); i++)
+			{
+				for (int j = 0; j < layer.GetLength(Width); j++)
+				{
+					if (layer[i, j] != Constants.ColorTransparent)
+					{
+						if (minx > j)
+						{
+							minx = j;
+						}
+						if (maxx < j)
+						{
+							maxx = j;
+						}
+						if (miny > i)
+						{
+							miny = i;
+						}
+						if (maxy < i)
+						{
+							maxy = i;
+						}
+					}
+				}
+			}
+			if (maxx == 0 && maxy == 0)
+			{
+				throw new ElementIsEmptyException("Element is Empty");
+			}
+			maxx++;
+			maxy++;
+			uint[,] newElement = new uint[maxy - miny, maxx - minx];
+			for (int i = 0; i < newElement.GetLength(Height); i++)
+			{
+				for (int j = 0; j < newElement.GetLength(Width); j++)
+				{
+					newElement[i, j] = layer[i + miny, j + minx];
+				}
+			}
+			x0 = (short)(minx - Constants.ElementWidth * (int)zoomFactor);
+			y0 = (short)(miny - Constants.ElementHeight * (int)zoomFactor);
+			layer = newElement;
+		}
+
+		private static void _WriteElementToStreamVersion2(uint[,] layer, BinaryWriter bw)
+		{
+			List<uint> pixels = new List<uint>();
+			for (int j = 0; j <= layer.GetLength(Height) - 1; j++)
+			{
+				for (int k = 0; k <= layer.GetLength(Width) - (short)1; k++)
+				{
+					pixels.Add(layer[j, k]);
+				}
+			}
+			List<uint> colors = new List<uint>();
+			int colorposition = 0;
+			while (colorposition < pixels.Count)
+			{
+				int length = 0;
+				uint lastcolor = pixels[colorposition];
+				for (; colorposition < pixels.Count; colorposition++)
+				{
+					if (lastcolor != pixels[colorposition] || length > 256)
+					{
+						break;
+					}
+					length++;
+					lastcolor = pixels[colorposition];
+				}
+				if (length <= 1)
+				{
+					colors.Add(lastcolor);
+				}
+				else if (lastcolor == Constants.ColorTransparent)
+				{
+					colors.Add(Constants.ColorCompressedTransparent | (uint)(length - 2));
+				}
+				else if (((lastcolor & Constants.ColorLogic) != 0) && lastcolor != (uint)Pixel.PixelProperty.BehindGlass)
+				{
+					uint color = lastcolor - Constants.ColorAsMin;
+					color = color << 8;
+					color = color | Constants.ColorCompressedSystemcolor;
+					colors.Add(color | (uint)(length - 2));
+				}
+				else
+				{
+					colors.Add(Constants.ColorCompressed | (uint)(length - 2));
+					colors.Add(lastcolor);
+				}
+			}
+			colors.Insert(0, (uint)(colors.Count));
+			uint[] compressed = colors.ToArray();
+			for (int j = 0; j < compressed.Length; j++)
+			{
+				bw.Write(compressed[j]);
 			}
 		}
-		#endregion Helper
+
+		private static void _WriteLayerToStream(uint[,] layer, BinaryWriter bw, BahnLib.ZoomFactor zoomFactor)
+		{
+			{
+				if (bw == null)
+					throw new ArgumentNullException("bw");
+				short x0;
+				short y0;
+				_TrimLayer(ref layer, out x0, out y0, zoomFactor);
+				bw.Write(x0); //x0
+				bw.Write(y0); //y0
+				bw.Write((short)layer.GetLength(Width)); //width
+				bw.Write((short)layer.GetLength(Height)); //height
+				_WriteElementToStreamVersion2(layer, bw);
+			}
+		}
+
+		//CALL STACK: LoadData -> ReadLayerFromStream
+		private static uint[,] ReadLayerFromStream(BinaryReader br, BahnLib.ZoomFactor zoomFactor, GraphicVersion graphicVersion)
+		{
+			if (br == null)
+				throw new ArgumentNullException("br");
+
+			short x0 = br.ReadInt16();
+			short y0 = br.ReadInt16();
+			short width = br.ReadInt16();
+			short height = br.ReadInt16();
+			uint[,] layer = null;
+			if (graphicVersion == GraphicVersion.Version2)
+			{
+				layer = _ReadLayerFromSteamVersion2(br, width, height);
+			}
+			else if (graphicVersion < GraphicVersion.Version2)
+			{
+				layer = _ReadLayerFromSteamVersion0(br, width, height);
+			}
+			else
+			{
+				throw new ArgumentOutOfRangeException("graphicVersion");
+			}
+			_FillLayer(ref layer, x0, y0, zoomFactor);
+			return layer;
+		}
+
+		#endregion Private Methods
 	}
 }

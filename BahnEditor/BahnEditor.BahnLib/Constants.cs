@@ -30,6 +30,7 @@
 		public const ushort GraphicFileFormat = 0x8403;
 
 		//Headertext
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2211:NonConstantFieldsShouldNotBeVisible")] //Variable is actually read-only
 		public static System.Collections.ObjectModel.ReadOnlyCollection<byte> HeaderText = new System.Collections.ObjectModel.ReadOnlyCollection<byte>(new System.Collections.Generic.List<byte>() { 67, 114, 101, 97, 116, 101, 100, 32, 98, 121, 32, 66, 97, 104, 110, 32, 71, 114, 97, 112, 104, 105, 99, 32, 69, 100, 105, 116, 111, 114, Constants.HeaderTextTerminator });
 		public const byte HeaderTextTerminator = 26;
 
