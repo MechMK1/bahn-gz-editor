@@ -43,7 +43,6 @@
 			this.leftComboBox = new System.Windows.Forms.ComboBox();
 			this.rightLabel = new System.Windows.Forms.Label();
 			this.leftLabel = new System.Windows.Forms.Label();
-			this.layerComboBox = new System.Windows.Forms.ComboBox();
 			this.rightComboBox = new System.Windows.Forms.ComboBox();
 			this.rightColorButton = new System.Windows.Forms.Button();
 			this.leftColorButton = new System.Windows.Forms.Button();
@@ -63,6 +62,12 @@
 			this.zoom1Tab = new System.Windows.Forms.TabPage();
 			this.zoom2Tab = new System.Windows.Forms.TabPage();
 			this.zoom4Tab = new System.Windows.Forms.TabPage();
+			this.foregroundRadioButton = new System.Windows.Forms.RadioButton();
+			this.backgroundRadioButton = new System.Windows.Forms.RadioButton();
+			this.backgroundRadioButton2 = new System.Windows.Forms.RadioButton();
+			this.toBackgroundRadioButton = new System.Windows.Forms.RadioButton();
+			this.foregroundAboveRadioButton = new System.Windows.Forms.RadioButton();
+			this.frontRadioButton = new System.Windows.Forms.RadioButton();
 			this.drawPanel = new BahnEditor.Editor.DrawPanel();
 			this.overviewPanel = new BahnEditor.Editor.DrawPanel();
 			this.overviewDownButton = new System.Windows.Forms.Button();
@@ -152,17 +157,22 @@
 			this.controlPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.controlPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.controlPanel.Controls.Add(this.frontRadioButton);
+			this.controlPanel.Controls.Add(this.foregroundAboveRadioButton);
+			this.controlPanel.Controls.Add(this.toBackgroundRadioButton);
+			this.controlPanel.Controls.Add(this.backgroundRadioButton2);
+			this.controlPanel.Controls.Add(this.backgroundRadioButton);
+			this.controlPanel.Controls.Add(this.foregroundRadioButton);
 			this.controlPanel.Controls.Add(this.settingsPanel);
 			this.controlPanel.Controls.Add(this.leftComboBox);
 			this.controlPanel.Controls.Add(this.rightLabel);
 			this.controlPanel.Controls.Add(this.leftLabel);
-			this.controlPanel.Controls.Add(this.layerComboBox);
 			this.controlPanel.Controls.Add(this.rightComboBox);
 			this.controlPanel.Controls.Add(this.rightColorButton);
 			this.controlPanel.Controls.Add(this.leftColorButton);
-			this.controlPanel.Location = new System.Drawing.Point(831, 52);
+			this.controlPanel.Location = new System.Drawing.Point(794, 52);
 			this.controlPanel.Name = "controlPanel";
-			this.controlPanel.Size = new System.Drawing.Size(170, 666);
+			this.controlPanel.Size = new System.Drawing.Size(207, 666);
 			this.controlPanel.TabIndex = 2;
 			// 
 			// settingsPanel
@@ -170,16 +180,16 @@
 			this.settingsPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.settingsPanel.Controls.Add(this.zoom4CheckBox);
 			this.settingsPanel.Controls.Add(this.zoom2CheckBox);
-			this.settingsPanel.Location = new System.Drawing.Point(5, 217);
+			this.settingsPanel.Location = new System.Drawing.Point(5, 319);
 			this.settingsPanel.Name = "settingsPanel";
-			this.settingsPanel.Size = new System.Drawing.Size(159, 444);
+			this.settingsPanel.Size = new System.Drawing.Size(196, 342);
 			this.settingsPanel.TabIndex = 9;
 			this.settingsPanel.Visible = false;
 			// 
 			// zoom4CheckBox
 			// 
 			this.zoom4CheckBox.AutoSize = true;
-			this.zoom4CheckBox.Location = new System.Drawing.Point(39, 26);
+			this.zoom4CheckBox.Location = new System.Drawing.Point(3, 26);
 			this.zoom4CheckBox.Name = "zoom4CheckBox";
 			this.zoom4CheckBox.Size = new System.Drawing.Size(62, 17);
 			this.zoom4CheckBox.TabIndex = 1;
@@ -190,7 +200,7 @@
 			// zoom2CheckBox
 			// 
 			this.zoom2CheckBox.AutoSize = true;
-			this.zoom2CheckBox.Location = new System.Drawing.Point(39, 3);
+			this.zoom2CheckBox.Location = new System.Drawing.Point(3, 3);
 			this.zoom2CheckBox.Name = "zoom2CheckBox";
 			this.zoom2CheckBox.Size = new System.Drawing.Size(62, 17);
 			this.zoom2CheckBox.TabIndex = 0;
@@ -243,7 +253,7 @@
             "wie Text"});
 			this.leftComboBox.Location = new System.Drawing.Point(5, 55);
 			this.leftComboBox.Name = "leftComboBox";
-			this.leftComboBox.Size = new System.Drawing.Size(160, 21);
+			this.leftComboBox.Size = new System.Drawing.Size(196, 21);
 			this.leftComboBox.TabIndex = 4;
 			this.leftComboBox.TabStop = false;
 			this.leftComboBox.SelectedIndexChanged += new System.EventHandler(this.leftComboBox_SelectedIndexChanged);
@@ -251,7 +261,7 @@
 			// rightLabel
 			// 
 			this.rightLabel.AutoSize = true;
-			this.rightLabel.Location = new System.Drawing.Point(38, 104);
+			this.rightLabel.Location = new System.Drawing.Point(56, 92);
 			this.rightLabel.Name = "rightLabel";
 			this.rightLabel.Size = new System.Drawing.Size(94, 13);
 			this.rightLabel.TabIndex = 8;
@@ -260,30 +270,11 @@
 			// leftLabel
 			// 
 			this.leftLabel.AutoSize = true;
-			this.leftLabel.Location = new System.Drawing.Point(42, 10);
+			this.leftLabel.Location = new System.Drawing.Point(61, 10);
 			this.leftLabel.Name = "leftLabel";
 			this.leftLabel.Size = new System.Drawing.Size(85, 13);
 			this.leftLabel.TabIndex = 7;
 			this.leftLabel.Text = "Linke Maustaste";
-			// 
-			// layerComboBox
-			// 
-			this.layerComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.layerComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.layerComboBox.FormattingEnabled = true;
-			this.layerComboBox.Items.AddRange(new object[] {
-            "Vordergrund",
-            "Hintergrund und flach nach vorn",
-            "Hintergrund und flach nach vorn (2)",
-            "Flach nach hinten",
-            "Vordergrund, oben",
-            "Vorn, auf Brücken"});
-			this.layerComboBox.Location = new System.Drawing.Point(5, 189);
-			this.layerComboBox.Name = "layerComboBox";
-			this.layerComboBox.Size = new System.Drawing.Size(160, 21);
-			this.layerComboBox.TabIndex = 6;
-			this.layerComboBox.TabStop = false;
-			this.layerComboBox.SelectedIndexChanged += new System.EventHandler(this.layerComboBox_SelectedIndexChanged);
 			// 
 			// rightComboBox
 			// 
@@ -328,9 +319,9 @@
             "wie Feldweg (Hintergrund)",
             "wie Feldweg (Fahrspur)",
             "wie Text"});
-			this.rightComboBox.Location = new System.Drawing.Point(5, 149);
+			this.rightComboBox.Location = new System.Drawing.Point(5, 137);
 			this.rightComboBox.Name = "rightComboBox";
-			this.rightComboBox.Size = new System.Drawing.Size(160, 21);
+			this.rightComboBox.Size = new System.Drawing.Size(196, 21);
 			this.rightComboBox.TabIndex = 5;
 			this.rightComboBox.TabStop = false;
 			this.rightComboBox.SelectedIndexChanged += new System.EventHandler(this.rightComboBox_SelectedIndexChanged);
@@ -339,7 +330,7 @@
 			// 
 			this.rightColorButton.BackColor = System.Drawing.Color.White;
 			this.rightColorButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.rightColorButton.Location = new System.Drawing.Point(40, 120);
+			this.rightColorButton.Location = new System.Drawing.Point(58, 108);
 			this.rightColorButton.Name = "rightColorButton";
 			this.rightColorButton.Size = new System.Drawing.Size(90, 23);
 			this.rightColorButton.TabIndex = 1;
@@ -351,7 +342,7 @@
 			// 
 			this.leftColorButton.BackColor = System.Drawing.Color.Black;
 			this.leftColorButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.leftColorButton.Location = new System.Drawing.Point(40, 26);
+			this.leftColorButton.Location = new System.Drawing.Point(58, 26);
 			this.leftColorButton.Name = "leftColorButton";
 			this.leftColorButton.Size = new System.Drawing.Size(90, 23);
 			this.leftColorButton.TabIndex = 0;
@@ -444,13 +435,15 @@
 			// 
 			// tabControl
 			// 
+			this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.tabControl.Controls.Add(this.zoom1Tab);
 			this.tabControl.Controls.Add(this.zoom2Tab);
 			this.tabControl.Controls.Add(this.zoom4Tab);
 			this.tabControl.Location = new System.Drawing.Point(13, 120);
 			this.tabControl.Name = "tabControl";
 			this.tabControl.SelectedIndex = 0;
-			this.tabControl.Size = new System.Drawing.Size(812, 20);
+			this.tabControl.Size = new System.Drawing.Size(775, 20);
 			this.tabControl.TabIndex = 6;
 			this.tabControl.TabStop = false;
 			this.tabControl.Visible = false;
@@ -461,7 +454,7 @@
 			this.zoom1Tab.Location = new System.Drawing.Point(4, 22);
 			this.zoom1Tab.Name = "zoom1Tab";
 			this.zoom1Tab.Padding = new System.Windows.Forms.Padding(3);
-			this.zoom1Tab.Size = new System.Drawing.Size(804, 0);
+			this.zoom1Tab.Size = new System.Drawing.Size(767, 0);
 			this.zoom1Tab.TabIndex = 0;
 			this.zoom1Tab.Text = "Zoom 1";
 			this.zoom1Tab.UseVisualStyleBackColor = true;
@@ -471,7 +464,7 @@
 			this.zoom2Tab.Location = new System.Drawing.Point(4, 22);
 			this.zoom2Tab.Name = "zoom2Tab";
 			this.zoom2Tab.Padding = new System.Windows.Forms.Padding(3);
-			this.zoom2Tab.Size = new System.Drawing.Size(804, 0);
+			this.zoom2Tab.Size = new System.Drawing.Size(767, 0);
 			this.zoom2Tab.TabIndex = 1;
 			this.zoom2Tab.Text = "Zoom 2";
 			this.zoom2Tab.UseVisualStyleBackColor = true;
@@ -480,10 +473,78 @@
 			// 
 			this.zoom4Tab.Location = new System.Drawing.Point(4, 22);
 			this.zoom4Tab.Name = "zoom4Tab";
-			this.zoom4Tab.Size = new System.Drawing.Size(804, 0);
+			this.zoom4Tab.Size = new System.Drawing.Size(767, 0);
 			this.zoom4Tab.TabIndex = 2;
 			this.zoom4Tab.Text = "Zoom 4";
 			this.zoom4Tab.UseVisualStyleBackColor = true;
+			// 
+			// foregroundRadioButton
+			// 
+			this.foregroundRadioButton.AutoSize = true;
+			this.foregroundRadioButton.Checked = true;
+			this.foregroundRadioButton.Location = new System.Drawing.Point(5, 171);
+			this.foregroundRadioButton.Name = "foregroundRadioButton";
+			this.foregroundRadioButton.Size = new System.Drawing.Size(83, 17);
+			this.foregroundRadioButton.TabIndex = 10;
+			this.foregroundRadioButton.TabStop = true;
+			this.foregroundRadioButton.Text = "Vordergrund";
+			this.foregroundRadioButton.UseVisualStyleBackColor = true;
+			this.foregroundRadioButton.CheckedChanged += new System.EventHandler(this.foregroundRadioButton_CheckedChanged);
+			// 
+			// backgroundRadioButton
+			// 
+			this.backgroundRadioButton.AutoSize = true;
+			this.backgroundRadioButton.Location = new System.Drawing.Point(5, 196);
+			this.backgroundRadioButton.Name = "backgroundRadioButton";
+			this.backgroundRadioButton.Size = new System.Drawing.Size(178, 17);
+			this.backgroundRadioButton.TabIndex = 11;
+			this.backgroundRadioButton.Text = "Hintergrund und flach nach vorn";
+			this.backgroundRadioButton.UseVisualStyleBackColor = true;
+			this.backgroundRadioButton.CheckedChanged += new System.EventHandler(this.backgroundRadioButton_CheckedChanged);
+			// 
+			// backgroundRadioButton2
+			// 
+			this.backgroundRadioButton2.AutoSize = true;
+			this.backgroundRadioButton2.Location = new System.Drawing.Point(5, 220);
+			this.backgroundRadioButton2.Name = "backgroundRadioButton2";
+			this.backgroundRadioButton2.Size = new System.Drawing.Size(193, 17);
+			this.backgroundRadioButton2.TabIndex = 12;
+			this.backgroundRadioButton2.Text = "Hintergrund und flach nach vorn (2)";
+			this.backgroundRadioButton2.UseVisualStyleBackColor = true;
+			this.backgroundRadioButton2.CheckedChanged += new System.EventHandler(this.backgroundRadioButton2_CheckedChanged);
+			// 
+			// toBackgroundRadioButton
+			// 
+			this.toBackgroundRadioButton.AutoSize = true;
+			this.toBackgroundRadioButton.Location = new System.Drawing.Point(5, 243);
+			this.toBackgroundRadioButton.Name = "toBackgroundRadioButton";
+			this.toBackgroundRadioButton.Size = new System.Drawing.Size(110, 17);
+			this.toBackgroundRadioButton.TabIndex = 13;
+			this.toBackgroundRadioButton.Text = "Flach nach hinten";
+			this.toBackgroundRadioButton.UseVisualStyleBackColor = true;
+			this.toBackgroundRadioButton.CheckedChanged += new System.EventHandler(this.toBackgroundRadioButton_CheckedChanged);
+			// 
+			// foregroundAboveRadioButton
+			// 
+			this.foregroundAboveRadioButton.AutoSize = true;
+			this.foregroundAboveRadioButton.Location = new System.Drawing.Point(5, 267);
+			this.foregroundAboveRadioButton.Name = "foregroundAboveRadioButton";
+			this.foregroundAboveRadioButton.Size = new System.Drawing.Size(116, 17);
+			this.foregroundAboveRadioButton.TabIndex = 14;
+			this.foregroundAboveRadioButton.Text = "Vordergrund (oben)";
+			this.foregroundAboveRadioButton.UseVisualStyleBackColor = true;
+			this.foregroundAboveRadioButton.CheckedChanged += new System.EventHandler(this.foregroundAboveRadioButton_CheckedChanged);
+			// 
+			// frontRadioButton
+			// 
+			this.frontRadioButton.AutoSize = true;
+			this.frontRadioButton.Location = new System.Drawing.Point(5, 291);
+			this.frontRadioButton.Name = "frontRadioButton";
+			this.frontRadioButton.Size = new System.Drawing.Size(114, 17);
+			this.frontRadioButton.TabIndex = 15;
+			this.frontRadioButton.Text = "Vorn (auf Brücken)";
+			this.frontRadioButton.UseVisualStyleBackColor = true;
+			this.frontRadioButton.CheckedChanged += new System.EventHandler(this.frontRadioButton6_CheckedChanged);
 			// 
 			// drawPanel
 			// 
@@ -495,7 +556,7 @@
 			this.drawPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.drawPanel.Location = new System.Drawing.Point(13, 140);
 			this.drawPanel.Name = "drawPanel";
-			this.drawPanel.Size = new System.Drawing.Size(812, 578);
+			this.drawPanel.Size = new System.Drawing.Size(775, 578);
 			this.drawPanel.TabIndex = 4;
 			this.drawPanel.Visible = false;
 			this.drawPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.drawPanel_Paint);
@@ -513,7 +574,7 @@
 			this.overviewPanel.Controls.Add(this.overviewLeftRightButton);
 			this.overviewPanel.Location = new System.Drawing.Point(13, 52);
 			this.overviewPanel.Name = "overviewPanel";
-			this.overviewPanel.Size = new System.Drawing.Size(812, 62);
+			this.overviewPanel.Size = new System.Drawing.Size(775, 62);
 			this.overviewPanel.TabIndex = 5;
 			this.overviewPanel.Visible = false;
 			this.overviewPanel.Click += new System.EventHandler(this.overviewPanel_Click);
@@ -608,7 +669,6 @@
 		private DrawPanel drawPanel;
 		private System.Windows.Forms.ComboBox rightComboBox;
 		private System.Windows.Forms.ComboBox leftComboBox;
-		private System.Windows.Forms.ComboBox layerComboBox;
 		private System.Windows.Forms.Label rightLabel;
 		private System.Windows.Forms.Label leftLabel;
 		private DrawPanel overviewPanel;
@@ -625,6 +685,12 @@
 		private System.Windows.Forms.Panel settingsPanel;
 		private System.Windows.Forms.CheckBox zoom4CheckBox;
 		private System.Windows.Forms.CheckBox zoom2CheckBox;
+		private System.Windows.Forms.RadioButton frontRadioButton;
+		private System.Windows.Forms.RadioButton foregroundAboveRadioButton;
+		private System.Windows.Forms.RadioButton toBackgroundRadioButton;
+		private System.Windows.Forms.RadioButton backgroundRadioButton2;
+		private System.Windows.Forms.RadioButton backgroundRadioButton;
+		private System.Windows.Forms.RadioButton foregroundRadioButton;
 
 	}
 }

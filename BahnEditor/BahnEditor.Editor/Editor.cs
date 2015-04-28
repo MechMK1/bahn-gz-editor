@@ -466,32 +466,32 @@ namespace BahnEditor.Editor
 			if (this.actualLayer != id)
 			{
 				this.actualLayer = id;
-				int index;
+				//int index;
 				switch (id)
 				{
 					case LayerID.ToBackground:
-						index = 2;
+						this.toBackgroundRadioButton.Checked = true;
 						break;
 					case LayerID.Foreground:
-						index = 0;
+						this.foregroundRadioButton.Checked = true;
 						break;
 					case LayerID.Background0:
-						index = 1;
+						this.backgroundRadioButton.Checked = true;
 						break;
 					case LayerID.Front:
-						index = 4;
+						this.frontRadioButton.Checked = true;
 						break;
 					case LayerID.ForegroundAbove:
-						index = 3;
+						this.foregroundAboveRadioButton.Checked = true;
 						break;
 					default:
 						throw new Exception("Internal Error");
 				}
-				if (this.layerComboBox.SelectedIndex != index)
+				/*if (this.layerComboBox2.SelectedIndex != index)
 				{
 					this.layerSelectBoxCodeChanged = true;
-					this.layerComboBox.SelectedIndex = index;
-				}
+					this.layerComboBox2.SelectedIndex = index;
+				}*/
 			}
 		}
 
@@ -510,23 +510,20 @@ namespace BahnEditor.Editor
 
 		private LayerID GetLayerIDBySelectedIndex()
 		{
-			switch (this.layerComboBox.SelectedIndex)
-			{
-				case 0:
-					return LayerID.Foreground;
-				case 1:
-					return LayerID.Background0;
-				case 2:
-					return LayerID.Background1;
-				case 3:
-					return LayerID.ToBackground;
-				case 4:
-					return LayerID.ForegroundAbove;
-				case 5:
-					return LayerID.Front;
-				default:
-					throw new Exception("Internal Error");
-			}
+			if (this.foregroundRadioButton.Checked)
+				return LayerID.Foreground;
+			else if (this.backgroundRadioButton.Checked)
+				return LayerID.Background0;
+			else if (this.backgroundRadioButton2.Checked)
+				return LayerID.Background1;
+			else if (this.toBackgroundRadioButton.Checked)
+				return LayerID.ToBackground;
+			else if (this.foregroundAboveRadioButton.Checked)
+				return LayerID.ForegroundAbove;
+			else if (this.frontRadioButton.Checked)
+				return LayerID.Front;
+			else
+				throw new Exception("Internal Error");
 		}
 
 		private bool ExitEditor()
@@ -1212,6 +1209,36 @@ namespace BahnEditor.Editor
 		}
 
 		#endregion
+
+		private void foregroundRadioButton_CheckedChanged(object sender, EventArgs e)
+		{
+			this.SelectLayer();
+		}
+
+		private void backgroundRadioButton_CheckedChanged(object sender, EventArgs e)
+		{
+			this.SelectLayer();
+		}
+
+		private void backgroundRadioButton2_CheckedChanged(object sender, EventArgs e)
+		{
+			this.SelectLayer();
+		}
+
+		private void toBackgroundRadioButton_CheckedChanged(object sender, EventArgs e)
+		{
+			this.SelectLayer();
+		}
+
+		private void foregroundAboveRadioButton_CheckedChanged(object sender, EventArgs e)
+		{
+			this.SelectLayer();
+		}
+
+		private void frontRadioButton6_CheckedChanged(object sender, EventArgs e)
+		{
+			this.SelectLayer();
+		}
 
 	}
 }
