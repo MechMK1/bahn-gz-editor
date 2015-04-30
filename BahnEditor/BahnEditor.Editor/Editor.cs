@@ -13,25 +13,25 @@ namespace BahnEditor.Editor
 {
 	public partial class Editor : Form
 	{
+		private bool hasLoadedGraphic = false;
+		private bool layerSelectBoxCodeChanged = false;
+		private bool userMadeChanges = false;
+		private bool zoom2CheckBoxCodeChanged = false;
+		private bool zoom4CheckBoxCodeChanged = false;
 		private GraphicArchive zoom1Archive;
 		private GraphicArchive zoom2Archive;
 		private GraphicArchive zoom4Archive;
 		private int actualGraphic;
-		private LayerID actualLayer;// = LayerID.Foreground;
-		private ZoomFactor actualZoomFactor = ZoomFactor.Zoom1;
-		private string lastPath = "";
-		private int zoomLevel = 5;
-		private bool userMadeChanges = false;
-		private bool hasLoadedGraphic = false;
-		private int overviewLine = 0;
 		private int overviewAlternative = 0;
-		private bool layerSelectBoxCodeChanged = false;
-		private bool zoom2CheckBoxCodeChanged = false;
-		private bool zoom4CheckBoxCodeChanged = false;
-		private uint leftPixel = 0;
+		private int overviewLine = 0;
+		private int zoomLevel = 5;
+		private LayerID actualLayer;// = LayerID.Foreground;
+		private string lastPath = "";
 		private uint lastLeftPixel = 0;
-		private uint rightPixel = 255 << 16 | 255 << 8 | 255;
 		private uint lastRightPixel = 0;
+		private uint leftPixel = 0;
+		private uint rightPixel = 255 << 16 | 255 << 8 | 255;
+		private ZoomFactor actualZoomFactor = ZoomFactor.Zoom1;
 
 		private static Brush transparentBrush = new HatchBrush(HatchStyle.Percent20, Color.FromArgb(140, 140, 140), Color.FromArgb(0, 112, 0)); //transparent 0, 112, 0
 
@@ -45,8 +45,10 @@ namespace BahnEditor.Editor
 		{
 			this.rightComboBox.SelectedIndex = 0;
 			this.leftComboBox.SelectedIndex = 0;
+			this.particleComboBox.SelectedIndex = 0;
 			this.tabControl.TabPages.Remove(this.zoom2Tab);
 			this.tabControl.TabPages.Remove(this.zoom4Tab);
+			this.NewGraphicArchive();
 		}
 
 		private void NewGraphicArchive()
@@ -58,10 +60,10 @@ namespace BahnEditor.Editor
 			graphic.AddTransparentLayer(LayerID.Foreground);
 			this.zoom1Archive.AddGraphic(graphic);
 			this.actualGraphic = 0;
-			this.drawPanel.Visible = true;
-			this.overviewPanel.Visible = true;
-			this.tabControl.Visible = true;
-			this.settingsPanel.Visible = true;
+			//this.drawPanel.Visible = true;
+			//this.overviewPanel.Visible = true;
+			//this.tabControl.Visible = true;
+			//this.settingsPanel.Visible = true;
 			this.ChangeLayer(LayerID.Foreground);
 			if (this.tabControl.TabPages.Contains(this.zoom2Tab))
 			{
@@ -115,6 +117,7 @@ namespace BahnEditor.Editor
 					this.zoom4Archive = new GraphicArchive(ZoomFactor.Zoom4);
 				}
 				this.actualGraphic = 0;
+				this.actualZoomFactor = ZoomFactor.Zoom1;
 				if (this.zoom2Archive[this.actualGraphic] != null && !this.tabControl.TabPages.Contains(this.zoom2Tab))
 				{
 					this.tabControl.TabPages.Add(this.zoom2Tab);
@@ -127,11 +130,32 @@ namespace BahnEditor.Editor
 					this.zoom4CheckBoxCodeChanged = true;
 					this.zoom4CheckBox.Checked = true;
 				}
+				if (this.zoom1Archive[this.actualGraphic].Properties.HasParticles)
+				{
+					if (this.zoom1Archive[this.actualGraphic].Properties.RawData.HasFlag(GraphicProperties.Properties.Steam))
+						this.particleComboBox.SelectedIndex = 1;
+					else
+						this.particleComboBox.SelectedIndex = 2;
+					this.particleWidthNumericUpDown.Enabled = true;
+					this.particleXNumericUpDown.Enabled = true;
+					this.particleYNumericUpDown.Enabled = true;
+					this.particleWidthNumericUpDown.Value = this.zoom1Archive[this.actualGraphic].Properties.ParticleWidth;
+					this.particleXNumericUpDown.Value = this.zoom1Archive[this.actualGraphic].Properties.ParticleX;
+					this.particleYNumericUpDown.Value = this.zoom1Archive[this.actualGraphic].Properties.ParticleY;
+				}
+				else if(this.particleComboBox.SelectedIndex != 0)
+				{
+					this.particleComboBox.SelectedIndex = 0;
+					this.particleWidthNumericUpDown.Enabled = false;
+					this.particleXNumericUpDown.Enabled = false;
+					this.particleYNumericUpDown.Enabled = false;
+				}
+				this.lastPath = this.zoom1Archive.FileName;
 				this.hasLoadedGraphic = true;
 				this.drawPanel.Visible = true;
 				this.overviewPanel.Visible = true;
 				this.tabControl.Visible = true;
-				this.settingsPanel.Visible = true;
+				this.propertiesPanel.Visible = true;
 				this.userMadeChanges = false;
 				this.ChangeLayer(LayerID.Foreground);
 				this.ResizeDrawPanel();
@@ -457,6 +481,27 @@ namespace BahnEditor.Editor
 					this.zoom4CheckBox.Checked = false;
 				}
 				this.ChangeLayer(LayerID.Foreground);
+				Graphic graphic = this.GetActualGraphic();
+				if(graphic.Properties.HasParticles)
+				{
+					if (graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Steam))
+						this.particleComboBox.SelectedIndex = 1;
+					else
+						this.particleComboBox.SelectedIndex = 2;
+					this.particleWidthNumericUpDown.Enabled = true;
+					this.particleXNumericUpDown.Enabled = true;
+					this.particleYNumericUpDown.Enabled = true;
+					this.particleWidthNumericUpDown.Value = graphic.Properties.ParticleWidth;
+					this.particleXNumericUpDown.Value = graphic.Properties.ParticleX;
+					this.particleYNumericUpDown.Value = graphic.Properties.ParticleY;
+				}
+				else
+				{
+					this.particleComboBox.SelectedIndex = 0;
+					this.particleWidthNumericUpDown.Enabled = false;
+					this.particleXNumericUpDown.Enabled = false;
+					this.particleYNumericUpDown.Enabled = false;
+				}
 				this.drawPanel.Invalidate();
 			}
 		}
@@ -635,24 +680,34 @@ namespace BahnEditor.Editor
 
 		private uint[,] GetElement()
 		{
+			Graphic graphic = this.GetActualGraphic();
+			if (graphic != null && graphic.GetLayer(this.actualLayer) != null)
+			{
+				return graphic.GetLayer(this.actualLayer);
+			}
+			return null;
+		}
+
+		private Graphic GetActualGraphic()
+		{
 			switch (this.actualZoomFactor)
 			{
 				case ZoomFactor.Zoom1:
-					if (this.zoom1Archive != null && this.zoom1Archive[this.actualGraphic] != null && this.zoom1Archive[this.actualGraphic].GetLayer(this.actualLayer) != null)
+					if (this.zoom1Archive != null)
 					{
-						return this.zoom1Archive[this.actualGraphic].GetLayer(this.actualLayer);
+						return this.zoom1Archive[this.actualGraphic];
 					}
 					break;
 				case ZoomFactor.Zoom2:
-					if (this.zoom2Archive != null && this.zoom2Archive[this.actualGraphic] != null && this.zoom2Archive[this.actualGraphic].GetLayer(this.actualLayer) != null)
+					if (this.zoom2Archive != null)
 					{
-						return this.zoom2Archive[this.actualGraphic].GetLayer(this.actualLayer);
+						return this.zoom2Archive[this.actualGraphic];
 					}
 					break;
 				case ZoomFactor.Zoom4:
-					if (this.zoom4Archive != null && this.zoom4Archive[this.actualGraphic] != null && this.zoom4Archive[this.actualGraphic].GetLayer(this.actualLayer) != null)
+					if (this.zoom4Archive != null)
 					{
-						return this.zoom4Archive[this.actualGraphic].GetLayer(this.actualLayer);
+						return this.zoom4Archive[this.actualGraphic];
 					}
 					break;
 				default:
@@ -788,59 +843,15 @@ namespace BahnEditor.Editor
 			this.MouseClickGraphic(e);
 		}
 
-		private void newButton_Click(object sender, EventArgs e)
-		{
-			this.NewGraphicArchive();
-		}
-
-		private void loadButton_Click(object sender, EventArgs e)
-		{
-			if (ExitEditor())
-				return;
-			this.loadFileDialog.ShowDialog();
-		}
-
 		private void loadFileDialog_FileOk(object sender, CancelEventArgs e)
 		{
 			this.LoadGraphicArchive();
-		}
-
-		private void saveButton_Click(object sender, EventArgs e)
-		{
-			this.ClickOnSaveButton(false);
-		}
-
-		private void newMenuItem_Click(object sender, EventArgs e)
-		{
-			this.NewGraphicArchive();
-		}
-
-		private void openMenuItem_Click(object sender, EventArgs e)
-		{
-			if (ExitEditor())
-				return;
-			this.loadFileDialog.ShowDialog();
-		}
-
-		private void saveMenuItem_Click(object sender, EventArgs e)
-		{
-			this.ClickOnSaveButton(false);
 		}
 
 		private void saveFileDialog_FileOk(object sender, CancelEventArgs e)
 		{
 			this.lastPath = this.saveFileDialog.FileName;
 			this.SaveGraphicArchive();
-		}
-
-		private void saveAsMenuItem_Click(object sender, EventArgs e)
-		{
-			this.ClickOnSaveButton(true);
-		}
-
-		private void exitMenuItem_Click(object sender, EventArgs e)
-		{
-			Application.Exit();
 		}
 
 		private void leftColorButton_Click(object sender, EventArgs e)
@@ -1008,11 +1019,6 @@ namespace BahnEditor.Editor
 			this.EditorLoaded();
 		}
 
-		private void layerComboBox_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			this.SelectLayer();
-		}
-
 		private void overviewPanel_Paint(object sender, PaintEventArgs e)
 		{
 			this.PaintOverview(e.Graphics);
@@ -1118,27 +1124,21 @@ namespace BahnEditor.Editor
 			{
 				if (zoom2CheckBox.Checked)
 				{
-					DialogResult result = MessageBox.Show("Soll wirklich eine Zoom2-Grafik erstellt werden?", "Zoom2", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-					if (result == DialogResult.Yes)
-					{
-						Graphic graphic = new Graphic("Kein Text", ZoomFactor.Zoom2);
-						graphic.AddTransparentLayer(LayerID.Foreground);
-						this.zoom2Archive.AddGraphic(this.actualGraphic, graphic);
-						this.ChangeLayer(LayerID.Foreground);
-						this.tabControl.TabPages.Insert(1, this.zoom2Tab);
-						this.tabControl.SelectedTab = this.zoom2Tab;
-						this.actualZoomFactor = ZoomFactor.Zoom2;
-						this.drawPanel.Invalidate();
-					}
-					else
-					{
-						this.zoom2CheckBoxCodeChanged = true;
-						this.zoom2CheckBox.Checked = false;
-					}
+
+					Graphic graphic = new Graphic("Kein Text", ZoomFactor.Zoom2);
+					graphic.AddTransparentLayer(LayerID.Foreground);
+					this.zoom2Archive.AddGraphic(this.actualGraphic, graphic);
+					this.ChangeLayer(LayerID.Foreground);
+					this.tabControl.TabPages.Insert(1, this.zoom2Tab);
+					this.tabControl.SelectedTab = this.zoom2Tab;
+					this.actualZoomFactor = ZoomFactor.Zoom2;
+					this.drawPanel.Invalidate();
 				}
 				else
 				{
-					DialogResult result = MessageBox.Show("Soll wirklich die Zoom2-Grafik gelöscht werden?", "Zoom2", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+					DialogResult result = DialogResult.Yes;
+					if (!this.zoom2Archive[this.actualGraphic].IsTransparent())
+						result = MessageBox.Show("Soll wirklich die Zoom2-Grafik gelöscht werden?", "Zoom2", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 					if (result == DialogResult.Yes)
 					{
 						this.zoom2Archive.RemoveGraphic(this.actualGraphic);
@@ -1166,27 +1166,20 @@ namespace BahnEditor.Editor
 			{
 				if (zoom4CheckBox.Checked)
 				{
-					DialogResult result = MessageBox.Show("Soll wirklich eine Zoom4-Grafik erstellt werden?", "Zoom4", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-					if (result == DialogResult.Yes)
-					{
-						Graphic graphic = new Graphic("Kein Text", ZoomFactor.Zoom4);
-						graphic.AddTransparentLayer(LayerID.Foreground);
-						this.zoom4Archive.AddGraphic(this.actualGraphic, graphic);
-						this.ChangeLayer(LayerID.Foreground);
-						this.tabControl.TabPages.Add(this.zoom4Tab);
-						this.tabControl.SelectedTab = this.zoom4Tab;
-						this.actualZoomFactor = ZoomFactor.Zoom4;
-						this.drawPanel.Invalidate();
-					}
-					else
-					{
-						this.zoom4CheckBoxCodeChanged = true;
-						this.zoom4CheckBox.Checked = false;
-					}
+					Graphic graphic = new Graphic("Kein Text", ZoomFactor.Zoom4);
+					graphic.AddTransparentLayer(LayerID.Foreground);
+					this.zoom4Archive.AddGraphic(this.actualGraphic, graphic);
+					this.ChangeLayer(LayerID.Foreground);
+					this.tabControl.TabPages.Add(this.zoom4Tab);
+					this.tabControl.SelectedTab = this.zoom4Tab;
+					this.actualZoomFactor = ZoomFactor.Zoom4;
+					this.drawPanel.Invalidate();
 				}
 				else
 				{
-					DialogResult result = MessageBox.Show("Soll wirklich die Zoom4-Grafik gelöscht werden?", "Zoom4", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+					DialogResult result = DialogResult.Yes;
+					if (!this.zoom4Archive[this.actualGraphic].IsTransparent())
+						result = MessageBox.Show("Soll wirklich die Zoom4-Grafik gelöscht werden?", "Zoom4", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 					if (result == DialogResult.Yes)
 					{
 						this.zoom4Archive.RemoveGraphic(this.actualGraphic);
@@ -1207,8 +1200,6 @@ namespace BahnEditor.Editor
 				this.zoom4CheckBoxCodeChanged = false;
 			}
 		}
-
-		#endregion
 
 		private void foregroundRadioButton_CheckedChanged(object sender, EventArgs e)
 		{
@@ -1240,5 +1231,96 @@ namespace BahnEditor.Editor
 			this.SelectLayer();
 		}
 
+		private void particleComboBox_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			Graphic graphic = this.GetActualGraphic();
+			if (graphic != null)
+			{
+				switch (this.particleComboBox.SelectedIndex)
+				{
+					case 0:
+						if (graphic.Properties.HasParticles)
+						{
+							graphic.Properties.RawData &= ~(GraphicProperties.Properties.Smoke & GraphicProperties.Properties.Steam);
+							this.particleWidthNumericUpDown.Enabled = false;
+							this.particleXNumericUpDown.Enabled = false;
+							this.particleYNumericUpDown.Enabled = false;
+						}
+						break;
+					case 1:
+						graphic.Properties.RawData &= ~GraphicProperties.Properties.Smoke;
+						graphic.Properties.RawData |= GraphicProperties.Properties.Steam;
+						this.particleWidthNumericUpDown.Enabled = true;
+						this.particleXNumericUpDown.Enabled = true;
+						this.particleYNumericUpDown.Enabled = true;
+						break;
+					case 2:
+						graphic.Properties.RawData &= ~GraphicProperties.Properties.Steam;
+						graphic.Properties.RawData |= GraphicProperties.Properties.Smoke;
+						this.particleWidthNumericUpDown.Enabled = true;
+						this.particleXNumericUpDown.Enabled = true;
+						this.particleYNumericUpDown.Enabled = true;
+						break;
+					default:
+						throw new ArgumentOutOfRangeException("particleComboBox.SelectedIndex");
+				}
+			}
+		}
+
+		private void newToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			this.NewGraphicArchive();
+		}
+
+		private void openToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (ExitEditor())
+				return;
+			this.loadFileDialog.ShowDialog();
+		}
+
+		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			this.ClickOnSaveButton(false);
+		}
+
+		private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			this.ClickOnSaveButton(true);
+		}
+
+		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			Application.Exit();
+		}
+
+		private void particleXNumericUpDown_ValueChanged(object sender, EventArgs e)
+		{
+			Graphic graphic = this.GetActualGraphic();
+			if(graphic.Properties.HasParticles)
+			{
+				graphic.Properties.ParticleX = (int)particleXNumericUpDown.Value;
+			}
+		}
+
+		private void particleYNumericUpDown_ValueChanged(object sender, EventArgs e)
+		{
+			Graphic graphic = this.GetActualGraphic();
+			if (graphic.Properties.HasParticles)
+			{
+				graphic.Properties.ParticleY = (int)particleYNumericUpDown.Value;
+			}
+		}
+
+		private void particleWidthNumericUpDown_ValueChanged(object sender, EventArgs e)
+		{
+			Graphic graphic = this.GetActualGraphic();
+			if (graphic.Properties.HasParticles)
+			{
+				graphic.Properties.ParticleWidth = (int)particleWidthNumericUpDown.Value;
+			}
+		}
+
+		#endregion
 	}
 }

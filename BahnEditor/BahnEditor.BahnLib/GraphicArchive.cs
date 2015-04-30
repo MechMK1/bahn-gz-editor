@@ -165,7 +165,7 @@ namespace BahnEditor.BahnLib
 		/// <exception cref="System.ArgumentException"/>
 		public void RemoveGraphic(int elementNumber)
 		{
-			this.RemoveGraphic(elementNumber, 0, 1);
+			this.RemoveGraphic(elementNumber, Constants.MinAnimationPhase, Constants.NoAlternative);
 		}
 
 		/// <summary>
@@ -204,6 +204,17 @@ namespace BahnEditor.BahnLib
 			}
 			else
 			{
+				if (this.graphics.Count <= 0)
+				{
+					throw new ArchiveIsEmptyException("the archive is empty");
+				}
+				foreach (var item in this.graphics)
+				{
+					if (item.Graphic.IsTransparent())
+					{
+						throw new ElementIsEmptyException("a graphic is empty");
+					}
+				}
 				using (FileStream stream = File.OpenWrite(path))
 				{
 					return Save(stream);
@@ -293,17 +304,6 @@ namespace BahnEditor.BahnLib
 
 		private bool Save(FileStream path)
 		{
-			if (this.graphics.Count <= 0)
-			{
-				throw new ArchiveIsEmptyException("the archive is empty");
-			}
-			foreach (var item in this.graphics)
-			{
-				if (item.Graphic.IsTransparent())
-				{
-					throw new ElementIsEmptyException("a graphic is empty");
-				}
-			}
 			using (BinaryWriter bw = new BinaryWriter(path, Encoding.Unicode))
 			{
 				List<Tuple<long, long>> offsetList = new List<Tuple<long, long>>();
