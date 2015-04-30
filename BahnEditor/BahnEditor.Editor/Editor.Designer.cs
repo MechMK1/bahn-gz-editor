@@ -30,8 +30,18 @@
 		{
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Editor));
 			this.toolStrip = new System.Windows.Forms.ToolStrip();
+			this.newToolStripButton = new System.Windows.Forms.ToolStripButton();
+			this.openToolStripButton = new System.Windows.Forms.ToolStripButton();
+			this.saveToolStripButton = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
+			this.cutToolStripButton = new System.Windows.Forms.ToolStripButton();
+			this.copyToolStripButton = new System.Windows.Forms.ToolStripButton();
+			this.pasteToolStripButton = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
 			this.zoomInButton = new System.Windows.Forms.ToolStripButton();
 			this.zoomOutButton = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+			this.helpToolStripButton = new System.Windows.Forms.ToolStripButton();
 			this.controlPanel = new System.Windows.Forms.Panel();
 			this.frontRadioButton = new System.Windows.Forms.RadioButton();
 			this.foregroundAboveRadioButton = new System.Windows.Forms.RadioButton();
@@ -40,6 +50,32 @@
 			this.backgroundRadioButton = new System.Windows.Forms.RadioButton();
 			this.foregroundRadioButton = new System.Windows.Forms.RadioButton();
 			this.propertiesPanel = new System.Windows.Forms.Panel();
+			this.panel1 = new System.Windows.Forms.Panel();
+			this.clockColorMinutesPointerButton = new System.Windows.Forms.Button();
+			this.clockColorHoursPointerButton = new System.Windows.Forms.Button();
+			this.clockColorMinutesPointerLabel = new System.Windows.Forms.Label();
+			this.clockColorHoursPointerLabel = new System.Windows.Forms.Label();
+			this.clockMinutesPointerCheckBox = new System.Windows.Forms.CheckBox();
+			this.clockWidthNumericUpDown = new System.Windows.Forms.NumericUpDown();
+			this.clockWidthLabel = new System.Windows.Forms.Label();
+			this.clockYNumericUpDown = new System.Windows.Forms.NumericUpDown();
+			this.clockYLabel = new System.Windows.Forms.Label();
+			this.clockXNumericUpDown = new System.Windows.Forms.NumericUpDown();
+			this.clockXLabel = new System.Windows.Forms.Label();
+			this.clockComboBox = new System.Windows.Forms.ComboBox();
+			this.clockRotationComboBox = new System.Windows.Forms.ComboBox();
+			this.clockRotationLabel = new System.Windows.Forms.Label();
+			this.clockLabel = new System.Windows.Forms.Label();
+			this.particlePropertiesPanel = new System.Windows.Forms.Panel();
+			this.particleWidthNumericUpDown = new System.Windows.Forms.NumericUpDown();
+			this.particleWidthLabel = new System.Windows.Forms.Label();
+			this.particleYLabel = new System.Windows.Forms.Label();
+			this.particleYNumericUpDown = new System.Windows.Forms.NumericUpDown();
+			this.particleXLabel = new System.Windows.Forms.Label();
+			this.particleLabel = new System.Windows.Forms.Label();
+			this.particleXNumericUpDown = new System.Windows.Forms.NumericUpDown();
+			this.particleComboBox = new System.Windows.Forms.ComboBox();
+			this.propertiesLabel = new System.Windows.Forms.Label();
 			this.zoom4CheckBox = new System.Windows.Forms.CheckBox();
 			this.zoom2CheckBox = new System.Windows.Forms.CheckBox();
 			this.leftComboBox = new System.Windows.Forms.ComboBox();
@@ -50,24 +86,6 @@
 			this.leftColorButton = new System.Windows.Forms.Button();
 			this.loadFileDialog = new System.Windows.Forms.OpenFileDialog();
 			this.menuStrip = new System.Windows.Forms.MenuStrip();
-			this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-			this.colorDialog = new System.Windows.Forms.ColorDialog();
-			this.tabControl = new System.Windows.Forms.TabControl();
-			this.zoom1Tab = new System.Windows.Forms.TabPage();
-			this.zoom2Tab = new System.Windows.Forms.TabPage();
-			this.zoom4Tab = new System.Windows.Forms.TabPage();
-			this.propertiesLabel = new System.Windows.Forms.Label();
-			this.particleComboBox = new System.Windows.Forms.ComboBox();
-			this.particleLabel = new System.Windows.Forms.Label();
-			this.newToolStripButton = new System.Windows.Forms.ToolStripButton();
-			this.openToolStripButton = new System.Windows.Forms.ToolStripButton();
-			this.saveToolStripButton = new System.Windows.Forms.ToolStripButton();
-			this.toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
-			this.cutToolStripButton = new System.Windows.Forms.ToolStripButton();
-			this.copyToolStripButton = new System.Windows.Forms.ToolStripButton();
-			this.pasteToolStripButton = new System.Windows.Forms.ToolStripButton();
-			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
-			this.helpToolStripButton = new System.Windows.Forms.ToolStripButton();
 			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -94,14 +112,12 @@
 			this.searchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
 			this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-			this.particleXNumericUpDown = new System.Windows.Forms.NumericUpDown();
-			this.particlePropertiesPanel = new System.Windows.Forms.Panel();
-			this.ParticleXLabel = new System.Windows.Forms.Label();
-			this.particleYNumericUpDown = new System.Windows.Forms.NumericUpDown();
-			this.particleYLabel = new System.Windows.Forms.Label();
-			this.particleWidthLabel = new System.Windows.Forms.Label();
-			this.particleWidthNumericUpDown = new System.Windows.Forms.NumericUpDown();
+			this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
+			this.colorDialog = new System.Windows.Forms.ColorDialog();
+			this.tabControl = new System.Windows.Forms.TabControl();
+			this.zoom1Tab = new System.Windows.Forms.TabPage();
+			this.zoom2Tab = new System.Windows.Forms.TabPage();
+			this.zoom4Tab = new System.Windows.Forms.TabPage();
 			this.drawPanel = new BahnEditor.Editor.DrawPanel();
 			this.overviewPanel = new BahnEditor.Editor.DrawPanel();
 			this.overviewDownButton = new System.Windows.Forms.Button();
@@ -110,12 +126,16 @@
 			this.toolStrip.SuspendLayout();
 			this.controlPanel.SuspendLayout();
 			this.propertiesPanel.SuspendLayout();
+			this.panel1.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.clockWidthNumericUpDown)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.clockYNumericUpDown)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.clockXNumericUpDown)).BeginInit();
+			this.particlePropertiesPanel.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.particleWidthNumericUpDown)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.particleYNumericUpDown)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.particleXNumericUpDown)).BeginInit();
 			this.menuStrip.SuspendLayout();
 			this.tabControl.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.particleXNumericUpDown)).BeginInit();
-			this.particlePropertiesPanel.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.particleYNumericUpDown)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.particleWidthNumericUpDown)).BeginInit();
 			this.overviewPanel.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -141,6 +161,73 @@
 			this.toolStrip.TabIndex = 0;
 			this.toolStrip.Text = "toolStrip1";
 			// 
+			// newToolStripButton
+			// 
+			this.newToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.newToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("newToolStripButton.Image")));
+			this.newToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.newToolStripButton.Name = "newToolStripButton";
+			this.newToolStripButton.Size = new System.Drawing.Size(23, 22);
+			this.newToolStripButton.Text = "&New";
+			this.newToolStripButton.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
+			// 
+			// openToolStripButton
+			// 
+			this.openToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.openToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("openToolStripButton.Image")));
+			this.openToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.openToolStripButton.Name = "openToolStripButton";
+			this.openToolStripButton.Size = new System.Drawing.Size(23, 22);
+			this.openToolStripButton.Text = "&Open";
+			this.openToolStripButton.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
+			// 
+			// saveToolStripButton
+			// 
+			this.saveToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.saveToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("saveToolStripButton.Image")));
+			this.saveToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.saveToolStripButton.Name = "saveToolStripButton";
+			this.saveToolStripButton.Size = new System.Drawing.Size(23, 22);
+			this.saveToolStripButton.Text = "&Save";
+			this.saveToolStripButton.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+			// 
+			// toolStripSeparator
+			// 
+			this.toolStripSeparator.Name = "toolStripSeparator";
+			this.toolStripSeparator.Size = new System.Drawing.Size(6, 25);
+			// 
+			// cutToolStripButton
+			// 
+			this.cutToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.cutToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("cutToolStripButton.Image")));
+			this.cutToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.cutToolStripButton.Name = "cutToolStripButton";
+			this.cutToolStripButton.Size = new System.Drawing.Size(23, 22);
+			this.cutToolStripButton.Text = "C&ut";
+			// 
+			// copyToolStripButton
+			// 
+			this.copyToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.copyToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("copyToolStripButton.Image")));
+			this.copyToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.copyToolStripButton.Name = "copyToolStripButton";
+			this.copyToolStripButton.Size = new System.Drawing.Size(23, 22);
+			this.copyToolStripButton.Text = "&Copy";
+			// 
+			// pasteToolStripButton
+			// 
+			this.pasteToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.pasteToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("pasteToolStripButton.Image")));
+			this.pasteToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.pasteToolStripButton.Name = "pasteToolStripButton";
+			this.pasteToolStripButton.Size = new System.Drawing.Size(23, 22);
+			this.pasteToolStripButton.Text = "&Paste";
+			// 
+			// toolStripSeparator4
+			// 
+			this.toolStripSeparator4.Name = "toolStripSeparator4";
+			this.toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
+			// 
 			// zoomInButton
 			// 
 			this.zoomInButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -160,6 +247,20 @@
 			this.zoomOutButton.Size = new System.Drawing.Size(23, 22);
 			this.zoomOutButton.Text = "Zoom out";
 			this.zoomOutButton.Click += new System.EventHandler(this.zoomOutButton_Click);
+			// 
+			// toolStripSeparator1
+			// 
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+			// 
+			// helpToolStripButton
+			// 
+			this.helpToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.helpToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("helpToolStripButton.Image")));
+			this.helpToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.helpToolStripButton.Name = "helpToolStripButton";
+			this.helpToolStripButton.Size = new System.Drawing.Size(23, 22);
+			this.helpToolStripButton.Text = "He&lp";
 			// 
 			// controlPanel
 			// 
@@ -255,6 +356,7 @@
 			// propertiesPanel
 			// 
 			this.propertiesPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.propertiesPanel.Controls.Add(this.panel1);
 			this.propertiesPanel.Controls.Add(this.particlePropertiesPanel);
 			this.propertiesPanel.Controls.Add(this.propertiesLabel);
 			this.propertiesPanel.Controls.Add(this.zoom4CheckBox);
@@ -264,10 +366,291 @@
 			this.propertiesPanel.Size = new System.Drawing.Size(196, 342);
 			this.propertiesPanel.TabIndex = 9;
 			// 
+			// panel1
+			// 
+			this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.panel1.Controls.Add(this.clockColorMinutesPointerButton);
+			this.panel1.Controls.Add(this.clockColorHoursPointerButton);
+			this.panel1.Controls.Add(this.clockColorMinutesPointerLabel);
+			this.panel1.Controls.Add(this.clockColorHoursPointerLabel);
+			this.panel1.Controls.Add(this.clockMinutesPointerCheckBox);
+			this.panel1.Controls.Add(this.clockWidthNumericUpDown);
+			this.panel1.Controls.Add(this.clockWidthLabel);
+			this.panel1.Controls.Add(this.clockYNumericUpDown);
+			this.panel1.Controls.Add(this.clockYLabel);
+			this.panel1.Controls.Add(this.clockXNumericUpDown);
+			this.panel1.Controls.Add(this.clockXLabel);
+			this.panel1.Controls.Add(this.clockComboBox);
+			this.panel1.Controls.Add(this.clockRotationComboBox);
+			this.panel1.Controls.Add(this.clockRotationLabel);
+			this.panel1.Controls.Add(this.clockLabel);
+			this.panel1.Location = new System.Drawing.Point(-1, 110);
+			this.panel1.Name = "panel1";
+			this.panel1.Size = new System.Drawing.Size(196, 172);
+			this.panel1.TabIndex = 8;
+			// 
+			// clockColorMinutesPointerButton
+			// 
+			this.clockColorMinutesPointerButton.BackColor = System.Drawing.Color.Black;
+			this.clockColorMinutesPointerButton.Enabled = false;
+			this.clockColorMinutesPointerButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.clockColorMinutesPointerButton.Location = new System.Drawing.Point(136, 134);
+			this.clockColorMinutesPointerButton.Name = "clockColorMinutesPointerButton";
+			this.clockColorMinutesPointerButton.Size = new System.Drawing.Size(53, 23);
+			this.clockColorMinutesPointerButton.TabIndex = 18;
+			this.clockColorMinutesPointerButton.UseVisualStyleBackColor = false;
+			this.clockColorMinutesPointerButton.Click += new System.EventHandler(this.clockColorMinutesPointerButton_Click);
+			// 
+			// clockColorHoursPointerButton
+			// 
+			this.clockColorHoursPointerButton.BackColor = System.Drawing.Color.Black;
+			this.clockColorHoursPointerButton.Enabled = false;
+			this.clockColorHoursPointerButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.clockColorHoursPointerButton.Location = new System.Drawing.Point(136, 108);
+			this.clockColorHoursPointerButton.Name = "clockColorHoursPointerButton";
+			this.clockColorHoursPointerButton.Size = new System.Drawing.Size(53, 23);
+			this.clockColorHoursPointerButton.TabIndex = 17;
+			this.clockColorHoursPointerButton.UseVisualStyleBackColor = false;
+			this.clockColorHoursPointerButton.Click += new System.EventHandler(this.clockColorHoursPointerButton_Click);
+			// 
+			// clockColorMinutesPointerLabel
+			// 
+			this.clockColorMinutesPointerLabel.AutoSize = true;
+			this.clockColorMinutesPointerLabel.Location = new System.Drawing.Point(3, 138);
+			this.clockColorMinutesPointerLabel.Name = "clockColorMinutesPointerLabel";
+			this.clockColorMinutesPointerLabel.Size = new System.Drawing.Size(128, 13);
+			this.clockColorMinutesPointerLabel.TabIndex = 16;
+			this.clockColorMinutesPointerLabel.Text = "Farbe des Minutenzeigers";
+			// 
+			// clockColorHoursPointerLabel
+			// 
+			this.clockColorHoursPointerLabel.AutoSize = true;
+			this.clockColorHoursPointerLabel.Location = new System.Drawing.Point(3, 113);
+			this.clockColorHoursPointerLabel.Name = "clockColorHoursPointerLabel";
+			this.clockColorHoursPointerLabel.Size = new System.Drawing.Size(130, 13);
+			this.clockColorHoursPointerLabel.TabIndex = 15;
+			this.clockColorHoursPointerLabel.Text = "Farbe des Stundenzeigers";
+			// 
+			// clockMinutesPointerCheckBox
+			// 
+			this.clockMinutesPointerCheckBox.AutoSize = true;
+			this.clockMinutesPointerCheckBox.Enabled = false;
+			this.clockMinutesPointerCheckBox.Location = new System.Drawing.Point(53, 59);
+			this.clockMinutesPointerCheckBox.Name = "clockMinutesPointerCheckBox";
+			this.clockMinutesPointerCheckBox.Size = new System.Drawing.Size(92, 17);
+			this.clockMinutesPointerCheckBox.TabIndex = 14;
+			this.clockMinutesPointerCheckBox.Text = "Minutenzeiger";
+			this.clockMinutesPointerCheckBox.UseVisualStyleBackColor = true;
+			this.clockMinutesPointerCheckBox.CheckedChanged += new System.EventHandler(this.clockMinutesPointerCheckBox_CheckedChanged);
+			// 
+			// clockWidthNumericUpDown
+			// 
+			this.clockWidthNumericUpDown.Enabled = false;
+			this.clockWidthNumericUpDown.Location = new System.Drawing.Point(156, 82);
+			this.clockWidthNumericUpDown.Name = "clockWidthNumericUpDown";
+			this.clockWidthNumericUpDown.Size = new System.Drawing.Size(33, 20);
+			this.clockWidthNumericUpDown.TabIndex = 12;
+			this.clockWidthNumericUpDown.ValueChanged += new System.EventHandler(this.clockWidthNumericUpDown_ValueChanged);
+			// 
+			// clockWidthLabel
+			// 
+			this.clockWidthLabel.AutoSize = true;
+			this.clockWidthLabel.Location = new System.Drawing.Point(119, 84);
+			this.clockWidthLabel.Name = "clockWidthLabel";
+			this.clockWidthLabel.Size = new System.Drawing.Size(37, 13);
+			this.clockWidthLabel.TabIndex = 11;
+			this.clockWidthLabel.Text = "Breite:";
+			// 
+			// clockYNumericUpDown
+			// 
+			this.clockYNumericUpDown.Enabled = false;
+			this.clockYNumericUpDown.Location = new System.Drawing.Point(80, 82);
+			this.clockYNumericUpDown.Name = "clockYNumericUpDown";
+			this.clockYNumericUpDown.Size = new System.Drawing.Size(33, 20);
+			this.clockYNumericUpDown.TabIndex = 10;
+			this.clockYNumericUpDown.ValueChanged += new System.EventHandler(this.clockYNumericUpDown_ValueChanged);
+			// 
+			// clockYLabel
+			// 
+			this.clockYLabel.AutoSize = true;
+			this.clockYLabel.Location = new System.Drawing.Point(63, 84);
+			this.clockYLabel.Name = "clockYLabel";
+			this.clockYLabel.Size = new System.Drawing.Size(15, 13);
+			this.clockYLabel.TabIndex = 9;
+			this.clockYLabel.Text = "y:";
+			// 
+			// clockXNumericUpDown
+			// 
+			this.clockXNumericUpDown.Enabled = false;
+			this.clockXNumericUpDown.Location = new System.Drawing.Point(23, 82);
+			this.clockXNumericUpDown.Name = "clockXNumericUpDown";
+			this.clockXNumericUpDown.Size = new System.Drawing.Size(33, 20);
+			this.clockXNumericUpDown.TabIndex = 8;
+			this.clockXNumericUpDown.ValueChanged += new System.EventHandler(this.clockXNumericUpDown_ValueChanged);
+			// 
+			// clockXLabel
+			// 
+			this.clockXLabel.AutoSize = true;
+			this.clockXLabel.Location = new System.Drawing.Point(6, 84);
+			this.clockXLabel.Name = "clockXLabel";
+			this.clockXLabel.Size = new System.Drawing.Size(15, 13);
+			this.clockXLabel.TabIndex = 7;
+			this.clockXLabel.Text = "x:";
+			// 
+			// clockComboBox
+			// 
+			this.clockComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.clockComboBox.FormattingEnabled = true;
+			this.clockComboBox.Items.AddRange(new object[] {
+            "Keine",
+            "Mit 12-Stunden-Anzeige",
+            "Mit 24-Stunden-Anzeige"});
+			this.clockComboBox.Location = new System.Drawing.Point(68, 8);
+			this.clockComboBox.Name = "clockComboBox";
+			this.clockComboBox.Size = new System.Drawing.Size(121, 21);
+			this.clockComboBox.TabIndex = 6;
+			this.clockComboBox.SelectedIndexChanged += new System.EventHandler(this.clockComboBox_SelectedIndexChanged);
+			// 
+			// clockRotationComboBox
+			// 
+			this.clockRotationComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.clockRotationComboBox.DropDownWidth = 167;
+			this.clockRotationComboBox.Enabled = false;
+			this.clockRotationComboBox.FormattingEnabled = true;
+			this.clockRotationComboBox.Items.AddRange(new object[] {
+            "geradeaus (auf den Betrachter zu)",
+            "nach Südwesten",
+            "nach Südosten"});
+			this.clockRotationComboBox.Location = new System.Drawing.Point(113, 32);
+			this.clockRotationComboBox.Name = "clockRotationComboBox";
+			this.clockRotationComboBox.Size = new System.Drawing.Size(76, 21);
+			this.clockRotationComboBox.TabIndex = 5;
+			this.clockRotationComboBox.SelectedIndexChanged += new System.EventHandler(this.clockRotationComboBox_SelectedIndexChanged);
+			// 
+			// clockRotationLabel
+			// 
+			this.clockRotationLabel.AutoSize = true;
+			this.clockRotationLabel.Location = new System.Drawing.Point(3, 35);
+			this.clockRotationLabel.Name = "clockRotationLabel";
+			this.clockRotationLabel.Size = new System.Drawing.Size(104, 13);
+			this.clockRotationLabel.TabIndex = 4;
+			this.clockRotationLabel.Text = "Ausrichtung der Uhr:";
+			// 
+			// clockLabel
+			// 
+			this.clockLabel.AutoSize = true;
+			this.clockLabel.Location = new System.Drawing.Point(3, 11);
+			this.clockLabel.Name = "clockLabel";
+			this.clockLabel.Size = new System.Drawing.Size(27, 13);
+			this.clockLabel.TabIndex = 0;
+			this.clockLabel.Text = "Uhr:";
+			// 
+			// particlePropertiesPanel
+			// 
+			this.particlePropertiesPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.particlePropertiesPanel.Controls.Add(this.particleWidthNumericUpDown);
+			this.particlePropertiesPanel.Controls.Add(this.particleWidthLabel);
+			this.particlePropertiesPanel.Controls.Add(this.particleYLabel);
+			this.particlePropertiesPanel.Controls.Add(this.particleYNumericUpDown);
+			this.particlePropertiesPanel.Controls.Add(this.particleXLabel);
+			this.particlePropertiesPanel.Controls.Add(this.particleLabel);
+			this.particlePropertiesPanel.Controls.Add(this.particleXNumericUpDown);
+			this.particlePropertiesPanel.Controls.Add(this.particleComboBox);
+			this.particlePropertiesPanel.Location = new System.Drawing.Point(-1, 48);
+			this.particlePropertiesPanel.Name = "particlePropertiesPanel";
+			this.particlePropertiesPanel.Size = new System.Drawing.Size(196, 63);
+			this.particlePropertiesPanel.TabIndex = 7;
+			// 
+			// particleWidthNumericUpDown
+			// 
+			this.particleWidthNumericUpDown.Enabled = false;
+			this.particleWidthNumericUpDown.Location = new System.Drawing.Point(156, 32);
+			this.particleWidthNumericUpDown.Name = "particleWidthNumericUpDown";
+			this.particleWidthNumericUpDown.Size = new System.Drawing.Size(33, 20);
+			this.particleWidthNumericUpDown.TabIndex = 11;
+			this.particleWidthNumericUpDown.ValueChanged += new System.EventHandler(this.particleWidthNumericUpDown_ValueChanged);
+			// 
+			// particleWidthLabel
+			// 
+			this.particleWidthLabel.AutoSize = true;
+			this.particleWidthLabel.Location = new System.Drawing.Point(119, 34);
+			this.particleWidthLabel.Name = "particleWidthLabel";
+			this.particleWidthLabel.Size = new System.Drawing.Size(37, 13);
+			this.particleWidthLabel.TabIndex = 10;
+			this.particleWidthLabel.Text = "Breite:";
+			// 
+			// particleYLabel
+			// 
+			this.particleYLabel.AutoSize = true;
+			this.particleYLabel.Location = new System.Drawing.Point(63, 34);
+			this.particleYLabel.Name = "particleYLabel";
+			this.particleYLabel.Size = new System.Drawing.Size(15, 13);
+			this.particleYLabel.TabIndex = 9;
+			this.particleYLabel.Text = "y:";
+			// 
+			// particleYNumericUpDown
+			// 
+			this.particleYNumericUpDown.Enabled = false;
+			this.particleYNumericUpDown.Location = new System.Drawing.Point(80, 32);
+			this.particleYNumericUpDown.Name = "particleYNumericUpDown";
+			this.particleYNumericUpDown.Size = new System.Drawing.Size(33, 20);
+			this.particleYNumericUpDown.TabIndex = 8;
+			this.particleYNumericUpDown.ValueChanged += new System.EventHandler(this.particleYNumericUpDown_ValueChanged);
+			// 
+			// particleXLabel
+			// 
+			this.particleXLabel.AutoSize = true;
+			this.particleXLabel.Location = new System.Drawing.Point(6, 34);
+			this.particleXLabel.Name = "particleXLabel";
+			this.particleXLabel.Size = new System.Drawing.Size(15, 13);
+			this.particleXLabel.TabIndex = 7;
+			this.particleXLabel.Text = "x:";
+			// 
+			// particleLabel
+			// 
+			this.particleLabel.AutoSize = true;
+			this.particleLabel.Location = new System.Drawing.Point(3, 9);
+			this.particleLabel.Name = "particleLabel";
+			this.particleLabel.Size = new System.Drawing.Size(78, 13);
+			this.particleLabel.TabIndex = 4;
+			this.particleLabel.Text = "Dampf/Rauch:";
+			// 
+			// particleXNumericUpDown
+			// 
+			this.particleXNumericUpDown.Enabled = false;
+			this.particleXNumericUpDown.Location = new System.Drawing.Point(23, 32);
+			this.particleXNumericUpDown.Name = "particleXNumericUpDown";
+			this.particleXNumericUpDown.Size = new System.Drawing.Size(33, 20);
+			this.particleXNumericUpDown.TabIndex = 6;
+			this.particleXNumericUpDown.ValueChanged += new System.EventHandler(this.particleXNumericUpDown_ValueChanged);
+			// 
+			// particleComboBox
+			// 
+			this.particleComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.particleComboBox.FormattingEnabled = true;
+			this.particleComboBox.Items.AddRange(new object[] {
+            "Keiner",
+            "Dampf (heller)",
+            "Rauch (dunkler)"});
+			this.particleComboBox.Location = new System.Drawing.Point(86, 6);
+			this.particleComboBox.Name = "particleComboBox";
+			this.particleComboBox.Size = new System.Drawing.Size(104, 21);
+			this.particleComboBox.TabIndex = 3;
+			this.particleComboBox.SelectedIndexChanged += new System.EventHandler(this.particleComboBox_SelectedIndexChanged);
+			// 
+			// propertiesLabel
+			// 
+			this.propertiesLabel.AutoSize = true;
+			this.propertiesLabel.Location = new System.Drawing.Point(3, 2);
+			this.propertiesLabel.Name = "propertiesLabel";
+			this.propertiesLabel.Size = new System.Drawing.Size(54, 13);
+			this.propertiesLabel.TabIndex = 2;
+			this.propertiesLabel.Text = "Properties";
+			// 
 			// zoom4CheckBox
 			// 
 			this.zoom4CheckBox.AutoSize = true;
-			this.zoom4CheckBox.Location = new System.Drawing.Point(101, 25);
+			this.zoom4CheckBox.Location = new System.Drawing.Point(103, 24);
 			this.zoom4CheckBox.Name = "zoom4CheckBox";
 			this.zoom4CheckBox.Size = new System.Drawing.Size(62, 17);
 			this.zoom4CheckBox.TabIndex = 1;
@@ -278,7 +661,7 @@
 			// zoom2CheckBox
 			// 
 			this.zoom2CheckBox.AutoSize = true;
-			this.zoom2CheckBox.Location = new System.Drawing.Point(20, 25);
+			this.zoom2CheckBox.Location = new System.Drawing.Point(22, 24);
 			this.zoom2CheckBox.Name = "zoom2CheckBox";
 			this.zoom2CheckBox.Size = new System.Drawing.Size(62, 17);
 			this.zoom2CheckBox.TabIndex = 0;
@@ -441,167 +824,6 @@
 			this.menuStrip.Size = new System.Drawing.Size(1008, 24);
 			this.menuStrip.TabIndex = 3;
 			this.menuStrip.Text = "menuStrip1";
-			// 
-			// saveFileDialog
-			// 
-			this.saveFileDialog.Filter = "Archive files|*.uz1";
-			this.saveFileDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog_FileOk);
-			// 
-			// colorDialog
-			// 
-			this.colorDialog.FullOpen = true;
-			// 
-			// tabControl
-			// 
-			this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.tabControl.Controls.Add(this.zoom1Tab);
-			this.tabControl.Controls.Add(this.zoom2Tab);
-			this.tabControl.Controls.Add(this.zoom4Tab);
-			this.tabControl.Location = new System.Drawing.Point(13, 120);
-			this.tabControl.Name = "tabControl";
-			this.tabControl.SelectedIndex = 0;
-			this.tabControl.Size = new System.Drawing.Size(775, 20);
-			this.tabControl.TabIndex = 6;
-			this.tabControl.TabStop = false;
-			this.tabControl.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tabControl_Selecting);
-			// 
-			// zoom1Tab
-			// 
-			this.zoom1Tab.Location = new System.Drawing.Point(4, 22);
-			this.zoom1Tab.Name = "zoom1Tab";
-			this.zoom1Tab.Padding = new System.Windows.Forms.Padding(3);
-			this.zoom1Tab.Size = new System.Drawing.Size(767, 0);
-			this.zoom1Tab.TabIndex = 0;
-			this.zoom1Tab.Text = "Zoom 1";
-			this.zoom1Tab.UseVisualStyleBackColor = true;
-			// 
-			// zoom2Tab
-			// 
-			this.zoom2Tab.Location = new System.Drawing.Point(4, 22);
-			this.zoom2Tab.Name = "zoom2Tab";
-			this.zoom2Tab.Padding = new System.Windows.Forms.Padding(3);
-			this.zoom2Tab.Size = new System.Drawing.Size(767, 0);
-			this.zoom2Tab.TabIndex = 1;
-			this.zoom2Tab.Text = "Zoom 2";
-			this.zoom2Tab.UseVisualStyleBackColor = true;
-			// 
-			// zoom4Tab
-			// 
-			this.zoom4Tab.Location = new System.Drawing.Point(4, 22);
-			this.zoom4Tab.Name = "zoom4Tab";
-			this.zoom4Tab.Size = new System.Drawing.Size(767, 0);
-			this.zoom4Tab.TabIndex = 2;
-			this.zoom4Tab.Text = "Zoom 4";
-			this.zoom4Tab.UseVisualStyleBackColor = true;
-			// 
-			// propertiesLabel
-			// 
-			this.propertiesLabel.AutoSize = true;
-			this.propertiesLabel.Location = new System.Drawing.Point(3, 1);
-			this.propertiesLabel.Name = "propertiesLabel";
-			this.propertiesLabel.Size = new System.Drawing.Size(54, 13);
-			this.propertiesLabel.TabIndex = 2;
-			this.propertiesLabel.Text = "Properties";
-			// 
-			// particleComboBox
-			// 
-			this.particleComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.particleComboBox.FormattingEnabled = true;
-			this.particleComboBox.Items.AddRange(new object[] {
-            "Keiner",
-            "Dampf (heller)",
-            "Rauch (dunkler)"});
-			this.particleComboBox.Location = new System.Drawing.Point(87, 6);
-			this.particleComboBox.Name = "particleComboBox";
-			this.particleComboBox.Size = new System.Drawing.Size(104, 21);
-			this.particleComboBox.TabIndex = 3;
-			this.particleComboBox.SelectedIndexChanged += new System.EventHandler(this.particleComboBox_SelectedIndexChanged);
-			// 
-			// particleLabel
-			// 
-			this.particleLabel.AutoSize = true;
-			this.particleLabel.Location = new System.Drawing.Point(3, 9);
-			this.particleLabel.Name = "particleLabel";
-			this.particleLabel.Size = new System.Drawing.Size(78, 13);
-			this.particleLabel.TabIndex = 4;
-			this.particleLabel.Text = "Dampf/Rauch:";
-			// 
-			// newToolStripButton
-			// 
-			this.newToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.newToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("newToolStripButton.Image")));
-			this.newToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.newToolStripButton.Name = "newToolStripButton";
-			this.newToolStripButton.Size = new System.Drawing.Size(23, 22);
-			this.newToolStripButton.Text = "&New";
-			this.newToolStripButton.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
-			// 
-			// openToolStripButton
-			// 
-			this.openToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.openToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("openToolStripButton.Image")));
-			this.openToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.openToolStripButton.Name = "openToolStripButton";
-			this.openToolStripButton.Size = new System.Drawing.Size(23, 22);
-			this.openToolStripButton.Text = "&Open";
-			this.openToolStripButton.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
-			// 
-			// saveToolStripButton
-			// 
-			this.saveToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.saveToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("saveToolStripButton.Image")));
-			this.saveToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.saveToolStripButton.Name = "saveToolStripButton";
-			this.saveToolStripButton.Size = new System.Drawing.Size(23, 22);
-			this.saveToolStripButton.Text = "&Save";
-			this.saveToolStripButton.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
-			// 
-			// toolStripSeparator
-			// 
-			this.toolStripSeparator.Name = "toolStripSeparator";
-			this.toolStripSeparator.Size = new System.Drawing.Size(6, 25);
-			// 
-			// cutToolStripButton
-			// 
-			this.cutToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.cutToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("cutToolStripButton.Image")));
-			this.cutToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.cutToolStripButton.Name = "cutToolStripButton";
-			this.cutToolStripButton.Size = new System.Drawing.Size(23, 22);
-			this.cutToolStripButton.Text = "C&ut";
-			// 
-			// copyToolStripButton
-			// 
-			this.copyToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.copyToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("copyToolStripButton.Image")));
-			this.copyToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.copyToolStripButton.Name = "copyToolStripButton";
-			this.copyToolStripButton.Size = new System.Drawing.Size(23, 22);
-			this.copyToolStripButton.Text = "&Copy";
-			// 
-			// pasteToolStripButton
-			// 
-			this.pasteToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.pasteToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("pasteToolStripButton.Image")));
-			this.pasteToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.pasteToolStripButton.Name = "pasteToolStripButton";
-			this.pasteToolStripButton.Size = new System.Drawing.Size(23, 22);
-			this.pasteToolStripButton.Text = "&Paste";
-			// 
-			// toolStripSeparator4
-			// 
-			this.toolStripSeparator4.Name = "toolStripSeparator4";
-			this.toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
-			// 
-			// helpToolStripButton
-			// 
-			this.helpToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.helpToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("helpToolStripButton.Image")));
-			this.helpToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.helpToolStripButton.Name = "helpToolStripButton";
-			this.helpToolStripButton.Size = new System.Drawing.Size(23, 22);
-			this.helpToolStripButton.Text = "He&lp";
 			// 
 			// fileToolStripMenuItem
 			// 
@@ -805,80 +1027,58 @@
 			this.aboutToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
 			this.aboutToolStripMenuItem.Text = "&About...";
 			// 
-			// toolStripSeparator1
+			// saveFileDialog
 			// 
-			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+			this.saveFileDialog.Filter = "Archive files|*.uz1";
+			this.saveFileDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog_FileOk);
 			// 
-			// particleXNumericUpDown
+			// colorDialog
 			// 
-			this.particleXNumericUpDown.Enabled = false;
-			this.particleXNumericUpDown.Location = new System.Drawing.Point(23, 32);
-			this.particleXNumericUpDown.Name = "particleXNumericUpDown";
-			this.particleXNumericUpDown.Size = new System.Drawing.Size(33, 20);
-			this.particleXNumericUpDown.TabIndex = 6;
-			this.particleXNumericUpDown.ValueChanged += new System.EventHandler(this.particleXNumericUpDown_ValueChanged);
+			this.colorDialog.FullOpen = true;
 			// 
-			// particlePropertiesPanel
+			// tabControl
 			// 
-			this.particlePropertiesPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.particlePropertiesPanel.Controls.Add(this.particleWidthNumericUpDown);
-			this.particlePropertiesPanel.Controls.Add(this.particleWidthLabel);
-			this.particlePropertiesPanel.Controls.Add(this.particleYLabel);
-			this.particlePropertiesPanel.Controls.Add(this.particleYNumericUpDown);
-			this.particlePropertiesPanel.Controls.Add(this.ParticleXLabel);
-			this.particlePropertiesPanel.Controls.Add(this.particleLabel);
-			this.particlePropertiesPanel.Controls.Add(this.particleXNumericUpDown);
-			this.particlePropertiesPanel.Controls.Add(this.particleComboBox);
-			this.particlePropertiesPanel.Location = new System.Drawing.Point(-1, 48);
-			this.particlePropertiesPanel.Name = "particlePropertiesPanel";
-			this.particlePropertiesPanel.Size = new System.Drawing.Size(196, 63);
-			this.particlePropertiesPanel.TabIndex = 7;
+			this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.tabControl.Controls.Add(this.zoom1Tab);
+			this.tabControl.Controls.Add(this.zoom2Tab);
+			this.tabControl.Controls.Add(this.zoom4Tab);
+			this.tabControl.Location = new System.Drawing.Point(13, 120);
+			this.tabControl.Name = "tabControl";
+			this.tabControl.SelectedIndex = 0;
+			this.tabControl.Size = new System.Drawing.Size(775, 20);
+			this.tabControl.TabIndex = 6;
+			this.tabControl.TabStop = false;
+			this.tabControl.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tabControl_Selecting);
 			// 
-			// ParticleXLabel
+			// zoom1Tab
 			// 
-			this.ParticleXLabel.AutoSize = true;
-			this.ParticleXLabel.Location = new System.Drawing.Point(6, 34);
-			this.ParticleXLabel.Name = "ParticleXLabel";
-			this.ParticleXLabel.Size = new System.Drawing.Size(15, 13);
-			this.ParticleXLabel.TabIndex = 7;
-			this.ParticleXLabel.Text = "x:";
+			this.zoom1Tab.Location = new System.Drawing.Point(4, 22);
+			this.zoom1Tab.Name = "zoom1Tab";
+			this.zoom1Tab.Padding = new System.Windows.Forms.Padding(3);
+			this.zoom1Tab.Size = new System.Drawing.Size(767, 0);
+			this.zoom1Tab.TabIndex = 0;
+			this.zoom1Tab.Text = "Zoom 1";
+			this.zoom1Tab.UseVisualStyleBackColor = true;
 			// 
-			// particleYNumericUpDown
+			// zoom2Tab
 			// 
-			this.particleYNumericUpDown.Enabled = false;
-			this.particleYNumericUpDown.Location = new System.Drawing.Point(80, 32);
-			this.particleYNumericUpDown.Name = "particleYNumericUpDown";
-			this.particleYNumericUpDown.Size = new System.Drawing.Size(33, 20);
-			this.particleYNumericUpDown.TabIndex = 8;
-			this.particleYNumericUpDown.ValueChanged += new System.EventHandler(this.particleYNumericUpDown_ValueChanged);
+			this.zoom2Tab.Location = new System.Drawing.Point(4, 22);
+			this.zoom2Tab.Name = "zoom2Tab";
+			this.zoom2Tab.Padding = new System.Windows.Forms.Padding(3);
+			this.zoom2Tab.Size = new System.Drawing.Size(767, 0);
+			this.zoom2Tab.TabIndex = 1;
+			this.zoom2Tab.Text = "Zoom 2";
+			this.zoom2Tab.UseVisualStyleBackColor = true;
 			// 
-			// particleYLabel
+			// zoom4Tab
 			// 
-			this.particleYLabel.AutoSize = true;
-			this.particleYLabel.Location = new System.Drawing.Point(63, 34);
-			this.particleYLabel.Name = "particleYLabel";
-			this.particleYLabel.Size = new System.Drawing.Size(15, 13);
-			this.particleYLabel.TabIndex = 9;
-			this.particleYLabel.Text = "y:";
-			// 
-			// particleWidthLabel
-			// 
-			this.particleWidthLabel.AutoSize = true;
-			this.particleWidthLabel.Location = new System.Drawing.Point(119, 34);
-			this.particleWidthLabel.Name = "particleWidthLabel";
-			this.particleWidthLabel.Size = new System.Drawing.Size(37, 13);
-			this.particleWidthLabel.TabIndex = 10;
-			this.particleWidthLabel.Text = "Breite:";
-			// 
-			// particleWidthNumericUpDown
-			// 
-			this.particleWidthNumericUpDown.Enabled = false;
-			this.particleWidthNumericUpDown.Location = new System.Drawing.Point(156, 32);
-			this.particleWidthNumericUpDown.Name = "particleWidthNumericUpDown";
-			this.particleWidthNumericUpDown.Size = new System.Drawing.Size(33, 20);
-			this.particleWidthNumericUpDown.TabIndex = 11;
-			this.particleWidthNumericUpDown.ValueChanged += new System.EventHandler(this.particleWidthNumericUpDown_ValueChanged);
+			this.zoom4Tab.Location = new System.Drawing.Point(4, 22);
+			this.zoom4Tab.Name = "zoom4Tab";
+			this.zoom4Tab.Size = new System.Drawing.Size(767, 0);
+			this.zoom4Tab.TabIndex = 2;
+			this.zoom4Tab.Text = "Zoom 4";
+			this.zoom4Tab.UseVisualStyleBackColor = true;
 			// 
 			// drawPanel
 			// 
@@ -968,14 +1168,19 @@
 			this.controlPanel.PerformLayout();
 			this.propertiesPanel.ResumeLayout(false);
 			this.propertiesPanel.PerformLayout();
+			this.panel1.ResumeLayout(false);
+			this.panel1.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.clockWidthNumericUpDown)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.clockYNumericUpDown)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.clockXNumericUpDown)).EndInit();
+			this.particlePropertiesPanel.ResumeLayout(false);
+			this.particlePropertiesPanel.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.particleWidthNumericUpDown)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.particleYNumericUpDown)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.particleXNumericUpDown)).EndInit();
 			this.menuStrip.ResumeLayout(false);
 			this.menuStrip.PerformLayout();
 			this.tabControl.ResumeLayout(false);
-			((System.ComponentModel.ISupportInitialize)(this.particleXNumericUpDown)).EndInit();
-			this.particlePropertiesPanel.ResumeLayout(false);
-			this.particlePropertiesPanel.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.particleYNumericUpDown)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.particleWidthNumericUpDown)).EndInit();
 			this.overviewPanel.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
@@ -1059,9 +1264,25 @@
 		private System.Windows.Forms.NumericUpDown particleXNumericUpDown;
 		private System.Windows.Forms.Label particleYLabel;
 		private System.Windows.Forms.NumericUpDown particleYNumericUpDown;
-		private System.Windows.Forms.Label ParticleXLabel;
+		private System.Windows.Forms.Label particleXLabel;
 		private System.Windows.Forms.NumericUpDown particleWidthNumericUpDown;
 		private System.Windows.Forms.Label particleWidthLabel;
+		private System.Windows.Forms.Panel panel1;
+		private System.Windows.Forms.Label clockLabel;
+		private System.Windows.Forms.Label clockRotationLabel;
+		private System.Windows.Forms.ComboBox clockRotationComboBox;
+		private System.Windows.Forms.ComboBox clockComboBox;
+		private System.Windows.Forms.Label clockYLabel;
+		private System.Windows.Forms.NumericUpDown clockXNumericUpDown;
+		private System.Windows.Forms.Label clockXLabel;
+		private System.Windows.Forms.NumericUpDown clockWidthNumericUpDown;
+		private System.Windows.Forms.Label clockWidthLabel;
+		private System.Windows.Forms.NumericUpDown clockYNumericUpDown;
+		private System.Windows.Forms.CheckBox clockMinutesPointerCheckBox;
+		private System.Windows.Forms.Label clockColorMinutesPointerLabel;
+		private System.Windows.Forms.Label clockColorHoursPointerLabel;
+		private System.Windows.Forms.Button clockColorHoursPointerButton;
+		private System.Windows.Forms.Button clockColorMinutesPointerButton;
 
 	}
 }

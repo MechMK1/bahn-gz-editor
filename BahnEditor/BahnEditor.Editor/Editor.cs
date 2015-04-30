@@ -46,6 +46,8 @@ namespace BahnEditor.Editor
 			this.rightComboBox.SelectedIndex = 0;
 			this.leftComboBox.SelectedIndex = 0;
 			this.particleComboBox.SelectedIndex = 0;
+			this.clockComboBox.SelectedIndex = 0;
+			this.clockRotationComboBox.SelectedIndex = 0;
 			this.tabControl.TabPages.Remove(this.zoom2Tab);
 			this.tabControl.TabPages.Remove(this.zoom4Tab);
 			this.NewGraphicArchive();
@@ -130,26 +132,7 @@ namespace BahnEditor.Editor
 					this.zoom4CheckBoxCodeChanged = true;
 					this.zoom4CheckBox.Checked = true;
 				}
-				if (this.zoom1Archive[this.actualGraphic].Properties.HasParticles)
-				{
-					if (this.zoom1Archive[this.actualGraphic].Properties.RawData.HasFlag(GraphicProperties.Properties.Steam))
-						this.particleComboBox.SelectedIndex = 1;
-					else
-						this.particleComboBox.SelectedIndex = 2;
-					this.particleWidthNumericUpDown.Enabled = true;
-					this.particleXNumericUpDown.Enabled = true;
-					this.particleYNumericUpDown.Enabled = true;
-					this.particleWidthNumericUpDown.Value = this.zoom1Archive[this.actualGraphic].Properties.ParticleWidth;
-					this.particleXNumericUpDown.Value = this.zoom1Archive[this.actualGraphic].Properties.ParticleX;
-					this.particleYNumericUpDown.Value = this.zoom1Archive[this.actualGraphic].Properties.ParticleY;
-				}
-				else if(this.particleComboBox.SelectedIndex != 0)
-				{
-					this.particleComboBox.SelectedIndex = 0;
-					this.particleWidthNumericUpDown.Enabled = false;
-					this.particleXNumericUpDown.Enabled = false;
-					this.particleYNumericUpDown.Enabled = false;
-				}
+				this.UpdateProperties();
 				this.lastPath = this.zoom1Archive.FileName;
 				this.hasLoadedGraphic = true;
 				this.drawPanel.Visible = true;
@@ -482,26 +465,7 @@ namespace BahnEditor.Editor
 				}
 				this.ChangeLayer(LayerID.Foreground);
 				Graphic graphic = this.GetActualGraphic();
-				if(graphic.Properties.HasParticles)
-				{
-					if (graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Steam))
-						this.particleComboBox.SelectedIndex = 1;
-					else
-						this.particleComboBox.SelectedIndex = 2;
-					this.particleWidthNumericUpDown.Enabled = true;
-					this.particleXNumericUpDown.Enabled = true;
-					this.particleYNumericUpDown.Enabled = true;
-					this.particleWidthNumericUpDown.Value = graphic.Properties.ParticleWidth;
-					this.particleXNumericUpDown.Value = graphic.Properties.ParticleX;
-					this.particleYNumericUpDown.Value = graphic.Properties.ParticleY;
-				}
-				else
-				{
-					this.particleComboBox.SelectedIndex = 0;
-					this.particleWidthNumericUpDown.Enabled = false;
-					this.particleXNumericUpDown.Enabled = false;
-					this.particleYNumericUpDown.Enabled = false;
-				}
+				this.UpdateProperties();
 				this.drawPanel.Invalidate();
 			}
 		}
@@ -829,6 +793,68 @@ namespace BahnEditor.Editor
 				}
 			}
 			return element;
+		}
+
+		private void UpdateProperties()
+		{
+			Graphic graphic = this.GetActualGraphic();
+			if (graphic.Properties.HasParticles)
+			{
+				if (graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Steam))
+					this.particleComboBox.SelectedIndex = 1;
+				else
+					this.particleComboBox.SelectedIndex = 2;
+				this.particleWidthNumericUpDown.Enabled = true;
+				this.particleXNumericUpDown.Enabled = true;
+				this.particleYNumericUpDown.Enabled = true;
+				this.particleWidthNumericUpDown.Value = graphic.Properties.ParticleWidth;
+				this.particleXNumericUpDown.Value = graphic.Properties.ParticleX;
+				this.particleYNumericUpDown.Value = graphic.Properties.ParticleY;
+			}
+			else if (this.particleComboBox.SelectedIndex != 0)
+			{
+				this.particleComboBox.SelectedIndex = 0;
+				this.particleWidthNumericUpDown.Enabled = false;
+				this.particleXNumericUpDown.Enabled = false;
+				this.particleYNumericUpDown.Enabled = false;
+			}
+			if (graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Clock))
+			{
+				if (graphic.Properties.ClockProperties.HasFlag(ClockProperties.Display24h))
+					this.clockComboBox.SelectedIndex = 2;
+				else
+					this.clockComboBox.SelectedIndex = 1;
+				this.clockColorHoursPointerButton.Enabled = true;
+				this.clockColorMinutesPointerButton.Enabled = true;
+				this.clockMinutesPointerCheckBox.Enabled = true;
+				this.clockRotationComboBox.Enabled = true;
+				this.clockWidthNumericUpDown.Enabled = true;
+				this.clockXNumericUpDown.Enabled = true;
+				this.clockYNumericUpDown.Enabled = true;
+				this.clockXNumericUpDown.Value = graphic.Properties.ClockX;
+				this.clockYNumericUpDown.Value = graphic.Properties.ClockY;
+				this.clockWidthNumericUpDown.Value = graphic.Properties.ClockWidth;
+				this.clockMinutesPointerCheckBox.Checked = graphic.Properties.ClockProperties.HasFlag(ClockProperties.MinutePointer);
+				if (graphic.Properties.ClockProperties.HasFlag(ClockProperties.RotatedNorthWest))
+					this.clockRotationComboBox.SelectedIndex = 1;
+				else if (graphic.Properties.ClockProperties.HasFlag(ClockProperties.RotatedNorthEast))
+					this.clockRotationComboBox.SelectedIndex = 2;
+				else
+					this.clockRotationComboBox.SelectedIndex = 0;
+				this.clockColorHoursPointerButton.BackColor = PixelToColor(graphic.Properties.ClockColorHoursPointer);
+				this.clockColorMinutesPointerButton.BackColor = PixelToColor(graphic.Properties.ClockColorMinutesPointer);
+			}
+			else if (this.clockComboBox.SelectedIndex != 0)
+			{
+				this.particleComboBox.SelectedIndex = 0;
+				this.clockColorHoursPointerButton.Enabled = false;
+				this.clockColorMinutesPointerButton.Enabled = false;
+				this.clockMinutesPointerCheckBox.Enabled = false;
+				this.clockRotationComboBox.Enabled = false;
+				this.clockWidthNumericUpDown.Enabled = false;
+				this.clockXNumericUpDown.Enabled = false;
+				this.clockYNumericUpDown.Enabled = false;
+			}
 		}
 
 
@@ -1297,7 +1323,7 @@ namespace BahnEditor.Editor
 		private void particleXNumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			Graphic graphic = this.GetActualGraphic();
-			if(graphic.Properties.HasParticles)
+			if (graphic != null && graphic.Properties.HasParticles)
 			{
 				graphic.Properties.ParticleX = (int)particleXNumericUpDown.Value;
 			}
@@ -1306,7 +1332,7 @@ namespace BahnEditor.Editor
 		private void particleYNumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			Graphic graphic = this.GetActualGraphic();
-			if (graphic.Properties.HasParticles)
+			if (graphic != null && graphic.Properties.HasParticles)
 			{
 				graphic.Properties.ParticleY = (int)particleYNumericUpDown.Value;
 			}
@@ -1315,12 +1341,157 @@ namespace BahnEditor.Editor
 		private void particleWidthNumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			Graphic graphic = this.GetActualGraphic();
-			if (graphic.Properties.HasParticles)
+			if (graphic != null && graphic.Properties.HasParticles)
 			{
 				graphic.Properties.ParticleWidth = (int)particleWidthNumericUpDown.Value;
 			}
 		}
 
+		private void clockComboBox_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			Graphic graphic = this.GetActualGraphic();
+			if (graphic != null)
+			{
+				switch (this.clockComboBox.SelectedIndex)
+				{
+					case 0:
+						if (graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Clock))
+						{
+							graphic.Properties.RawData &= ~(GraphicProperties.Properties.Clock);
+							this.clockColorHoursPointerButton.Enabled = false;
+							this.clockColorMinutesPointerButton.Enabled = false;
+							this.clockMinutesPointerCheckBox.Enabled = false;
+							this.clockRotationComboBox.Enabled = false;
+							this.clockWidthNumericUpDown.Enabled = false;
+							this.clockXNumericUpDown.Enabled = false;
+							this.clockYNumericUpDown.Enabled = false;
+						}
+						break;
+					case 1:
+						graphic.Properties.RawData |= GraphicProperties.Properties.Clock;
+						graphic.Properties.ClockProperties &= ~ClockProperties.Display24h;
+						graphic.Properties.ClockZ = this.actualLayer;
+						this.clockColorHoursPointerButton.Enabled = true;
+						this.clockColorMinutesPointerButton.Enabled = true;
+						this.clockMinutesPointerCheckBox.Enabled = true;
+						this.clockRotationComboBox.Enabled = true;
+						this.clockWidthNumericUpDown.Enabled = true;
+						this.clockXNumericUpDown.Enabled = true;
+						this.clockYNumericUpDown.Enabled = true;
+						break;
+					case 2:
+						graphic.Properties.RawData |= GraphicProperties.Properties.Clock;
+						graphic.Properties.ClockProperties |= ClockProperties.Display24h;
+						graphic.Properties.ClockZ = this.actualLayer;
+						this.clockColorHoursPointerButton.Enabled = true;
+						this.clockColorMinutesPointerButton.Enabled = true;
+						this.clockMinutesPointerCheckBox.Enabled = true;
+						this.clockRotationComboBox.Enabled = true;
+						this.clockWidthNumericUpDown.Enabled = true;
+						this.clockXNumericUpDown.Enabled = true;
+						this.clockYNumericUpDown.Enabled = true;
+						break;
+					default:
+						throw new ArgumentOutOfRangeException("clockComboBox.SelectedIndex");
+				}
+			}
+		}
+
+		private void clockRotationComboBox_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			Graphic graphic = this.GetActualGraphic();
+			if (graphic != null)
+			{
+				switch (this.clockRotationComboBox.SelectedIndex)
+				{
+					case 0:
+						graphic.Properties.ClockProperties &= ~(ClockProperties.RotatedNorthEast & ClockProperties.RotatedNorthWest);
+						break;
+					case 1:
+						graphic.Properties.ClockProperties &= ~ClockProperties.RotatedNorthEast;
+						graphic.Properties.ClockProperties |= ClockProperties.RotatedNorthWest;
+						break;
+					case 2:
+						graphic.Properties.ClockProperties &= ~ClockProperties.RotatedNorthWest;
+						graphic.Properties.ClockProperties |= ClockProperties.RotatedNorthEast;
+						break;
+					default:
+						throw new ArgumentOutOfRangeException("clockRotationComboBox.SelectedIndex");
+				}
+			}
+		}
+
+		private void clockMinutesPointerCheckBox_CheckedChanged(object sender, EventArgs e)
+		{
+			Graphic graphic = this.GetActualGraphic();
+			if (graphic != null)
+			{
+				if (clockMinutesPointerCheckBox.Checked)
+				{
+					graphic.Properties.ClockProperties |= ClockProperties.MinutePointer;
+				}
+				else
+				{
+					graphic.Properties.ClockProperties &= ~ClockProperties.MinutePointer;
+				}
+			}
+		}
+
+		private void clockXNumericUpDown_ValueChanged(object sender, EventArgs e)
+		{
+			Graphic graphic = this.GetActualGraphic();
+			if (graphic != null && graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Clock))
+			{
+				graphic.Properties.ClockX = (int)clockXNumericUpDown.Value;
+			}
+		}
+
+		private void clockYNumericUpDown_ValueChanged(object sender, EventArgs e)
+		{
+			Graphic graphic = this.GetActualGraphic();
+			if (graphic != null && graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Clock))
+			{
+				graphic.Properties.ClockY = (int)clockYNumericUpDown.Value;
+			}
+		}
+
+		private void clockWidthNumericUpDown_ValueChanged(object sender, EventArgs e)
+		{
+			Graphic graphic = this.GetActualGraphic();
+			if (graphic != null && graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Clock))
+			{
+				graphic.Properties.ClockWidth = (int)clockWidthNumericUpDown.Value;
+				graphic.Properties.ClockHeight = (int)clockWidthNumericUpDown.Value;
+			}
+		}
+
+		private void clockColorHoursPointerButton_Click(object sender, EventArgs e)
+		{
+			Graphic graphic = this.GetActualGraphic();
+			if (graphic != null && graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Clock))
+			{
+				DialogResult dr = this.colorDialog.ShowDialog();
+				if (dr == DialogResult.OK)
+				{
+					graphic.Properties.ClockColorHoursPointer = PixelFromColor(this.colorDialog.Color);
+					this.clockColorHoursPointerButton.BackColor = this.colorDialog.Color;
+				}
+			}
+		}
+
+		private void clockColorMinutesPointerButton_Click(object sender, EventArgs e)
+		{
+			Graphic graphic = this.GetActualGraphic();
+			if (graphic != null && graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Clock))
+			{
+				DialogResult dr = this.colorDialog.ShowDialog();
+				if (dr == DialogResult.OK)
+				{
+					graphic.Properties.ClockColorMinutesPointer = PixelFromColor(this.colorDialog.Color);
+					this.clockColorMinutesPointerButton.BackColor = this.colorDialog.Color;
+				}
+			}
+		}
 		#endregion
 	}
 }
