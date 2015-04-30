@@ -232,7 +232,7 @@
 			// 
 			this.zoomInButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 			this.zoomInButton.Image = ((System.Drawing.Image)(resources.GetObject("zoomInButton.Image")));
-			this.zoomInButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.zoomInButton.ImageTransparentColor = System.Drawing.Color.Black;
 			this.zoomInButton.Name = "zoomInButton";
 			this.zoomInButton.Size = new System.Drawing.Size(23, 22);
 			this.zoomInButton.Text = "Zoom in";
@@ -242,7 +242,7 @@
 			// 
 			this.zoomOutButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 			this.zoomOutButton.Image = ((System.Drawing.Image)(resources.GetObject("zoomOutButton.Image")));
-			this.zoomOutButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.zoomOutButton.ImageTransparentColor = System.Drawing.Color.Black;
 			this.zoomOutButton.Name = "zoomOutButton";
 			this.zoomOutButton.Size = new System.Drawing.Size(23, 22);
 			this.zoomOutButton.Text = "Zoom out";
