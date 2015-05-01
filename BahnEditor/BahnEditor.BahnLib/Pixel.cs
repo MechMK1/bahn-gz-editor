@@ -22,25 +22,31 @@
 			return (PixelProperty)(pixel & 0xFF000000);
 		}
 
-		public static uint SetRed(uint pixel, byte red)
+		public static void SetRed(ref uint pixel, byte red)
 		{
-			return (pixel & 0xFF00FFFF) | (uint)(red << (16));
+			pixel = ((pixel & 0xFF00FFFF) | (uint)(red << (16)));
 		}
 
-		public static uint SetGreen(uint pixel, byte green)
+		public static void SetGreen(ref uint pixel, byte green)
 		{
-			return (pixel & 0xFFFF00FF) | (uint)(green << (8));
+			pixel = ((pixel & 0xFFFF00FF) | (uint)(green << (8)));
 		}
 
-		public static uint SetBlue(uint pixel, byte blue)
+		public static void SetBlue(ref uint pixel, byte blue)
 		{
-			return (pixel & 0xFFFFFF00) | (uint)(blue);
+			pixel = ((pixel & 0xFFFFFF00) | (uint)(blue));
 		}
 
-		public static uint SetProperty(uint pixel, PixelProperty property)
+		public static void SetProperty(ref uint pixel, PixelProperty property)
 		{
 			uint prop = (uint)property;
-			return ((prop & Constants.ColorLogic) == Constants.ColorLogic) ? prop : (pixel & 0x00FFFFFF) | prop;
+
+			// ((prop & Constants.ColorLogic) == Constants.ColorLogic) => If prop uses RGB dataspace...
+			//                                                            ...then return the property alone as data. (E.g. PixelProperty.Transparent always has the same value)
+
+			// (pixel & 0x00FFFFFF) | prop                             => Else, take the right 3 byte (RGB data) and add the property data in.
+            //                                                            In this case, prop only uses the left-most byte
+			pixel = (((prop & Constants.ColorLogic) == Constants.ColorLogic) ? prop : (pixel & 0x00FFFFFF) | prop);
 		}
 
 		public static bool IsSpecial(uint pixel)
