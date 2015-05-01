@@ -62,10 +62,6 @@ namespace BahnEditor.Editor
 			graphic.AddTransparentLayer(LayerID.Foreground);
 			this.zoom1Archive.AddGraphic(graphic);
 			this.actualGraphic = 0;
-			//this.drawPanel.Visible = true;
-			//this.overviewPanel.Visible = true;
-			//this.tabControl.Visible = true;
-			//this.settingsPanel.Visible = true;
 			this.ChangeLayer(LayerID.Foreground);
 			if (this.tabControl.TabPages.Contains(this.zoom2Tab))
 			{
@@ -79,6 +75,7 @@ namespace BahnEditor.Editor
 				this.zoom4CheckBoxCodeChanged = true;
 				this.zoom4CheckBox.Checked = false;
 			}
+			this.UpdateProperties();
 			this.ResizeDrawPanel();
 			this.drawPanel.AutoScrollPosition = new Point(this.drawPanel.HorizontalScroll.Maximum, this.drawPanel.VerticalScroll.Maximum);
 			this.drawPanel.Invalidate();
@@ -464,7 +461,6 @@ namespace BahnEditor.Editor
 					this.zoom4CheckBox.Checked = false;
 				}
 				this.ChangeLayer(LayerID.Foreground);
-				Graphic graphic = this.GetActualGraphic();
 				this.UpdateProperties();
 				this.drawPanel.Invalidate();
 			}
@@ -846,7 +842,7 @@ namespace BahnEditor.Editor
 			}
 			else if (this.clockComboBox.SelectedIndex != 0)
 			{
-				this.particleComboBox.SelectedIndex = 0;
+				this.clockComboBox.SelectedIndex = 0;
 				this.clockColorHoursPointerButton.Enabled = false;
 				this.clockColorMinutesPointerButton.Enabled = false;
 				this.clockMinutesPointerCheckBox.Enabled = false;
@@ -854,6 +850,16 @@ namespace BahnEditor.Editor
 				this.clockWidthNumericUpDown.Enabled = false;
 				this.clockXNumericUpDown.Enabled = false;
 				this.clockYNumericUpDown.Enabled = false;
+			}
+			if(this.zoom1Archive[this.actualGraphic].Properties.RawData.HasFlag(GraphicProperties.Properties.Cursor))
+			{
+				this.cursorNormalDirectionComboBox.SelectedIndex = (int)this.zoom1Archive[this.actualGraphic].Properties.CursorNormalDirection;
+				this.cursorReverseDirectionComboBox.SelectedIndex = (int)this.zoom1Archive[this.actualGraphic].Properties.CursorReverseDirection;
+			}
+			else if(this.cursorNormalDirectionComboBox.SelectedIndex > -1 || this.cursorReverseDirectionComboBox.SelectedIndex > -1)
+			{
+				this.cursorNormalDirectionComboBox.SelectedIndex = -1;
+				this.cursorReverseDirectionComboBox.SelectedIndex = -1;
 			}
 		}
 
@@ -1489,6 +1495,86 @@ namespace BahnEditor.Editor
 				{
 					graphic.Properties.ClockColorMinutesPointer = PixelFromColor(this.colorDialog.Color);
 					this.clockColorMinutesPointerButton.BackColor = this.colorDialog.Color;
+				}
+			}
+		}	
+
+		private void cursorNormalDirectionComboBox_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			Graphic graphic = this.zoom1Archive[this.actualGraphic];
+			graphic.Properties.RawData |= GraphicProperties.Properties.Cursor;
+			if(graphic != null)
+			{
+				switch(cursorNormalDirectionComboBox.SelectedIndex)
+				{
+					case 0:
+						graphic.Properties.CursorNormalDirection = Direction.North;
+						break;
+					case 1:
+						graphic.Properties.CursorNormalDirection = Direction.South;
+						break;
+					case 2:
+						graphic.Properties.CursorNormalDirection = Direction.West;
+						break;
+					case 3:
+						graphic.Properties.CursorNormalDirection = Direction.East;
+						break;
+					case 4:
+						graphic.Properties.CursorNormalDirection = Direction.SouthEast;
+						break;
+					case 5:
+						graphic.Properties.CursorNormalDirection = Direction.NorthWest;
+						break;
+					case 6:
+						graphic.Properties.CursorNormalDirection = Direction.SouthWest;
+						break;
+					case 7:
+						graphic.Properties.CursorNormalDirection = Direction.NorthEast;
+						break;
+					case -1:
+						break;
+					default:
+						throw new ArgumentOutOfRangeException("cursorNormalDirectionComboBox.SelectedIndex");
+				}
+			}
+		}
+
+		private void cursorReverseDirectionComboBox_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			Graphic graphic = this.zoom1Archive[this.actualGraphic];
+			graphic.Properties.RawData |= GraphicProperties.Properties.Cursor;
+			if (graphic != null)
+			{
+				switch (cursorReverseDirectionComboBox.SelectedIndex)
+				{
+					case 0:
+						graphic.Properties.CursorReverseDirection = Direction.North;
+						break;
+					case 1:
+						graphic.Properties.CursorReverseDirection = Direction.South;
+						break;
+					case 2:
+						graphic.Properties.CursorReverseDirection = Direction.West;
+						break;
+					case 3:
+						graphic.Properties.CursorReverseDirection = Direction.East;
+						break;
+					case 4:
+						graphic.Properties.CursorReverseDirection = Direction.SouthEast;
+						break;
+					case 5:
+						graphic.Properties.CursorReverseDirection = Direction.NorthWest;
+						break;
+					case 6:
+						graphic.Properties.CursorReverseDirection = Direction.SouthWest;
+						break;
+					case 7:
+						graphic.Properties.CursorReverseDirection = Direction.NorthEast;
+						break;
+					case -1:
+						break;
+					default:
+						throw new ArgumentOutOfRangeException("cursorReverseDirectionComboBox.SelectedIndex");
 				}
 			}
 		}
