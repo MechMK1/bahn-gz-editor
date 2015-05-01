@@ -6,6 +6,7 @@ using System.Text;
 
 namespace BahnEditor.BahnLib
 {
+	// TODO Write documentation
 	public class Graphic
 	{
 		#region Private Fields

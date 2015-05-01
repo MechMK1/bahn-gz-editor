@@ -1,7 +1,4 @@
-﻿using System;
-using System.Globalization;
-
-namespace BahnEditor.BahnLib
+﻿namespace BahnEditor.BahnLib
 {
 	/// <summary>
 	/// Represents a driving way element in BAHN
