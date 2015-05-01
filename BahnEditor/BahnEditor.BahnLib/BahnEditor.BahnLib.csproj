@@ -42,7 +42,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArchiveElement.cs" />
     <Compile Include="ArchiveIsEmptyException.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="DrivingWay.cs" />
