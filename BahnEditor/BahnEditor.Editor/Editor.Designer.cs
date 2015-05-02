@@ -50,6 +50,11 @@
 			this.backgroundRadioButton = new System.Windows.Forms.RadioButton();
 			this.foregroundRadioButton = new System.Windows.Forms.RadioButton();
 			this.propertiesPanel = new System.Windows.Forms.Panel();
+			this.cursorReverseDirectionComboBox = new System.Windows.Forms.ComboBox();
+			this.cursorReverseDirectionLabel = new System.Windows.Forms.Label();
+			this.cursorNormalDirectionLabel = new System.Windows.Forms.Label();
+			this.cursorLabel = new System.Windows.Forms.Label();
+			this.cursorNormalDirectionComboBox = new System.Windows.Forms.ComboBox();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.clockColorMinutesPointerButton = new System.Windows.Forms.Button();
 			this.clockColorHoursPointerButton = new System.Windows.Forms.Button();
@@ -118,11 +123,6 @@
 			this.zoom1Tab = new System.Windows.Forms.TabPage();
 			this.zoom2Tab = new System.Windows.Forms.TabPage();
 			this.zoom4Tab = new System.Windows.Forms.TabPage();
-			this.cursorNormalDirectionComboBox = new System.Windows.Forms.ComboBox();
-			this.cursorLabel = new System.Windows.Forms.Label();
-			this.cursorNormalDirectionLabel = new System.Windows.Forms.Label();
-			this.cursorReverseDirectionLabel = new System.Windows.Forms.Label();
-			this.cursorReverseDirectionComboBox = new System.Windows.Forms.ComboBox();
 			this.drawPanel = new BahnEditor.Editor.DrawPanel();
 			this.overviewPanel = new BahnEditor.Editor.DrawPanel();
 			this.overviewDownButton = new System.Windows.Forms.Button();
@@ -375,6 +375,73 @@
 			this.propertiesPanel.Name = "propertiesPanel";
 			this.propertiesPanel.Size = new System.Drawing.Size(196, 342);
 			this.propertiesPanel.TabIndex = 9;
+			// 
+			// cursorReverseDirectionComboBox
+			// 
+			this.cursorReverseDirectionComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cursorReverseDirectionComboBox.FormattingEnabled = true;
+			this.cursorReverseDirectionComboBox.Items.AddRange(new object[] {
+            "",
+            "↑",
+            "↓",
+            "←",
+            "→",
+            "↘",
+            "↖",
+            "↙",
+            "↗"});
+			this.cursorReverseDirectionComboBox.Location = new System.Drawing.Point(136, 316);
+			this.cursorReverseDirectionComboBox.Name = "cursorReverseDirectionComboBox";
+			this.cursorReverseDirectionComboBox.Size = new System.Drawing.Size(34, 21);
+			this.cursorReverseDirectionComboBox.TabIndex = 13;
+			this.cursorReverseDirectionComboBox.SelectedIndexChanged += new System.EventHandler(this.cursorReverseDirectionComboBox_SelectedIndexChanged);
+			// 
+			// cursorReverseDirectionLabel
+			// 
+			this.cursorReverseDirectionLabel.AutoSize = true;
+			this.cursorReverseDirectionLabel.Location = new System.Drawing.Point(3, 319);
+			this.cursorReverseDirectionLabel.Name = "cursorReverseDirectionLabel";
+			this.cursorReverseDirectionLabel.Size = new System.Drawing.Size(100, 13);
+			this.cursorReverseDirectionLabel.TabIndex = 12;
+			this.cursorReverseDirectionLabel.Text = "Invertierte Richtung";
+			// 
+			// cursorNormalDirectionLabel
+			// 
+			this.cursorNormalDirectionLabel.AutoSize = true;
+			this.cursorNormalDirectionLabel.Location = new System.Drawing.Point(3, 297);
+			this.cursorNormalDirectionLabel.Name = "cursorNormalDirectionLabel";
+			this.cursorNormalDirectionLabel.Size = new System.Drawing.Size(92, 13);
+			this.cursorNormalDirectionLabel.TabIndex = 11;
+			this.cursorNormalDirectionLabel.Text = "Normale Richtung";
+			// 
+			// cursorLabel
+			// 
+			this.cursorLabel.AutoSize = true;
+			this.cursorLabel.Location = new System.Drawing.Point(3, 278);
+			this.cursorLabel.Name = "cursorLabel";
+			this.cursorLabel.Size = new System.Drawing.Size(179, 13);
+			this.cursorLabel.TabIndex = 10;
+			this.cursorLabel.Text = "Bewegung des Kursors nach Einbau";
+			// 
+			// cursorNormalDirectionComboBox
+			// 
+			this.cursorNormalDirectionComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cursorNormalDirectionComboBox.FormattingEnabled = true;
+			this.cursorNormalDirectionComboBox.Items.AddRange(new object[] {
+            "",
+            "↑",
+            "↓",
+            "←",
+            "→",
+            "↘",
+            "↖",
+            "↙",
+            "↗"});
+			this.cursorNormalDirectionComboBox.Location = new System.Drawing.Point(136, 294);
+			this.cursorNormalDirectionComboBox.Name = "cursorNormalDirectionComboBox";
+			this.cursorNormalDirectionComboBox.Size = new System.Drawing.Size(34, 21);
+			this.cursorNormalDirectionComboBox.TabIndex = 9;
+			this.cursorNormalDirectionComboBox.SelectedIndexChanged += new System.EventHandler(this.cursorNormalDirectionComboBox_SelectedIndexChanged);
 			// 
 			// panel1
 			// 
@@ -1089,71 +1156,6 @@
 			this.zoom4Tab.TabIndex = 2;
 			this.zoom4Tab.Text = "Zoom 4";
 			this.zoom4Tab.UseVisualStyleBackColor = true;
-			// 
-			// cursorNormalDirectionComboBox
-			// 
-			this.cursorNormalDirectionComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.cursorNormalDirectionComboBox.FormattingEnabled = true;
-			this.cursorNormalDirectionComboBox.Items.AddRange(new object[] {
-            "↑",
-            "↓",
-            "←",
-            "→",
-            "↘",
-            "↖",
-            "↙",
-            "↗"});
-			this.cursorNormalDirectionComboBox.Location = new System.Drawing.Point(136, 294);
-			this.cursorNormalDirectionComboBox.Name = "cursorNormalDirectionComboBox";
-			this.cursorNormalDirectionComboBox.Size = new System.Drawing.Size(34, 21);
-			this.cursorNormalDirectionComboBox.TabIndex = 9;
-			this.cursorNormalDirectionComboBox.SelectedIndexChanged += new System.EventHandler(this.cursorNormalDirectionComboBox_SelectedIndexChanged);
-			// 
-			// cursorLabel
-			// 
-			this.cursorLabel.AutoSize = true;
-			this.cursorLabel.Location = new System.Drawing.Point(3, 278);
-			this.cursorLabel.Name = "cursorLabel";
-			this.cursorLabel.Size = new System.Drawing.Size(179, 13);
-			this.cursorLabel.TabIndex = 10;
-			this.cursorLabel.Text = "Bewegung des Kursors nach Einbau";
-			// 
-			// cursorNormalDirectionLabel
-			// 
-			this.cursorNormalDirectionLabel.AutoSize = true;
-			this.cursorNormalDirectionLabel.Location = new System.Drawing.Point(3, 297);
-			this.cursorNormalDirectionLabel.Name = "cursorNormalDirectionLabel";
-			this.cursorNormalDirectionLabel.Size = new System.Drawing.Size(92, 13);
-			this.cursorNormalDirectionLabel.TabIndex = 11;
-			this.cursorNormalDirectionLabel.Text = "Normale Richtung";
-			// 
-			// cursorReverseDirectionLabel
-			// 
-			this.cursorReverseDirectionLabel.AutoSize = true;
-			this.cursorReverseDirectionLabel.Location = new System.Drawing.Point(3, 319);
-			this.cursorReverseDirectionLabel.Name = "cursorReverseDirectionLabel";
-			this.cursorReverseDirectionLabel.Size = new System.Drawing.Size(100, 13);
-			this.cursorReverseDirectionLabel.TabIndex = 12;
-			this.cursorReverseDirectionLabel.Text = "Invertierte Richtung";
-			// 
-			// cursorReverseDirectionComboBox
-			// 
-			this.cursorReverseDirectionComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.cursorReverseDirectionComboBox.FormattingEnabled = true;
-			this.cursorReverseDirectionComboBox.Items.AddRange(new object[] {
-            "↑",
-            "↓",
-            "←",
-            "→",
-            "↘",
-            "↖",
-            "↙",
-            "↗"});
-			this.cursorReverseDirectionComboBox.Location = new System.Drawing.Point(136, 316);
-			this.cursorReverseDirectionComboBox.Name = "cursorReverseDirectionComboBox";
-			this.cursorReverseDirectionComboBox.Size = new System.Drawing.Size(34, 21);
-			this.cursorReverseDirectionComboBox.TabIndex = 13;
-			this.cursorReverseDirectionComboBox.SelectedIndexChanged += new System.EventHandler(this.cursorReverseDirectionComboBox_SelectedIndexChanged);
 			// 
 			// drawPanel
 			// 

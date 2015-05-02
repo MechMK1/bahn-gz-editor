@@ -18,6 +18,8 @@ namespace BahnEditor.Editor
 		private bool userMadeChanges = false;
 		private bool zoom2CheckBoxCodeChanged = false;
 		private bool zoom4CheckBoxCodeChanged = false;
+		private bool cursorNormalDirectionCBCodeChanged = false;
+		private bool cursorReverseDirectionCBCodeChanged = false;
 		private GraphicArchive zoom1Archive;
 		private GraphicArchive zoom2Archive;
 		private GraphicArchive zoom4Archive;
@@ -75,6 +77,8 @@ namespace BahnEditor.Editor
 				this.zoom4CheckBoxCodeChanged = true;
 				this.zoom4CheckBox.Checked = false;
 			}
+			this.userMadeChanges = false;
+			this.lastPath = "";
 			this.UpdateProperties();
 			this.ResizeDrawPanel();
 			this.drawPanel.AutoScrollPosition = new Point(this.drawPanel.HorizontalScroll.Maximum, this.drawPanel.VerticalScroll.Maximum);
@@ -531,21 +535,21 @@ namespace BahnEditor.Editor
 				throw new Exception("Internal Error");
 		}
 
-		private bool ExitEditor()
+		private bool AskSaveGraphic()
 		{
 			if (this.userMadeChanges == true)
 			{
 				DialogResult dr = MessageBox.Show("Soll die Grafik gespeichert werden?", "Speichern", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
 				if (dr == DialogResult.Cancel)
 				{
-					return true;
+					return false;
 				}
 				else if (dr == DialogResult.Yes)
 				{
 					this.ClickOnSaveButton(false);
 				}
 			}
-			return false;
+			return true;
 		}
 
 		private uint GetPixelFromComboBox(int index, uint lastPixel)
@@ -794,6 +798,8 @@ namespace BahnEditor.Editor
 		private void UpdateProperties()
 		{
 			Graphic graphic = this.GetActualGraphic();
+			if (graphic == null)
+				return;
 			if (graphic.Properties.HasParticles)
 			{
 				if (graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Steam))
@@ -851,14 +857,18 @@ namespace BahnEditor.Editor
 				this.clockXNumericUpDown.Enabled = false;
 				this.clockYNumericUpDown.Enabled = false;
 			}
-			if(this.zoom1Archive[this.actualGraphic].Properties.RawData.HasFlag(GraphicProperties.Properties.Cursor))
+			if (this.zoom1Archive[this.actualGraphic].Properties.RawData.HasFlag(GraphicProperties.Properties.Cursor))
 			{
-				this.cursorNormalDirectionComboBox.SelectedIndex = (int)this.zoom1Archive[this.actualGraphic].Properties.CursorNormalDirection;
-				this.cursorReverseDirectionComboBox.SelectedIndex = (int)this.zoom1Archive[this.actualGraphic].Properties.CursorReverseDirection;
+				this.cursorNormalDirectionCBCodeChanged = true;
+				this.cursorNormalDirectionComboBox.SelectedIndex = (int)this.zoom1Archive[this.actualGraphic].Properties.CursorNormalDirection + 1;
+				this.cursorReverseDirectionCBCodeChanged = true;
+				this.cursorReverseDirectionComboBox.SelectedIndex = (int)this.zoom1Archive[this.actualGraphic].Properties.CursorReverseDirection + 1;
 			}
-			else if(this.cursorNormalDirectionComboBox.SelectedIndex > -1 || this.cursorReverseDirectionComboBox.SelectedIndex > -1)
+			else if (this.cursorNormalDirectionComboBox.SelectedIndex > -1 || this.cursorReverseDirectionComboBox.SelectedIndex > -1)
 			{
+				this.cursorNormalDirectionCBCodeChanged = true;
 				this.cursorNormalDirectionComboBox.SelectedIndex = -1;
+				this.cursorReverseDirectionCBCodeChanged = true;
 				this.cursorReverseDirectionComboBox.SelectedIndex = -1;
 			}
 		}
@@ -926,7 +936,7 @@ namespace BahnEditor.Editor
 
 		private void Editor_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			e.Cancel = this.ExitEditor();
+			e.Cancel = !this.AskSaveGraphic();
 		}
 
 		private void drawPanel_MouseMove(object sender, MouseEventArgs e)
@@ -1301,12 +1311,14 @@ namespace BahnEditor.Editor
 
 		private void newToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			if (!this.AskSaveGraphic())
+				return;
 			this.NewGraphicArchive();
 		}
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (ExitEditor())
+			if (!this.AskSaveGraphic())
 				return;
 			this.loadFileDialog.ShowDialog();
 		}
@@ -1497,84 +1509,52 @@ namespace BahnEditor.Editor
 					this.clockColorMinutesPointerButton.BackColor = this.colorDialog.Color;
 				}
 			}
-		}	
+		}
 
 		private void cursorNormalDirectionComboBox_SelectedIndexChanged(object sender, EventArgs e)
 		{
+			if (this.cursorNormalDirectionCBCodeChanged)
+			{
+				this.cursorNormalDirectionCBCodeChanged = false;
+				return;
+			}
 			Graphic graphic = this.zoom1Archive[this.actualGraphic];
 			graphic.Properties.RawData |= GraphicProperties.Properties.Cursor;
-			if(graphic != null)
+			if (graphic != null)
 			{
-				switch(cursorNormalDirectionComboBox.SelectedIndex)
+				if (cursorNormalDirectionComboBox.SelectedIndex == 0)
 				{
-					case 0:
-						graphic.Properties.CursorNormalDirection = Direction.North;
-						break;
-					case 1:
-						graphic.Properties.CursorNormalDirection = Direction.South;
-						break;
-					case 2:
-						graphic.Properties.CursorNormalDirection = Direction.West;
-						break;
-					case 3:
-						graphic.Properties.CursorNormalDirection = Direction.East;
-						break;
-					case 4:
-						graphic.Properties.CursorNormalDirection = Direction.SouthEast;
-						break;
-					case 5:
-						graphic.Properties.CursorNormalDirection = Direction.NorthWest;
-						break;
-					case 6:
-						graphic.Properties.CursorNormalDirection = Direction.SouthWest;
-						break;
-					case 7:
-						graphic.Properties.CursorNormalDirection = Direction.NorthEast;
-						break;
-					case -1:
-						break;
-					default:
-						throw new ArgumentOutOfRangeException("cursorNormalDirectionComboBox.SelectedIndex");
+					graphic.Properties.RawData &= ~GraphicProperties.Properties.Cursor;
+					this.cursorReverseDirectionCBCodeChanged = true;
+					this.cursorReverseDirectionComboBox.SelectedIndex = 0;
+				}
+				else
+				{
+					graphic.Properties.CursorNormalDirection = (Direction)(cursorNormalDirectionComboBox.SelectedIndex - 1);
 				}
 			}
 		}
 
 		private void cursorReverseDirectionComboBox_SelectedIndexChanged(object sender, EventArgs e)
 		{
+			if(this.cursorReverseDirectionCBCodeChanged)
+			{
+				this.cursorReverseDirectionCBCodeChanged = false;
+				return;
+			}
 			Graphic graphic = this.zoom1Archive[this.actualGraphic];
 			graphic.Properties.RawData |= GraphicProperties.Properties.Cursor;
 			if (graphic != null)
 			{
-				switch (cursorReverseDirectionComboBox.SelectedIndex)
+				if (cursorReverseDirectionComboBox.SelectedIndex == 0)
 				{
-					case 0:
-						graphic.Properties.CursorReverseDirection = Direction.North;
-						break;
-					case 1:
-						graphic.Properties.CursorReverseDirection = Direction.South;
-						break;
-					case 2:
-						graphic.Properties.CursorReverseDirection = Direction.West;
-						break;
-					case 3:
-						graphic.Properties.CursorReverseDirection = Direction.East;
-						break;
-					case 4:
-						graphic.Properties.CursorReverseDirection = Direction.SouthEast;
-						break;
-					case 5:
-						graphic.Properties.CursorReverseDirection = Direction.NorthWest;
-						break;
-					case 6:
-						graphic.Properties.CursorReverseDirection = Direction.SouthWest;
-						break;
-					case 7:
-						graphic.Properties.CursorReverseDirection = Direction.NorthEast;
-						break;
-					case -1:
-						break;
-					default:
-						throw new ArgumentOutOfRangeException("cursorReverseDirectionComboBox.SelectedIndex");
+					graphic.Properties.RawData &= ~GraphicProperties.Properties.Cursor;
+					this.cursorNormalDirectionCBCodeChanged = true;
+					this.cursorNormalDirectionComboBox.SelectedIndex = 0;
+				}
+				else
+				{
+					graphic.Properties.CursorReverseDirection = (Direction)(cursorReverseDirectionComboBox.SelectedIndex - 1);
 				}
 			}
 		}
