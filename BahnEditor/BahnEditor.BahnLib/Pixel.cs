@@ -45,7 +45,7 @@
 			//                                                            ...then return the property alone as data. (E.g. PixelProperty.Transparent always has the same value)
 
 			// (pixel & 0x00FFFFFF) | prop                             => Else, take the right 3 byte (RGB data) and add the property data in.
-            //                                                            In this case, prop only uses the left-most byte
+			//                                                            In this case, prop only uses the left-most byte
 			pixel = (((prop & Constants.ColorLogic) == Constants.ColorLogic) ? prop : (pixel & 0x00FFFFFF) | prop);
 		}
 
