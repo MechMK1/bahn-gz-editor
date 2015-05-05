@@ -112,48 +112,43 @@ namespace BahnEditor.BahnLib
 			{
 				try
 				{
-					IEnumerable<ArchiveElement> enumerable = graphics.Where(x => x.ElementNumber == index);
+					Graphic graphic;
 					for (int i = 1; i < 4; i++)
 					{
-						ArchiveElement archiveElement = enumerable.SingleOrDefault(x => x.AnimationPhase == 0 && x.Alternative == i);
-						if (archiveElement != null)
-						{
-							if (archiveElement.Graphic.IsEmpty() && this.FileName != null)
-							{
-								using (FileStream stream = File.Open(this.FileName, FileMode.Open))
-								{
-									stream.Seek(archiveElement.SeekPositionGraphicData, SeekOrigin.Begin);
-									using (BinaryReader br = new BinaryReader(stream))
-									{
-										archiveElement.Graphic.LoadData(br);
-									}
-								}
-							}
-							return archiveElement.Graphic;
-						}
+						graphic = this[index, 0, i];
+						if (graphic != null)
+							return graphic;
 					}
-					ArchiveElement element = enumerable.SingleOrDefault(x => x.AnimationPhase == 0 && x.Alternative == 0);
-					if (element != null)
-					{
-						if (element.Graphic.IsEmpty() && this.FileName != null)
-						{
-							using (FileStream stream = File.Open(this.FileName, FileMode.Open))
-							{
-								stream.Seek(element.SeekPositionGraphicData, SeekOrigin.Begin);
-								using (BinaryReader br = new BinaryReader(stream))
-								{
-									element.Graphic.LoadData(br);
-								}
-							}
-						}
-						return element.Graphic;
-					}
-					return null;
+					return this[index, 0, 0];
 				}
 				catch (InvalidOperationException)
 				{
 					return null;
 				}
+			}
+		}
+
+		public Graphic this[int elementNumber, int animationPhase, int alternative]
+		{
+			get
+			{
+				ArchiveElement element = this.graphics.SingleOrDefault(x => x.ElementNumber == elementNumber && x.AnimationPhase == animationPhase && x.Alternative == alternative);
+				if (element != null)
+				{
+					if (element.Graphic.IsEmpty() && this.FileName != null)
+					{
+						using (FileStream stream = File.Open(this.FileName, FileMode.Open))
+						{
+							stream.Seek(element.SeekPositionGraphicData, SeekOrigin.Begin);
+							using (BinaryReader br = new BinaryReader(stream))
+							{
+								element.Graphic.LoadData(br);
+							}
+						}
+					}
+					return element.Graphic;
+				}
+				return null;
 			}
 		}
 
