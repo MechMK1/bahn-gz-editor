@@ -113,12 +113,15 @@ namespace BahnEditor.BahnLib
 				try
 				{
 					Graphic graphic;
+					// Try if alternatives exist...
 					for (int i = 1; i < 4; i++)
 					{
 						graphic = this[index, 0, i];
 						if (graphic != null)
 							return graphic;
 					}
+
+					// If not, return the first
 					return this[index, 0, 0];
 				}
 				catch (InvalidOperationException)
@@ -150,6 +153,18 @@ namespace BahnEditor.BahnLib
 				}
 				return null;
 			}
+		}
+
+		internal IEnumerable<ArchiveElement> this[Func<ArchiveElement, bool> func]
+		{
+			get {
+				var res = from g in this.graphics
+						  where func(g)
+						  select g;
+
+				return res;
+			}
+
 		}
 
 		/// <summary>
@@ -349,7 +364,7 @@ namespace BahnEditor.BahnLib
 		/// <summary>
 		/// Represents an element in a graphic archive
 		/// </summary>
-		private class ArchiveElement
+		internal class ArchiveElement
 		{
 			#region Properties
 			/// <summary>
