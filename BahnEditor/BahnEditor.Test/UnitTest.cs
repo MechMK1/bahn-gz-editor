@@ -191,6 +191,13 @@ namespace BahnEditor.Test
 			Assert.AreEqual<byte>(1, Pixel.GetRed(a));
 			Assert.AreEqual<byte>(1, (byte)(a >> 16));
 		}
+
+		[TestMethod]
+		public void TestAnimation()
+		{
+			GraphicArchive archive = GraphicArchive.Load("lturm.uz1");
+			Animation animation = new Animation(archive, 1, 1);
+		}
 		#endregion Tests
 
 		#region Private Methods
