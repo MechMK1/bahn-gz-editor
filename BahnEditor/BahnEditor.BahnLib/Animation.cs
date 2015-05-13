@@ -20,6 +20,13 @@ namespace BahnEditor.BahnLib
 
 		#endregion Private Fields
 
+		#region Internal Constructors
+
+		internal Animation()
+		{
+		}
+
+		#endregion Internal Constructors
 
 		#region Public Indexers
 
@@ -27,12 +34,13 @@ namespace BahnEditor.BahnLib
 		{
 			get
 			{
+				if (!animationPrograms.ContainsKey(new Tuple<int, int>(elementID, alternative)))
+					return null;
 				return animationPrograms[new Tuple<int, int>(elementID, alternative)];
 			}
 		}
 
 		#endregion Public Indexers
-
 
 		#region Public Methods
 
@@ -40,10 +48,7 @@ namespace BahnEditor.BahnLib
 		{
 			if (File.Exists(path))
 			{
-				using (FileStream stream = File.OpenRead(path))
-				{
-					return Load(stream);
-				}
+				return Load(File.ReadAllLines(path));
 			}
 			else throw new FileNotFoundException("File not found", path);
 		}
@@ -56,6 +61,14 @@ namespace BahnEditor.BahnLib
 		public void RemoveAnimationProgram(int elementID, int alternative)
 		{
 			this.animationPrograms.Remove(new Tuple<int, int>(elementID, alternative));
+		}
+
+		public int AnimationProgramCount
+		{
+			get
+			{
+				return this.animationPrograms.Count;
+			}
 		}
 
 		public bool Save(string path, bool overwrite)
@@ -74,16 +87,95 @@ namespace BahnEditor.BahnLib
 
 		#endregion Public Methods
 
-
 		#region Private Methods
 
-		private static Animation Load(FileStream stream)
+		private static Animation Load(string[] lines)
 		{
-			return null;
+			Animation animation = new Animation();
+
+			for (int i = 0; i < lines.Length; i++)
+			{
+				if (lines[i] == "END")
+					break;
+				if (!lines[i].StartsWith(";"))
+				{
+					string line = lines[i].Replace(" ", "");
+					if (line.StartsWith("xd="))
+					{
+						string[] s = line.Split(',');
+						int xDiff = int.Parse(s[0].Substring(3));
+						int yDiff = int.Parse(s[2].Substring(3));
+						int width = int.Parse(s[1].Substring(2));
+						int height = int.Parse(s[3].Substring(2));
+						int steps = int.Parse(s[4].Substring(3));
+						string IDs = s[5].Substring(4);
+						int alternative = Constants.NoAlternative;
+						int elementID;
+						if (Char.IsLetter(IDs, IDs.Length - 1))
+						{
+							switch(IDs[IDs.Length - 1])
+							{
+								case 'a':
+									alternative = 1;
+									break;
+								case 'b':
+									alternative = 2;
+									break;
+								case 'c':
+									alternative = 3;
+									break;
+								case 'd':
+									alternative = 4;
+									break;
+								default:
+									throw new InvalidDataException("Alternative");
+							}
+							elementID = int.Parse(IDs.Remove(IDs.Length - 1));
+						}
+						else
+						{
+							elementID = int.Parse(IDs);
+						}
+						AnimationProgram AnimationProgram = new AnimationProgram(xDiff, yDiff, width, height);
+						for (int j = 0; j < steps; i++, j++)
+						{
+							string step = lines[i+1].Replace(" ", "");
+							string[] stepArray = step.Split(',');
+							int phase = int.Parse(stepArray[0]);
+							int minimumTime = int.Parse(stepArray[1]);
+							int maximumTime = int.Parse(stepArray[2]);
+							int sound = int.Parse(stepArray[3]);
+							AnimationStep animationStep = new AnimationStep(phase, minimumTime, maximumTime, sound);
+							AnimationProgram.AddAnimationStep(animationStep);
+						}
+						animation.AddAnimationProgram(AnimationProgram, elementID, alternative);
+					}
+				}
+			}
+
+			return animation;
 		}
 
 		private bool Save(FileStream stream)
 		{
+			using(StreamWriter sw = new StreamWriter(stream, System.Text.Encoding.Unicode))
+			{
+				foreach (var program in this.animationPrograms)
+				{
+					if (program.Value.AnimationStepCount > 0)
+					{
+						string symbol = String.Format("{0}{1}", program.Key.Item1, program.Key.Item2 == 0 ? "" : (program.Key.Item2 - 1 + 'a').ToString());
+						string headLine = String.Format("xd={0},b={1},yd={2},h={3},st={4},sym={5}", program.Value.XDiff, program.Value.Width, program.Value.YDiff, program.Value.Height, program.Value.AnimationStepCount, symbol);
+						sw.WriteLine(headLine);
+						for (int i = 0; i < program.Value.AnimationStepCount; i++)
+						{
+							sw.WriteLine(String.Format("{0},{1},{2},{3}", program.Value[i].AnimationPhase, program.Value[i].MinimumTime, program.Value[i].MaximumTime, program.Value[i].Sound));
+						}
+					}
+					sw.WriteLine(";");
+				}
+				sw.WriteLine("END");
+			}
 			return false;
 		}
 

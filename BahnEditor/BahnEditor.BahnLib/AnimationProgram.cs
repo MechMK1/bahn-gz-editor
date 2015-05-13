@@ -44,6 +44,8 @@ namespace BahnEditor.BahnLib
 		{
 			get
 			{
+				if (index >= this.animationSteps.Count)
+					return null;
 				return this.animationSteps[index];
 			}
 			set
@@ -51,6 +53,14 @@ namespace BahnEditor.BahnLib
 				if (value == null)
 					throw new ArgumentNullException("value");
 				this.animationSteps[index] = value;
+			}
+		}
+
+		public int AnimationStepCount
+		{
+			get
+			{
+				return this.animationSteps.Count;
 			}
 		}
 
