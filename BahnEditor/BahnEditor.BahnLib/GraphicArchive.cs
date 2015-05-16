@@ -105,7 +105,7 @@ namespace BahnEditor.BahnLib
 			}
 		}
 
-		internal IEnumerable<ArchiveElement> this[Func<ArchiveElement, bool> func]
+		/*internal IEnumerable<ArchiveElement> this[Func<ArchiveElement, bool> func]
 		{
 			get
 			{
@@ -115,7 +115,7 @@ namespace BahnEditor.BahnLib
 
 				return res;
 			}
-		}
+		}*/
 
 		/// <summary>
 		/// Adds a graphic to the archive at the last position
@@ -274,6 +274,8 @@ namespace BahnEditor.BahnLib
 		/// <exception cref="System.IO.InvalidDataException"/>
 		public static GraphicArchive Load(string path)
 		{
+			if (path == null)
+				throw new ArgumentNullException("path");
 			if (File.Exists(path))
 			{
 				GraphicArchive archive = null;
@@ -282,7 +284,7 @@ namespace BahnEditor.BahnLib
 					archive = Load(stream);
 					archive.FileName = path;
 				}
-				if (archive != null)
+				if (archive != null && archive.ZoomFactor == ZoomFactor.Zoom1)
 				{
 					string animationPath = path.Remove(path.Length - 3) + "bnm";
 					if (File.Exists(animationPath))

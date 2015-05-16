@@ -40,8 +40,6 @@
 			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
 			this.zoomInButton = new System.Windows.Forms.ToolStripButton();
 			this.zoomOutButton = new System.Windows.Forms.ToolStripButton();
-			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-			this.helpToolStripButton = new System.Windows.Forms.ToolStripButton();
 			this.controlPanel = new System.Windows.Forms.Panel();
 			this.frontRadioButton = new System.Windows.Forms.RadioButton();
 			this.foregroundAboveRadioButton = new System.Windows.Forms.RadioButton();
@@ -157,9 +155,7 @@
             this.pasteToolStripButton,
             this.toolStripSeparator4,
             this.zoomInButton,
-            this.zoomOutButton,
-            this.toolStripSeparator1,
-            this.helpToolStripButton});
+            this.zoomOutButton});
 			this.toolStrip.Location = new System.Drawing.Point(0, 24);
 			this.toolStrip.Name = "toolStrip";
 			this.toolStrip.Size = new System.Drawing.Size(1008, 25);
@@ -252,20 +248,6 @@
 			this.zoomOutButton.Size = new System.Drawing.Size(23, 22);
 			this.zoomOutButton.Text = "Zoom out";
 			this.zoomOutButton.Click += new System.EventHandler(this.zoomOutButton_Click);
-			// 
-			// toolStripSeparator1
-			// 
-			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-			// 
-			// helpToolStripButton
-			// 
-			this.helpToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.helpToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("helpToolStripButton.Image")));
-			this.helpToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.helpToolStripButton.Name = "helpToolStripButton";
-			this.helpToolStripButton.Size = new System.Drawing.Size(23, 22);
-			this.helpToolStripButton.Text = "He&lp";
 			// 
 			// controlPanel
 			// 
@@ -1309,7 +1291,6 @@
 		private System.Windows.Forms.ToolStripButton copyToolStripButton;
 		private System.Windows.Forms.ToolStripButton pasteToolStripButton;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
-		private System.Windows.Forms.ToolStripButton helpToolStripButton;
 		private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
@@ -1336,7 +1317,6 @@
 		private System.Windows.Forms.ToolStripMenuItem searchToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
 		private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 		private System.Windows.Forms.Panel particlePropertiesPanel;
 		private System.Windows.Forms.NumericUpDown particleXNumericUpDown;
 		private System.Windows.Forms.Label particleYLabel;

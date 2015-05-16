@@ -252,6 +252,9 @@ namespace BahnEditor.Test
 			Assert.IsNotNull(archive.Animation);
 			Assert.AreEqual<int>(expectedArchive.Animation.AnimationProgramCount, archive.Animation.AnimationProgramCount);
 			CompareAnimationProgram(expectedProgram, archive.Animation[0,Constants.NoAlternative]);
+
+			System.IO.File.Delete("testAnimation.uz1");
+			System.IO.File.Delete("testAnimation.bnm");
 		}
 		#endregion Tests
 

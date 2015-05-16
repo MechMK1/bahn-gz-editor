@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 
 namespace BahnEditor.BahnLib
@@ -97,23 +98,23 @@ namespace BahnEditor.BahnLib
 			{
 				if (lines[i] == "END")
 					break;
-				if (!lines[i].StartsWith(";"))
+				if (lines[i][0] != ';')
 				{
 					string line = lines[i].Replace(" ", "");
-					if (line.StartsWith("xd="))
+					if (line.StartsWith("xd=", StringComparison.Ordinal))
 					{
 						string[] s = line.Split(',');
-						int xDiff = int.Parse(s[0].Substring(3));
-						int yDiff = int.Parse(s[2].Substring(3));
-						int width = int.Parse(s[1].Substring(2));
-						int height = int.Parse(s[3].Substring(2));
-						int steps = int.Parse(s[4].Substring(3));
+						int xDiff = int.Parse(s[0].Substring(3), CultureInfo.InvariantCulture);
+						int yDiff = int.Parse(s[2].Substring(3), CultureInfo.InvariantCulture);
+						int width = int.Parse(s[1].Substring(2), CultureInfo.InvariantCulture);
+						int height = int.Parse(s[3].Substring(2), CultureInfo.InvariantCulture);
+						int steps = int.Parse(s[4].Substring(3), CultureInfo.InvariantCulture);
 						string IDs = s[5].Substring(4);
 						int alternative = Constants.NoAlternative;
 						int elementID;
 						if (Char.IsLetter(IDs, IDs.Length - 1))
 						{
-							switch(IDs[IDs.Length - 1])
+							switch (IDs[IDs.Length - 1])
 							{
 								case 'a':
 									alternative = 1;
@@ -130,21 +131,21 @@ namespace BahnEditor.BahnLib
 								default:
 									throw new InvalidDataException("Alternative");
 							}
-							elementID = int.Parse(IDs.Remove(IDs.Length - 1));
+							elementID = int.Parse(IDs.Remove(IDs.Length - 1), CultureInfo.InvariantCulture);
 						}
 						else
 						{
-							elementID = int.Parse(IDs);
+							elementID = int.Parse(IDs, CultureInfo.InvariantCulture);
 						}
 						AnimationProgram AnimationProgram = new AnimationProgram(xDiff, yDiff, width, height);
 						for (int j = 0; j < steps; i++, j++)
 						{
-							string step = lines[i+1].Replace(" ", "");
+							string step = lines[i + 1].Replace(" ", "");
 							string[] stepArray = step.Split(',');
-							int phase = int.Parse(stepArray[0]);
-							int minimumTime = int.Parse(stepArray[1]);
-							int maximumTime = int.Parse(stepArray[2]);
-							int sound = int.Parse(stepArray[3]);
+							int phase = int.Parse(stepArray[0], CultureInfo.InvariantCulture);
+							int minimumTime = int.Parse(stepArray[1], CultureInfo.InvariantCulture);
+							int maximumTime = int.Parse(stepArray[2], CultureInfo.InvariantCulture);
+							int sound = int.Parse(stepArray[3], CultureInfo.InvariantCulture);
 							AnimationStep animationStep = new AnimationStep(phase, minimumTime, maximumTime, sound);
 							AnimationProgram.AddAnimationStep(animationStep);
 						}
@@ -158,25 +159,25 @@ namespace BahnEditor.BahnLib
 
 		private bool Save(FileStream stream)
 		{
-			using(StreamWriter sw = new StreamWriter(stream, System.Text.Encoding.Unicode))
+			using (StreamWriter sw = new StreamWriter(stream, System.Text.Encoding.Unicode))
 			{
 				foreach (var program in this.animationPrograms)
 				{
 					if (program.Value.AnimationStepCount > 0)
 					{
-						string symbol = String.Format("{0}{1}", program.Key.Item1, program.Key.Item2 == 0 ? "" : (program.Key.Item2 - 1 + 'a').ToString());
-						string headLine = String.Format("xd={0},b={1},yd={2},h={3},st={4},sym={5}", program.Value.XDiff, program.Value.Width, program.Value.YDiff, program.Value.Height, program.Value.AnimationStepCount, symbol);
+						string symbol = String.Format(CultureInfo.InvariantCulture, "{0}{1}", program.Key.Item1, program.Key.Item2 == 0 ? "" : (program.Key.Item2 - 1 + 'a').ToString(CultureInfo.InvariantCulture));
+						string headLine = String.Format(CultureInfo.InvariantCulture, "xd={0},b={1},yd={2},h={3},st={4},sym={5}", program.Value.XDiff, program.Value.Width, program.Value.YDiff, program.Value.Height, program.Value.AnimationStepCount, symbol);
 						sw.WriteLine(headLine);
 						for (int i = 0; i < program.Value.AnimationStepCount; i++)
 						{
-							sw.WriteLine(String.Format("{0},{1},{2},{3}", program.Value[i].AnimationPhase, program.Value[i].MinimumTime, program.Value[i].MaximumTime, program.Value[i].Sound));
+							sw.WriteLine(String.Format(CultureInfo.InvariantCulture, "{0},{1},{2},{3}", program.Value[i].AnimationPhase, program.Value[i].MinimumTime, program.Value[i].MaximumTime, program.Value[i].Sound));
 						}
 					}
 					sw.WriteLine(";");
 				}
 				sw.WriteLine("END");
 			}
-			return false;
+			return true;
 		}
 
 		#endregion Private Methods
