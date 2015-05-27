@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+﻿using BahnEditor.BahnLib;
+using System;
 using System.Drawing;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using BahnEditor.BahnLib;
 
 namespace BahnEditor.Editor
 {
@@ -18,6 +12,8 @@ namespace BahnEditor.Editor
 		private Rectangle dragBoxFromMouseDown;
 		private int rowIndexFromMouseDown;
 		private int rowIndexOfItemUnderMouseToDrop;
+		private bool cellValueCodeChanged = false;
+		private bool numericCodeChanged = false;
 
 		public AnimationForm()
 		{
@@ -32,6 +28,7 @@ namespace BahnEditor.Editor
 
 		private void AnimationForm_Load(object sender, EventArgs e)
 		{
+			this.dataGridView.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
 			ChangeAnimationProgram();
 		}
 
@@ -45,7 +42,23 @@ namespace BahnEditor.Editor
 				this.deleteAnimationStepButton.Visible = true;
 				this.upAnimationStepButton.Visible = true;
 				this.downAnimationStepButton.Visible = true;
+				this.deleteAnimationButton.Visible = true;
+				this.numericCodeChanged = true;
+				this.xNumericUpDown.Value = this.editor.Zoom1Archive.Animation[this.editor.ActualGraphicID, this.editor.ActualAlternativeID].XDiff;
+				this.yNumericUpDown.Value = this.editor.Zoom1Archive.Animation[this.editor.ActualGraphicID, this.editor.ActualAlternativeID].YDiff;
+				this.widthNumericUpDown.Value = this.editor.Zoom1Archive.Animation[this.editor.ActualGraphicID, this.editor.ActualAlternativeID].Width;
+				this.heightNumericUpDown.Value = this.editor.Zoom1Archive.Animation[this.editor.ActualGraphicID, this.editor.ActualAlternativeID].Height;
+				this.numericCodeChanged = false;
+				this.xLabel.Visible = true;
+				this.xNumericUpDown.Visible = true;
+				this.yLabel.Visible = true;
+				this.yNumericUpDown.Visible = true;
+				this.widthLabel.Visible = true;
+				this.widthNumericUpDown.Visible = true;
+				this.heightLabel.Visible = true;
+				this.heightNumericUpDown.Visible = true;
 				this.noAnimationLabel.Visible = false;
+				this.createAnimationProgramButton.Visible = false;
 				AnimationProgram program = this.editor.Zoom1Archive.Animation[this.editor.ActualGraphicID, this.editor.ActualAlternativeID];
 				for (int i = 0; i < program.AnimationStepCount; i++)
 				{
@@ -58,7 +71,17 @@ namespace BahnEditor.Editor
 			this.deleteAnimationStepButton.Visible = false;
 			this.upAnimationStepButton.Visible = false;
 			this.downAnimationStepButton.Visible = false;
+			this.deleteAnimationButton.Visible = false;
+			this.xLabel.Visible = false;
+			this.xNumericUpDown.Visible = false;
+			this.yLabel.Visible = false;
+			this.yNumericUpDown.Visible = false;
+			this.widthLabel.Visible = false;
+			this.widthNumericUpDown.Visible = false;
+			this.heightLabel.Visible = false;
+			this.heightNumericUpDown.Visible = false;
 			this.noAnimationLabel.Visible = true;
+			this.createAnimationProgramButton.Visible = true;
 			return false;
 		}
 
@@ -70,7 +93,9 @@ namespace BahnEditor.Editor
 
 		private void deleteAnimationStepButton_Click(object sender, EventArgs e)
 		{
-			if (MessageBox.Show("Should the entry be deleted?", "Delete Animationstep", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+			if (this.dataGridView.SelectedCells.Count <= 0)
+				return;
+			if (MessageBox.Show("Do you really want to delete the entry?", "Delete Animationstep", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
 			{
 				return;
 			}
@@ -79,7 +104,6 @@ namespace BahnEditor.Editor
 				this.editor.Zoom1Archive.Animation[this.editor.ActualGraphicID, this.editor.ActualAlternativeID].RemoveAnimationStep(this.dataGridView.CurrentCell.RowIndex);
 				this.dataGridView.Rows.RemoveAt(this.dataGridView.CurrentCell.RowIndex);
 			}
-			
 		}
 
 		private void upAnimationStepButton_Click(object sender, EventArgs e)
@@ -92,14 +116,9 @@ namespace BahnEditor.Editor
 			this.MoveStep(this.dataGridView.CurrentCell.RowIndex, this.dataGridView.CurrentCell.RowIndex + 1);
 		}
 
-		private void dataGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-		{
-			
-		}
-
 		private void dataGridView_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
 		{
-			if (MessageBox.Show("Should the entry be deleted?", "Delete Animationstep", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+			if (MessageBox.Show("Do you really want to delete the entry?", "Delete Animationstep", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
 			{
 				e.Cancel = true;
 			}
@@ -117,8 +136,7 @@ namespace BahnEditor.Editor
 				if (dragBoxFromMouseDown != Rectangle.Empty &&
 					!dragBoxFromMouseDown.Contains(e.X, e.Y))
 				{
-
-					// Proceed with the drag and drop, passing in the list item.                    
+					// Proceed with the drag and drop, passing in the list item.
 					DragDropEffects dropEffect = dataGridView.DoDragDrop(
 					dataGridView.Rows[rowIndexFromMouseDown],
 					DragDropEffects.Move);
@@ -132,9 +150,9 @@ namespace BahnEditor.Editor
 			rowIndexFromMouseDown = dataGridView.HitTest(e.X, e.Y).RowIndex;
 			if (rowIndexFromMouseDown != -1)
 			{
-				// Remember the point where the mouse down occurred. 
-				// The DragSize indicates the size that the mouse can move 
-				// before a drag event should be started.                
+				// Remember the point where the mouse down occurred.
+				// The DragSize indicates the size that the mouse can move
+				// before a drag event should be started.
 				Size dragSize = SystemInformation.DragSize;
 
 				// Create a rectangle using the DragSize, with the mouse position being
@@ -155,11 +173,11 @@ namespace BahnEditor.Editor
 
 		private void dataGridView_DragDrop(object sender, DragEventArgs e)
 		{
-			// The mouse locations are relative to the screen, so they must be 
+			// The mouse locations are relative to the screen, so they must be
 			// converted to client coordinates.
 			Point clientPoint = dataGridView.PointToClient(new Point(e.X, e.Y));
 
-			// Get the row index of the item the mouse is below. 
+			// Get the row index of the item the mouse is below.
 			rowIndexOfItemUnderMouseToDrop =
 				dataGridView.HitTest(clientPoint.X, clientPoint.Y).RowIndex;
 
@@ -179,7 +197,8 @@ namespace BahnEditor.Editor
 			if (actualRow == -1 || targetRow == -1 || targetRow >= dataGridView.Rows.Count || targetRow >= editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID].AnimationStepCount)
 				return;
 			DataGridViewRow rowToMove = dataGridView.Rows[actualRow];
-			dataGridView.Rows.RemoveAt(actualRow);
+			dataGridView.Rows.Remove(rowToMove);
+			this.cellValueCodeChanged = true;
 			dataGridView.Rows.Insert(targetRow, rowToMove);
 			AnimationStep step = this.editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID][actualRow];
 			this.editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID].RemoveAnimationStep(actualRow);
@@ -189,6 +208,14 @@ namespace BahnEditor.Editor
 
 		private void dataGridView_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
 		{
+			if (this.cellValueCodeChanged)
+			{
+				this.cellValueCodeChanged = false;
+				return;
+			}
+			if (this.dataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value == e.FormattedValue || editor.Zoom1Archive.Animation == null || editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID] == null)
+				return;
+
 			if (e.RowIndex >= 0)
 			{
 				int value = 0;
@@ -204,19 +231,109 @@ namespace BahnEditor.Editor
 					case 0:
 						editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID][e.RowIndex].AnimationPhase = value;
 						break;
+
 					case 1:
 						editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID][e.RowIndex].MinimumTime = value;
 						break;
+
 					case 2:
 						editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID][e.RowIndex].MaximumTime = value;
 						break;
+
 					case 3:
 						editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID][e.RowIndex].Sound = value;
 						break;
+
 					default:
 						MessageBox.Show("Unknown Column", "Unknown Column", MessageBoxButtons.OK, MessageBoxIcon.Error);
 						break;
 				}
+			}
+		}
+
+		private void createAnimationProgramButton_Click(object sender, EventArgs e)
+		{
+			if(editor.Zoom1Archive.Animation == null)
+				editor.Zoom1Archive.AddAnimation();
+			if (editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID] == null)
+				editor.Zoom1Archive.Animation.AddAnimationProgram(new AnimationProgram(0, 0, 1, 1), editor.ActualGraphicID, editor.ActualAlternativeID);
+			ChangeAnimationProgram();
+			editor.Invalidate();
+		}
+
+		private void deleteAnimationButton_Click(object sender, EventArgs e)
+		{
+			if(editor.Zoom1Archive.Animation != null && editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID] != null)
+			{
+				DialogResult result = MessageBox.Show("Do you really want to delete the animation?", "Delete animation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+				if(result == DialogResult.Yes)
+				{
+					editor.Zoom1Archive.Animation.RemoveAnimationProgram(editor.ActualGraphicID, editor.ActualAlternativeID);
+					if(editor.Zoom1Archive.Animation.AnimationProgramCount <= 0)
+					{
+						editor.Zoom1Archive.RemoveAnimation();
+					}
+					this.ChangeAnimationProgram();
+					editor.Invalidate();
+				}
+			}
+		}
+
+		private void xNumericUpDown_ValueChanged(object sender, EventArgs e)
+		{
+			if (!this.numericCodeChanged && editor.Zoom1Archive.Animation != null && editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID] != null)
+			{
+				if(widthNumericUpDown.Value + xNumericUpDown.Value > 2)
+				{
+					this.widthNumericUpDown.Value = 2 - (int)this.xNumericUpDown.Value;
+				}
+				editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID].XDiff = (int)this.xNumericUpDown.Value;
+				editor.Invalidate();
+			}
+		}
+
+		private void yNumericUpDown_ValueChanged(object sender, EventArgs e)
+		{
+			if (!this.numericCodeChanged && editor.Zoom1Archive.Animation != null && editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID] != null)
+			{
+				if (heightNumericUpDown.Value + yNumericUpDown.Value > 7)
+				{
+					this.heightNumericUpDown.Value = 7 - (int)this.yNumericUpDown.Value;
+				}
+				editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID].YDiff = (int)this.yNumericUpDown.Value;
+				editor.Invalidate();
+			}
+		}
+
+		private void widthNumericUpDown_ValueChanged(object sender, EventArgs e)
+		{
+			if (!this.numericCodeChanged && editor.Zoom1Archive.Animation != null && editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID] != null)
+			{
+				if(widthNumericUpDown.Value + xNumericUpDown.Value > 2)
+				{
+					int result = 2 - (int)xNumericUpDown.Value;
+					if(result == widthNumericUpDown.Value)
+						return;
+					this.widthNumericUpDown.Value = result;
+				}
+				editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID].Width = (int)this.widthNumericUpDown.Value;
+				editor.Invalidate();
+			}
+		}
+
+		private void heightNumericUpDown_ValueChanged(object sender, EventArgs e)
+		{
+			if (!this.numericCodeChanged && editor.Zoom1Archive.Animation != null && editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID] != null)
+			{
+				if (heightNumericUpDown.Value + yNumericUpDown.Value > 7)
+				{
+					int result = 7 - (int)yNumericUpDown.Value;
+					if (result == heightNumericUpDown.Value)
+						return;
+					this.heightNumericUpDown.Value = result;
+				}
+				editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID].Height= (int)this.heightNumericUpDown.Value;
+				editor.Invalidate();
 			}
 		}
 	}

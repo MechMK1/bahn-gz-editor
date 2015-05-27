@@ -159,10 +159,10 @@ namespace BahnEditor.Editor
 			this.zoom1Archive = new GraphicArchive(ZoomFactor.Zoom1);
 			this.zoom2Archive = new GraphicArchive(ZoomFactor.Zoom2);
 			this.zoom4Archive = new GraphicArchive(ZoomFactor.Zoom4);
+			this.actualGraphic = 0;
 			Graphic graphic = new Graphic("Kein Text");
 			graphic.AddTransparentLayer(LayerID.Foreground);
-			this.zoom1Archive.AddGraphic(graphic);
-			this.actualGraphic = 0;
+			this.zoom1Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
 			this.ChangeLayer(LayerID.Foreground);
 			if (this.tabControl.TabPages.Contains(this.zoom2Tab))
 			{
@@ -389,6 +389,26 @@ namespace BahnEditor.Editor
 					}
 				}
 				g.DrawRectangle(Pens.DarkGray, 20 + Constants.ElementWidth * (this.zoomLevel), 20 + (6 * Constants.ElementHeight) * (this.zoomLevel), Constants.ElementWidth * (this.zoomLevel), Constants.ElementHeight * (this.zoomLevel));
+				if(this.zoom1Archive.Animation != null && this.zoom1Archive.Animation[this.actualGraphic, this.actualAlternative] != null)
+				{
+					AnimationProgram program = this.zoom1Archive.Animation[this.actualGraphic, this.actualAlternative];
+					Point corner1 = new Point(program.XDiff + 1, 8 - (program.YDiff + 1));
+					Point corner2 = new Point(program.XDiff + 1 + program.Width, (8 - (program.YDiff + 1)) - program.Height);
+
+					corner1.X = 20 + (corner1.X * Constants.ElementWidth) * (this.zoomLevel);
+					corner1.Y = 20 + (corner1.Y * Constants.ElementHeight) * (this.zoomLevel);
+					corner2.X = 20 + (corner2.X * Constants.ElementWidth) * (this.zoomLevel);
+					corner2.Y = 20 + (corner2.Y * Constants.ElementHeight) * (this.zoomLevel);
+
+					Rectangle rectangle = new Rectangle(Math.Min(corner1.X, corner2.X),
+														Math.Min(corner1.Y, corner2.Y),
+														Math.Abs(corner1.X - corner2.X),
+														Math.Abs(corner1.Y - corner2.Y));
+					Pen pen = new Pen(Brushes.Red);
+					float[] dashValues = { 3, 3 };
+					pen.DashPattern = dashValues;
+					g.DrawRectangle(pen, rectangle);
+				}
 			}
 			catch (IndexOutOfRangeException)
 			{
@@ -467,6 +487,7 @@ namespace BahnEditor.Editor
 			}
 			return element;
 		}
+
 		private static uint PixelFromColor(Color color)
 		{
 			return Pixel.Create(color.R, color.G, color.B);
@@ -708,6 +729,7 @@ namespace BahnEditor.Editor
 					this.animationForm.ChangeAnimationProgram();
 			}
 		}
+		
 		private uint[,] GetElement()
 		{
 			Graphic graphic = this.ActualGraphic;
@@ -861,6 +883,7 @@ namespace BahnEditor.Editor
 					throw new ArgumentOutOfRangeException();
 			}
 		}
+
 		private void MouseClickGraphic(MouseEventArgs e)
 		{
 			if (this.hasLoadedGraphic == true)
@@ -876,7 +899,7 @@ namespace BahnEditor.Editor
 				{
 					Graphic graphic = new Graphic("Kein Text");
 					graphic.AddTransparentLayer(LayerID.Foreground);
-					this.zoom1Archive.AddGraphic(this.actualGraphic, graphic);
+					this.zoom1Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
 					this.ChangeLayer(LayerID.Foreground);
 					this.overviewPanel.Invalidate();
 				}
@@ -929,6 +952,7 @@ namespace BahnEditor.Editor
 			catch (Exception)
 			{ }
 		}
+
 		private void OpenAnimationForm()
 		{
 			if (animationForm.Created)
@@ -940,10 +964,12 @@ namespace BahnEditor.Editor
 				animationForm = new AnimationForm(this);
 			animationForm.Show();
 		}
+
 		private void ResizeDrawPanel()
 		{
 			this.drawPanel.AutoScrollMinSize = new Size((int)((this.zoomLevel) * Constants.ElementWidth * 3 + 30), (int)((this.zoomLevel) * Constants.ElementHeight * 8 + 30));
 		}
+
 		private void SelectLayer()
 		{
 			if (this.layerSelectBoxCodeChanged)
