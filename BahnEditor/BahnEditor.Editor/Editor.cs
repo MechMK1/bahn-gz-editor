@@ -26,6 +26,7 @@ namespace BahnEditor.Editor
 		private string lastPath = "";
 		private uint lastRightPixel = 0;
 		private bool layerSelectBoxCodeChanged = false;
+		private bool animationPhaseCodeChanged = false;
 		private uint leftPixel = 0;
 		private int overviewAlternative = 0;
 		private int overviewLine = 0;
@@ -160,6 +161,8 @@ namespace BahnEditor.Editor
 			this.zoom2Archive = new GraphicArchive(ZoomFactor.Zoom2);
 			this.zoom4Archive = new GraphicArchive(ZoomFactor.Zoom4);
 			this.actualGraphic = 0;
+			this.actualAlternative = 1;
+			this.actualAnimationPhase = 0;
 			Graphic graphic = new Graphic("Kein Text");
 			graphic.AddTransparentLayer(LayerID.Foreground);
 			this.zoom1Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
@@ -177,13 +180,16 @@ namespace BahnEditor.Editor
 				this.zoom4CheckBox.Checked = false;
 			}
 			this.userMadeChanges = false;
+			this.animationPhaseCodeChanged = true;
+			this.animationNumericUpDown.Value = Constants.MinAnimationPhase;
+			this.animationPhaseCodeChanged = false;
 			this.lastPath = "";
 			this.UpdateProperties();
 			this.ResizeDrawPanel();
 			this.drawPanel.AutoScrollPosition = new Point(this.drawPanel.HorizontalScroll.Maximum, this.drawPanel.VerticalScroll.Maximum);
 			this.drawPanel.Invalidate();
 			this.overviewPanel.Invalidate();
-			if (this.animationForm.Created)
+			if (this.animationForm != null && !this.animationForm.IsDisposed)
 				this.animationForm.ChangeAnimationProgram();
 		}
 
@@ -221,6 +227,8 @@ namespace BahnEditor.Editor
 					this.zoom4Archive = new GraphicArchive(ZoomFactor.Zoom4);
 				}
 				this.actualGraphic = 0;
+				this.actualAlternative = 1;
+				this.actualAnimationPhase = 0;
 				this.actualZoomFactor = ZoomFactor.Zoom1;
 				if (this.zoom2Archive[this.actualGraphic] != null && !this.tabControl.TabPages.Contains(this.zoom2Tab))
 				{
@@ -246,20 +254,19 @@ namespace BahnEditor.Editor
 					this.zoom4CheckBoxCodeChanged = true;
 					this.zoom4CheckBox.Checked = false;
 				}
+				this.animationPhaseCodeChanged = true;
+				this.animationNumericUpDown.Value = Constants.MinAnimationPhase;
+				this.animationPhaseCodeChanged = false;
 				this.UpdateProperties();
 				this.lastPath = this.zoom1Archive.FileName;
 				this.hasLoadedGraphic = true;
-				this.drawPanel.Visible = true;
-				this.overviewPanel.Visible = true;
-				this.tabControl.Visible = true;
-				this.propertiesPanel.Visible = true;
 				this.userMadeChanges = false;
 				this.ChangeLayer(LayerID.Foreground);
 				this.ResizeDrawPanel();
 				this.drawPanel.AutoScrollPosition = new Point(this.drawPanel.HorizontalScroll.Maximum, this.drawPanel.VerticalScroll.Maximum / 2);
 				this.drawPanel.Invalidate();
 				this.overviewPanel.Invalidate();
-				if (this.animationForm.Created)
+				if (this.animationForm != null && !this.animationForm.IsDisposed)
 					this.animationForm.ChangeAnimationProgram();
 			}
 			catch (Exception ex)
@@ -389,7 +396,7 @@ namespace BahnEditor.Editor
 					}
 				}
 				g.DrawRectangle(Pens.DarkGray, 20 + Constants.ElementWidth * (this.zoomLevel), 20 + (6 * Constants.ElementHeight) * (this.zoomLevel), Constants.ElementWidth * (this.zoomLevel), Constants.ElementHeight * (this.zoomLevel));
-				if(this.zoom1Archive.Animation != null && this.zoom1Archive.Animation[this.actualGraphic, this.actualAlternative] != null)
+				if (this.zoom1Archive.Animation != null && this.zoom1Archive.Animation[this.actualGraphic, this.actualAlternative] != null)
 				{
 					AnimationProgram program = this.zoom1Archive.Animation[this.actualGraphic, this.actualAlternative];
 					Point corner1 = new Point(program.XDiff + 1, 8 - (program.YDiff + 1));
@@ -446,7 +453,7 @@ namespace BahnEditor.Editor
 		{
 			if (this.zoom1Archive != null)
 			{
-				g.TranslateTransform(50, 20);
+				g.TranslateTransform(45, 20);
 				for (int i = this.overviewLine * 18 + this.overviewAlternative, j = 1; j <= 9; i += 2, j++)
 				{
 					if (this.zoom1Archive[i] != null)
@@ -674,7 +681,7 @@ namespace BahnEditor.Editor
 		private void ClickOverview(MouseEventArgs e)
 		{
 			int element = -1;
-			int x = e.X - 50;
+			int x = e.X - 45;
 			if (x >= 0 && 31 >= x)
 				element = 0;
 			else if (x >= 42 && 73 >= x)
@@ -722,14 +729,17 @@ namespace BahnEditor.Editor
 					this.zoom4CheckBoxCodeChanged = true;
 					this.zoom4CheckBox.Checked = false;
 				}
+				this.animationPhaseCodeChanged = true;
+				this.animationNumericUpDown.Value = Constants.MinAnimationPhase;
+				this.animationPhaseCodeChanged = false;
 				this.ChangeLayer(LayerID.Foreground);
 				this.UpdateProperties();
 				this.drawPanel.Invalidate();
-				if (this.animationForm.Created)
+				if (this.animationForm != null && !this.animationForm.IsDisposed)
 					this.animationForm.ChangeAnimationProgram();
 			}
 		}
-		
+
 		private uint[,] GetElement()
 		{
 			Graphic graphic = this.ActualGraphic;
@@ -955,9 +965,9 @@ namespace BahnEditor.Editor
 
 		private void OpenAnimationForm()
 		{
-			if (animationForm.Created)
+			if (animationForm.Created && animationForm.Visible)
 			{
-				animationForm.Close();
+				animationForm.Hide();
 				return;
 			}
 			if (animationForm.IsDisposed)
@@ -1068,6 +1078,19 @@ namespace BahnEditor.Editor
 				this.cursorReverseDirectionCBCodeChanged = true;
 				this.cursorReverseDirectionComboBox.SelectedIndex = -1;
 			}
+		}
+
+		internal void UpdateAnimation(bool animationExists)
+		{
+			if (animationExists)
+			{
+				this.animationNumericUpDown.Enabled = true;
+			}
+			else
+			{
+				this.animationNumericUpDown.Enabled = false;
+			}
+			drawPanel.Invalidate();
 		}
 
 		#endregion Private Methods
@@ -1771,6 +1794,14 @@ namespace BahnEditor.Editor
 				this.zoomOutButton.Enabled = false;
 			}
 			this.ResizeDrawPanel();
+			this.drawPanel.Invalidate();
+		}
+
+		private void animationNumericUpDown_ValueChanged(object sender, EventArgs e)
+		{
+			if(this.animationPhaseCodeChanged)
+				return;
+			this.actualAnimationPhase = (int)this.animationNumericUpDown.Value;
 			this.drawPanel.Invalidate();
 		}
 

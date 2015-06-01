@@ -29,6 +29,10 @@
 		private void InitializeComponent()
 		{
 			this.dataGridView = new System.Windows.Forms.DataGridView();
+			this.phaseColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.minTimeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.maxTimeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.soundColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.noAnimationLabel = new System.Windows.Forms.Label();
 			this.addAnimationStepButton = new System.Windows.Forms.Button();
 			this.deleteAnimationStepButton = new System.Windows.Forms.Button();
@@ -44,10 +48,6 @@
 			this.heightLabel = new System.Windows.Forms.Label();
 			this.heightNumericUpDown = new System.Windows.Forms.NumericUpDown();
 			this.deleteAnimationButton = new System.Windows.Forms.Button();
-			this.phaseColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.minTimeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.maxTimeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.soundColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.xNumericUpDown)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.yNumericUpDown)).BeginInit();
@@ -82,6 +82,35 @@
 			this.dataGridView.DragOver += new System.Windows.Forms.DragEventHandler(this.dataGridView_DragOver);
 			this.dataGridView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dataGridView_MouseDown);
 			this.dataGridView.MouseMove += new System.Windows.Forms.MouseEventHandler(this.dataGridView_MouseMove);
+			// 
+			// phaseColumn
+			// 
+			this.phaseColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+			this.phaseColumn.HeaderText = "Animationphase";
+			this.phaseColumn.Name = "phaseColumn";
+			this.phaseColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+			// 
+			// minTimeColumn
+			// 
+			this.minTimeColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+			this.minTimeColumn.HeaderText = "Minimum Time";
+			this.minTimeColumn.Name = "minTimeColumn";
+			this.minTimeColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+			// 
+			// maxTimeColumn
+			// 
+			this.maxTimeColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+			this.maxTimeColumn.HeaderText = "Maximum Time";
+			this.maxTimeColumn.Name = "maxTimeColumn";
+			this.maxTimeColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+			// 
+			// soundColumn
+			// 
+			this.soundColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+			this.soundColumn.FillWeight = 50F;
+			this.soundColumn.HeaderText = "Sound";
+			this.soundColumn.Name = "soundColumn";
+			this.soundColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
 			// 
 			// noAnimationLabel
 			// 
@@ -269,6 +298,7 @@
 			// 
 			// deleteAnimationButton
 			// 
+			this.deleteAnimationButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.deleteAnimationButton.Location = new System.Drawing.Point(318, 12);
 			this.deleteAnimationButton.Name = "deleteAnimationButton";
 			this.deleteAnimationButton.Size = new System.Drawing.Size(96, 23);
@@ -276,35 +306,6 @@
 			this.deleteAnimationButton.Text = "Delete animation";
 			this.deleteAnimationButton.UseVisualStyleBackColor = true;
 			this.deleteAnimationButton.Click += new System.EventHandler(this.deleteAnimationButton_Click);
-			// 
-			// phaseColumn
-			// 
-			this.phaseColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-			this.phaseColumn.HeaderText = "Animationphase";
-			this.phaseColumn.Name = "phaseColumn";
-			this.phaseColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-			// 
-			// minTimeColumn
-			// 
-			this.minTimeColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-			this.minTimeColumn.HeaderText = "Minimum Time";
-			this.minTimeColumn.Name = "minTimeColumn";
-			this.minTimeColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-			// 
-			// maxTimeColumn
-			// 
-			this.maxTimeColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-			this.maxTimeColumn.HeaderText = "Maximum Time";
-			this.maxTimeColumn.Name = "maxTimeColumn";
-			this.maxTimeColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-			// 
-			// soundColumn
-			// 
-			this.soundColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-			this.soundColumn.FillWeight = 50F;
-			this.soundColumn.HeaderText = "Sound";
-			this.soundColumn.Name = "soundColumn";
-			this.soundColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
 			// 
 			// AnimationForm
 			// 
@@ -327,10 +328,12 @@
 			this.Controls.Add(this.addAnimationStepButton);
 			this.Controls.Add(this.noAnimationLabel);
 			this.Controls.Add(this.dataGridView);
+			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
 			this.MaximizeBox = false;
-			this.MinimumSize = new System.Drawing.Size(440, 172);
+			this.MinimumSize = new System.Drawing.Size(440, 205);
 			this.Name = "AnimationForm";
 			this.Text = "Animations";
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AnimationForm_FormClosing);
 			this.Load += new System.EventHandler(this.AnimationForm_Load);
 			((System.ComponentModel.ISupportInitialize)(this.dataGridView)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.xNumericUpDown)).EndInit();

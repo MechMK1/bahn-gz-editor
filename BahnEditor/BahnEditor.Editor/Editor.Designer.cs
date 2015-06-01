@@ -125,6 +125,8 @@
 			this.zoom4Tab = new System.Windows.Forms.TabPage();
 			this.drawPanel = new BahnEditor.Editor.DrawPanel();
 			this.overviewPanel = new BahnEditor.Editor.DrawPanel();
+			this.animationPhaseLabel = new System.Windows.Forms.Label();
+			this.animationNumericUpDown = new System.Windows.Forms.NumericUpDown();
 			this.overviewDownButton = new System.Windows.Forms.Button();
 			this.overviewUpButton = new System.Windows.Forms.Button();
 			this.overviewLeftRightButton = new System.Windows.Forms.Button();
@@ -142,6 +144,7 @@
 			this.menuStrip.SuspendLayout();
 			this.tabControl.SuspendLayout();
 			this.overviewPanel.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.animationNumericUpDown)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// toolStrip
@@ -1177,6 +1180,8 @@
 			this.overviewPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.overviewPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.overviewPanel.Controls.Add(this.animationPhaseLabel);
+			this.overviewPanel.Controls.Add(this.animationNumericUpDown);
 			this.overviewPanel.Controls.Add(this.overviewDownButton);
 			this.overviewPanel.Controls.Add(this.overviewUpButton);
 			this.overviewPanel.Controls.Add(this.overviewLeftRightButton);
@@ -1187,11 +1192,37 @@
 			this.overviewPanel.Click += new System.EventHandler(this.overviewPanel_Click);
 			this.overviewPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.overviewPanel_Paint);
 			// 
+			// animationPhaseLabel
+			// 
+			this.animationPhaseLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.animationPhaseLabel.AutoSize = true;
+			this.animationPhaseLabel.Location = new System.Drawing.Point(688, 2);
+			this.animationPhaseLabel.Name = "animationPhaseLabel";
+			this.animationPhaseLabel.Size = new System.Drawing.Size(82, 13);
+			this.animationPhaseLabel.TabIndex = 5;
+			this.animationPhaseLabel.Text = "Animationphase";
+			// 
+			// animationNumericUpDown
+			// 
+			this.animationNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.animationNumericUpDown.Enabled = false;
+			this.animationNumericUpDown.Location = new System.Drawing.Point(691, 18);
+			this.animationNumericUpDown.Maximum = new decimal(new int[] {
+            99,
+            0,
+            0,
+            0});
+			this.animationNumericUpDown.Name = "animationNumericUpDown";
+			this.animationNumericUpDown.Size = new System.Drawing.Size(79, 20);
+			this.animationNumericUpDown.TabIndex = 4;
+			this.animationNumericUpDown.Tag = "";
+			this.animationNumericUpDown.ValueChanged += new System.EventHandler(this.animationNumericUpDown_ValueChanged);
+			// 
 			// overviewDownButton
 			// 
 			this.overviewDownButton.BackgroundImage = global::BahnEditor.Editor.Properties.Resources.downarrow;
 			this.overviewDownButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-			this.overviewDownButton.Location = new System.Drawing.Point(20, 16);
+			this.overviewDownButton.Location = new System.Drawing.Point(15, 16);
 			this.overviewDownButton.Name = "overviewDownButton";
 			this.overviewDownButton.Size = new System.Drawing.Size(17, 17);
 			this.overviewDownButton.TabIndex = 3;
@@ -1202,7 +1233,7 @@
 			// 
 			this.overviewUpButton.BackgroundImage = global::BahnEditor.Editor.Properties.Resources.uparrow;
 			this.overviewUpButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-			this.overviewUpButton.Location = new System.Drawing.Point(20, 0);
+			this.overviewUpButton.Location = new System.Drawing.Point(15, 0);
 			this.overviewUpButton.Name = "overviewUpButton";
 			this.overviewUpButton.Size = new System.Drawing.Size(17, 17);
 			this.overviewUpButton.TabIndex = 2;
@@ -1212,7 +1243,7 @@
 			// overviewLeftRightButton
 			// 
 			this.overviewLeftRightButton.Image = global::BahnEditor.Editor.Properties.Resources.leftrightarrow;
-			this.overviewLeftRightButton.Location = new System.Drawing.Point(10, 37);
+			this.overviewLeftRightButton.Location = new System.Drawing.Point(5, 37);
 			this.overviewLeftRightButton.Name = "overviewLeftRightButton";
 			this.overviewLeftRightButton.Size = new System.Drawing.Size(27, 17);
 			this.overviewLeftRightButton.TabIndex = 1;
@@ -1258,6 +1289,8 @@
 			this.menuStrip.PerformLayout();
 			this.tabControl.ResumeLayout(false);
 			this.overviewPanel.ResumeLayout(false);
+			this.overviewPanel.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.animationNumericUpDown)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -1273,7 +1306,6 @@
 		private System.Windows.Forms.ColorDialog colorDialog;
 		private System.Windows.Forms.Button leftColorButton;
 		private System.Windows.Forms.Button rightColorButton;
-		private DrawPanel drawPanel;
 		private System.Windows.Forms.ComboBox rightComboBox;
 		private System.Windows.Forms.ComboBox leftComboBox;
 		private System.Windows.Forms.Label rightLabel;
@@ -1364,6 +1396,9 @@
 		private System.Windows.Forms.ComboBox cursorNormalDirectionComboBox;
 		private System.Windows.Forms.ToolStripMenuItem animationToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+		private DrawPanel drawPanel;
+		private System.Windows.Forms.NumericUpDown animationNumericUpDown;
+		private System.Windows.Forms.Label animationPhaseLabel;
 
 	}
 }

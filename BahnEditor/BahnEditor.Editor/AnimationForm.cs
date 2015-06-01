@@ -64,6 +64,7 @@ namespace BahnEditor.Editor
 				{
 					this.dataGridView.Rows.Add(program[i].AnimationPhase.ToString(CultureInfo.InvariantCulture), program[i].MinimumTime.ToString(CultureInfo.InvariantCulture), program[i].MaximumTime.ToString(CultureInfo.InvariantCulture), program[i].Sound.ToString(CultureInfo.InvariantCulture));
 				}
+				editor.UpdateAnimation(true);
 				return true;
 			}
 			this.dataGridView.Visible = false;
@@ -82,6 +83,7 @@ namespace BahnEditor.Editor
 			this.heightNumericUpDown.Visible = false;
 			this.noAnimationLabel.Visible = true;
 			this.createAnimationProgramButton.Visible = true;
+			editor.UpdateAnimation(false);
 			return false;
 		}
 
@@ -258,7 +260,7 @@ namespace BahnEditor.Editor
 			if (editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID] == null)
 				editor.Zoom1Archive.Animation.AddAnimationProgram(new AnimationProgram(0, 0, 1, 1), editor.ActualGraphicID, editor.ActualAlternativeID);
 			ChangeAnimationProgram();
-			editor.Invalidate();
+			editor.UpdateAnimation(true);
 		}
 
 		private void deleteAnimationButton_Click(object sender, EventArgs e)
@@ -274,7 +276,7 @@ namespace BahnEditor.Editor
 						editor.Zoom1Archive.RemoveAnimation();
 					}
 					this.ChangeAnimationProgram();
-					editor.Invalidate();
+					editor.UpdateAnimation(false);
 				}
 			}
 		}
@@ -334,6 +336,15 @@ namespace BahnEditor.Editor
 				}
 				editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID].Height= (int)this.heightNumericUpDown.Value;
 				editor.Invalidate();
+			}
+		}
+
+		private void AnimationForm_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			if(e.CloseReason == CloseReason.UserClosing)
+			{
+				e.Cancel = true;
+				this.Hide();
 			}
 		}
 	}
