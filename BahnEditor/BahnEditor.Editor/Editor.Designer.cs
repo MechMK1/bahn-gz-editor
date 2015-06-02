@@ -864,22 +864,26 @@
 			// rightColorButton
 			// 
 			this.rightColorButton.BackColor = System.Drawing.Color.White;
+			this.rightColorButton.FlatAppearance.BorderSize = 0;
 			this.rightColorButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.rightColorButton.Location = new System.Drawing.Point(58, 103);
 			this.rightColorButton.Name = "rightColorButton";
 			this.rightColorButton.Size = new System.Drawing.Size(90, 23);
 			this.rightColorButton.TabIndex = 1;
+			this.rightColorButton.TabStop = false;
 			this.rightColorButton.UseVisualStyleBackColor = false;
 			this.rightColorButton.Click += new System.EventHandler(this.rightColorButton_Click);
 			// 
 			// leftColorButton
 			// 
 			this.leftColorButton.BackColor = System.Drawing.Color.Black;
+			this.leftColorButton.FlatAppearance.BorderSize = 0;
 			this.leftColorButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.leftColorButton.Location = new System.Drawing.Point(58, 23);
 			this.leftColorButton.Name = "leftColorButton";
 			this.leftColorButton.Size = new System.Drawing.Size(90, 23);
 			this.leftColorButton.TabIndex = 0;
+			this.leftColorButton.TabStop = false;
 			this.leftColorButton.UseVisualStyleBackColor = false;
 			this.leftColorButton.Click += new System.EventHandler(this.leftColorButton_Click);
 			// 
@@ -1287,7 +1291,7 @@
 			this.Controls.Add(this.toolStrip);
 			this.Controls.Add(this.menuStrip);
 			this.MainMenuStrip = this.menuStrip;
-			this.MinimumSize = new System.Drawing.Size(800, 750);
+			this.MinimumSize = new System.Drawing.Size(800, 740);
 			this.Name = "Editor";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Bahn Editor";

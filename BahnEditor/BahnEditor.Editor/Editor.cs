@@ -144,7 +144,7 @@ namespace BahnEditor.Editor
 
 		private void EditorLoaded()
 		{
-			this.rightComboBox.SelectedIndex = 0;
+			this.rightComboBox.SelectedIndex = 1;
 			this.leftComboBox.SelectedIndex = 0;
 			this.particleComboBox.SelectedIndex = 0;
 			this.clockComboBox.SelectedIndex = 0;
