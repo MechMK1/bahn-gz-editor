@@ -191,6 +191,71 @@ namespace BahnEditor.Test
 			Assert.AreEqual<byte>(1, Pixel.GetRed(a));
 			Assert.AreEqual<byte>(1, (byte)(a >> 16));
 		}
+
+		[TestMethod]
+		public void TestAnimation()
+		{
+			GraphicArchive archive = GraphicArchive.Load("testSteam.uz1");
+			Assert.IsNotNull(archive.Animation);
+			Assert.AreEqual<int>(archive.Animation[0, 0].XDiff, 0);
+			Assert.AreEqual<int>(archive.Animation[0, 0].YDiff, 0);
+			Assert.AreEqual<int>(archive.Animation[0, 0].Width, 1);
+			Assert.AreEqual<int>(archive.Animation[0, 0].Height, 1);
+			Assert.AreEqual<int>(archive.Animation[0, 0][0].AnimationPhase, 0);
+			Assert.AreEqual<int>(archive.Animation[0, 0][0].MinimumTime, 5);
+			Assert.AreEqual<int>(archive.Animation[0, 0][0].MaximumTime, 5);
+			Assert.AreEqual<int>(archive.Animation[0, 0][0].Sound, 0);
+			Assert.IsNull(archive.Animation[1, 0]);
+			Assert.IsNull(archive.Animation[0, 0][1]);
+		}
+
+		[TestMethod]
+		public void TestAnimationSave()
+		{
+			GraphicArchive expectedArchive = new GraphicArchive(ZoomFactor.Zoom1);
+			Graphic graphic1 = new Graphic("test1", ZoomFactor.Zoom1);
+			Graphic graphic2 = new Graphic("test2", ZoomFactor.Zoom1);
+			Graphic graphic3 = new Graphic("test3", ZoomFactor.Zoom1);
+			Graphic graphic4 = new Graphic("test4", ZoomFactor.Zoom1);
+
+			graphic1.AddTransparentLayer(LayerID.Foreground);
+			graphic2.AddTransparentLayer(LayerID.Foreground);
+			graphic3.AddTransparentLayer(LayerID.Foreground);
+			graphic4.AddTransparentLayer(LayerID.Foreground);
+
+			graphic1.GetLayer(LayerID.Foreground)[10, 10] = 100 << 16 | 50 << 8 | 20;
+			graphic2.GetLayer(LayerID.Foreground)[50, 40] = 150 << 16 | 63 << 8 | 123;
+			graphic3.GetLayer(LayerID.Foreground)[50, 40] = 150 << 16 | 63 << 8 | 123;
+			graphic4.GetLayer(LayerID.Foreground)[50, 40] = 150 << 16 | 63 << 8 | 123;
+
+			expectedArchive.AddGraphic(0, 0, Constants.NoAlternative, graphic1);
+			expectedArchive.AddGraphic(0, 1, Constants.NoAlternative, graphic2);
+			expectedArchive.AddGraphic(0, 2, Constants.NoAlternative, graphic3);
+			expectedArchive.AddGraphic(2, graphic4);
+
+			expectedArchive.AddAnimation();
+			AnimationProgram expectedProgram = new AnimationProgram(0, 0, 1, 1);
+			expectedProgram.AddAnimationStep(new AnimationStep(0, 5, 6, 0));
+			expectedProgram.AddAnimationStep(new AnimationStep(1, 5, 6, 0));
+			expectedProgram.AddAnimationStep(new AnimationStep(2, 10, 10, 0));
+			expectedProgram.AddAnimationStep(new AnimationStep(1, 5, 6, 0));
+			expectedArchive.Animation.AddAnimationProgram(expectedProgram, 0, Constants.NoAlternative);
+
+			Assert.IsTrue(expectedArchive.Save("testAnimation.uz1", true));
+
+			GraphicArchive archive = GraphicArchive.Load("testAnimation.uz1");
+			CompareGraphic(graphic1, archive[0, 0, Constants.NoAlternative]);
+			CompareGraphic(graphic2, archive[0, 1, Constants.NoAlternative]);
+			CompareGraphic(graphic3, archive[0, 2, Constants.NoAlternative]);
+			CompareGraphic(graphic4, archive[2, 0, Constants.NoAlternative]);
+
+			Assert.IsNotNull(archive.Animation);
+			Assert.AreEqual<int>(expectedArchive.Animation.AnimationProgramCount, archive.Animation.AnimationProgramCount);
+			CompareAnimationProgram(expectedProgram, archive.Animation[0,Constants.NoAlternative]);
+
+			System.IO.File.Delete("testAnimation.uz1");
+			System.IO.File.Delete("testAnimation.bnm");
+		}
 		#endregion Tests
 
 		#region Private Methods
@@ -215,6 +280,22 @@ namespace BahnEditor.Test
 			Assert.AreEqual<DrivingWayFunction>(expectedDrivingWayElement.Function, drivingWayElement.Function);
 			Assert.AreEqual<Direction>(expectedDrivingWayElement.Arrival, drivingWayElement.Arrival);
 			Assert.AreEqual<Direction>(expectedDrivingWayElement.Departure, drivingWayElement.Departure);
+		}
+
+		private void CompareAnimationProgram(AnimationProgram expectedAnimationProgram, AnimationProgram animationProgram)
+		{
+			Assert.AreEqual<int>(expectedAnimationProgram.XDiff, animationProgram.XDiff);
+			Assert.AreEqual<int>(expectedAnimationProgram.YDiff, animationProgram.YDiff);
+			Assert.AreEqual<int>(expectedAnimationProgram.Width, animationProgram.Width);
+			Assert.AreEqual<int>(expectedAnimationProgram.Height, animationProgram.Height);
+			Assert.AreEqual<int>(expectedAnimationProgram.AnimationStepCount, animationProgram.AnimationStepCount);
+			for (int i = 0; i < expectedAnimationProgram.AnimationStepCount; i++)
+			{
+				Assert.AreEqual<int>(expectedAnimationProgram[0].AnimationPhase, animationProgram[0].AnimationPhase);
+				Assert.AreEqual<int>(expectedAnimationProgram[0].MinimumTime, animationProgram[0].MinimumTime);
+				Assert.AreEqual<int>(expectedAnimationProgram[0].MaximumTime, animationProgram[0].MaximumTime);
+				Assert.AreEqual<int>(expectedAnimationProgram[0].Sound, animationProgram[0].Sound);
+			}
 		}
 		#endregion Private Methods
 	}

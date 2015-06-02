@@ -12,17 +12,13 @@ namespace BahnEditor.BahnLib
 	public class GraphicArchive
 	{
 		#region Fields and Properties
+
 		/// <summary>
 		/// List of graphics in the archive
 		/// </summary>
 		private List<ArchiveElement> graphics;
 
 		public string FileName { get; private set; }
-
-		/// <summary>
-		/// Gets the zoom factor
-		/// </summary>
-		public ZoomFactor ZoomFactor { get; protected set; }
 
 		/// <summary>
 		/// Gets the count of graphics in the archive
@@ -34,9 +30,18 @@ namespace BahnEditor.BahnLib
 				return graphics.Count;
 			}
 		}
+
+		/// <summary>
+		/// Gets the zoom factor
+		/// </summary>
+		public ZoomFactor ZoomFactor { get; protected set; }
+
+		public Animation Animation { get; private set; }
+
 		#endregion Fields and Properties
 
 		#region Constructor
+
 		/// <summary>
 		/// Initializes a new Instance of BahnEditor.BahnLib.GraphicArchive class
 		/// </summary>
@@ -46,9 +51,72 @@ namespace BahnEditor.BahnLib
 			graphics = new List<ArchiveElement>();
 			this.ZoomFactor = zoomFactor;
 		}
+
 		#endregion Constructor
 
 		#region Public Methods
+
+		public Graphic this[int index]
+		{
+			get
+			{
+				try
+				{
+					Graphic graphic;
+					// Try if alternatives exist...
+					for (int i = 1; i < 4; i++)
+					{
+						graphic = this[index, 0, i];
+						if (graphic != null)
+							return graphic;
+					}
+
+					// If not, return the first
+					return this[index, 0, 0];
+				}
+				catch (InvalidOperationException)
+				{
+					return null;
+				}
+			}
+		}
+
+		public Graphic this[int elementNumber, int animationPhase, int alternative]
+		{
+			get
+			{
+				ArchiveElement element = this.graphics.SingleOrDefault(x => x.ElementNumber == elementNumber && x.AnimationPhase == animationPhase && x.Alternative == alternative);
+				if (element != null)
+				{
+					if (element.Graphic.IsEmpty() && this.FileName != null)
+					{
+						using (FileStream stream = File.Open(this.FileName, FileMode.Open))
+						{
+							stream.Seek(element.SeekPositionGraphicData, SeekOrigin.Begin);
+							using (BinaryReader br = new BinaryReader(stream))
+							{
+								element.Graphic.LoadData(br);
+							}
+						}
+					}
+					return element.Graphic;
+				}
+				return null;
+			}
+		}
+
+		/*internal IEnumerable<ArchiveElement> this[Func<ArchiveElement, bool> func]
+		{
+			get
+			{
+				var res = from g in this.graphics
+						  where func(g)
+						  select g;
+
+				return res;
+			}
+		}*/
+
 		/// <summary>
 		/// Adds a graphic to the archive at the last position
 		/// </summary>
@@ -106,55 +174,13 @@ namespace BahnEditor.BahnLib
 			this.graphics.Add(new ArchiveElement(elementNumber, phase, alternative, graphic));
 		}
 
-		public Graphic this[int index]
+		public void AddAnimation()
 		{
-			get
-			{
-				try
-				{
-					IEnumerable<ArchiveElement> enumerable = graphics.Where(x => x.ElementNumber == index);
-					for (int i = 1; i < 4; i++)
-					{
-						ArchiveElement archiveElement = enumerable.SingleOrDefault(x => x.AnimationPhase == 0 && x.Alternative == i);
-						if (archiveElement != null)
-						{
-							if (archiveElement.Graphic.IsEmpty() && this.FileName != null)
-							{
-								using (FileStream stream = File.Open(this.FileName, FileMode.Open))
-								{
-									stream.Seek(archiveElement.SeekPositionGraphicData, SeekOrigin.Begin);
-									using (BinaryReader br = new BinaryReader(stream))
-									{
-										archiveElement.Graphic.LoadData(br);
-									}
-								}
-							}
-							return archiveElement.Graphic;
-						}
-					}
-					ArchiveElement element = enumerable.SingleOrDefault(x => x.AnimationPhase == 0 && x.Alternative == 0);
-					if (element != null)
-					{
-						if (element.Graphic.IsEmpty() && this.FileName != null)
-						{
-							using (FileStream stream = File.Open(this.FileName, FileMode.Open))
-							{
-								stream.Seek(element.SeekPositionGraphicData, SeekOrigin.Begin);
-								using (BinaryReader br = new BinaryReader(stream))
-								{
-									element.Graphic.LoadData(br);
-								}
-							}
-						}
-						return element.Graphic;
-					}
-					return null;
-				}
-				catch (InvalidOperationException)
-				{
-					return null;
-				}
-			}
+			if (this.ZoomFactor != BahnLib.ZoomFactor.Zoom1)
+				throw new ArgumentException("Animations only available in Zoom1-Archives");
+			if (this.Animation != null)
+				throw new ArgumentException("There is already an animation");
+			this.Animation = new Animation();
 		}
 
 		/// <summary>
@@ -182,6 +208,15 @@ namespace BahnEditor.BahnLib
 			if (result == 0)
 				throw new ArgumentException("Graphic not found");
 			this.graphics.RemoveAll(x => x.ElementNumber == elementNumber && x.AnimationPhase == phase && x.Alternative == alternative);
+		}
+
+		public void RemoveAnimation()
+		{
+			if (this.ZoomFactor != BahnLib.ZoomFactor.Zoom1)
+				throw new ArgumentException("Animations only available in Zoom1-Archives");
+			if (this.Animation == null)
+				throw new ArgumentException("There is no animation to remove");
+			this.Animation = null;
 		}
 
 		/// <summary>
@@ -216,10 +251,16 @@ namespace BahnEditor.BahnLib
 				}
 				using (FileStream stream = File.OpenWrite(path))
 				{
-					return Save(stream);
+					bool result = Save(stream);
+					if (this.Animation != null && result)
+					{
+						this.Animation.Save(path.Remove(path.Length - 3) + "bnm", true);
+					}
+					return result;
 				}
 			}
 		}
+
 		#endregion Public Methods
 
 		#region Static Methods
@@ -233,20 +274,33 @@ namespace BahnEditor.BahnLib
 		/// <exception cref="System.IO.InvalidDataException"/>
 		public static GraphicArchive Load(string path)
 		{
+			if (path == null)
+				throw new ArgumentNullException("path");
 			if (File.Exists(path))
 			{
+				GraphicArchive archive = null;
 				using (FileStream stream = File.OpenRead(path))
 				{
-					GraphicArchive archive = Load(stream);
+					archive = Load(stream);
 					archive.FileName = path;
-					return archive;
 				}
+				if (archive != null && archive.ZoomFactor == ZoomFactor.Zoom1)
+				{
+					string animationPath = path.Remove(path.Length - 3) + "bnm";
+					if (File.Exists(animationPath))
+					{
+						archive.Animation = Animation.Load(animationPath);
+					}
+				}
+				return archive;
 			}
 			else throw new FileNotFoundException("File not found", path);
 		}
+
 		#endregion Static Methods
 
 		#region Private Methods
+
 		private static GraphicArchive Load(FileStream path)
 		{
 			using (BinaryReader br = new BinaryReader(path, Encoding.Unicode))
@@ -292,6 +346,7 @@ namespace BahnEditor.BahnLib
 						ZoomFactor f = (ZoomFactor)zoomFactor;
 						archive = new GraphicArchive(f);
 						break;
+
 					default:
 						throw new InvalidDataException("Invalid ZoomFactor");
 				}
@@ -306,7 +361,7 @@ namespace BahnEditor.BahnLib
 			using (BinaryWriter bw = new BinaryWriter(path, Encoding.Unicode))
 			{
 				List<Tuple<long, long>> offsetList = new List<Tuple<long, long>>();
-				bw.Write(Constants.HeaderText.ToArray()); //Headertext 
+				bw.Write(Constants.HeaderText.ToArray()); //Headertext
 				bw.Write(new byte[] { 85, 90, 88 });      //identification string UZX ASCII
 				bw.Write((byte)(48 + this.ZoomFactor));   //Zoom factor to ASCII
 				foreach (var item in this.graphics)
@@ -318,7 +373,6 @@ namespace BahnEditor.BahnLib
 					bw.Write(item.Alternative);    //Alternative
 					offsetList.Add(Tuple.Create<long, long>(bw.BaseStream.Position, 0));
 					bw.Write(0); //Offset
-
 				}
 				bw.Write(0xFFFFFFFF); //Terminator
 				int i = 0;
@@ -348,19 +402,22 @@ namespace BahnEditor.BahnLib
 				return true;
 			}
 		}
+
 		#endregion Private Methods
 
 		#region Nested Classes
+
 		/// <summary>
 		/// Represents an element in a graphic archive
 		/// </summary>
-		private class ArchiveElement
+		internal class ArchiveElement
 		{
 			#region Properties
+
 			/// <summary>
-			/// Index in the archive
+			/// Alternative
 			/// </summary>
-			public int ElementNumber { get; set; }
+			public int Alternative { get; set; }
 
 			/// <summary>
 			/// Animationphase
@@ -368,9 +425,9 @@ namespace BahnEditor.BahnLib
 			public int AnimationPhase { get; set; }
 
 			/// <summary>
-			/// Alternative
+			/// Index in the archive
 			/// </summary>
-			public int Alternative { get; set; }
+			public int ElementNumber { get; set; }
 
 			/// <summary>
 			/// Graphic
@@ -383,9 +440,11 @@ namespace BahnEditor.BahnLib
 			public int SeekPosition { get; set; }
 
 			public long SeekPositionGraphicData { get; set; }
+
 			#endregion Properties
 
 			#region Constructor
+
 			internal ArchiveElement(int elementNumber, int animationPhase, int alternative, Graphic graphic)
 			{
 				this.ElementNumber = elementNumber;
@@ -393,8 +452,10 @@ namespace BahnEditor.BahnLib
 				this.Alternative = alternative;
 				this.Graphic = graphic;
 			}
-			#endregion
+
+			#endregion Constructor
 		}
+
 		#endregion Nested Classes
 	}
 }

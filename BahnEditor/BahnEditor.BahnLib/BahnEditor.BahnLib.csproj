@@ -42,6 +42,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Animation.cs" />
+    <Compile Include="AnimationProgram.cs" />
+    <Compile Include="AnimationStep.cs" />
     <Compile Include="ArchiveIsEmptyException.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="DrivingWay.cs" />

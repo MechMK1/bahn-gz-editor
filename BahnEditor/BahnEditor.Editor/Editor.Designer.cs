@@ -40,8 +40,6 @@
 			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
 			this.zoomInButton = new System.Windows.Forms.ToolStripButton();
 			this.zoomOutButton = new System.Windows.Forms.ToolStripButton();
-			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-			this.helpToolStripButton = new System.Windows.Forms.ToolStripButton();
 			this.controlPanel = new System.Windows.Forms.Panel();
 			this.frontRadioButton = new System.Windows.Forms.RadioButton();
 			this.foregroundAboveRadioButton = new System.Windows.Forms.RadioButton();
@@ -109,6 +107,8 @@
 			this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
 			this.selectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.animationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.customizeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -125,6 +125,8 @@
 			this.zoom4Tab = new System.Windows.Forms.TabPage();
 			this.drawPanel = new BahnEditor.Editor.DrawPanel();
 			this.overviewPanel = new BahnEditor.Editor.DrawPanel();
+			this.animationPhaseLabel = new System.Windows.Forms.Label();
+			this.animationNumericUpDown = new System.Windows.Forms.NumericUpDown();
 			this.overviewDownButton = new System.Windows.Forms.Button();
 			this.overviewUpButton = new System.Windows.Forms.Button();
 			this.overviewLeftRightButton = new System.Windows.Forms.Button();
@@ -142,6 +144,7 @@
 			this.menuStrip.SuspendLayout();
 			this.tabControl.SuspendLayout();
 			this.overviewPanel.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.animationNumericUpDown)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// toolStrip
@@ -157,9 +160,7 @@
             this.pasteToolStripButton,
             this.toolStripSeparator4,
             this.zoomInButton,
-            this.zoomOutButton,
-            this.toolStripSeparator1,
-            this.helpToolStripButton});
+            this.zoomOutButton});
 			this.toolStrip.Location = new System.Drawing.Point(0, 24);
 			this.toolStrip.Name = "toolStrip";
 			this.toolStrip.Size = new System.Drawing.Size(1008, 25);
@@ -204,6 +205,7 @@
 			// cutToolStripButton
 			// 
 			this.cutToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.cutToolStripButton.Enabled = false;
 			this.cutToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("cutToolStripButton.Image")));
 			this.cutToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.cutToolStripButton.Name = "cutToolStripButton";
@@ -213,6 +215,7 @@
 			// copyToolStripButton
 			// 
 			this.copyToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.copyToolStripButton.Enabled = false;
 			this.copyToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("copyToolStripButton.Image")));
 			this.copyToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.copyToolStripButton.Name = "copyToolStripButton";
@@ -222,6 +225,7 @@
 			// pasteToolStripButton
 			// 
 			this.pasteToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.pasteToolStripButton.Enabled = false;
 			this.pasteToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("pasteToolStripButton.Image")));
 			this.pasteToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.pasteToolStripButton.Name = "pasteToolStripButton";
@@ -252,20 +256,6 @@
 			this.zoomOutButton.Size = new System.Drawing.Size(23, 22);
 			this.zoomOutButton.Text = "Zoom out";
 			this.zoomOutButton.Click += new System.EventHandler(this.zoomOutButton_Click);
-			// 
-			// toolStripSeparator1
-			// 
-			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-			// 
-			// helpToolStripButton
-			// 
-			this.helpToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.helpToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("helpToolStripButton.Image")));
-			this.helpToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.helpToolStripButton.Name = "helpToolStripButton";
-			this.helpToolStripButton.Size = new System.Drawing.Size(23, 22);
-			this.helpToolStripButton.Text = "He&lp";
 			// 
 			// controlPanel
 			// 
@@ -987,6 +977,7 @@
 			// 
 			// undoToolStripMenuItem
 			// 
+			this.undoToolStripMenuItem.Enabled = false;
 			this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
 			this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
 			this.undoToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
@@ -994,6 +985,7 @@
 			// 
 			// redoToolStripMenuItem
 			// 
+			this.redoToolStripMenuItem.Enabled = false;
 			this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
 			this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
 			this.redoToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
@@ -1006,6 +998,7 @@
 			// 
 			// cutToolStripMenuItem
 			// 
+			this.cutToolStripMenuItem.Enabled = false;
 			this.cutToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("cutToolStripMenuItem.Image")));
 			this.cutToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
@@ -1015,6 +1008,7 @@
 			// 
 			// copyToolStripMenuItem
 			// 
+			this.copyToolStripMenuItem.Enabled = false;
 			this.copyToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("copyToolStripMenuItem.Image")));
 			this.copyToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
@@ -1024,6 +1018,7 @@
 			// 
 			// pasteToolStripMenuItem
 			// 
+			this.pasteToolStripMenuItem.Enabled = false;
 			this.pasteToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("pasteToolStripMenuItem.Image")));
 			this.pasteToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
@@ -1038,6 +1033,7 @@
 			// 
 			// selectAllToolStripMenuItem
 			// 
+			this.selectAllToolStripMenuItem.Enabled = false;
 			this.selectAllToolStripMenuItem.Name = "selectAllToolStripMenuItem";
 			this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
 			this.selectAllToolStripMenuItem.Text = "Select &All";
@@ -1045,22 +1041,38 @@
 			// toolsToolStripMenuItem
 			// 
 			this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.animationToolStripMenuItem,
+            this.toolStripSeparator1,
             this.customizeToolStripMenuItem,
             this.optionsToolStripMenuItem});
 			this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
 			this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
 			this.toolsToolStripMenuItem.Text = "&Tools";
 			// 
+			// animationToolStripMenuItem
+			// 
+			this.animationToolStripMenuItem.Name = "animationToolStripMenuItem";
+			this.animationToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
+			this.animationToolStripMenuItem.Text = "Animations";
+			this.animationToolStripMenuItem.Click += new System.EventHandler(this.animationToolStripMenuItem_Click);
+			// 
+			// toolStripSeparator1
+			// 
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new System.Drawing.Size(132, 6);
+			// 
 			// customizeToolStripMenuItem
 			// 
+			this.customizeToolStripMenuItem.Enabled = false;
 			this.customizeToolStripMenuItem.Name = "customizeToolStripMenuItem";
-			this.customizeToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+			this.customizeToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
 			this.customizeToolStripMenuItem.Text = "&Customize";
 			// 
 			// optionsToolStripMenuItem
 			// 
+			this.optionsToolStripMenuItem.Enabled = false;
 			this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-			this.optionsToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+			this.optionsToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
 			this.optionsToolStripMenuItem.Text = "&Options";
 			// 
 			// helpToolStripMenuItem
@@ -1077,18 +1089,21 @@
 			// 
 			// contentsToolStripMenuItem
 			// 
+			this.contentsToolStripMenuItem.Enabled = false;
 			this.contentsToolStripMenuItem.Name = "contentsToolStripMenuItem";
 			this.contentsToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
 			this.contentsToolStripMenuItem.Text = "&Contents";
 			// 
 			// indexToolStripMenuItem
 			// 
+			this.indexToolStripMenuItem.Enabled = false;
 			this.indexToolStripMenuItem.Name = "indexToolStripMenuItem";
 			this.indexToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
 			this.indexToolStripMenuItem.Text = "&Index";
 			// 
 			// searchToolStripMenuItem
 			// 
+			this.searchToolStripMenuItem.Enabled = false;
 			this.searchToolStripMenuItem.Name = "searchToolStripMenuItem";
 			this.searchToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
 			this.searchToolStripMenuItem.Text = "&Search";
@@ -1100,6 +1115,7 @@
 			// 
 			// aboutToolStripMenuItem
 			// 
+			this.aboutToolStripMenuItem.Enabled = false;
 			this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
 			this.aboutToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
 			this.aboutToolStripMenuItem.Text = "&About...";
@@ -1179,6 +1195,8 @@
 			this.overviewPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.overviewPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.overviewPanel.Controls.Add(this.animationPhaseLabel);
+			this.overviewPanel.Controls.Add(this.animationNumericUpDown);
 			this.overviewPanel.Controls.Add(this.overviewDownButton);
 			this.overviewPanel.Controls.Add(this.overviewUpButton);
 			this.overviewPanel.Controls.Add(this.overviewLeftRightButton);
@@ -1189,11 +1207,37 @@
 			this.overviewPanel.Click += new System.EventHandler(this.overviewPanel_Click);
 			this.overviewPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.overviewPanel_Paint);
 			// 
+			// animationPhaseLabel
+			// 
+			this.animationPhaseLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.animationPhaseLabel.AutoSize = true;
+			this.animationPhaseLabel.Location = new System.Drawing.Point(688, 2);
+			this.animationPhaseLabel.Name = "animationPhaseLabel";
+			this.animationPhaseLabel.Size = new System.Drawing.Size(82, 13);
+			this.animationPhaseLabel.TabIndex = 5;
+			this.animationPhaseLabel.Text = "Animationphase";
+			// 
+			// animationNumericUpDown
+			// 
+			this.animationNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.animationNumericUpDown.Enabled = false;
+			this.animationNumericUpDown.Location = new System.Drawing.Point(691, 18);
+			this.animationNumericUpDown.Maximum = new decimal(new int[] {
+            99,
+            0,
+            0,
+            0});
+			this.animationNumericUpDown.Name = "animationNumericUpDown";
+			this.animationNumericUpDown.Size = new System.Drawing.Size(79, 20);
+			this.animationNumericUpDown.TabIndex = 4;
+			this.animationNumericUpDown.Tag = "";
+			this.animationNumericUpDown.ValueChanged += new System.EventHandler(this.animationNumericUpDown_ValueChanged);
+			// 
 			// overviewDownButton
 			// 
 			this.overviewDownButton.BackgroundImage = global::BahnEditor.Editor.Properties.Resources.downarrow;
 			this.overviewDownButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-			this.overviewDownButton.Location = new System.Drawing.Point(20, 16);
+			this.overviewDownButton.Location = new System.Drawing.Point(15, 16);
 			this.overviewDownButton.Name = "overviewDownButton";
 			this.overviewDownButton.Size = new System.Drawing.Size(17, 17);
 			this.overviewDownButton.TabIndex = 3;
@@ -1204,7 +1248,7 @@
 			// 
 			this.overviewUpButton.BackgroundImage = global::BahnEditor.Editor.Properties.Resources.uparrow;
 			this.overviewUpButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-			this.overviewUpButton.Location = new System.Drawing.Point(20, 0);
+			this.overviewUpButton.Location = new System.Drawing.Point(15, 0);
 			this.overviewUpButton.Name = "overviewUpButton";
 			this.overviewUpButton.Size = new System.Drawing.Size(17, 17);
 			this.overviewUpButton.TabIndex = 2;
@@ -1214,7 +1258,7 @@
 			// overviewLeftRightButton
 			// 
 			this.overviewLeftRightButton.Image = global::BahnEditor.Editor.Properties.Resources.leftrightarrow;
-			this.overviewLeftRightButton.Location = new System.Drawing.Point(10, 37);
+			this.overviewLeftRightButton.Location = new System.Drawing.Point(5, 37);
 			this.overviewLeftRightButton.Name = "overviewLeftRightButton";
 			this.overviewLeftRightButton.Size = new System.Drawing.Size(27, 17);
 			this.overviewLeftRightButton.TabIndex = 1;
@@ -1234,6 +1278,7 @@
 			this.Controls.Add(this.toolStrip);
 			this.Controls.Add(this.menuStrip);
 			this.MainMenuStrip = this.menuStrip;
+			this.MinimumSize = new System.Drawing.Size(800, 600);
 			this.Name = "Editor";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Bahn Editor";
@@ -1259,6 +1304,8 @@
 			this.menuStrip.PerformLayout();
 			this.tabControl.ResumeLayout(false);
 			this.overviewPanel.ResumeLayout(false);
+			this.overviewPanel.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.animationNumericUpDown)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -1274,7 +1321,6 @@
 		private System.Windows.Forms.ColorDialog colorDialog;
 		private System.Windows.Forms.Button leftColorButton;
 		private System.Windows.Forms.Button rightColorButton;
-		private DrawPanel drawPanel;
 		private System.Windows.Forms.ComboBox rightComboBox;
 		private System.Windows.Forms.ComboBox leftComboBox;
 		private System.Windows.Forms.Label rightLabel;
@@ -1309,7 +1355,6 @@
 		private System.Windows.Forms.ToolStripButton copyToolStripButton;
 		private System.Windows.Forms.ToolStripButton pasteToolStripButton;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
-		private System.Windows.Forms.ToolStripButton helpToolStripButton;
 		private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
@@ -1336,7 +1381,6 @@
 		private System.Windows.Forms.ToolStripMenuItem searchToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
 		private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 		private System.Windows.Forms.Panel particlePropertiesPanel;
 		private System.Windows.Forms.NumericUpDown particleXNumericUpDown;
 		private System.Windows.Forms.Label particleYLabel;
@@ -1365,6 +1409,11 @@
 		private System.Windows.Forms.Label cursorNormalDirectionLabel;
 		private System.Windows.Forms.Label cursorLabel;
 		private System.Windows.Forms.ComboBox cursorNormalDirectionComboBox;
+		private System.Windows.Forms.ToolStripMenuItem animationToolStripMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+		private DrawPanel drawPanel;
+		private System.Windows.Forms.NumericUpDown animationNumericUpDown;
+		private System.Windows.Forms.Label animationPhaseLabel;
 
 	}
 }
