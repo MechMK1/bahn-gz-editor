@@ -219,7 +219,7 @@ namespace BahnEditor.BahnLib
 				graphic.Properties.ParticleWidth = br.ReadInt32();
 			}
 
-			//If either Clock is set in the GraphicProperties
+			//If Clock is set in the GraphicProperties
 			if (graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Clock))
 			{
 				if (graphic.Version == GraphicVersion.Version0)
@@ -562,7 +562,7 @@ namespace BahnEditor.BahnLib
 			}
 			if (maxx == 0 && maxy == 0)
 			{
-				throw new ElementIsEmptyException("Element is Empty");
+				throw new ElementIsEmptyException("Graphic is Empty");
 			}
 			maxx++;
 			maxy++;

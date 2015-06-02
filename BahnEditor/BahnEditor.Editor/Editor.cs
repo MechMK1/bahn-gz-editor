@@ -163,7 +163,7 @@ namespace BahnEditor.Editor
 			this.actualGraphic = 0;
 			this.actualAlternative = 1;
 			this.actualAnimationPhase = 0;
-			Graphic graphic = new Graphic("Kein Text");
+			Graphic graphic = new Graphic("No text");
 			graphic.AddTransparentLayer(LayerID.Foreground);
 			this.zoom1Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
 			this.ChangeLayer(LayerID.Foreground);
@@ -200,7 +200,7 @@ namespace BahnEditor.Editor
 				this.zoom1Archive = GraphicArchive.Load(this.loadFileDialog.FileName);
 				if (this.zoom1Archive.ZoomFactor != ZoomFactor.Zoom1)
 				{
-					throw new InvalidDataException("Zoomfactor not 1");
+					throw new InvalidDataException("Zoomfactor of archive not 1");
 				}
 				try
 				{
@@ -230,25 +230,25 @@ namespace BahnEditor.Editor
 				this.actualAlternative = 1;
 				this.actualAnimationPhase = 0;
 				this.actualZoomFactor = ZoomFactor.Zoom1;
-				if (this.zoom2Archive[this.actualGraphic] != null && !this.tabControl.TabPages.Contains(this.zoom2Tab))
+				if (this.zoom2Archive[this.actualGraphic, this.actualAnimationPhase, this.actualAlternative] != null && !this.tabControl.TabPages.Contains(this.zoom2Tab))
 				{
 					this.tabControl.TabPages.Add(this.zoom2Tab);
 					this.zoom2CheckBoxCodeChanged = true;
 					this.zoom2CheckBox.Checked = true;
 				}
-				else if (this.zoom2Archive[this.actualGraphic] == null && this.tabControl.TabPages.Contains(this.zoom2Tab))
+				else if (this.zoom2Archive[this.actualGraphic, this.actualAnimationPhase, this.actualAlternative] == null && this.tabControl.TabPages.Contains(this.zoom2Tab))
 				{
 					this.tabControl.TabPages.Remove(this.zoom2Tab);
 					this.zoom2CheckBoxCodeChanged = true;
 					this.zoom2CheckBox.Checked = false;
 				}
-				if (this.zoom4Archive[this.actualGraphic] != null && !this.tabControl.TabPages.Contains(this.zoom4Tab))
+				if (this.zoom4Archive[this.actualGraphic, this.actualAnimationPhase, this.actualAlternative] != null && !this.tabControl.TabPages.Contains(this.zoom4Tab))
 				{
 					this.tabControl.TabPages.Add(this.zoom4Tab);
 					this.zoom4CheckBoxCodeChanged = true;
 					this.zoom4CheckBox.Checked = true;
 				}
-				else if (this.zoom4Archive[this.actualGraphic] == null && this.tabControl.TabPages.Contains(this.zoom4Tab))
+				else if (this.zoom4Archive[this.actualGraphic, this.actualAnimationPhase, this.actualAlternative] == null && this.tabControl.TabPages.Contains(this.zoom4Tab))
 				{
 					this.tabControl.TabPages.Remove(this.zoom4Tab);
 					this.zoom4CheckBoxCodeChanged = true;
@@ -271,7 +271,7 @@ namespace BahnEditor.Editor
 			}
 			catch (Exception ex)
 			{
-				MessageBox.Show(String.Format("Fehler beim Laden: {0}!", ex.ToString()), "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(String.Format("There was an error while loading: {0}!", ex.ToString()), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				this.NewGraphicArchive();
 			}
 		}
@@ -282,14 +282,14 @@ namespace BahnEditor.Editor
 			{
 				if (!this.zoom1Archive.Save(lastPath, true))
 				{
-					MessageBox.Show("Fehler beim Speichern des Zoom1-Archivs!", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					MessageBox.Show("There was an error while saving the zoom1-archive!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 					return;
 				}
 				try
 				{
 					if (!this.zoom2Archive.Save(lastPath.Remove(lastPath.Length - 3) + "uz2", true))
 					{
-						MessageBox.Show("Fehler beim Speichern des Zoom2-Archivs!", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+						MessageBox.Show("There was an error while saving the zoom2-archive!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 					}
 				}
 				catch (ArchiveIsEmptyException) { }
@@ -297,7 +297,7 @@ namespace BahnEditor.Editor
 				{
 					if (!this.zoom4Archive.Save(lastPath.Remove(lastPath.Length - 3) + "uz4", true))
 					{
-						MessageBox.Show("Fehler beim Speichern des Zoom4-Archivs!", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+						MessageBox.Show("There was an error while saving the zoom4-archive!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 					}
 				}
 				catch (ArchiveIsEmptyException) { }
@@ -305,7 +305,7 @@ namespace BahnEditor.Editor
 			}
 			catch (ElementIsEmptyException)
 			{
-				MessageBox.Show("Element ist leer!", "Element ist leer!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				MessageBox.Show("A graphic is empty (transparent)!", "Invalid graphic!", MessageBoxButtons.OK, MessageBoxIcon.Information);
 			}
 		}
 
@@ -614,7 +614,7 @@ namespace BahnEditor.Editor
 		{
 			if (this.userMadeChanges == true)
 			{
-				DialogResult dr = MessageBox.Show("Soll die Grafik gespeichert werden?", "Speichern", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+				DialogResult dr = MessageBox.Show("Do you want to save the graphic?", "Save", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
 				if (dr == DialogResult.Cancel)
 				{
 					return false;
@@ -632,7 +632,6 @@ namespace BahnEditor.Editor
 			if (this.actualLayer != id)
 			{
 				this.actualLayer = id;
-				//int index;
 				switch (id)
 				{
 					case LayerID.ToBackground:
@@ -658,11 +657,6 @@ namespace BahnEditor.Editor
 					default:
 						throw new Exception("Internal Error");
 				}
-				/*if (this.layerComboBox2.SelectedIndex != index)
-				{
-					this.layerSelectBoxCodeChanged = true;
-					this.layerComboBox2.SelectedIndex = index;
-				}*/
 			}
 		}
 
@@ -705,25 +699,25 @@ namespace BahnEditor.Editor
 				this.actualGraphic = (element * 2 + overviewAlternative) + ((overviewLine) * 18);
 				this.actualAnimationPhase = Constants.MinAnimationPhase;
 				this.actualAlternative = 1;
-				if (this.zoom2Archive[this.actualGraphic] != null && !this.tabControl.TabPages.Contains(this.zoom2Tab))
+				if (this.zoom2Archive[this.actualGraphic, this.actualAnimationPhase, this.actualAlternative] != null && !this.tabControl.TabPages.Contains(this.zoom2Tab))
 				{
 					this.tabControl.TabPages.Insert(1, this.zoom2Tab);
 					this.zoom2CheckBoxCodeChanged = true;
 					this.zoom2CheckBox.Checked = true;
 				}
-				else if (this.zoom2Archive[this.actualGraphic] == null && this.tabControl.TabPages.Contains(this.zoom2Tab))
+				else if (this.zoom2Archive[this.actualGraphic, this.actualAnimationPhase, this.actualAlternative] == null && this.tabControl.TabPages.Contains(this.zoom2Tab))
 				{
 					this.tabControl.TabPages.Remove(this.zoom2Tab);
 					this.zoom2CheckBoxCodeChanged = true;
 					this.zoom2CheckBox.Checked = false;
 				}
-				if (this.zoom4Archive[this.actualGraphic] != null && !this.tabControl.TabPages.Contains(this.zoom4Tab))
+				if (this.zoom4Archive[this.actualGraphic, this.actualAnimationPhase, this.actualAlternative] != null && !this.tabControl.TabPages.Contains(this.zoom4Tab))
 				{
 					this.tabControl.TabPages.Add(this.zoom4Tab);
 					this.zoom4CheckBoxCodeChanged = true;
 					this.zoom4CheckBox.Checked = true;
 				}
-				else if (this.zoom4Archive[this.actualGraphic] == null && this.tabControl.TabPages.Contains(this.zoom4Tab))
+				else if (this.zoom4Archive[this.actualGraphic, this.actualAnimationPhase, this.actualAlternative] == null && this.tabControl.TabPages.Contains(this.zoom4Tab))
 				{
 					this.tabControl.TabPages.Remove(this.zoom4Tab);
 					this.zoom4CheckBoxCodeChanged = true;
@@ -907,7 +901,7 @@ namespace BahnEditor.Editor
 			{
 				if (this.ActualZoom1Graphic == null)
 				{
-					Graphic graphic = new Graphic("Kein Text");
+					Graphic graphic = new Graphic("No text");
 					graphic.AddTransparentLayer(LayerID.Foreground);
 					this.zoom1Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
 					this.ChangeLayer(LayerID.Foreground);
@@ -1431,7 +1425,7 @@ namespace BahnEditor.Editor
 				}
 				else
 				{
-					MessageBox.Show("WTF");
+					MessageBox.Show("Internal Error", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}
 			}
 			this.leftColorButton.BackColor = PixelToColor(this.leftPixel);
@@ -1482,7 +1476,7 @@ namespace BahnEditor.Editor
 			if (me != null)
 				ClickOverview(me);
 			else
-				MessageBox.Show("Interner Fehler", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show("Internal Error", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 		}
 
 		private void overviewPanel_Paint(object sender, PaintEventArgs e)
@@ -1635,7 +1629,7 @@ namespace BahnEditor.Editor
 				}
 				else
 				{
-					MessageBox.Show("WTF");
+					MessageBox.Show("Internal Error", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}
 			}
 			this.rightColorButton.BackColor = PixelToColor(this.rightPixel);
@@ -1690,9 +1684,9 @@ namespace BahnEditor.Editor
 			{
 				if (zoom2CheckBox.Checked)
 				{
-					Graphic graphic = new Graphic("Kein Text", ZoomFactor.Zoom2);
+					Graphic graphic = new Graphic("No text", ZoomFactor.Zoom2);
 					graphic.AddTransparentLayer(LayerID.Foreground);
-					this.zoom2Archive.AddGraphic(this.actualGraphic, graphic);
+					this.zoom2Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
 					this.ChangeLayer(LayerID.Foreground);
 					this.tabControl.TabPages.Insert(1, this.zoom2Tab);
 					this.tabControl.SelectedTab = this.zoom2Tab;
@@ -1703,10 +1697,10 @@ namespace BahnEditor.Editor
 				{
 					DialogResult result = DialogResult.Yes;
 					if (!this.ActualZoom2Graphic.IsTransparent())
-						result = MessageBox.Show("Soll wirklich die Zoom2-Grafik gelöscht werden?", "Zoom2", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+						result = MessageBox.Show("Do you really want to delete the zoom2-graphic?", "Delete zoom2-graphic", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 					if (result == DialogResult.Yes)
 					{
-						this.zoom2Archive.RemoveGraphic(this.actualGraphic);
+						this.zoom2Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative);
 						this.tabControl.TabPages.Remove(this.zoom2Tab);
 						this.tabControl.SelectedTab = this.zoom1Tab;
 						this.actualZoomFactor = ZoomFactor.Zoom1;
@@ -1731,9 +1725,9 @@ namespace BahnEditor.Editor
 			{
 				if (zoom4CheckBox.Checked)
 				{
-					Graphic graphic = new Graphic("Kein Text", ZoomFactor.Zoom4);
+					Graphic graphic = new Graphic("No text", ZoomFactor.Zoom4);
 					graphic.AddTransparentLayer(LayerID.Foreground);
-					this.zoom4Archive.AddGraphic(this.actualGraphic, graphic);
+					this.zoom4Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
 					this.ChangeLayer(LayerID.Foreground);
 					this.tabControl.TabPages.Add(this.zoom4Tab);
 					this.tabControl.SelectedTab = this.zoom4Tab;
@@ -1744,10 +1738,10 @@ namespace BahnEditor.Editor
 				{
 					DialogResult result = DialogResult.Yes;
 					if (!this.ActualZoom4Graphic.IsTransparent())
-						result = MessageBox.Show("Soll wirklich die Zoom4-Grafik gelöscht werden?", "Zoom4", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+						result = MessageBox.Show("Do you really want to delete the zoom4-graphic?", "Delete zoom4-graphic", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 					if (result == DialogResult.Yes)
 					{
-						this.zoom4Archive.RemoveGraphic(this.actualGraphic);
+						this.zoom4Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative);
 						this.tabControl.TabPages.Remove(this.zoom4Tab);
 						this.tabControl.SelectedTab = this.zoom1Tab;
 						this.actualZoomFactor = ZoomFactor.Zoom1;
