@@ -205,6 +205,7 @@
 			// cutToolStripButton
 			// 
 			this.cutToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.cutToolStripButton.Enabled = false;
 			this.cutToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("cutToolStripButton.Image")));
 			this.cutToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.cutToolStripButton.Name = "cutToolStripButton";
@@ -214,6 +215,7 @@
 			// copyToolStripButton
 			// 
 			this.copyToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.copyToolStripButton.Enabled = false;
 			this.copyToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("copyToolStripButton.Image")));
 			this.copyToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.copyToolStripButton.Name = "copyToolStripButton";
@@ -223,6 +225,7 @@
 			// pasteToolStripButton
 			// 
 			this.pasteToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.pasteToolStripButton.Enabled = false;
 			this.pasteToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("pasteToolStripButton.Image")));
 			this.pasteToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.pasteToolStripButton.Name = "pasteToolStripButton";
@@ -974,6 +977,7 @@
 			// 
 			// undoToolStripMenuItem
 			// 
+			this.undoToolStripMenuItem.Enabled = false;
 			this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
 			this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
 			this.undoToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
@@ -981,6 +985,7 @@
 			// 
 			// redoToolStripMenuItem
 			// 
+			this.redoToolStripMenuItem.Enabled = false;
 			this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
 			this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
 			this.redoToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
@@ -993,6 +998,7 @@
 			// 
 			// cutToolStripMenuItem
 			// 
+			this.cutToolStripMenuItem.Enabled = false;
 			this.cutToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("cutToolStripMenuItem.Image")));
 			this.cutToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
@@ -1002,6 +1008,7 @@
 			// 
 			// copyToolStripMenuItem
 			// 
+			this.copyToolStripMenuItem.Enabled = false;
 			this.copyToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("copyToolStripMenuItem.Image")));
 			this.copyToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
@@ -1011,6 +1018,7 @@
 			// 
 			// pasteToolStripMenuItem
 			// 
+			this.pasteToolStripMenuItem.Enabled = false;
 			this.pasteToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("pasteToolStripMenuItem.Image")));
 			this.pasteToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
@@ -1025,6 +1033,7 @@
 			// 
 			// selectAllToolStripMenuItem
 			// 
+			this.selectAllToolStripMenuItem.Enabled = false;
 			this.selectAllToolStripMenuItem.Name = "selectAllToolStripMenuItem";
 			this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
 			this.selectAllToolStripMenuItem.Text = "Select &All";
@@ -1054,12 +1063,14 @@
 			// 
 			// customizeToolStripMenuItem
 			// 
+			this.customizeToolStripMenuItem.Enabled = false;
 			this.customizeToolStripMenuItem.Name = "customizeToolStripMenuItem";
 			this.customizeToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
 			this.customizeToolStripMenuItem.Text = "&Customize";
 			// 
 			// optionsToolStripMenuItem
 			// 
+			this.optionsToolStripMenuItem.Enabled = false;
 			this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
 			this.optionsToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
 			this.optionsToolStripMenuItem.Text = "&Options";
@@ -1078,18 +1089,21 @@
 			// 
 			// contentsToolStripMenuItem
 			// 
+			this.contentsToolStripMenuItem.Enabled = false;
 			this.contentsToolStripMenuItem.Name = "contentsToolStripMenuItem";
 			this.contentsToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
 			this.contentsToolStripMenuItem.Text = "&Contents";
 			// 
 			// indexToolStripMenuItem
 			// 
+			this.indexToolStripMenuItem.Enabled = false;
 			this.indexToolStripMenuItem.Name = "indexToolStripMenuItem";
 			this.indexToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
 			this.indexToolStripMenuItem.Text = "&Index";
 			// 
 			// searchToolStripMenuItem
 			// 
+			this.searchToolStripMenuItem.Enabled = false;
 			this.searchToolStripMenuItem.Name = "searchToolStripMenuItem";
 			this.searchToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
 			this.searchToolStripMenuItem.Text = "&Search";
@@ -1101,6 +1115,7 @@
 			// 
 			// aboutToolStripMenuItem
 			// 
+			this.aboutToolStripMenuItem.Enabled = false;
 			this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
 			this.aboutToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
 			this.aboutToolStripMenuItem.Text = "&About...";
