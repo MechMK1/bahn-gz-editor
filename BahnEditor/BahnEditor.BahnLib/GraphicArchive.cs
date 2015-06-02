@@ -105,18 +105,6 @@ namespace BahnEditor.BahnLib
 			}
 		}
 
-		/*internal IEnumerable<ArchiveElement> this[Func<ArchiveElement, bool> func]
-		{
-			get
-			{
-				var res = from g in this.graphics
-						  where func(g)
-						  select g;
-
-				return res;
-			}
-		}*/
-
 		/// <summary>
 		/// Adds a graphic to the archive at the last position
 		/// </summary>

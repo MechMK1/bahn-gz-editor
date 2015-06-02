@@ -7,14 +7,6 @@ namespace BahnEditor.BahnLib
 {
 	public class Animation
 	{
-		/*private Graphic[] Graphics;
-
-		public Animation(GraphicArchive archive, int elementID, int alternativeID)
-		{
-			this.Graphics = archive[(element => element.ElementNumber == elementID && element.Alternative == alternativeID)].Select((s=>s.Graphic)).ToArray<Graphic>();
-		}
-		*/
-
 		#region Private Fields
 
 		private Dictionary<Tuple<int, int>, AnimationProgram> animationPrograms = new Dictionary<Tuple<int, int>, AnimationProgram>();
