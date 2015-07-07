@@ -24,7 +24,7 @@
 
 		//Animations
 		public const int MinAnimationPhase = 0;
-		public const int MaxAnimationPhase = 0;
+		public const int MaxAnimationPhase = 99;
 
 		//File format versions
 		public const ushort GraphicFileFormat = 0x8403;

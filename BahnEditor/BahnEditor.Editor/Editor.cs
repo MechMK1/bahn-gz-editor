@@ -166,7 +166,7 @@ namespace BahnEditor.Editor
 			this.alternativeCheckBoxCodeChanged = false;
 			this.actualAnimationPhase = 0;
 			this.ChangeLayer(LayerID.Foreground);
-			this.userMadeChanges = false;
+			this.UserMadeChanges(false);
 			this.animationPhaseCodeChanged = true;
 			this.animationNumericUpDown.Value = Constants.MinAnimationPhase;
 			this.animationPhaseCodeChanged = false;
@@ -212,8 +212,8 @@ namespace BahnEditor.Editor
 				{
 					this.zoom4Archive = new GraphicArchive(ZoomFactor.Zoom4);
 				}
+
 				this.actualGraphic = 0;
-				//this.actualAlternative = 1;
 				this.actualAnimationPhase = 0;
 				this.actualZoomFactor = ZoomFactor.Zoom1;
 				this.alternativeCheckBoxCodeChanged = true;
@@ -234,7 +234,7 @@ namespace BahnEditor.Editor
 				this.UpdateProperties();
 				this.lastPath = this.zoom1Archive.FileName;
 				this.hasLoadedGraphic = true;
-				this.userMadeChanges = false;
+				this.UserMadeChanges(false);
 				this.ChangeLayer(LayerID.Foreground);
 				this.ResizeDrawPanel();
 				this.drawPanel.AutoScrollPosition = new Point(this.drawPanel.HorizontalScroll.Maximum, this.drawPanel.VerticalScroll.Maximum / 2);
@@ -274,7 +274,7 @@ namespace BahnEditor.Editor
 					}
 				}
 				catch (ArchiveIsEmptyException) { }
-				this.userMadeChanges = false;
+				this.UserMadeChanges(false);
 			}
 			catch (ElementIsEmptyException)
 			{
@@ -720,16 +720,16 @@ namespace BahnEditor.Editor
 				if (this.ActualZoom1Graphic == null)
 				{
 					Graphic graphic = new Graphic("No text");
-					//graphic.AddTransparentLayer(LayerID.Foreground);
 					this.zoom1Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
+					this.UserMadeChanges(true);
 					ChangePropertyComboBoxes(true);
-					//this.ChangeLayer(LayerID.Foreground);
 					this.overviewPanel.Invalidate();
 				}
 				if (this.ActualZoom1Graphic.GetLayer(this.actualLayer) == null)
 				{
 					LayerID LayerID = GetLayerIDBySelectedIndex();
 					this.ActualZoom1Graphic.AddTransparentLayer(LayerID);
+					this.UserMadeChanges(true);
 					this.ChangeLayer(LayerID);
 				}
 			}
@@ -738,16 +738,16 @@ namespace BahnEditor.Editor
 				if (this.ActualZoom2Graphic == null)
 				{
 					Graphic graphic = new Graphic("No text");
-					//graphic.AddTransparentLayer(LayerID.Foreground);
 					this.zoom2Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
+					this.UserMadeChanges(true);
 					ChangePropertyComboBoxes(true);
-					//this.ChangeLayer(LayerID.Foreground);
 					this.overviewPanel.Invalidate();
 				}
 				if (this.ActualZoom2Graphic.GetLayer(this.actualLayer) == null)
 				{
 					LayerID LayerID = GetLayerIDBySelectedIndex();
 					this.ActualZoom2Graphic.AddTransparentLayer(LayerID);
+					this.UserMadeChanges(true);
 					this.ChangeLayer(LayerID);
 				}
 			}
@@ -756,16 +756,16 @@ namespace BahnEditor.Editor
 				if (this.ActualZoom4Graphic == null)
 				{
 					Graphic graphic = new Graphic("No text");
-					//graphic.AddTransparentLayer(LayerID.Foreground);
 					this.zoom4Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
+					this.UserMadeChanges(true);
 					ChangePropertyComboBoxes(true);
-					//this.ChangeLayer(LayerID.Foreground);
 					this.overviewPanel.Invalidate();
 				}
-				else if (this.ActualZoom4Graphic.GetLayer(this.actualLayer) == null)
+				if (this.ActualZoom4Graphic.GetLayer(this.actualLayer) == null)
 				{
 					LayerID LayerID = GetLayerIDBySelectedIndex();
 					this.ActualZoom4Graphic.AddTransparentLayer(LayerID);
+					this.UserMadeChanges(true);
 					this.ChangeLayer(LayerID);
 				}
 			}
@@ -791,7 +791,7 @@ namespace BahnEditor.Editor
 						{
 							return;
 						}
-						this.userMadeChanges = true;
+						this.UserMadeChanges(true);
 						drawPanel.Invalidate(new Rectangle(e.X - this.zoomLevel / ((int)this.actualZoomFactor), e.Y - this.zoomLevel / ((int)this.actualZoomFactor), (this.zoomLevel * 2) / (int)this.actualZoomFactor, (this.zoomLevel * 2) / (int)this.actualZoomFactor));
 					}
 				}
@@ -1164,15 +1164,20 @@ namespace BahnEditor.Editor
 			if (z1Graphic != null && z1Graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Cursor))
 			{
 				this.cursorNormalDirectionCBCodeChanged = true;
-				this.cursorNormalDirectionComboBox.SelectedIndex = (int)z1Graphic.Properties.CursorNormalDirection + 1;
 				this.cursorReverseDirectionCBCodeChanged = true;
+				this.cursorNormalDirectionComboBox.SelectedIndex = (int)z1Graphic.Properties.CursorNormalDirection + 1;
 				this.cursorReverseDirectionComboBox.SelectedIndex = (int)z1Graphic.Properties.CursorReverseDirection + 1;
+				this.cursorNormalDirectionCBCodeChanged = false;
+				this.cursorReverseDirectionCBCodeChanged = false;
 			}
 			else if (this.cursorNormalDirectionComboBox.SelectedIndex > -1 || this.cursorReverseDirectionComboBox.SelectedIndex > -1)
 			{
-				this.cursorNormalDirectionCBCodeChanged = true; this.cursorNormalDirectionComboBox.SelectedIndex = -1;
+				this.cursorNormalDirectionCBCodeChanged = true; 
 				this.cursorReverseDirectionCBCodeChanged = true;
+				this.cursorNormalDirectionComboBox.SelectedIndex = -1;
 				this.cursorReverseDirectionComboBox.SelectedIndex = -1;
+				this.cursorNormalDirectionCBCodeChanged = false;
+				this.cursorReverseDirectionCBCodeChanged = false;
 			}
 		}
 
@@ -1210,6 +1215,20 @@ namespace BahnEditor.Editor
 			drawPanel.Invalidate();
 		}
 
+		internal void ResetAnimationNumericUpDown()
+		{
+			this.actualAnimationPhase = 0;
+			this.animationPhaseCodeChanged = true;
+			this.animationNumericUpDown.Value = 0;
+			this.animationPhaseCodeChanged = false;
+		}
+
+		internal void UserMadeChanges(bool userMadeChanges)
+		{
+			this.userMadeChanges = userMadeChanges;
+			this.Text = userMadeChanges ? "Bahn Editor *" : "Bahn Editor";
+		}
+
 		#endregion Internal Methods
 
 		#region Event-Handler
@@ -1238,6 +1257,7 @@ namespace BahnEditor.Editor
 				if (dr == DialogResult.OK)
 				{
 					graphic.Properties.ClockColorHoursPointer = PixelFromColor(this.colorDialog.Color);
+					this.UserMadeChanges(true);
 					this.clockColorHoursPointerButton.BackColor = this.colorDialog.Color;
 				}
 			}
@@ -1252,6 +1272,7 @@ namespace BahnEditor.Editor
 				if (dr == DialogResult.OK)
 				{
 					graphic.Properties.ClockColorMinutesPointer = PixelFromColor(this.colorDialog.Color);
+					this.UserMadeChanges(true);
 					this.clockColorMinutesPointerButton.BackColor = this.colorDialog.Color;
 				}
 			}
@@ -1275,6 +1296,7 @@ namespace BahnEditor.Editor
 							this.clockWidthNumericUpDown.Enabled = false;
 							this.clockXNumericUpDown.Enabled = false;
 							this.clockYNumericUpDown.Enabled = false;
+							this.UserMadeChanges(true);
 						}
 						break;
 
@@ -1289,6 +1311,7 @@ namespace BahnEditor.Editor
 						this.clockWidthNumericUpDown.Enabled = true;
 						this.clockXNumericUpDown.Enabled = true;
 						this.clockYNumericUpDown.Enabled = true;
+						this.UserMadeChanges(true);
 						break;
 
 					case 2:
@@ -1302,6 +1325,7 @@ namespace BahnEditor.Editor
 						this.clockWidthNumericUpDown.Enabled = true;
 						this.clockXNumericUpDown.Enabled = true;
 						this.clockYNumericUpDown.Enabled = true;
+						this.UserMadeChanges(true);
 						break;
 
 					default:
@@ -1323,6 +1347,7 @@ namespace BahnEditor.Editor
 				{
 					graphic.Properties.ClockProperties &= ~ClockProperties.MinutePointer;
 				}
+				this.UserMadeChanges(true);
 			}
 		}
 
@@ -1350,6 +1375,7 @@ namespace BahnEditor.Editor
 					default:
 						throw new ArgumentOutOfRangeException("clockRotationComboBox.SelectedIndex");
 				}
+				this.UserMadeChanges(true);
 			}
 		}
 
@@ -1360,6 +1386,7 @@ namespace BahnEditor.Editor
 			{
 				graphic.Properties.ClockWidth = (int)clockWidthNumericUpDown.Value;
 				graphic.Properties.ClockHeight = (int)clockWidthNumericUpDown.Value;
+				this.UserMadeChanges(true);
 			}
 		}
 
@@ -1369,6 +1396,7 @@ namespace BahnEditor.Editor
 			if (graphic != null && graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Clock))
 			{
 				graphic.Properties.ClockX = (int)clockXNumericUpDown.Value;
+				this.UserMadeChanges(true);
 			}
 		}
 
@@ -1378,6 +1406,7 @@ namespace BahnEditor.Editor
 			if (graphic != null && graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Clock))
 			{
 				graphic.Properties.ClockY = (int)clockYNumericUpDown.Value;
+				this.UserMadeChanges(true);
 			}
 		}
 
@@ -1385,11 +1414,10 @@ namespace BahnEditor.Editor
 		{
 			if (this.cursorNormalDirectionCBCodeChanged)
 			{
-				this.cursorNormalDirectionCBCodeChanged = false;
 				return;
 			}
 			Graphic graphic = this.ActualZoom1Graphic;
-			graphic.Properties.RawData |= GraphicProperties.Properties.Cursor;
+
 			if (graphic != null)
 			{
 				if (cursorNormalDirectionComboBox.SelectedIndex == 0)
@@ -1397,11 +1425,14 @@ namespace BahnEditor.Editor
 					graphic.Properties.RawData &= ~GraphicProperties.Properties.Cursor;
 					this.cursorReverseDirectionCBCodeChanged = true;
 					this.cursorReverseDirectionComboBox.SelectedIndex = 0;
+					this.cursorReverseDirectionCBCodeChanged = false;
 				}
 				else
 				{
+					graphic.Properties.RawData |= GraphicProperties.Properties.Cursor;
 					graphic.Properties.CursorNormalDirection = (Direction)(cursorNormalDirectionComboBox.SelectedIndex - 1);
 				}
+				this.UserMadeChanges(true);
 			}
 		}
 
@@ -1409,11 +1440,10 @@ namespace BahnEditor.Editor
 		{
 			if (this.cursorReverseDirectionCBCodeChanged)
 			{
-				this.cursorReverseDirectionCBCodeChanged = false;
 				return;
 			}
 			Graphic graphic = this.ActualZoom1Graphic;
-			graphic.Properties.RawData |= GraphicProperties.Properties.Cursor;
+
 			if (graphic != null)
 			{
 				if (cursorReverseDirectionComboBox.SelectedIndex == 0)
@@ -1421,11 +1451,14 @@ namespace BahnEditor.Editor
 					graphic.Properties.RawData &= ~GraphicProperties.Properties.Cursor;
 					this.cursorNormalDirectionCBCodeChanged = true;
 					this.cursorNormalDirectionComboBox.SelectedIndex = 0;
+					this.cursorNormalDirectionCBCodeChanged = false;
 				}
 				else
 				{
+					graphic.Properties.RawData |= GraphicProperties.Properties.Cursor;
 					graphic.Properties.CursorReverseDirection = (Direction)(cursorReverseDirectionComboBox.SelectedIndex - 1);
 				}
+				this.UserMadeChanges(true);
 			}
 		}
 
@@ -1635,6 +1668,7 @@ namespace BahnEditor.Editor
 							this.particleWidthNumericUpDown.Enabled = false;
 							this.particleXNumericUpDown.Enabled = false;
 							this.particleYNumericUpDown.Enabled = false;
+							this.UserMadeChanges(true);
 						}
 						break;
 
@@ -1644,6 +1678,7 @@ namespace BahnEditor.Editor
 						this.particleWidthNumericUpDown.Enabled = true;
 						this.particleXNumericUpDown.Enabled = true;
 						this.particleYNumericUpDown.Enabled = true;
+						this.UserMadeChanges(true);
 						break;
 
 					case 2:
@@ -1652,6 +1687,7 @@ namespace BahnEditor.Editor
 						this.particleWidthNumericUpDown.Enabled = true;
 						this.particleXNumericUpDown.Enabled = true;
 						this.particleYNumericUpDown.Enabled = true;
+						this.UserMadeChanges(true);
 						break;
 
 					default:
@@ -1666,6 +1702,7 @@ namespace BahnEditor.Editor
 			if (graphic != null && graphic.Properties.HasParticles)
 			{
 				graphic.Properties.ParticleWidth = (int)particleWidthNumericUpDown.Value;
+				this.UserMadeChanges(true);
 			}
 		}
 
@@ -1675,6 +1712,7 @@ namespace BahnEditor.Editor
 			if (graphic != null && graphic.Properties.HasParticles)
 			{
 				graphic.Properties.ParticleX = (int)particleXNumericUpDown.Value;
+				this.UserMadeChanges(true);
 			}
 		}
 
@@ -1684,6 +1722,7 @@ namespace BahnEditor.Editor
 			if (graphic != null && graphic.Properties.HasParticles)
 			{
 				graphic.Properties.ParticleY = (int)particleYNumericUpDown.Value;
+				this.UserMadeChanges(true);
 			}
 		}
 
@@ -1876,13 +1915,14 @@ namespace BahnEditor.Editor
 						this.zoom4Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, 1, this.zoom4Archive[this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative]);
 						this.zoom4Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative);
 					}
-					if (this.zoom1Archive.Animation[this.actualGraphic, Constants.NoAlternative] != null)
+					if (this.zoom1Archive.Animation != null && this.zoom1Archive.Animation[this.actualGraphic, Constants.NoAlternative] != null)
 					{
 						this.zoom1Archive.Animation.AddAnimationProgram(this.zoom1Archive.Animation[this.actualGraphic, Constants.NoAlternative], this.actualGraphic, 1);
 						this.zoom1Archive.Animation.RemoveAnimationProgram(this.actualGraphic, Constants.NoAlternative);
 					}
 				}
 				this.actualAlternative = 1;
+				this.UserMadeChanges(true);
 			}
 			else
 			{
@@ -1908,7 +1948,7 @@ namespace BahnEditor.Editor
 									this.zoom1Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, i);
 									if (this.zoom2Archive[this.actualGraphic, this.actualAnimationPhase, i] != null) this.zoom2Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, i);
 									if (this.zoom4Archive[this.actualGraphic, this.actualAnimationPhase, i] != null) this.zoom4Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, i);
-									if (this.zoom1Archive.Animation[this.actualGraphic, i] != null) this.zoom1Archive.Animation.RemoveAnimationProgram(this.actualGraphic, i);
+									if (this.zoom1Archive.Animation != null && this.zoom1Archive.Animation[this.actualGraphic, i] != null) this.zoom1Archive.Animation.RemoveAnimationProgram(this.actualGraphic, i);
 								}
 							}
 						}
@@ -1926,13 +1966,14 @@ namespace BahnEditor.Editor
 						this.zoom4Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative, this.zoom4Archive[this.actualGraphic, this.actualAnimationPhase, 1]);
 						this.zoom4Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, 1);
 					}
-					if (this.zoom1Archive.Animation[this.actualGraphic, 1] != null)
+					if (this.zoom1Archive.Animation != null && this.zoom1Archive.Animation[this.actualGraphic, 1] != null)
 					{
 						this.zoom1Archive.Animation.AddAnimationProgram(this.zoom1Archive.Animation[this.actualGraphic, 1], this.actualGraphic, Constants.NoAlternative);
 						this.zoom1Archive.Animation.RemoveAnimationProgram(this.actualGraphic, 1);
 					}
 				}
 				this.actualAlternative = Constants.NoAlternative;
+				this.UserMadeChanges(true);
 			}
 			this.overviewPanel.Invalidate();
 			this.drawPanel.Invalidate();

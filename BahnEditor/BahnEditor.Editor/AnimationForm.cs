@@ -91,6 +91,7 @@ namespace BahnEditor.Editor
 		{
 			this.dataGridView.Rows.Add("0", "0", "0", "0");
 			this.editor.Zoom1Archive.Animation[this.editor.ActualGraphicID, this.editor.ActualAlternativeID].AddAnimationStep(new AnimationStep(0, 0, 0, 0));
+			this.editor.UserMadeChanges(true);
 		}
 
 		private void deleteAnimationStepButton_Click(object sender, EventArgs e)
@@ -105,6 +106,7 @@ namespace BahnEditor.Editor
 			{
 				this.editor.Zoom1Archive.Animation[this.editor.ActualGraphicID, this.editor.ActualAlternativeID].RemoveAnimationStep(this.dataGridView.CurrentCell.RowIndex);
 				this.dataGridView.Rows.RemoveAt(this.dataGridView.CurrentCell.RowIndex);
+				this.editor.UserMadeChanges(true);
 			}
 		}
 
@@ -127,6 +129,7 @@ namespace BahnEditor.Editor
 			else
 			{
 				this.editor.Zoom1Archive.Animation[this.editor.ActualGraphicID, this.editor.ActualAlternativeID].RemoveAnimationStep(e.Row.Index);
+				this.editor.UserMadeChanges(true);
 			}
 		}
 
@@ -206,6 +209,7 @@ namespace BahnEditor.Editor
 			this.editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID].RemoveAnimationStep(actualRow);
 			this.editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID].InsertAnimationStep(step, targetRow);
 			this.dataGridView.CurrentCell = this.dataGridView.Rows[targetRow].Cells[0];
+			this.editor.UserMadeChanges(true);
 		}
 
 		private void dataGridView_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
@@ -250,6 +254,7 @@ namespace BahnEditor.Editor
 						MessageBox.Show("Unknown Column", "Unknown Column", MessageBoxButtons.OK, MessageBoxIcon.Error);
 						break;
 				}
+				this.editor.UserMadeChanges(true);
 			}
 		}
 
@@ -260,6 +265,7 @@ namespace BahnEditor.Editor
 			if (editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID] == null)
 				editor.Zoom1Archive.Animation.AddAnimationProgram(new AnimationProgram(0, 0, 1, 1), editor.ActualGraphicID, editor.ActualAlternativeID);
 			ChangeAnimationProgram();
+			this.editor.UserMadeChanges(true);
 			editor.UpdateAnimation(true);
 		}
 
@@ -275,11 +281,16 @@ namespace BahnEditor.Editor
 					{
 						editor.Zoom1Archive.RemoveAnimation();
 					}
-					if(MessageBox.Show("Do you also want to delete the animationsteps?", "Delete animationsteps", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+					if(MessageBox.Show("Do you also want to delete the graphics for the animationsteps?", "Delete graphics for animationsteps", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
 					{
-
+						for (int i = 1; i <= Constants.MaxAnimationPhase; i++)
+						{
+							if (editor.Zoom1Archive[editor.ActualGraphicID, i, editor.ActualAlternativeID] != null) editor.Zoom1Archive.RemoveGraphic(editor.ActualGraphicID, i, editor.ActualAlternativeID);
+						}
 					}
 					this.ChangeAnimationProgram();
+					this.editor.UserMadeChanges(true);
+					editor.ResetAnimationNumericUpDown();
 					editor.UpdateAnimation(false);
 				}
 			}
@@ -294,6 +305,7 @@ namespace BahnEditor.Editor
 					this.widthNumericUpDown.Value = 2 - (int)this.xNumericUpDown.Value;
 				}
 				editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID].XDiff = (int)this.xNumericUpDown.Value;
+				this.editor.UserMadeChanges(true);
 				editor.Invalidate();
 			}
 		}
@@ -307,6 +319,7 @@ namespace BahnEditor.Editor
 					this.heightNumericUpDown.Value = 7 - (int)this.yNumericUpDown.Value;
 				}
 				editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID].YDiff = (int)this.yNumericUpDown.Value;
+				this.editor.UserMadeChanges(true);
 				editor.Invalidate();
 			}
 		}
@@ -323,6 +336,7 @@ namespace BahnEditor.Editor
 					this.widthNumericUpDown.Value = result;
 				}
 				editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID].Width = (int)this.widthNumericUpDown.Value;
+				this.editor.UserMadeChanges(true);
 				editor.Invalidate();
 			}
 		}
@@ -339,6 +353,7 @@ namespace BahnEditor.Editor
 					this.heightNumericUpDown.Value = result;
 				}
 				editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID].Height= (int)this.heightNumericUpDown.Value;
+				this.editor.UserMadeChanges(true);
 				editor.Invalidate();
 			}
 		}
