@@ -64,7 +64,7 @@ namespace BahnEditor.BahnLib
 				{
 					Graphic graphic;
 					// Try if alternatives exist...
-					for (int i = 1; i < 4; i++)
+					for (int i = 1; i < Constants.MaxAlternative; i++)
 					{
 						graphic = this[index, 0, i];
 						if (graphic != null)
@@ -72,7 +72,7 @@ namespace BahnEditor.BahnLib
 					}
 
 					// If not, return the first
-					return this[index, 0, 0];
+					return this[index, 0, Constants.NoAlternative];
 				}
 				catch (InvalidOperationException)
 				{
@@ -123,7 +123,7 @@ namespace BahnEditor.BahnLib
 		}
 
 		/// <summary>
-		/// Adds a graphic to the archive at a defined position
+		/// Adds a graphic to the archive at the given position
 		/// </summary>
 		/// <param name="elementNumber">Position in the archive</param>
 		/// <param name="graphic">Graphic</param>
@@ -136,7 +136,7 @@ namespace BahnEditor.BahnLib
 		}
 
 		/// <summary>
-		/// Adds a graphic to the archive at a defined position with animationphase and alternative
+		/// Adds a graphic to the archive at the given position with animationphase and alternative.
 		/// </summary>
 		/// <param name="elementNumber">Position in the archive</param>
 		/// <param name="phase">Animationphase</param>
@@ -149,11 +149,11 @@ namespace BahnEditor.BahnLib
 		{
 			if (graphic == null)
 				throw new ArgumentNullException("graphic");
-			if (elementNumber < 0 || elementNumber > 89)
+			if (elementNumber < 0 || elementNumber > Constants.MaxElementsInArchive)
 				throw new ArgumentOutOfRangeException("elementNumber");
-			if (phase < 0 || phase > 99)
+			if (phase < 0 || phase > Constants.MaxAnimationPhase)
 				throw new ArgumentOutOfRangeException("phase");
-			if (alternative < 0 || alternative > 4)
+			if (alternative < Constants.NoAlternative || alternative > Constants.MaxAlternative)
 				throw new ArgumentOutOfRangeException("alternative");
 			if (graphic.ZoomFactor != this.ZoomFactor)
 				throw new ArgumentException("Zoomfactor not matching");
@@ -172,7 +172,7 @@ namespace BahnEditor.BahnLib
 		}
 
 		/// <summary>
-		/// Removes a graphic from the archive
+		/// Removes a graphic from the archive at the given position.
 		/// </summary>
 		/// <param name="elementNumber">Position in the archive</param>
 		/// <exception cref="System.ArgumentException"/>
@@ -182,7 +182,7 @@ namespace BahnEditor.BahnLib
 		}
 
 		/// <summary>
-		/// Removes a graphic from the archive
+		/// Removes a graphic from the archive at the given position, animationphase and alternative.
 		/// </summary>
 		/// <param name="elementNumber">Position in the archive</param>
 		/// <param name="phase">Animationphase</param>

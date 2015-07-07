@@ -17,6 +17,9 @@
 		/// </summary>
 		public const int ElementHeight = 16;
 
+		//Elements in Archive
+		public const int MaxElementsInArchive = 89;
+
 		//Variants
 		public const int NoAlternative = 0;
 		public const int MinAlternative = 1;

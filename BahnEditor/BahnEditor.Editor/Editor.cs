@@ -249,20 +249,30 @@ namespace BahnEditor.Editor
 			}
 		}
 
-		private void SaveGraphicArchive()
+		private bool SaveGraphicArchive()
 		{
 			try
 			{
-				if (!this.zoom1Archive.Save(lastPath, true))
+				this.RemoveUnusedGraphics();
+				try
 				{
-					MessageBox.Show("There was an error while saving the zoom1-archive!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-					return;
+					if (!this.zoom1Archive.Save(lastPath, true))
+					{
+						MessageBox.Show("There was an error while saving the zoom1-archive!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+						return false;
+					}
+				}
+				catch(ArchiveIsEmptyException)
+				{
+					MessageBox.Show("The archive is empty!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return false;
 				}
 				try
 				{
 					if (!this.zoom2Archive.Save(lastPath.Remove(lastPath.Length - 3) + "uz2", true))
 					{
 						MessageBox.Show("There was an error while saving the zoom2-archive!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+						return false;
 					}
 				}
 				catch (ArchiveIsEmptyException) { }
@@ -271,14 +281,17 @@ namespace BahnEditor.Editor
 					if (!this.zoom4Archive.Save(lastPath.Remove(lastPath.Length - 3) + "uz4", true))
 					{
 						MessageBox.Show("There was an error while saving the zoom4-archive!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+						return false;
 					}
 				}
 				catch (ArchiveIsEmptyException) { }
 				this.UserMadeChanges(false);
+				return true;
 			}
 			catch (ElementIsEmptyException)
 			{
 				MessageBox.Show("A graphic is empty (transparent)!", "Invalid graphic!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				return false;
 			}
 		}
 
@@ -696,7 +709,7 @@ namespace BahnEditor.Editor
 
 		private void ClickOnSaveButton(bool forceSave)
 		{
-			if (lastPath == "" || forceSave == true)
+			if (lastPath == "" || forceSave)
 			{
 				this.saveFileDialog.ShowDialog();
 			}
@@ -737,7 +750,7 @@ namespace BahnEditor.Editor
 			{
 				if (this.ActualZoom2Graphic == null)
 				{
-					Graphic graphic = new Graphic("No text");
+					Graphic graphic = new Graphic("No text", zoomFactor: ZoomFactor.Zoom2);
 					this.zoom2Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
 					this.UserMadeChanges(true);
 					ChangePropertyComboBoxes(true);
@@ -755,7 +768,7 @@ namespace BahnEditor.Editor
 			{
 				if (this.ActualZoom4Graphic == null)
 				{
-					Graphic graphic = new Graphic("No text");
+					Graphic graphic = new Graphic("No text", zoomFactor: ZoomFactor.Zoom4);
 					this.zoom4Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
 					this.UserMadeChanges(true);
 					ChangePropertyComboBoxes(true);
@@ -807,7 +820,7 @@ namespace BahnEditor.Editor
 			if (!e.Button.HasFlag(MouseButtons.Left))
 				return;
 			int element = -1;
-			int x = e.X - 45;
+			int x = e.X - 40;
 			if (x >= 0 && 31 >= x)
 				element = 0;
 			else if (x >= 42 && 73 >= x)
@@ -1044,6 +1057,7 @@ namespace BahnEditor.Editor
 					throw new ArgumentOutOfRangeException();
 			}
 		}
+
 		private void OpenAnimationForm()
 		{
 			if (animationForm.Created && animationForm.Visible)
@@ -1172,7 +1186,7 @@ namespace BahnEditor.Editor
 			}
 			else if (this.cursorNormalDirectionComboBox.SelectedIndex > -1 || this.cursorReverseDirectionComboBox.SelectedIndex > -1)
 			{
-				this.cursorNormalDirectionCBCodeChanged = true; 
+				this.cursorNormalDirectionCBCodeChanged = true;
 				this.cursorReverseDirectionCBCodeChanged = true;
 				this.cursorNormalDirectionComboBox.SelectedIndex = -1;
 				this.cursorReverseDirectionComboBox.SelectedIndex = -1;
@@ -1183,11 +1197,25 @@ namespace BahnEditor.Editor
 
 		private void RemoveUnusedGraphics()
 		{
-			for (int i = 0; i < this.zoom2Archive.GraphicsCount; i++)
+			for (int element = 0; element < Constants.MaxElementsInArchive; element++)
 			{
-				if (this.zoom2Archive[i].IsTransparent())
+				for (int alternative = 0; alternative <= Constants.MaxAlternative; alternative++)
 				{
-
+					for (int animationPhase = 0; animationPhase <= Constants.MaxAnimationPhase; animationPhase++)
+					{
+						if(this.zoom1Archive[element, animationPhase, alternative] != null && this.zoom1Archive[element, animationPhase, alternative].IsTransparent())
+						{
+							this.zoom1Archive.RemoveGraphic(element, animationPhase, alternative);
+						}
+						if (this.zoom2Archive[element, animationPhase, alternative] != null && this.zoom2Archive[element, animationPhase, alternative].IsTransparent())
+						{
+							this.zoom2Archive.RemoveGraphic(element, animationPhase, alternative);
+						}
+						if (this.zoom4Archive[element, animationPhase, alternative] != null && this.zoom4Archive[element, animationPhase, alternative].IsTransparent())
+						{
+							this.zoom4Archive.RemoveGraphic(element, animationPhase, alternative);
+						}
+					}
 				}
 			}
 		}
@@ -1813,7 +1841,10 @@ namespace BahnEditor.Editor
 		private void saveFileDialog_FileOk(object sender, CancelEventArgs e)
 		{
 			this.lastPath = this.saveFileDialog.FileName;
-			this.SaveGraphicArchive();
+			if(!this.SaveGraphicArchive())
+			{
+				this.ClickOnSaveButton(true);
+			}
 		}
 
 		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
