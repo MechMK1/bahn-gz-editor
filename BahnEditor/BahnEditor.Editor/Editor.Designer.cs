@@ -42,18 +42,22 @@
 			this.zoomInButton = new System.Windows.Forms.ToolStripButton();
 			this.zoomOutButton = new System.Windows.Forms.ToolStripButton();
 			this.controlPanel = new System.Windows.Forms.Panel();
-			this.frontRadioButton = new System.Windows.Forms.RadioButton();
-			this.foregroundAboveRadioButton = new System.Windows.Forms.RadioButton();
-			this.toBackgroundRadioButton = new System.Windows.Forms.RadioButton();
-			this.backgroundRadioButton2 = new System.Windows.Forms.RadioButton();
-			this.backgroundRadioButton = new System.Windows.Forms.RadioButton();
-			this.foregroundRadioButton = new System.Windows.Forms.RadioButton();
-			this.propertiesPanel = new System.Windows.Forms.Panel();
+			this.propertiesGroupBox = new System.Windows.Forms.GroupBox();
+			this.cursorDirectionPanel = new System.Windows.Forms.Panel();
 			this.cursorReverseDirectionComboBox = new System.Windows.Forms.ComboBox();
-			this.cursorReverseDirectionLabel = new System.Windows.Forms.Label();
-			this.cursorNormalDirectionLabel = new System.Windows.Forms.Label();
 			this.cursorLabel = new System.Windows.Forms.Label();
+			this.cursorReverseDirectionLabel = new System.Windows.Forms.Label();
 			this.cursorNormalDirectionComboBox = new System.Windows.Forms.ComboBox();
+			this.cursorNormalDirectionLabel = new System.Windows.Forms.Label();
+			this.particlePropertiesPanel = new System.Windows.Forms.Panel();
+			this.particleWidthNumericUpDown = new System.Windows.Forms.NumericUpDown();
+			this.particleWidthLabel = new System.Windows.Forms.Label();
+			this.particleYLabel = new System.Windows.Forms.Label();
+			this.particleYNumericUpDown = new System.Windows.Forms.NumericUpDown();
+			this.particleXLabel = new System.Windows.Forms.Label();
+			this.particleLabel = new System.Windows.Forms.Label();
+			this.particleXNumericUpDown = new System.Windows.Forms.NumericUpDown();
+			this.particleComboBox = new System.Windows.Forms.ComboBox();
 			this.clockPanel = new System.Windows.Forms.Panel();
 			this.clockColorMinutesPointerButton = new System.Windows.Forms.Button();
 			this.clockColorHoursPointerButton = new System.Windows.Forms.Button();
@@ -70,18 +74,12 @@
 			this.clockRotationComboBox = new System.Windows.Forms.ComboBox();
 			this.clockRotationLabel = new System.Windows.Forms.Label();
 			this.clockLabel = new System.Windows.Forms.Label();
-			this.particlePropertiesPanel = new System.Windows.Forms.Panel();
-			this.particleWidthNumericUpDown = new System.Windows.Forms.NumericUpDown();
-			this.particleWidthLabel = new System.Windows.Forms.Label();
-			this.particleYLabel = new System.Windows.Forms.Label();
-			this.particleYNumericUpDown = new System.Windows.Forms.NumericUpDown();
-			this.particleXLabel = new System.Windows.Forms.Label();
-			this.particleLabel = new System.Windows.Forms.Label();
-			this.particleXNumericUpDown = new System.Windows.Forms.NumericUpDown();
-			this.particleComboBox = new System.Windows.Forms.ComboBox();
-			this.propertiesLabel = new System.Windows.Forms.Label();
-			this.zoom4CheckBox = new System.Windows.Forms.CheckBox();
-			this.zoom2CheckBox = new System.Windows.Forms.CheckBox();
+			this.frontRadioButton = new System.Windows.Forms.RadioButton();
+			this.foregroundAboveRadioButton = new System.Windows.Forms.RadioButton();
+			this.toBackgroundRadioButton = new System.Windows.Forms.RadioButton();
+			this.backgroundRadioButton2 = new System.Windows.Forms.RadioButton();
+			this.backgroundRadioButton = new System.Windows.Forms.RadioButton();
+			this.foregroundRadioButton = new System.Windows.Forms.RadioButton();
 			this.leftComboBox = new System.Windows.Forms.ComboBox();
 			this.rightLabel = new System.Windows.Forms.Label();
 			this.leftLabel = new System.Windows.Forms.Label();
@@ -125,28 +123,30 @@
 			this.zoom2Tab = new System.Windows.Forms.TabPage();
 			this.zoom4Tab = new System.Windows.Forms.TabPage();
 			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-			this.drawPanel = new BahnEditor.Editor.DrawPanel();
-			this.overviewPanel = new BahnEditor.Editor.DrawPanel();
 			this.animationPhaseLabel = new System.Windows.Forms.Label();
 			this.animationNumericUpDown = new System.Windows.Forms.NumericUpDown();
+			this.alternativesCheckBox = new System.Windows.Forms.CheckBox();
+			this.drawPanel = new BahnEditor.Editor.DrawPanel();
+			this.overviewPanel = new BahnEditor.Editor.DrawPanel();
 			this.overviewDownButton = new System.Windows.Forms.Button();
 			this.overviewUpButton = new System.Windows.Forms.Button();
 			this.overviewLeftRightButton = new System.Windows.Forms.Button();
 			this.toolStrip.SuspendLayout();
 			this.controlPanel.SuspendLayout();
-			this.propertiesPanel.SuspendLayout();
-			this.clockPanel.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.clockWidthNumericUpDown)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.clockYNumericUpDown)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.clockXNumericUpDown)).BeginInit();
+			this.propertiesGroupBox.SuspendLayout();
+			this.cursorDirectionPanel.SuspendLayout();
 			this.particlePropertiesPanel.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.particleWidthNumericUpDown)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.particleYNumericUpDown)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.particleXNumericUpDown)).BeginInit();
+			this.clockPanel.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.clockWidthNumericUpDown)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.clockYNumericUpDown)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.clockXNumericUpDown)).BeginInit();
 			this.menuStrip.SuspendLayout();
 			this.tabControl.SuspendLayout();
-			this.overviewPanel.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.animationNumericUpDown)).BeginInit();
+			this.overviewPanel.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// toolStrip
@@ -264,13 +264,13 @@
 			this.controlPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.controlPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.controlPanel.Controls.Add(this.propertiesGroupBox);
 			this.controlPanel.Controls.Add(this.frontRadioButton);
 			this.controlPanel.Controls.Add(this.foregroundAboveRadioButton);
 			this.controlPanel.Controls.Add(this.toBackgroundRadioButton);
 			this.controlPanel.Controls.Add(this.backgroundRadioButton2);
 			this.controlPanel.Controls.Add(this.backgroundRadioButton);
 			this.controlPanel.Controls.Add(this.foregroundRadioButton);
-			this.controlPanel.Controls.Add(this.propertiesPanel);
 			this.controlPanel.Controls.Add(this.leftComboBox);
 			this.controlPanel.Controls.Add(this.rightLabel);
 			this.controlPanel.Controls.Add(this.leftLabel);
@@ -282,98 +282,31 @@
 			this.controlPanel.Size = new System.Drawing.Size(207, 666);
 			this.controlPanel.TabIndex = 2;
 			// 
-			// frontRadioButton
+			// propertiesGroupBox
 			// 
-			this.frontRadioButton.AutoSize = true;
-			this.frontRadioButton.Location = new System.Drawing.Point(15, 274);
-			this.frontRadioButton.Name = "frontRadioButton";
-			this.frontRadioButton.Size = new System.Drawing.Size(49, 17);
-			this.frontRadioButton.TabIndex = 15;
-			this.frontRadioButton.Text = "Front";
-			this.toolTip.SetToolTip(this.frontRadioButton, "Front (used for bridges)");
-			this.frontRadioButton.UseVisualStyleBackColor = true;
-			this.frontRadioButton.CheckedChanged += new System.EventHandler(this.frontRadioButton6_CheckedChanged);
+			this.propertiesGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.propertiesGroupBox.Controls.Add(this.cursorDirectionPanel);
+			this.propertiesGroupBox.Controls.Add(this.particlePropertiesPanel);
+			this.propertiesGroupBox.Controls.Add(this.clockPanel);
+			this.propertiesGroupBox.Location = new System.Drawing.Point(3, 350);
+			this.propertiesGroupBox.Name = "propertiesGroupBox";
+			this.propertiesGroupBox.Size = new System.Drawing.Size(200, 311);
+			this.propertiesGroupBox.TabIndex = 16;
+			this.propertiesGroupBox.TabStop = false;
+			this.propertiesGroupBox.Text = "Properties";
+			this.propertiesGroupBox.Paint += new System.Windows.Forms.PaintEventHandler(this.propertiesGroupBox_Paint);
 			// 
-			// foregroundAboveRadioButton
+			// cursorDirectionPanel
 			// 
-			this.foregroundAboveRadioButton.AutoSize = true;
-			this.foregroundAboveRadioButton.Location = new System.Drawing.Point(15, 251);
-			this.foregroundAboveRadioButton.Name = "foregroundAboveRadioButton";
-			this.foregroundAboveRadioButton.Size = new System.Drawing.Size(112, 17);
-			this.foregroundAboveRadioButton.TabIndex = 14;
-			this.foregroundAboveRadioButton.Text = "Foreground above";
-			this.toolTip.SetToolTip(this.foregroundAboveRadioButton, "Foreground above (use e.g. for overhead wires)");
-			this.foregroundAboveRadioButton.UseVisualStyleBackColor = true;
-			this.foregroundAboveRadioButton.CheckedChanged += new System.EventHandler(this.foregroundAboveRadioButton_CheckedChanged);
-			// 
-			// toBackgroundRadioButton
-			// 
-			this.toBackgroundRadioButton.AutoSize = true;
-			this.toBackgroundRadioButton.Location = new System.Drawing.Point(15, 228);
-			this.toBackgroundRadioButton.Name = "toBackgroundRadioButton";
-			this.toBackgroundRadioButton.Size = new System.Drawing.Size(98, 17);
-			this.toBackgroundRadioButton.TabIndex = 13;
-			this.toBackgroundRadioButton.Text = "To background";
-			this.toolTip.SetToolTip(this.toBackgroundRadioButton, "To background (=flat, use e.g. for platforms)");
-			this.toBackgroundRadioButton.UseVisualStyleBackColor = true;
-			this.toBackgroundRadioButton.CheckedChanged += new System.EventHandler(this.toBackgroundRadioButton_CheckedChanged);
-			// 
-			// backgroundRadioButton2
-			// 
-			this.backgroundRadioButton2.AutoSize = true;
-			this.backgroundRadioButton2.Location = new System.Drawing.Point(15, 205);
-			this.backgroundRadioButton2.Name = "backgroundRadioButton2";
-			this.backgroundRadioButton2.Size = new System.Drawing.Size(98, 17);
-			this.backgroundRadioButton2.TabIndex = 12;
-			this.backgroundRadioButton2.Text = "Background (2)";
-			this.toolTip.SetToolTip(this.backgroundRadioButton2, "Background (behind train; second layer)");
-			this.backgroundRadioButton2.UseVisualStyleBackColor = true;
-			this.backgroundRadioButton2.CheckedChanged += new System.EventHandler(this.backgroundRadioButton2_CheckedChanged);
-			// 
-			// backgroundRadioButton
-			// 
-			this.backgroundRadioButton.AutoSize = true;
-			this.backgroundRadioButton.Location = new System.Drawing.Point(15, 182);
-			this.backgroundRadioButton.Name = "backgroundRadioButton";
-			this.backgroundRadioButton.Size = new System.Drawing.Size(83, 17);
-			this.backgroundRadioButton.TabIndex = 11;
-			this.backgroundRadioButton.Text = "Background";
-			this.toolTip.SetToolTip(this.backgroundRadioButton, "Background (behind train)");
-			this.backgroundRadioButton.UseVisualStyleBackColor = true;
-			this.backgroundRadioButton.CheckedChanged += new System.EventHandler(this.backgroundRadioButton_CheckedChanged);
-			// 
-			// foregroundRadioButton
-			// 
-			this.foregroundRadioButton.AutoSize = true;
-			this.foregroundRadioButton.Checked = true;
-			this.foregroundRadioButton.Location = new System.Drawing.Point(15, 159);
-			this.foregroundRadioButton.Name = "foregroundRadioButton";
-			this.foregroundRadioButton.Size = new System.Drawing.Size(79, 17);
-			this.foregroundRadioButton.TabIndex = 10;
-			this.foregroundRadioButton.TabStop = true;
-			this.foregroundRadioButton.Text = "Foreground";
-			this.toolTip.SetToolTip(this.foregroundRadioButton, "Foreground (in front of driving way and train)");
-			this.foregroundRadioButton.UseVisualStyleBackColor = true;
-			this.foregroundRadioButton.CheckedChanged += new System.EventHandler(this.foregroundRadioButton_CheckedChanged);
-			// 
-			// propertiesPanel
-			// 
-			this.propertiesPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.propertiesPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.propertiesPanel.Controls.Add(this.cursorReverseDirectionComboBox);
-			this.propertiesPanel.Controls.Add(this.cursorReverseDirectionLabel);
-			this.propertiesPanel.Controls.Add(this.cursorNormalDirectionLabel);
-			this.propertiesPanel.Controls.Add(this.cursorLabel);
-			this.propertiesPanel.Controls.Add(this.cursorNormalDirectionComboBox);
-			this.propertiesPanel.Controls.Add(this.clockPanel);
-			this.propertiesPanel.Controls.Add(this.particlePropertiesPanel);
-			this.propertiesPanel.Controls.Add(this.propertiesLabel);
-			this.propertiesPanel.Controls.Add(this.zoom4CheckBox);
-			this.propertiesPanel.Controls.Add(this.zoom2CheckBox);
-			this.propertiesPanel.Location = new System.Drawing.Point(5, 324);
-			this.propertiesPanel.Name = "propertiesPanel";
-			this.propertiesPanel.Size = new System.Drawing.Size(196, 337);
-			this.propertiesPanel.TabIndex = 9;
+			this.cursorDirectionPanel.Controls.Add(this.cursorReverseDirectionComboBox);
+			this.cursorDirectionPanel.Controls.Add(this.cursorLabel);
+			this.cursorDirectionPanel.Controls.Add(this.cursorReverseDirectionLabel);
+			this.cursorDirectionPanel.Controls.Add(this.cursorNormalDirectionComboBox);
+			this.cursorDirectionPanel.Controls.Add(this.cursorNormalDirectionLabel);
+			this.cursorDirectionPanel.Location = new System.Drawing.Point(2, 243);
+			this.cursorDirectionPanel.Name = "cursorDirectionPanel";
+			this.cursorDirectionPanel.Size = new System.Drawing.Size(196, 66);
+			this.cursorDirectionPanel.TabIndex = 9;
 			// 
 			// cursorReverseDirectionComboBox
 			// 
@@ -389,38 +322,29 @@
             "↖",
             "↙",
             "↗"});
-			this.cursorReverseDirectionComboBox.Location = new System.Drawing.Point(136, 311);
+			this.cursorReverseDirectionComboBox.Location = new System.Drawing.Point(139, 42);
 			this.cursorReverseDirectionComboBox.Name = "cursorReverseDirectionComboBox";
 			this.cursorReverseDirectionComboBox.Size = new System.Drawing.Size(34, 21);
 			this.cursorReverseDirectionComboBox.TabIndex = 13;
 			this.cursorReverseDirectionComboBox.SelectedIndexChanged += new System.EventHandler(this.cursorReverseDirectionComboBox_SelectedIndexChanged);
 			// 
-			// cursorReverseDirectionLabel
-			// 
-			this.cursorReverseDirectionLabel.AutoSize = true;
-			this.cursorReverseDirectionLabel.Location = new System.Drawing.Point(3, 314);
-			this.cursorReverseDirectionLabel.Name = "cursorReverseDirectionLabel";
-			this.cursorReverseDirectionLabel.Size = new System.Drawing.Size(85, 13);
-			this.cursorReverseDirectionLabel.TabIndex = 12;
-			this.cursorReverseDirectionLabel.Text = "reverse direction";
-			// 
-			// cursorNormalDirectionLabel
-			// 
-			this.cursorNormalDirectionLabel.AutoSize = true;
-			this.cursorNormalDirectionLabel.Location = new System.Drawing.Point(3, 292);
-			this.cursorNormalDirectionLabel.Name = "cursorNormalDirectionLabel";
-			this.cursorNormalDirectionLabel.Size = new System.Drawing.Size(83, 13);
-			this.cursorNormalDirectionLabel.TabIndex = 11;
-			this.cursorNormalDirectionLabel.Text = "Normal direction";
-			// 
 			// cursorLabel
 			// 
 			this.cursorLabel.AutoSize = true;
-			this.cursorLabel.Location = new System.Drawing.Point(3, 273);
+			this.cursorLabel.Location = new System.Drawing.Point(6, 3);
 			this.cursorLabel.Name = "cursorLabel";
 			this.cursorLabel.Size = new System.Drawing.Size(111, 13);
 			this.cursorLabel.TabIndex = 10;
 			this.cursorLabel.Text = "Direction of the cursor";
+			// 
+			// cursorReverseDirectionLabel
+			// 
+			this.cursorReverseDirectionLabel.AutoSize = true;
+			this.cursorReverseDirectionLabel.Location = new System.Drawing.Point(6, 45);
+			this.cursorReverseDirectionLabel.Name = "cursorReverseDirectionLabel";
+			this.cursorReverseDirectionLabel.Size = new System.Drawing.Size(90, 13);
+			this.cursorReverseDirectionLabel.TabIndex = 12;
+			this.cursorReverseDirectionLabel.Text = "Reverse direction";
 			// 
 			// cursorNormalDirectionComboBox
 			// 
@@ -436,15 +360,115 @@
             "↖",
             "↙",
             "↗"});
-			this.cursorNormalDirectionComboBox.Location = new System.Drawing.Point(136, 289);
+			this.cursorNormalDirectionComboBox.Location = new System.Drawing.Point(139, 20);
 			this.cursorNormalDirectionComboBox.Name = "cursorNormalDirectionComboBox";
 			this.cursorNormalDirectionComboBox.Size = new System.Drawing.Size(34, 21);
 			this.cursorNormalDirectionComboBox.TabIndex = 9;
 			this.cursorNormalDirectionComboBox.SelectedIndexChanged += new System.EventHandler(this.cursorNormalDirectionComboBox_SelectedIndexChanged);
 			// 
+			// cursorNormalDirectionLabel
+			// 
+			this.cursorNormalDirectionLabel.AutoSize = true;
+			this.cursorNormalDirectionLabel.Location = new System.Drawing.Point(6, 23);
+			this.cursorNormalDirectionLabel.Name = "cursorNormalDirectionLabel";
+			this.cursorNormalDirectionLabel.Size = new System.Drawing.Size(83, 13);
+			this.cursorNormalDirectionLabel.TabIndex = 11;
+			this.cursorNormalDirectionLabel.Text = "Normal direction";
+			// 
+			// particlePropertiesPanel
+			// 
+			this.particlePropertiesPanel.Controls.Add(this.particleWidthNumericUpDown);
+			this.particlePropertiesPanel.Controls.Add(this.particleWidthLabel);
+			this.particlePropertiesPanel.Controls.Add(this.particleYLabel);
+			this.particlePropertiesPanel.Controls.Add(this.particleYNumericUpDown);
+			this.particlePropertiesPanel.Controls.Add(this.particleXLabel);
+			this.particlePropertiesPanel.Controls.Add(this.particleLabel);
+			this.particlePropertiesPanel.Controls.Add(this.particleXNumericUpDown);
+			this.particlePropertiesPanel.Controls.Add(this.particleComboBox);
+			this.particlePropertiesPanel.Location = new System.Drawing.Point(2, 13);
+			this.particlePropertiesPanel.Name = "particlePropertiesPanel";
+			this.particlePropertiesPanel.Size = new System.Drawing.Size(196, 63);
+			this.particlePropertiesPanel.TabIndex = 7;
+			// 
+			// particleWidthNumericUpDown
+			// 
+			this.particleWidthNumericUpDown.Enabled = false;
+			this.particleWidthNumericUpDown.Location = new System.Drawing.Point(156, 32);
+			this.particleWidthNumericUpDown.Name = "particleWidthNumericUpDown";
+			this.particleWidthNumericUpDown.Size = new System.Drawing.Size(33, 20);
+			this.particleWidthNumericUpDown.TabIndex = 11;
+			this.particleWidthNumericUpDown.ValueChanged += new System.EventHandler(this.particleWidthNumericUpDown_ValueChanged);
+			// 
+			// particleWidthLabel
+			// 
+			this.particleWidthLabel.AutoSize = true;
+			this.particleWidthLabel.Location = new System.Drawing.Point(119, 34);
+			this.particleWidthLabel.Name = "particleWidthLabel";
+			this.particleWidthLabel.Size = new System.Drawing.Size(38, 13);
+			this.particleWidthLabel.TabIndex = 10;
+			this.particleWidthLabel.Text = "Width:";
+			// 
+			// particleYLabel
+			// 
+			this.particleYLabel.AutoSize = true;
+			this.particleYLabel.Location = new System.Drawing.Point(63, 34);
+			this.particleYLabel.Name = "particleYLabel";
+			this.particleYLabel.Size = new System.Drawing.Size(15, 13);
+			this.particleYLabel.TabIndex = 9;
+			this.particleYLabel.Text = "y:";
+			// 
+			// particleYNumericUpDown
+			// 
+			this.particleYNumericUpDown.Enabled = false;
+			this.particleYNumericUpDown.Location = new System.Drawing.Point(80, 32);
+			this.particleYNumericUpDown.Name = "particleYNumericUpDown";
+			this.particleYNumericUpDown.Size = new System.Drawing.Size(33, 20);
+			this.particleYNumericUpDown.TabIndex = 8;
+			this.particleYNumericUpDown.ValueChanged += new System.EventHandler(this.particleYNumericUpDown_ValueChanged);
+			// 
+			// particleXLabel
+			// 
+			this.particleXLabel.AutoSize = true;
+			this.particleXLabel.Location = new System.Drawing.Point(6, 34);
+			this.particleXLabel.Name = "particleXLabel";
+			this.particleXLabel.Size = new System.Drawing.Size(15, 13);
+			this.particleXLabel.TabIndex = 7;
+			this.particleXLabel.Text = "x:";
+			// 
+			// particleLabel
+			// 
+			this.particleLabel.AutoSize = true;
+			this.particleLabel.Location = new System.Drawing.Point(3, 8);
+			this.particleLabel.Name = "particleLabel";
+			this.particleLabel.Size = new System.Drawing.Size(78, 13);
+			this.particleLabel.TabIndex = 4;
+			this.particleLabel.Text = "Steam/Smoke:";
+			// 
+			// particleXNumericUpDown
+			// 
+			this.particleXNumericUpDown.Enabled = false;
+			this.particleXNumericUpDown.Location = new System.Drawing.Point(23, 32);
+			this.particleXNumericUpDown.Name = "particleXNumericUpDown";
+			this.particleXNumericUpDown.Size = new System.Drawing.Size(33, 20);
+			this.particleXNumericUpDown.TabIndex = 6;
+			this.particleXNumericUpDown.ValueChanged += new System.EventHandler(this.particleXNumericUpDown_ValueChanged);
+			// 
+			// particleComboBox
+			// 
+			this.particleComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.particleComboBox.FormattingEnabled = true;
+			this.particleComboBox.Items.AddRange(new object[] {
+            "No particles",
+            "Steam (light colors)",
+            "Smoke (dark colors)"});
+			this.particleComboBox.Location = new System.Drawing.Point(86, 5);
+			this.particleComboBox.Name = "particleComboBox";
+			this.particleComboBox.Size = new System.Drawing.Size(104, 21);
+			this.particleComboBox.TabIndex = 3;
+			this.particleComboBox.SelectedIndexChanged += new System.EventHandler(this.particleComboBox_SelectedIndexChanged);
+			// 
 			// clockPanel
 			// 
-			this.clockPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.clockPanel.Controls.Add(this.clockColorMinutesPointerButton);
 			this.clockPanel.Controls.Add(this.clockColorHoursPointerButton);
 			this.clockPanel.Controls.Add(this.clockColorMinutesPointerLabel);
@@ -460,7 +484,7 @@
 			this.clockPanel.Controls.Add(this.clockRotationComboBox);
 			this.clockPanel.Controls.Add(this.clockRotationLabel);
 			this.clockPanel.Controls.Add(this.clockLabel);
-			this.clockPanel.Location = new System.Drawing.Point(-1, 105);
+			this.clockPanel.Location = new System.Drawing.Point(2, 77);
 			this.clockPanel.Name = "clockPanel";
 			this.clockPanel.Size = new System.Drawing.Size(196, 165);
 			this.clockPanel.TabIndex = 8;
@@ -621,129 +645,79 @@
 			this.clockLabel.TabIndex = 0;
 			this.clockLabel.Text = "Clock:";
 			// 
-			// particlePropertiesPanel
+			// frontRadioButton
 			// 
-			this.particlePropertiesPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.particlePropertiesPanel.Controls.Add(this.particleWidthNumericUpDown);
-			this.particlePropertiesPanel.Controls.Add(this.particleWidthLabel);
-			this.particlePropertiesPanel.Controls.Add(this.particleYLabel);
-			this.particlePropertiesPanel.Controls.Add(this.particleYNumericUpDown);
-			this.particlePropertiesPanel.Controls.Add(this.particleXLabel);
-			this.particlePropertiesPanel.Controls.Add(this.particleLabel);
-			this.particlePropertiesPanel.Controls.Add(this.particleXNumericUpDown);
-			this.particlePropertiesPanel.Controls.Add(this.particleComboBox);
-			this.particlePropertiesPanel.Location = new System.Drawing.Point(-1, 43);
-			this.particlePropertiesPanel.Name = "particlePropertiesPanel";
-			this.particlePropertiesPanel.Size = new System.Drawing.Size(196, 63);
-			this.particlePropertiesPanel.TabIndex = 7;
+			this.frontRadioButton.AutoSize = true;
+			this.frontRadioButton.Location = new System.Drawing.Point(15, 271);
+			this.frontRadioButton.Name = "frontRadioButton";
+			this.frontRadioButton.Size = new System.Drawing.Size(49, 17);
+			this.frontRadioButton.TabIndex = 15;
+			this.frontRadioButton.Text = "Front";
+			this.toolTip.SetToolTip(this.frontRadioButton, "Front (used for bridges)");
+			this.frontRadioButton.UseVisualStyleBackColor = true;
+			this.frontRadioButton.CheckedChanged += new System.EventHandler(this.frontRadioButton6_CheckedChanged);
 			// 
-			// particleWidthNumericUpDown
+			// foregroundAboveRadioButton
 			// 
-			this.particleWidthNumericUpDown.Enabled = false;
-			this.particleWidthNumericUpDown.Location = new System.Drawing.Point(156, 32);
-			this.particleWidthNumericUpDown.Name = "particleWidthNumericUpDown";
-			this.particleWidthNumericUpDown.Size = new System.Drawing.Size(33, 20);
-			this.particleWidthNumericUpDown.TabIndex = 11;
-			this.particleWidthNumericUpDown.ValueChanged += new System.EventHandler(this.particleWidthNumericUpDown_ValueChanged);
+			this.foregroundAboveRadioButton.AutoSize = true;
+			this.foregroundAboveRadioButton.Location = new System.Drawing.Point(15, 248);
+			this.foregroundAboveRadioButton.Name = "foregroundAboveRadioButton";
+			this.foregroundAboveRadioButton.Size = new System.Drawing.Size(112, 17);
+			this.foregroundAboveRadioButton.TabIndex = 14;
+			this.foregroundAboveRadioButton.Text = "Foreground above";
+			this.toolTip.SetToolTip(this.foregroundAboveRadioButton, "Foreground above (use e.g. for overhead wires)");
+			this.foregroundAboveRadioButton.UseVisualStyleBackColor = true;
+			this.foregroundAboveRadioButton.CheckedChanged += new System.EventHandler(this.foregroundAboveRadioButton_CheckedChanged);
 			// 
-			// particleWidthLabel
+			// toBackgroundRadioButton
 			// 
-			this.particleWidthLabel.AutoSize = true;
-			this.particleWidthLabel.Location = new System.Drawing.Point(119, 34);
-			this.particleWidthLabel.Name = "particleWidthLabel";
-			this.particleWidthLabel.Size = new System.Drawing.Size(38, 13);
-			this.particleWidthLabel.TabIndex = 10;
-			this.particleWidthLabel.Text = "Width:";
+			this.toBackgroundRadioButton.AutoSize = true;
+			this.toBackgroundRadioButton.Location = new System.Drawing.Point(15, 225);
+			this.toBackgroundRadioButton.Name = "toBackgroundRadioButton";
+			this.toBackgroundRadioButton.Size = new System.Drawing.Size(98, 17);
+			this.toBackgroundRadioButton.TabIndex = 13;
+			this.toBackgroundRadioButton.Text = "To background";
+			this.toolTip.SetToolTip(this.toBackgroundRadioButton, "To background (=flat, use e.g. for platforms)");
+			this.toBackgroundRadioButton.UseVisualStyleBackColor = true;
+			this.toBackgroundRadioButton.CheckedChanged += new System.EventHandler(this.toBackgroundRadioButton_CheckedChanged);
 			// 
-			// particleYLabel
+			// backgroundRadioButton2
 			// 
-			this.particleYLabel.AutoSize = true;
-			this.particleYLabel.Location = new System.Drawing.Point(63, 34);
-			this.particleYLabel.Name = "particleYLabel";
-			this.particleYLabel.Size = new System.Drawing.Size(15, 13);
-			this.particleYLabel.TabIndex = 9;
-			this.particleYLabel.Text = "y:";
+			this.backgroundRadioButton2.AutoSize = true;
+			this.backgroundRadioButton2.Location = new System.Drawing.Point(15, 202);
+			this.backgroundRadioButton2.Name = "backgroundRadioButton2";
+			this.backgroundRadioButton2.Size = new System.Drawing.Size(98, 17);
+			this.backgroundRadioButton2.TabIndex = 12;
+			this.backgroundRadioButton2.Text = "Background (2)";
+			this.toolTip.SetToolTip(this.backgroundRadioButton2, "Background (behind train; second layer)");
+			this.backgroundRadioButton2.UseVisualStyleBackColor = true;
+			this.backgroundRadioButton2.CheckedChanged += new System.EventHandler(this.backgroundRadioButton2_CheckedChanged);
 			// 
-			// particleYNumericUpDown
+			// backgroundRadioButton
 			// 
-			this.particleYNumericUpDown.Enabled = false;
-			this.particleYNumericUpDown.Location = new System.Drawing.Point(80, 32);
-			this.particleYNumericUpDown.Name = "particleYNumericUpDown";
-			this.particleYNumericUpDown.Size = new System.Drawing.Size(33, 20);
-			this.particleYNumericUpDown.TabIndex = 8;
-			this.particleYNumericUpDown.ValueChanged += new System.EventHandler(this.particleYNumericUpDown_ValueChanged);
+			this.backgroundRadioButton.AutoSize = true;
+			this.backgroundRadioButton.Location = new System.Drawing.Point(15, 179);
+			this.backgroundRadioButton.Name = "backgroundRadioButton";
+			this.backgroundRadioButton.Size = new System.Drawing.Size(83, 17);
+			this.backgroundRadioButton.TabIndex = 11;
+			this.backgroundRadioButton.Text = "Background";
+			this.toolTip.SetToolTip(this.backgroundRadioButton, "Background (behind train)");
+			this.backgroundRadioButton.UseVisualStyleBackColor = true;
+			this.backgroundRadioButton.CheckedChanged += new System.EventHandler(this.backgroundRadioButton_CheckedChanged);
 			// 
-			// particleXLabel
+			// foregroundRadioButton
 			// 
-			this.particleXLabel.AutoSize = true;
-			this.particleXLabel.Location = new System.Drawing.Point(6, 34);
-			this.particleXLabel.Name = "particleXLabel";
-			this.particleXLabel.Size = new System.Drawing.Size(15, 13);
-			this.particleXLabel.TabIndex = 7;
-			this.particleXLabel.Text = "x:";
-			// 
-			// particleLabel
-			// 
-			this.particleLabel.AutoSize = true;
-			this.particleLabel.Location = new System.Drawing.Point(3, 8);
-			this.particleLabel.Name = "particleLabel";
-			this.particleLabel.Size = new System.Drawing.Size(78, 13);
-			this.particleLabel.TabIndex = 4;
-			this.particleLabel.Text = "Steam/Smoke:";
-			// 
-			// particleXNumericUpDown
-			// 
-			this.particleXNumericUpDown.Enabled = false;
-			this.particleXNumericUpDown.Location = new System.Drawing.Point(23, 32);
-			this.particleXNumericUpDown.Name = "particleXNumericUpDown";
-			this.particleXNumericUpDown.Size = new System.Drawing.Size(33, 20);
-			this.particleXNumericUpDown.TabIndex = 6;
-			this.particleXNumericUpDown.ValueChanged += new System.EventHandler(this.particleXNumericUpDown_ValueChanged);
-			// 
-			// particleComboBox
-			// 
-			this.particleComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.particleComboBox.FormattingEnabled = true;
-			this.particleComboBox.Items.AddRange(new object[] {
-            "No particles",
-            "Steam (light colors)",
-            "Smoke (dark colors)"});
-			this.particleComboBox.Location = new System.Drawing.Point(86, 5);
-			this.particleComboBox.Name = "particleComboBox";
-			this.particleComboBox.Size = new System.Drawing.Size(104, 21);
-			this.particleComboBox.TabIndex = 3;
-			this.particleComboBox.SelectedIndexChanged += new System.EventHandler(this.particleComboBox_SelectedIndexChanged);
-			// 
-			// propertiesLabel
-			// 
-			this.propertiesLabel.AutoSize = true;
-			this.propertiesLabel.Location = new System.Drawing.Point(3, 2);
-			this.propertiesLabel.Name = "propertiesLabel";
-			this.propertiesLabel.Size = new System.Drawing.Size(54, 13);
-			this.propertiesLabel.TabIndex = 2;
-			this.propertiesLabel.Text = "Properties";
-			// 
-			// zoom4CheckBox
-			// 
-			this.zoom4CheckBox.AutoSize = true;
-			this.zoom4CheckBox.Location = new System.Drawing.Point(103, 20);
-			this.zoom4CheckBox.Name = "zoom4CheckBox";
-			this.zoom4CheckBox.Size = new System.Drawing.Size(62, 17);
-			this.zoom4CheckBox.TabIndex = 1;
-			this.zoom4CheckBox.Text = "Zoom 4";
-			this.zoom4CheckBox.UseVisualStyleBackColor = true;
-			this.zoom4CheckBox.CheckedChanged += new System.EventHandler(this.zoom4CheckBox_CheckedChanged);
-			// 
-			// zoom2CheckBox
-			// 
-			this.zoom2CheckBox.AutoSize = true;
-			this.zoom2CheckBox.Location = new System.Drawing.Point(22, 20);
-			this.zoom2CheckBox.Name = "zoom2CheckBox";
-			this.zoom2CheckBox.Size = new System.Drawing.Size(62, 17);
-			this.zoom2CheckBox.TabIndex = 0;
-			this.zoom2CheckBox.Text = "Zoom 2";
-			this.zoom2CheckBox.UseVisualStyleBackColor = true;
-			this.zoom2CheckBox.CheckedChanged += new System.EventHandler(this.zoom2CheckBox_CheckedChanged);
+			this.foregroundRadioButton.AutoSize = true;
+			this.foregroundRadioButton.Checked = true;
+			this.foregroundRadioButton.Location = new System.Drawing.Point(15, 156);
+			this.foregroundRadioButton.Name = "foregroundRadioButton";
+			this.foregroundRadioButton.Size = new System.Drawing.Size(79, 17);
+			this.foregroundRadioButton.TabIndex = 10;
+			this.foregroundRadioButton.TabStop = true;
+			this.foregroundRadioButton.Text = "Foreground";
+			this.toolTip.SetToolTip(this.foregroundRadioButton, "Foreground (in front of driving way and train)");
+			this.foregroundRadioButton.UseVisualStyleBackColor = true;
+			this.foregroundRadioButton.CheckedChanged += new System.EventHandler(this.foregroundRadioButton_CheckedChanged);
 			// 
 			// leftComboBox
 			// 
@@ -797,7 +771,7 @@
 			// rightLabel
 			// 
 			this.rightLabel.AutoSize = true;
-			this.rightLabel.Location = new System.Drawing.Point(56, 87);
+			this.rightLabel.Location = new System.Drawing.Point(56, 84);
 			this.rightLabel.Name = "rightLabel";
 			this.rightLabel.Size = new System.Drawing.Size(97, 13);
 			this.rightLabel.TabIndex = 8;
@@ -855,7 +829,7 @@
             "as path (Hintergrund)",
             "as path (Fahrspur)",
             "as text"});
-			this.rightComboBox.Location = new System.Drawing.Point(5, 132);
+			this.rightComboBox.Location = new System.Drawing.Point(5, 129);
 			this.rightComboBox.Name = "rightComboBox";
 			this.rightComboBox.Size = new System.Drawing.Size(196, 21);
 			this.rightComboBox.TabIndex = 5;
@@ -866,7 +840,7 @@
 			this.rightColorButton.BackColor = System.Drawing.Color.White;
 			this.rightColorButton.FlatAppearance.BorderSize = 0;
 			this.rightColorButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.rightColorButton.Location = new System.Drawing.Point(58, 103);
+			this.rightColorButton.Location = new System.Drawing.Point(58, 100);
 			this.rightColorButton.Name = "rightColorButton";
 			this.rightColorButton.Size = new System.Drawing.Size(90, 23);
 			this.rightColorButton.TabIndex = 1;
@@ -1144,15 +1118,13 @@
 			// 
 			// tabControl
 			// 
-			this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
 			this.tabControl.Controls.Add(this.zoom1Tab);
 			this.tabControl.Controls.Add(this.zoom2Tab);
 			this.tabControl.Controls.Add(this.zoom4Tab);
 			this.tabControl.Location = new System.Drawing.Point(13, 120);
 			this.tabControl.Name = "tabControl";
 			this.tabControl.SelectedIndex = 0;
-			this.tabControl.Size = new System.Drawing.Size(775, 20);
+			this.tabControl.Size = new System.Drawing.Size(161, 20);
 			this.tabControl.TabIndex = 6;
 			this.tabControl.TabStop = false;
 			this.tabControl.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tabControl_Selecting);
@@ -1162,7 +1134,7 @@
 			this.zoom1Tab.Location = new System.Drawing.Point(4, 22);
 			this.zoom1Tab.Name = "zoom1Tab";
 			this.zoom1Tab.Padding = new System.Windows.Forms.Padding(3);
-			this.zoom1Tab.Size = new System.Drawing.Size(767, 0);
+			this.zoom1Tab.Size = new System.Drawing.Size(153, 0);
 			this.zoom1Tab.TabIndex = 0;
 			this.zoom1Tab.Text = "Zoom 1";
 			this.zoom1Tab.UseVisualStyleBackColor = true;
@@ -1172,7 +1144,7 @@
 			this.zoom2Tab.Location = new System.Drawing.Point(4, 22);
 			this.zoom2Tab.Name = "zoom2Tab";
 			this.zoom2Tab.Padding = new System.Windows.Forms.Padding(3);
-			this.zoom2Tab.Size = new System.Drawing.Size(767, 0);
+			this.zoom2Tab.Size = new System.Drawing.Size(153, 0);
 			this.zoom2Tab.TabIndex = 1;
 			this.zoom2Tab.Text = "Zoom 2";
 			this.zoom2Tab.UseVisualStyleBackColor = true;
@@ -1181,10 +1153,48 @@
 			// 
 			this.zoom4Tab.Location = new System.Drawing.Point(4, 22);
 			this.zoom4Tab.Name = "zoom4Tab";
-			this.zoom4Tab.Size = new System.Drawing.Size(767, 0);
+			this.zoom4Tab.Size = new System.Drawing.Size(153, 0);
 			this.zoom4Tab.TabIndex = 2;
 			this.zoom4Tab.Text = "Zoom 4";
 			this.zoom4Tab.UseVisualStyleBackColor = true;
+			// 
+			// animationPhaseLabel
+			// 
+			this.animationPhaseLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.animationPhaseLabel.AutoSize = true;
+			this.animationPhaseLabel.Location = new System.Drawing.Point(664, 120);
+			this.animationPhaseLabel.Name = "animationPhaseLabel";
+			this.animationPhaseLabel.Size = new System.Drawing.Size(85, 13);
+			this.animationPhaseLabel.TabIndex = 5;
+			this.animationPhaseLabel.Text = "Animationphase:";
+			// 
+			// animationNumericUpDown
+			// 
+			this.animationNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.animationNumericUpDown.Enabled = false;
+			this.animationNumericUpDown.Location = new System.Drawing.Point(755, 118);
+			this.animationNumericUpDown.Maximum = new decimal(new int[] {
+            99,
+            0,
+            0,
+            0});
+			this.animationNumericUpDown.Name = "animationNumericUpDown";
+			this.animationNumericUpDown.Size = new System.Drawing.Size(33, 20);
+			this.animationNumericUpDown.TabIndex = 4;
+			this.animationNumericUpDown.Tag = "";
+			this.animationNumericUpDown.ValueChanged += new System.EventHandler(this.animationNumericUpDown_ValueChanged);
+			// 
+			// alternativesCheckBox
+			// 
+			this.alternativesCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.alternativesCheckBox.AutoSize = true;
+			this.alternativesCheckBox.Location = new System.Drawing.Point(542, 119);
+			this.alternativesCheckBox.Name = "alternativesCheckBox";
+			this.alternativesCheckBox.Size = new System.Drawing.Size(103, 17);
+			this.alternativesCheckBox.TabIndex = 7;
+			this.alternativesCheckBox.Text = "Has Alternatives";
+			this.alternativesCheckBox.UseVisualStyleBackColor = true;
+			this.alternativesCheckBox.CheckedChanged += new System.EventHandler(this.alternativesCheckBox_CheckedChanged);
 			// 
 			// drawPanel
 			// 
@@ -1208,49 +1218,21 @@
 			this.overviewPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.overviewPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.overviewPanel.Controls.Add(this.animationPhaseLabel);
-			this.overviewPanel.Controls.Add(this.animationNumericUpDown);
 			this.overviewPanel.Controls.Add(this.overviewDownButton);
 			this.overviewPanel.Controls.Add(this.overviewUpButton);
 			this.overviewPanel.Controls.Add(this.overviewLeftRightButton);
 			this.overviewPanel.Location = new System.Drawing.Point(13, 52);
 			this.overviewPanel.Name = "overviewPanel";
-			this.overviewPanel.Size = new System.Drawing.Size(775, 62);
+			this.overviewPanel.Size = new System.Drawing.Size(775, 64);
 			this.overviewPanel.TabIndex = 5;
 			this.overviewPanel.Click += new System.EventHandler(this.overviewPanel_Click);
 			this.overviewPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.overviewPanel_Paint);
-			// 
-			// animationPhaseLabel
-			// 
-			this.animationPhaseLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.animationPhaseLabel.AutoSize = true;
-			this.animationPhaseLabel.Location = new System.Drawing.Point(688, 2);
-			this.animationPhaseLabel.Name = "animationPhaseLabel";
-			this.animationPhaseLabel.Size = new System.Drawing.Size(82, 13);
-			this.animationPhaseLabel.TabIndex = 5;
-			this.animationPhaseLabel.Text = "Animationphase";
-			// 
-			// animationNumericUpDown
-			// 
-			this.animationNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.animationNumericUpDown.Enabled = false;
-			this.animationNumericUpDown.Location = new System.Drawing.Point(691, 18);
-			this.animationNumericUpDown.Maximum = new decimal(new int[] {
-            99,
-            0,
-            0,
-            0});
-			this.animationNumericUpDown.Name = "animationNumericUpDown";
-			this.animationNumericUpDown.Size = new System.Drawing.Size(79, 20);
-			this.animationNumericUpDown.TabIndex = 4;
-			this.animationNumericUpDown.Tag = "";
-			this.animationNumericUpDown.ValueChanged += new System.EventHandler(this.animationNumericUpDown_ValueChanged);
 			// 
 			// overviewDownButton
 			// 
 			this.overviewDownButton.BackgroundImage = global::BahnEditor.Editor.Properties.Resources.downarrow;
 			this.overviewDownButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-			this.overviewDownButton.Location = new System.Drawing.Point(15, 16);
+			this.overviewDownButton.Location = new System.Drawing.Point(14, 15);
 			this.overviewDownButton.Name = "overviewDownButton";
 			this.overviewDownButton.Size = new System.Drawing.Size(17, 17);
 			this.overviewDownButton.TabIndex = 3;
@@ -1261,7 +1243,7 @@
 			// 
 			this.overviewUpButton.BackgroundImage = global::BahnEditor.Editor.Properties.Resources.uparrow;
 			this.overviewUpButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-			this.overviewUpButton.Location = new System.Drawing.Point(15, 0);
+			this.overviewUpButton.Location = new System.Drawing.Point(14, -1);
 			this.overviewUpButton.Name = "overviewUpButton";
 			this.overviewUpButton.Size = new System.Drawing.Size(17, 17);
 			this.overviewUpButton.TabIndex = 2;
@@ -1271,7 +1253,7 @@
 			// overviewLeftRightButton
 			// 
 			this.overviewLeftRightButton.Image = global::BahnEditor.Editor.Properties.Resources.leftrightarrow;
-			this.overviewLeftRightButton.Location = new System.Drawing.Point(5, 37);
+			this.overviewLeftRightButton.Location = new System.Drawing.Point(4, 33);
 			this.overviewLeftRightButton.Name = "overviewLeftRightButton";
 			this.overviewLeftRightButton.Size = new System.Drawing.Size(27, 17);
 			this.overviewLeftRightButton.TabIndex = 1;
@@ -1284,14 +1266,17 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(1008, 730);
+			this.Controls.Add(this.alternativesCheckBox);
+			this.Controls.Add(this.animationPhaseLabel);
 			this.Controls.Add(this.tabControl);
+			this.Controls.Add(this.animationNumericUpDown);
 			this.Controls.Add(this.drawPanel);
 			this.Controls.Add(this.overviewPanel);
 			this.Controls.Add(this.controlPanel);
 			this.Controls.Add(this.toolStrip);
 			this.Controls.Add(this.menuStrip);
 			this.MainMenuStrip = this.menuStrip;
-			this.MinimumSize = new System.Drawing.Size(800, 740);
+			this.MinimumSize = new System.Drawing.Size(800, 715);
 			this.Name = "Editor";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Bahn Editor";
@@ -1301,24 +1286,24 @@
 			this.toolStrip.PerformLayout();
 			this.controlPanel.ResumeLayout(false);
 			this.controlPanel.PerformLayout();
-			this.propertiesPanel.ResumeLayout(false);
-			this.propertiesPanel.PerformLayout();
-			this.clockPanel.ResumeLayout(false);
-			this.clockPanel.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.clockWidthNumericUpDown)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.clockYNumericUpDown)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.clockXNumericUpDown)).EndInit();
+			this.propertiesGroupBox.ResumeLayout(false);
+			this.cursorDirectionPanel.ResumeLayout(false);
+			this.cursorDirectionPanel.PerformLayout();
 			this.particlePropertiesPanel.ResumeLayout(false);
 			this.particlePropertiesPanel.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.particleWidthNumericUpDown)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.particleYNumericUpDown)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.particleXNumericUpDown)).EndInit();
+			this.clockPanel.ResumeLayout(false);
+			this.clockPanel.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.clockWidthNumericUpDown)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.clockYNumericUpDown)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.clockXNumericUpDown)).EndInit();
 			this.menuStrip.ResumeLayout(false);
 			this.menuStrip.PerformLayout();
 			this.tabControl.ResumeLayout(false);
-			this.overviewPanel.ResumeLayout(false);
-			this.overviewPanel.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.animationNumericUpDown)).EndInit();
+			this.overviewPanel.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -1348,16 +1333,12 @@
 		private System.Windows.Forms.TabPage zoom4Tab;
 		private System.Windows.Forms.ToolStripButton zoomInButton;
 		private System.Windows.Forms.ToolStripButton zoomOutButton;
-		private System.Windows.Forms.Panel propertiesPanel;
-		private System.Windows.Forms.CheckBox zoom4CheckBox;
-		private System.Windows.Forms.CheckBox zoom2CheckBox;
 		private System.Windows.Forms.RadioButton frontRadioButton;
 		private System.Windows.Forms.RadioButton foregroundAboveRadioButton;
 		private System.Windows.Forms.RadioButton toBackgroundRadioButton;
 		private System.Windows.Forms.RadioButton backgroundRadioButton2;
 		private System.Windows.Forms.RadioButton backgroundRadioButton;
 		private System.Windows.Forms.RadioButton foregroundRadioButton;
-		private System.Windows.Forms.Label propertiesLabel;
 		private System.Windows.Forms.Label particleLabel;
 		private System.Windows.Forms.ComboBox particleComboBox;
 		private System.Windows.Forms.ToolStripButton newToolStripButton;
@@ -1401,22 +1382,6 @@
 		private System.Windows.Forms.Label particleXLabel;
 		private System.Windows.Forms.NumericUpDown particleWidthNumericUpDown;
 		private System.Windows.Forms.Label particleWidthLabel;
-		private System.Windows.Forms.Panel clockPanel;
-		private System.Windows.Forms.Label clockLabel;
-		private System.Windows.Forms.Label clockRotationLabel;
-		private System.Windows.Forms.ComboBox clockRotationComboBox;
-		private System.Windows.Forms.ComboBox clockComboBox;
-		private System.Windows.Forms.Label clockYLabel;
-		private System.Windows.Forms.NumericUpDown clockXNumericUpDown;
-		private System.Windows.Forms.Label clockXLabel;
-		private System.Windows.Forms.NumericUpDown clockWidthNumericUpDown;
-		private System.Windows.Forms.Label clockWidthLabel;
-		private System.Windows.Forms.NumericUpDown clockYNumericUpDown;
-		private System.Windows.Forms.CheckBox clockMinutesPointerCheckBox;
-		private System.Windows.Forms.Label clockColorMinutesPointerLabel;
-		private System.Windows.Forms.Label clockColorHoursPointerLabel;
-		private System.Windows.Forms.Button clockColorHoursPointerButton;
-		private System.Windows.Forms.Button clockColorMinutesPointerButton;
 		private System.Windows.Forms.ComboBox cursorReverseDirectionComboBox;
 		private System.Windows.Forms.Label cursorReverseDirectionLabel;
 		private System.Windows.Forms.Label cursorNormalDirectionLabel;
@@ -1428,6 +1393,25 @@
 		private System.Windows.Forms.NumericUpDown animationNumericUpDown;
 		private System.Windows.Forms.Label animationPhaseLabel;
 		private System.Windows.Forms.ToolTip toolTip;
+		private System.Windows.Forms.Panel cursorDirectionPanel;
+		private System.Windows.Forms.GroupBox propertiesGroupBox;
+		private System.Windows.Forms.Panel clockPanel;
+		private System.Windows.Forms.Button clockColorMinutesPointerButton;
+		private System.Windows.Forms.Button clockColorHoursPointerButton;
+		private System.Windows.Forms.Label clockColorMinutesPointerLabel;
+		private System.Windows.Forms.Label clockColorHoursPointerLabel;
+		private System.Windows.Forms.CheckBox clockMinutesPointerCheckBox;
+		private System.Windows.Forms.NumericUpDown clockWidthNumericUpDown;
+		private System.Windows.Forms.Label clockWidthLabel;
+		private System.Windows.Forms.NumericUpDown clockYNumericUpDown;
+		private System.Windows.Forms.Label clockYLabel;
+		private System.Windows.Forms.NumericUpDown clockXNumericUpDown;
+		private System.Windows.Forms.Label clockXLabel;
+		private System.Windows.Forms.ComboBox clockComboBox;
+		private System.Windows.Forms.ComboBox clockRotationComboBox;
+		private System.Windows.Forms.Label clockRotationLabel;
+		private System.Windows.Forms.Label clockLabel;
+		private System.Windows.Forms.CheckBox alternativesCheckBox;
 
 	}
 }

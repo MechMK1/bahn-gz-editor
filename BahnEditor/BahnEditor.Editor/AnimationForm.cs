@@ -275,6 +275,10 @@ namespace BahnEditor.Editor
 					{
 						editor.Zoom1Archive.RemoveAnimation();
 					}
+					if(MessageBox.Show("Do you also want to delete the animationsteps?", "Delete animationsteps", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+					{
+
+					}
 					this.ChangeAnimationProgram();
 					editor.UpdateAnimation(false);
 				}

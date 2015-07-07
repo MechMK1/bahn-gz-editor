@@ -30,14 +30,14 @@ namespace BahnEditor.Test
 					else if (i == 5)
 						elementExpected[i, j] = (uint)Pixel.PixelProperty.AsMarkingPointBus0;
 					else if (i == 4)
-						elementExpected[i, j] = 100 << 16 | 100 << 8 | 100 | (uint) Pixel.PixelProperty.AlwaysBright;
+						elementExpected[i, j] = 100 << 16 | 100 << 8 | 100 | (uint)Pixel.PixelProperty.AlwaysBright;
 					else if (i == 6)
-						elementExpected[i, j] = 100 << 8 | 100 | (uint) Pixel.PixelProperty.LampRed;
+						elementExpected[i, j] = 100 << 8 | 100 | (uint)Pixel.PixelProperty.LampRed;
 					else
 						elementExpected[i, j] = Constants.ColorTransparent;
 				}
 			}
-			
+
 
 			Graphic graphic = new Graphic(infoTextExpected, ZoomFactor.Zoom1);
 
@@ -210,6 +210,14 @@ namespace BahnEditor.Test
 		}
 
 		[TestMethod]
+		[ExpectedException(typeof(ArgumentException), "Animations only available in Zoom1-Archives")]
+		public void TestAnimationWithZoom2()
+		{
+			GraphicArchive archive = new GraphicArchive(ZoomFactor.Zoom2);
+			archive.AddAnimation();
+		}
+
+		[TestMethod]
 		public void TestAnimationSave()
 		{
 			GraphicArchive expectedArchive = new GraphicArchive(ZoomFactor.Zoom1);
@@ -251,11 +259,37 @@ namespace BahnEditor.Test
 
 			Assert.IsNotNull(archive.Animation);
 			Assert.AreEqual<int>(expectedArchive.Animation.AnimationProgramCount, archive.Animation.AnimationProgramCount);
-			CompareAnimationProgram(expectedProgram, archive.Animation[0,Constants.NoAlternative]);
+			CompareAnimationProgram(expectedProgram, archive.Animation[0, Constants.NoAlternative]);
 
 			System.IO.File.Delete("testAnimation.uz1");
 			System.IO.File.Delete("testAnimation.bnm");
 		}
+
+		[TestMethod]
+		public void TestHasAlternatives()
+		{
+			GraphicArchive archive = new GraphicArchive(ZoomFactor.Zoom1);
+			Graphic g = new Graphic("TestGraphic");
+			g.AddTransparentLayer(LayerID.Foreground);
+			g.GetLayer(LayerID.Foreground)[10, 10] = 100 << 16 | 50 << 8 | 20;
+
+			archive.AddGraphic(0, 0, 0, g);
+			archive.AddGraphic(0, 1, 0, g);
+			archive.AddGraphic(1, 0, 1, g);
+			archive.AddGraphic(1, 0, 2, g);
+			archive.AddGraphic(1, 0, 3, g);
+			archive.AddGraphic(1, 1, 3, g);
+			archive.AddGraphic(2, 0, 1, g);
+			archive.AddGraphic(3, 0, 0, g);
+			archive.AddGraphic(4, 0, 1, g);
+
+			Assert.IsFalse(archive.HasAlternatives(0));
+			Assert.IsTrue(archive.HasAlternatives(1));
+			Assert.IsTrue(archive.HasAlternatives(2));
+			Assert.IsFalse(archive.HasAlternatives(3));
+			Assert.IsTrue(archive.HasAlternatives(4));
+		}
+
 		#endregion Tests
 
 		#region Private Methods

@@ -13,20 +13,23 @@ namespace BahnEditor.Editor
 		#region Private Fields
 
 		private static Brush transparentBrush = new HatchBrush(HatchStyle.Percent20, Color.FromArgb(140, 140, 140), Color.FromArgb(0, 112, 0));
-		private int actualAlternative = 1;
+		private int actualAlternative = 0;
 		private int actualAnimationPhase = Constants.MinAnimationPhase;
 		private int actualGraphic;
 		private LayerID actualLayer;
 		private ZoomFactor actualZoomFactor = ZoomFactor.Zoom1;
 		private AnimationForm animationForm;
+		private bool hasLoadedGraphic = false;
 		private bool cursorNormalDirectionCBCodeChanged = false;
 		private bool cursorReverseDirectionCBCodeChanged = false;
-		private bool hasLoadedGraphic = false;
 		private uint lastLeftPixel = 0;
 		private string lastPath = "";
 		private uint lastRightPixel = 0;
+		private bool rightComboBoxSelectedCodeChanged = false;
+		private bool leftComboBoxSelectedCodeChanged = false;
 		private bool layerSelectBoxCodeChanged = false;
 		private bool animationPhaseCodeChanged = false;
+		private bool alternativeCheckBoxCodeChanged = false;
 		private uint leftPixel = 0;
 		private int overviewAlternative = 0;
 		private int overviewLine = 0;
@@ -34,9 +37,7 @@ namespace BahnEditor.Editor
 		private bool userMadeChanges = false;
 		private GraphicArchive zoom1Archive;
 		private GraphicArchive zoom2Archive;
-		private bool zoom2CheckBoxCodeChanged = false;
 		private GraphicArchive zoom4Archive;
-		private bool zoom4CheckBoxCodeChanged = false;
 		private int zoomLevel = 5;
 
 		#endregion Private Fields
@@ -149,8 +150,6 @@ namespace BahnEditor.Editor
 			this.particleComboBox.SelectedIndex = 0;
 			this.clockComboBox.SelectedIndex = 0;
 			this.clockRotationComboBox.SelectedIndex = 0;
-			this.tabControl.TabPages.Remove(this.zoom2Tab);
-			this.tabControl.TabPages.Remove(this.zoom4Tab);
 			this.animationForm = new AnimationForm(this);
 			this.NewGraphicArchive();
 		}
@@ -161,24 +160,12 @@ namespace BahnEditor.Editor
 			this.zoom2Archive = new GraphicArchive(ZoomFactor.Zoom2);
 			this.zoom4Archive = new GraphicArchive(ZoomFactor.Zoom4);
 			this.actualGraphic = 0;
-			this.actualAlternative = 1;
+			this.actualAlternative = 0;
+			this.alternativeCheckBoxCodeChanged = true;
+			this.alternativesCheckBox.Checked = false;
+			this.alternativeCheckBoxCodeChanged = false;
 			this.actualAnimationPhase = 0;
-			Graphic graphic = new Graphic("No text");
-			graphic.AddTransparentLayer(LayerID.Foreground);
-			this.zoom1Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
 			this.ChangeLayer(LayerID.Foreground);
-			if (this.tabControl.TabPages.Contains(this.zoom2Tab))
-			{
-				this.tabControl.TabPages.Remove(this.zoom2Tab);
-				this.zoom2CheckBoxCodeChanged = true;
-				this.zoom2CheckBox.Checked = false;
-			}
-			if (this.tabControl.TabPages.Contains(this.zoom4Tab))
-			{
-				this.tabControl.TabPages.Remove(this.zoom4Tab);
-				this.zoom4CheckBoxCodeChanged = true;
-				this.zoom4CheckBox.Checked = false;
-			}
 			this.userMadeChanges = false;
 			this.animationPhaseCodeChanged = true;
 			this.animationNumericUpDown.Value = Constants.MinAnimationPhase;
@@ -189,8 +176,7 @@ namespace BahnEditor.Editor
 			this.drawPanel.AutoScrollPosition = new Point(this.drawPanel.HorizontalScroll.Maximum, this.drawPanel.VerticalScroll.Maximum);
 			this.drawPanel.Invalidate();
 			this.overviewPanel.Invalidate();
-			if (this.animationForm != null && !this.animationForm.IsDisposed)
-				this.animationForm.ChangeAnimationProgram();
+			this.UpdateAnimation();
 		}
 
 		private void LoadGraphicArchive()
@@ -227,33 +213,21 @@ namespace BahnEditor.Editor
 					this.zoom4Archive = new GraphicArchive(ZoomFactor.Zoom4);
 				}
 				this.actualGraphic = 0;
-				this.actualAlternative = 1;
+				//this.actualAlternative = 1;
 				this.actualAnimationPhase = 0;
 				this.actualZoomFactor = ZoomFactor.Zoom1;
-				if (this.zoom2Archive[this.actualGraphic, this.actualAnimationPhase, this.actualAlternative] != null && !this.tabControl.TabPages.Contains(this.zoom2Tab))
+				this.alternativeCheckBoxCodeChanged = true;
+				if (this.zoom1Archive.HasAlternatives(this.actualGraphic))
 				{
-					this.tabControl.TabPages.Add(this.zoom2Tab);
-					this.zoom2CheckBoxCodeChanged = true;
-					this.zoom2CheckBox.Checked = true;
+					this.alternativesCheckBox.Checked = true;
+					this.actualAlternative = 1;
 				}
-				else if (this.zoom2Archive[this.actualGraphic, this.actualAnimationPhase, this.actualAlternative] == null && this.tabControl.TabPages.Contains(this.zoom2Tab))
+				else
 				{
-					this.tabControl.TabPages.Remove(this.zoom2Tab);
-					this.zoom2CheckBoxCodeChanged = true;
-					this.zoom2CheckBox.Checked = false;
+					this.alternativesCheckBox.Checked = false;
+					this.actualAlternative = 0;
 				}
-				if (this.zoom4Archive[this.actualGraphic, this.actualAnimationPhase, this.actualAlternative] != null && !this.tabControl.TabPages.Contains(this.zoom4Tab))
-				{
-					this.tabControl.TabPages.Add(this.zoom4Tab);
-					this.zoom4CheckBoxCodeChanged = true;
-					this.zoom4CheckBox.Checked = true;
-				}
-				else if (this.zoom4Archive[this.actualGraphic, this.actualAnimationPhase, this.actualAlternative] == null && this.tabControl.TabPages.Contains(this.zoom4Tab))
-				{
-					this.tabControl.TabPages.Remove(this.zoom4Tab);
-					this.zoom4CheckBoxCodeChanged = true;
-					this.zoom4CheckBox.Checked = false;
-				}
+				this.alternativeCheckBoxCodeChanged = false;
 				this.animationPhaseCodeChanged = true;
 				this.animationNumericUpDown.Value = Constants.MinAnimationPhase;
 				this.animationPhaseCodeChanged = false;
@@ -266,8 +240,7 @@ namespace BahnEditor.Editor
 				this.drawPanel.AutoScrollPosition = new Point(this.drawPanel.HorizontalScroll.Maximum, this.drawPanel.VerticalScroll.Maximum / 2);
 				this.drawPanel.Invalidate();
 				this.overviewPanel.Invalidate();
-				if (this.animationForm != null && !this.animationForm.IsDisposed)
-					this.animationForm.ChangeAnimationProgram();
+				this.UpdateAnimation();
 			}
 			catch (Exception ex)
 			{
@@ -309,7 +282,7 @@ namespace BahnEditor.Editor
 			}
 		}
 
-		private void PaintGraphic(Graphics g)
+		private void DrawGraphic(Graphics g)
 		{
 			try
 			{
@@ -383,7 +356,7 @@ namespace BahnEditor.Editor
 						else
 						{
 							g.TranslateTransform(drawPanel.AutoScrollPosition.X + 20, drawPanel.AutoScrollPosition.Y + 20);
-							PaintElement(g, element, this.zoomLevel, true, this.actualZoomFactor);
+							DrawElement(g, element, this.zoomLevel, true, this.actualZoomFactor);
 							g.TranslateTransform(-20, -20);
 						}
 					}
@@ -423,7 +396,7 @@ namespace BahnEditor.Editor
 			}
 		}
 
-		private static void PaintElement(Graphics g, uint[,] element, int zoomLevel, bool withHatchBrush, ZoomFactor zoomfactor)
+		private static void DrawElement(Graphics g, uint[,] element, int zoomLevel, bool withHatchBrush, ZoomFactor zoomfactor)
 		{
 			if (withHatchBrush)
 				//g.FillRectangle(transparentBrush, 0, 0, element.GetLength(1) * zoomLevel / (int)zoomfactor, element.GetLength(0) * zoomLevel / (int)zoomfactor);
@@ -449,25 +422,86 @@ namespace BahnEditor.Editor
 			}
 		}
 
-		private void PaintOverview(Graphics g)
+		private void DrawOverview(Graphics g)
 		{
 			if (this.zoom1Archive != null)
 			{
-				g.TranslateTransform(45, 20);
+				g.TranslateTransform(40, 15);
 				for (int i = this.overviewLine * 18 + this.overviewAlternative, j = 1; j <= 9; i += 2, j++)
 				{
 					if (this.zoom1Archive[i] != null)
 					{
-						PaintElement(g, GraphicPreview(this.zoom1Archive[i]), 1, false, ZoomFactor.Zoom1);
+						DrawElement(g, GraphicPreview(this.zoom1Archive[i]), 1, false, ZoomFactor.Zoom1);
 					}
 					else
 					{
 						g.FillRectangle(transparentBrush, 0, 0, Constants.ElementWidth, Constants.ElementHeight);
 					}
+					if (i == this.actualGraphic)
+						g.DrawRectangle(Pens.Blue, -1, -1, Constants.ElementWidth + 1, Constants.ElementHeight + 1);
 					g.DrawString(String.Format("{0} - {1}", j, i), DefaultFont, Brushes.Black, 1, 20);
 					g.TranslateTransform(Constants.ElementWidth + 10, 0);
 				}
 
+				if (this.alternativesCheckBox.Checked)
+				{
+					g.ResetTransform();
+					g.TranslateTransform(440, 5);
+					/*alternative a*/
+					if (this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 1] != null)
+					{
+						DrawElement(g, GraphicPreview(this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 1]), 1, false, ZoomFactor.Zoom1);
+					}
+					else
+					{
+						g.FillRectangle(transparentBrush, 0, 0, Constants.ElementWidth, Constants.ElementHeight);
+					}
+					if (this.actualAlternative == 1)
+						g.DrawRectangle(Pens.Blue, -1, -1, Constants.ElementWidth + 1, Constants.ElementHeight + 1);
+					g.DrawString("a", DefaultFont, Brushes.Black, 10, 15);
+
+					/*alternative b*/
+					g.TranslateTransform(Constants.ElementWidth + 10, 0);
+					if (this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 2] != null)
+					{
+						DrawElement(g, GraphicPreview(this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 2]), 1, false, ZoomFactor.Zoom1);
+					}
+					else
+					{
+						g.FillRectangle(transparentBrush, 0, 0, Constants.ElementWidth, Constants.ElementHeight);
+					}
+					if (this.actualAlternative == 2)
+						g.DrawRectangle(Pens.Blue, -1, -1, Constants.ElementWidth + 1, Constants.ElementHeight + 1);
+					g.DrawString("b", DefaultFont, Brushes.Black, 10, 15);
+
+					/*alternative c*/
+					g.TranslateTransform(-Constants.ElementWidth - 10, 30);
+					if (this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 3] != null)
+					{
+						DrawElement(g, GraphicPreview(this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 3]), 1, false, ZoomFactor.Zoom1);
+					}
+					else
+					{
+						g.FillRectangle(transparentBrush, 0, 0, Constants.ElementWidth, Constants.ElementHeight);
+					}
+					if (this.actualAlternative == 3)
+						g.DrawRectangle(Pens.Blue, -1, -1, Constants.ElementWidth + 1, Constants.ElementHeight + 1);
+					g.DrawString("c", DefaultFont, Brushes.Black, 10, 15);
+
+					/*alternative d*/
+					g.TranslateTransform(Constants.ElementWidth + 10, 0);
+					if (this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 4] != null)
+					{
+						DrawElement(g, GraphicPreview(this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 4]), 1, false, ZoomFactor.Zoom1);
+					}
+					else
+					{
+						g.FillRectangle(transparentBrush, 0, 0, Constants.ElementWidth, Constants.ElementHeight);
+					}
+					if (this.actualAlternative == 4)
+						g.DrawRectangle(Pens.Blue, -1, -1, Constants.ElementWidth + 1, Constants.ElementHeight + 1);
+					g.DrawString("d", DefaultFont, Brushes.Black, 10, 15);
+				}
 			}
 		}
 
@@ -672,8 +706,106 @@ namespace BahnEditor.Editor
 			}
 		}
 
+		private void ClickGraphic(MouseEventArgs e)
+		{
+			if (this.hasLoadedGraphic == true)
+			{
+				this.hasLoadedGraphic = false;
+				return;
+			}
+			if (e.Button == MouseButtons.None)
+				return;
+			if (this.actualZoomFactor == ZoomFactor.Zoom1)
+			{
+				if (this.ActualZoom1Graphic == null)
+				{
+					Graphic graphic = new Graphic("No text");
+					//graphic.AddTransparentLayer(LayerID.Foreground);
+					this.zoom1Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
+					ChangePropertyComboBoxes(true);
+					//this.ChangeLayer(LayerID.Foreground);
+					this.overviewPanel.Invalidate();
+				}
+				if (this.ActualZoom1Graphic.GetLayer(this.actualLayer) == null)
+				{
+					LayerID LayerID = GetLayerIDBySelectedIndex();
+					this.ActualZoom1Graphic.AddTransparentLayer(LayerID);
+					this.ChangeLayer(LayerID);
+				}
+			}
+			else if (this.actualZoomFactor == ZoomFactor.Zoom2)
+			{
+				if (this.ActualZoom2Graphic == null)
+				{
+					Graphic graphic = new Graphic("No text");
+					//graphic.AddTransparentLayer(LayerID.Foreground);
+					this.zoom2Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
+					ChangePropertyComboBoxes(true);
+					//this.ChangeLayer(LayerID.Foreground);
+					this.overviewPanel.Invalidate();
+				}
+				if (this.ActualZoom2Graphic.GetLayer(this.actualLayer) == null)
+				{
+					LayerID LayerID = GetLayerIDBySelectedIndex();
+					this.ActualZoom2Graphic.AddTransparentLayer(LayerID);
+					this.ChangeLayer(LayerID);
+				}
+			}
+			else if (this.actualZoomFactor == ZoomFactor.Zoom4)
+			{
+				if (this.ActualZoom4Graphic == null)
+				{
+					Graphic graphic = new Graphic("No text");
+					//graphic.AddTransparentLayer(LayerID.Foreground);
+					this.zoom4Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
+					ChangePropertyComboBoxes(true);
+					//this.ChangeLayer(LayerID.Foreground);
+					this.overviewPanel.Invalidate();
+				}
+				else if (this.ActualZoom4Graphic.GetLayer(this.actualLayer) == null)
+				{
+					LayerID LayerID = GetLayerIDBySelectedIndex();
+					this.ActualZoom4Graphic.AddTransparentLayer(LayerID);
+					this.ChangeLayer(LayerID);
+				}
+			}
+			try
+			{
+				uint[,] element = this.GetElement();
+
+				if (e.X - drawPanel.AutoScrollPosition.X >= 20 && e.Y - drawPanel.AutoScrollPosition.Y >= 20 && (20 + this.zoomLevel * element.GetLength(0) + drawPanel.AutoScrollPosition.Y - e.Y) > 0)
+				{
+					int xElement = (int)(((e.X - 20 - drawPanel.AutoScrollPosition.X) / (float)this.zoomLevel) * (int)this.actualZoomFactor);
+					int yElement = (int)(((20 + this.zoomLevel * element.GetLength(0) / (int)this.actualZoomFactor + drawPanel.AutoScrollPosition.Y - e.Y) / (float)this.zoomLevel) * (int)this.actualZoomFactor);
+					if (xElement >= 0 && yElement >= 0 && xElement < element.GetLength(1) && yElement < element.GetLength(0))
+					{
+						if (e.Button == MouseButtons.Left && !element[yElement, xElement].Equals(leftPixel))
+						{
+							element[yElement, xElement] = leftPixel;
+						}
+						else if (e.Button == MouseButtons.Right && !element[yElement, xElement].Equals(rightPixel))
+						{
+							element[yElement, xElement] = rightPixel;
+						}
+						else
+						{
+							return;
+						}
+						this.userMadeChanges = true;
+						drawPanel.Invalidate(new Rectangle(e.X - this.zoomLevel / ((int)this.actualZoomFactor), e.Y - this.zoomLevel / ((int)this.actualZoomFactor), (this.zoomLevel * 2) / (int)this.actualZoomFactor, (this.zoomLevel * 2) / (int)this.actualZoomFactor));
+					}
+				}
+			}
+			catch (Exception)
+			{
+				MessageBox.Show("Internal Error!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+		}
+
 		private void ClickOverview(MouseEventArgs e)
 		{
+			if (!e.Button.HasFlag(MouseButtons.Left))
+				return;
 			int element = -1;
 			int x = e.X - 45;
 			if (x >= 0 && 31 >= x)
@@ -697,40 +829,65 @@ namespace BahnEditor.Editor
 			if (element != -1)
 			{
 				this.actualGraphic = (element * 2 + overviewAlternative) + ((overviewLine) * 18);
+
 				this.actualAnimationPhase = Constants.MinAnimationPhase;
-				this.actualAlternative = 1;
-				if (this.zoom2Archive[this.actualGraphic, this.actualAnimationPhase, this.actualAlternative] != null && !this.tabControl.TabPages.Contains(this.zoom2Tab))
-				{
-					this.tabControl.TabPages.Insert(1, this.zoom2Tab);
-					this.zoom2CheckBoxCodeChanged = true;
-					this.zoom2CheckBox.Checked = true;
-				}
-				else if (this.zoom2Archive[this.actualGraphic, this.actualAnimationPhase, this.actualAlternative] == null && this.tabControl.TabPages.Contains(this.zoom2Tab))
-				{
-					this.tabControl.TabPages.Remove(this.zoom2Tab);
-					this.zoom2CheckBoxCodeChanged = true;
-					this.zoom2CheckBox.Checked = false;
-				}
-				if (this.zoom4Archive[this.actualGraphic, this.actualAnimationPhase, this.actualAlternative] != null && !this.tabControl.TabPages.Contains(this.zoom4Tab))
-				{
-					this.tabControl.TabPages.Add(this.zoom4Tab);
-					this.zoom4CheckBoxCodeChanged = true;
-					this.zoom4CheckBox.Checked = true;
-				}
-				else if (this.zoom4Archive[this.actualGraphic, this.actualAnimationPhase, this.actualAlternative] == null && this.tabControl.TabPages.Contains(this.zoom4Tab))
-				{
-					this.tabControl.TabPages.Remove(this.zoom4Tab);
-					this.zoom4CheckBoxCodeChanged = true;
-					this.zoom4CheckBox.Checked = false;
-				}
 				this.animationPhaseCodeChanged = true;
 				this.animationNumericUpDown.Value = Constants.MinAnimationPhase;
 				this.animationPhaseCodeChanged = false;
-				this.ChangeLayer(LayerID.Foreground);
+
+				this.alternativeCheckBoxCodeChanged = true;
+				if (this.zoom1Archive.HasAlternatives(this.actualGraphic))
+				{
+					this.alternativesCheckBox.Checked = true;
+					this.actualAlternative = 1;
+				}
+				else
+				{
+					this.alternativesCheckBox.Checked = false;
+					this.actualAlternative = 0;
+				}
+				this.alternativeCheckBoxCodeChanged = false;
+
 				this.UpdateProperties();
 				this.drawPanel.Invalidate();
-				if (this.animationForm != null && !this.animationForm.IsDisposed)
-					this.animationForm.ChangeAnimationProgram();
+				this.overviewPanel.Invalidate();
+				this.UpdateAnimation();
+			}
+			else if (this.alternativesCheckBox.Checked)
+			{
+				int xa = e.X - 440;
+				int ya = e.Y - 5;
+				int alternative = -1;
+				if (xa >= 0 && Constants.ElementWidth >= xa)
+				{
+					if (ya >= 0 && 25 >= ya)
+					{
+						alternative = 1;
+					}
+					else if (ya >= 30 && 55 >= ya)
+					{
+						alternative = 3;
+					}
+				}
+				else if (xa >= Constants.ElementWidth + 10 && Constants.ElementWidth * 2 + 10 >= xa)
+				{
+					if (ya >= 0 && 25 >= ya)
+					{
+						alternative = 2;
+					}
+					else if (ya >= 30 && 55 >= ya)
+					{
+						alternative = 4;
+					}
+				}
+				if (alternative != -1 && alternative != this.actualAlternative)
+				{
+					this.actualAlternative = alternative;
+					this.UpdateProperties();
+					this.overviewPanel.Invalidate();
+					this.drawPanel.Invalidate();
+					this.UpdateAnimation();
+				}
 			}
 		}
 
@@ -887,76 +1044,6 @@ namespace BahnEditor.Editor
 					throw new ArgumentOutOfRangeException();
 			}
 		}
-
-		private void MouseClickGraphic(MouseEventArgs e)
-		{
-			if (this.hasLoadedGraphic == true)
-			{
-				this.hasLoadedGraphic = false;
-				return;
-			}
-			if (e.Button == MouseButtons.None)
-				return;
-			if (this.actualZoomFactor == ZoomFactor.Zoom1)
-			{
-				if (this.ActualZoom1Graphic == null)
-				{
-					Graphic graphic = new Graphic("No text");
-					graphic.AddTransparentLayer(LayerID.Foreground);
-					this.zoom1Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
-					this.ChangeLayer(LayerID.Foreground);
-					this.overviewPanel.Invalidate();
-				}
-				else if (this.ActualZoom1Graphic.GetLayer(this.actualLayer) == null)
-				{
-					LayerID LayerID = GetLayerIDBySelectedIndex();
-					this.ActualZoom1Graphic.AddTransparentLayer(LayerID);
-					this.ChangeLayer(LayerID);
-				}
-			}
-			else if (this.actualZoomFactor == ZoomFactor.Zoom2 && this.ActualZoom2Graphic != null && this.ActualZoom1Graphic != null && this.ActualZoom2Graphic.GetLayer(this.actualLayer) == null)
-			{
-				LayerID LayerID = GetLayerIDBySelectedIndex();
-				this.ActualZoom2Graphic.AddTransparentLayer(LayerID);
-				this.ChangeLayer(LayerID);
-			}
-			else if (this.actualZoomFactor == ZoomFactor.Zoom4 && this.ActualZoom4Graphic != null && this.ActualZoom1Graphic != null && this.ActualZoom4Graphic.GetLayer(this.actualLayer) == null)
-			{
-				LayerID LayerID = GetLayerIDBySelectedIndex();
-				this.ActualZoom4Graphic.AddTransparentLayer(LayerID);
-				this.ChangeLayer(LayerID);
-			}
-			try
-			{
-				uint[,] element = this.GetElement();
-
-				if (e.X - drawPanel.AutoScrollPosition.X >= 20 && e.Y - drawPanel.AutoScrollPosition.Y >= 20 && (20 + this.zoomLevel * element.GetLength(0) + drawPanel.AutoScrollPosition.Y - e.Y) > 0)
-				{
-					int xElement = (int)(((e.X - 20 - drawPanel.AutoScrollPosition.X) / (float)this.zoomLevel) * (int)this.actualZoomFactor);
-					int yElement = (int)(((20 + this.zoomLevel * element.GetLength(0) / (int)this.actualZoomFactor + drawPanel.AutoScrollPosition.Y - e.Y) / (float)this.zoomLevel) * (int)this.actualZoomFactor);
-					if (xElement >= 0 && yElement >= 0 && xElement < element.GetLength(1) && yElement < element.GetLength(0))
-					{
-						if (e.Button == MouseButtons.Left && !element[yElement, xElement].Equals(leftPixel))
-						{
-							element[yElement, xElement] = leftPixel;
-						}
-						else if (e.Button == MouseButtons.Right && !element[yElement, xElement].Equals(rightPixel))
-						{
-							element[yElement, xElement] = rightPixel;
-						}
-						else
-						{
-							return;
-						}
-						this.userMadeChanges = true;
-						drawPanel.Invalidate(new Rectangle(e.X - this.zoomLevel / ((int)this.actualZoomFactor), e.Y - this.zoomLevel / ((int)this.actualZoomFactor), (this.zoomLevel * 2) / (int)this.actualZoomFactor, (this.zoomLevel * 2) / (int)this.actualZoomFactor));
-					}
-				}
-			}
-			catch (Exception)
-			{ }
-		}
-
 		private void OpenAnimationForm()
 		{
 			if (animationForm.Created && animationForm.Visible)
@@ -987,9 +1074,25 @@ namespace BahnEditor.Editor
 			}
 		}
 
+		private void ChangePropertyComboBoxes(bool enabled)
+		{
+			this.particleComboBox.Enabled = enabled;
+			this.clockComboBox.Enabled = enabled;
+			this.cursorNormalDirectionComboBox.Enabled = enabled;
+			this.cursorReverseDirectionComboBox.Enabled = enabled;
+		}
+
 		private void UpdateProperties()
 		{
 			Graphic graphic = this.ActualGraphic;
+			if (graphic == null)
+			{
+				ChangePropertyComboBoxes(false);
+			}
+			else
+			{
+				ChangePropertyComboBoxes(true);
+			}
 			if (graphic != null && graphic.Properties.HasParticles)
 			{
 				if (graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Steam))
@@ -1067,12 +1170,32 @@ namespace BahnEditor.Editor
 			}
 			else if (this.cursorNormalDirectionComboBox.SelectedIndex > -1 || this.cursorReverseDirectionComboBox.SelectedIndex > -1)
 			{
-				this.cursorNormalDirectionCBCodeChanged = true;
-				this.cursorNormalDirectionComboBox.SelectedIndex = -1;
+				this.cursorNormalDirectionCBCodeChanged = true; this.cursorNormalDirectionComboBox.SelectedIndex = -1;
 				this.cursorReverseDirectionCBCodeChanged = true;
 				this.cursorReverseDirectionComboBox.SelectedIndex = -1;
 			}
 		}
+
+		private void RemoveUnusedGraphics()
+		{
+			for (int i = 0; i < this.zoom2Archive.GraphicsCount; i++)
+			{
+				if (this.zoom2Archive[i].IsTransparent())
+				{
+
+				}
+			}
+		}
+
+		private void UpdateAnimation()
+		{
+			if (this.animationForm != null && !this.animationForm.IsDisposed)
+				this.animationForm.ChangeAnimationProgram();
+		}
+
+		#endregion Private Methods
+
+		#region Internal Methods
 
 		internal void UpdateAnimation(bool animationExists)
 		{
@@ -1087,7 +1210,7 @@ namespace BahnEditor.Editor
 			drawPanel.Invalidate();
 		}
 
-		#endregion Private Methods
+		#endregion Internal Methods
 
 		#region Event-Handler
 
@@ -1308,12 +1431,12 @@ namespace BahnEditor.Editor
 
 		private void drawPanel_MouseClick(object sender, MouseEventArgs e)
 		{
-			this.MouseClickGraphic(e);
+			this.ClickGraphic(e);
 		}
 
 		private void drawPanel_MouseMove(object sender, MouseEventArgs e)
 		{
-			this.MouseClickGraphic(e);
+			this.ClickGraphic(e);
 		}
 
 		private void drawPanel_MouseUp(object sender, MouseEventArgs e)
@@ -1323,7 +1446,7 @@ namespace BahnEditor.Editor
 
 		private void drawPanel_Paint(object sender, PaintEventArgs e)
 		{
-			this.PaintGraphic(e.Graphics);
+			this.DrawGraphic(e.Graphics);
 		}
 
 		private void Editor_FormClosing(object sender, FormClosingEventArgs e)
@@ -1368,8 +1491,10 @@ namespace BahnEditor.Editor
 				}
 				else
 				{
-					this.leftPixel = PixelFromColor(c);
+					this.leftComboBoxSelectedCodeChanged = true;
 					this.leftComboBox.SelectedIndex = 0;
+					this.leftComboBoxSelectedCodeChanged = false;
+					this.leftPixel = PixelFromColor(c);
 				}
 				this.leftColorButton.BackColor = c;
 			}
@@ -1377,6 +1502,8 @@ namespace BahnEditor.Editor
 
 		private void leftComboBox_SelectedIndexChanged(object sender, EventArgs e)
 		{
+			if (this.leftComboBoxSelectedCodeChanged)
+				return;
 			if (this.leftComboBox.SelectedIndex == 0)
 			{
 				if (this.lastLeftPixel != 0 && !Pixel.IsTransparent(this.lastLeftPixel) && Pixel.UsesRgb(this.lastLeftPixel))
@@ -1481,7 +1608,7 @@ namespace BahnEditor.Editor
 
 		private void overviewPanel_Paint(object sender, PaintEventArgs e)
 		{
-			this.PaintOverview(e.Graphics);
+			this.DrawOverview(e.Graphics);
 		}
 
 		private void overviewUpButton_Click(object sender, EventArgs e)
@@ -1572,8 +1699,10 @@ namespace BahnEditor.Editor
 				}
 				else
 				{
-					this.rightPixel = PixelFromColor(c);
+					this.rightComboBoxSelectedCodeChanged = true;
 					this.rightComboBox.SelectedIndex = 0;
+					this.rightComboBoxSelectedCodeChanged = false;
+					this.rightPixel = PixelFromColor(c);
 				}
 				this.rightColorButton.BackColor = c;
 			}
@@ -1581,6 +1710,8 @@ namespace BahnEditor.Editor
 
 		private void rightComboBox_SelectedIndexChanged(object sender, EventArgs e)
 		{
+			if (this.rightComboBoxSelectedCodeChanged)
+				return;
 			if (this.rightComboBox.SelectedIndex == 0)
 			{
 				if (this.lastRightPixel != 0 && !Pixel.IsTransparent(this.lastRightPixel) && Pixel.UsesRgb(this.lastRightPixel))
@@ -1670,94 +1801,13 @@ namespace BahnEditor.Editor
 				default:
 					throw new Exception("Internal Error!");
 			}
+			this.UpdateProperties();
 			this.drawPanel.Invalidate();
 		}
 
 		private void toBackgroundRadioButton_CheckedChanged(object sender, EventArgs e)
 		{
 			this.SelectLayer();
-		}
-
-		private void zoom2CheckBox_CheckedChanged(object sender, EventArgs e)
-		{
-			if (!this.zoom2CheckBoxCodeChanged)
-			{
-				if (zoom2CheckBox.Checked)
-				{
-					Graphic graphic = new Graphic("No text", ZoomFactor.Zoom2);
-					graphic.AddTransparentLayer(LayerID.Foreground);
-					this.zoom2Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
-					this.ChangeLayer(LayerID.Foreground);
-					this.tabControl.TabPages.Insert(1, this.zoom2Tab);
-					this.tabControl.SelectedTab = this.zoom2Tab;
-					this.actualZoomFactor = ZoomFactor.Zoom2;
-					this.drawPanel.Invalidate();
-				}
-				else
-				{
-					DialogResult result = DialogResult.Yes;
-					if (!this.ActualZoom2Graphic.IsTransparent())
-						result = MessageBox.Show("Do you really want to delete the zoom2-graphic?", "Delete zoom2-graphic", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-					if (result == DialogResult.Yes)
-					{
-						this.zoom2Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative);
-						this.tabControl.TabPages.Remove(this.zoom2Tab);
-						this.tabControl.SelectedTab = this.zoom1Tab;
-						this.actualZoomFactor = ZoomFactor.Zoom1;
-						this.drawPanel.Invalidate();
-					}
-					else
-					{
-						this.zoom2CheckBoxCodeChanged = true;
-						this.zoom2CheckBox.Checked = true;
-					}
-				}
-			}
-			else
-			{
-				this.zoom2CheckBoxCodeChanged = false;
-			}
-		}
-
-		private void zoom4CheckBox_CheckedChanged(object sender, EventArgs e)
-		{
-			if (!this.zoom4CheckBoxCodeChanged)
-			{
-				if (zoom4CheckBox.Checked)
-				{
-					Graphic graphic = new Graphic("No text", ZoomFactor.Zoom4);
-					graphic.AddTransparentLayer(LayerID.Foreground);
-					this.zoom4Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
-					this.ChangeLayer(LayerID.Foreground);
-					this.tabControl.TabPages.Add(this.zoom4Tab);
-					this.tabControl.SelectedTab = this.zoom4Tab;
-					this.actualZoomFactor = ZoomFactor.Zoom4;
-					this.drawPanel.Invalidate();
-				}
-				else
-				{
-					DialogResult result = DialogResult.Yes;
-					if (!this.ActualZoom4Graphic.IsTransparent())
-						result = MessageBox.Show("Do you really want to delete the zoom4-graphic?", "Delete zoom4-graphic", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-					if (result == DialogResult.Yes)
-					{
-						this.zoom4Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative);
-						this.tabControl.TabPages.Remove(this.zoom4Tab);
-						this.tabControl.SelectedTab = this.zoom1Tab;
-						this.actualZoomFactor = ZoomFactor.Zoom1;
-						this.drawPanel.Invalidate();
-					}
-					else
-					{
-						this.zoom4CheckBoxCodeChanged = true;
-						this.zoom4CheckBox.Checked = true;
-					}
-				}
-			}
-			else
-			{
-				this.zoom4CheckBoxCodeChanged = false;
-			}
 		}
 
 		private void zoomInButton_Click(object sender, EventArgs e)
@@ -1793,10 +1843,100 @@ namespace BahnEditor.Editor
 
 		private void animationNumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
-			if(this.animationPhaseCodeChanged)
+			if (this.animationPhaseCodeChanged)
 				return;
 			this.actualAnimationPhase = (int)this.animationNumericUpDown.Value;
+			this.UpdateProperties();
 			this.drawPanel.Invalidate();
+		}
+
+		private void propertiesGroupBox_Paint(object sender, PaintEventArgs e)
+		{
+			e.Graphics.DrawLine(Pens.DarkGray, 1, 76, 198, 76);
+			e.Graphics.DrawLine(Pens.DarkGray, 1, 242, 198, 242);
+		}
+
+		private void alternativesCheckBox_CheckedChanged(object sender, EventArgs e)
+		{
+			if (alternativeCheckBoxCodeChanged)
+				return;
+			if (this.alternativesCheckBox.Checked)
+			{
+				if (this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative] != null && !this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative].IsTransparent())
+				{
+					this.zoom1Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, 1, this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative]);
+					this.zoom1Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative);
+					if (this.zoom2Archive[this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative] != null && !this.zoom2Archive[this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative].IsTransparent())
+					{
+						this.zoom2Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, 1, this.zoom2Archive[this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative]);
+						this.zoom2Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative);
+					}
+					if (this.zoom4Archive[this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative] != null && !this.zoom4Archive[this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative].IsTransparent())
+					{
+						this.zoom4Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, 1, this.zoom4Archive[this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative]);
+						this.zoom4Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative);
+					}
+					if (this.zoom1Archive.Animation[this.actualGraphic, Constants.NoAlternative] != null)
+					{
+						this.zoom1Archive.Animation.AddAnimationProgram(this.zoom1Archive.Animation[this.actualGraphic, Constants.NoAlternative], this.actualGraphic, 1);
+						this.zoom1Archive.Animation.RemoveAnimationProgram(this.actualGraphic, Constants.NoAlternative);
+					}
+				}
+				this.actualAlternative = 1;
+			}
+			else
+			{
+				if (this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 1] != null && !this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 1].IsTransparent())
+				{
+					if ((this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 2] != null && !this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 2].IsTransparent())
+						|| (this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 3] != null && !this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 3].IsTransparent())
+						|| (this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 4] != null && !this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 4].IsTransparent()))
+					{
+						if (MessageBox.Show("Only the first alternative will be saved!" + Environment.NewLine + "The other alternatives will be deleted!", "Alternatives", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) == DialogResult.Cancel)
+						{
+							this.alternativeCheckBoxCodeChanged = true;
+							this.alternativesCheckBox.Checked = true;
+							this.alternativeCheckBoxCodeChanged = false;
+							return;
+						}
+						else
+						{
+							for (int i = 2; i <= Constants.MaxAlternative; i++)
+							{
+								if (this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, i] != null)
+								{
+									this.zoom1Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, i);
+									if (this.zoom2Archive[this.actualGraphic, this.actualAnimationPhase, i] != null) this.zoom2Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, i);
+									if (this.zoom4Archive[this.actualGraphic, this.actualAnimationPhase, i] != null) this.zoom4Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, i);
+									if (this.zoom1Archive.Animation[this.actualGraphic, i] != null) this.zoom1Archive.Animation.RemoveAnimationProgram(this.actualGraphic, i);
+								}
+							}
+						}
+					}
+
+					this.zoom1Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative, this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 1]);
+					this.zoom1Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, 1);
+					if (this.zoom2Archive[this.actualGraphic, this.actualAnimationPhase, 1] != null && !this.zoom2Archive[this.actualGraphic, this.actualAnimationPhase, 1].IsTransparent())
+					{
+						this.zoom2Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative, this.zoom2Archive[this.actualGraphic, this.actualAnimationPhase, 1]);
+						this.zoom2Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, 1);
+					}
+					if (this.zoom4Archive[this.actualGraphic, this.actualAnimationPhase, 1] != null && !this.zoom4Archive[this.actualGraphic, this.actualAnimationPhase, 1].IsTransparent())
+					{
+						this.zoom4Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative, this.zoom4Archive[this.actualGraphic, this.actualAnimationPhase, 1]);
+						this.zoom4Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, 1);
+					}
+					if (this.zoom1Archive.Animation[this.actualGraphic, 1] != null)
+					{
+						this.zoom1Archive.Animation.AddAnimationProgram(this.zoom1Archive.Animation[this.actualGraphic, 1], this.actualGraphic, Constants.NoAlternative);
+						this.zoom1Archive.Animation.RemoveAnimationProgram(this.actualGraphic, 1);
+					}
+				}
+				this.actualAlternative = Constants.NoAlternative;
+			}
+			this.overviewPanel.Invalidate();
+			this.drawPanel.Invalidate();
+			this.UpdateAnimation();
 		}
 
 		#endregion Event-Handler

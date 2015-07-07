@@ -200,11 +200,18 @@ namespace BahnEditor.BahnLib
 
 		public void RemoveAnimation()
 		{
-			if (this.ZoomFactor != BahnLib.ZoomFactor.Zoom1)
-				throw new ArgumentException("Animations only available in Zoom1-Archives");
 			if (this.Animation == null)
 				throw new ArgumentException("There is no animation to remove");
+			if (this.ZoomFactor != BahnLib.ZoomFactor.Zoom1)
+				throw new ArgumentException("Animations only available in Zoom1-Archives (how did you get an animation to a non zoom1-archive?)");
 			this.Animation = null;
+		}
+
+		public bool HasAlternatives(int elementNumber)
+		{
+			if (elementNumber < 0 || elementNumber > 89)
+				throw new ArgumentOutOfRangeException("elementNumber");
+			return this.graphics.Where(x => x.ElementNumber == elementNumber).Where(x => x.Alternative != Constants.NoAlternative).Count() > 0;
 		}
 
 		/// <summary>
@@ -354,10 +361,10 @@ namespace BahnEditor.BahnLib
 				bw.Write((byte)(48 + this.ZoomFactor));   //Zoom factor to ASCII
 				foreach (var item in this.graphics)
 				{
-					bw.Write(item.ElementNumber);  //Elementnummer
+					bw.Write(item.ElementNumber);  //Elementnumber
 					bw.Write(0);                   //Bauform
 					bw.Write(0);                   //FwSig
-					bw.Write(item.AnimationPhase); //Phase
+					bw.Write(item.AnimationPhase); //Animationphase
 					bw.Write(item.Alternative);    //Alternative
 					offsetList.Add(Tuple.Create<long, long>(bw.BaseStream.Position, 0));
 					bw.Write(0); //Offset
@@ -366,16 +373,16 @@ namespace BahnEditor.BahnLib
 				int i = 0;
 				foreach (var item in this.graphics)
 				{
-					bw.Write(item.ElementNumber); //Elementnummer
+					bw.Write(item.ElementNumber); //Elementnumber
 					offsetList[i] = Tuple.Create(offsetList[i].Item1, bw.BaseStream.Position);
 					bw.Write(0);                   //Bauform
 					bw.Write(0);                   //FwSig
-					bw.Write(item.AnimationPhase); //Phase
-					bw.Write(item.Alternative);    //Alt
+					bw.Write(item.AnimationPhase); //Animationphase
+					bw.Write(item.Alternative);    //Alternative
 					using (MemoryStream ms = new MemoryStream())
 					{
 						item.Graphic.Save(ms);
-						bw.Write((int)ms.Length); //Länge der Einzeldatei in Byte
+						bw.Write((int)ms.Length); //Length of the graphic in byte
 						bw.Write(0x46646E7C);     //Dummy data
 						ms.WriteTo(bw.BaseStream);
 					}

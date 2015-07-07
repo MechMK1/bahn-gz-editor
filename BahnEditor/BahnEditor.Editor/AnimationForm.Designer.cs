@@ -328,7 +328,7 @@
 			this.Controls.Add(this.addAnimationStepButton);
 			this.Controls.Add(this.noAnimationLabel);
 			this.Controls.Add(this.dataGridView);
-			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
 			this.MaximizeBox = false;
 			this.MinimumSize = new System.Drawing.Size(440, 205);
 			this.Name = "AnimationForm";
