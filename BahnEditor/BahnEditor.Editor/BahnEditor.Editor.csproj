@@ -106,7 +106,40 @@
     <None Include="Resources\leftrightarrow.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\background5.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\background4.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\background6.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\background7.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\background3.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\background8.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\background9.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\background10.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\background11.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\background12.bmp" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="Resources\background.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\background2.bmp" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

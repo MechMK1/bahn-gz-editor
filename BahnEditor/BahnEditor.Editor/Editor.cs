@@ -12,7 +12,7 @@ namespace BahnEditor.Editor
 	{
 		#region Private Fields
 
-		private static Brush transparentBrush = new HatchBrush(HatchStyle.Percent20, Color.FromArgb(140, 140, 140), Color.FromArgb(0, 112, 0));
+		private static Brush transparentBrush = new HatchBrush(HatchStyle.Percent10, Color.FromArgb(140, 140, 140), Color.FromArgb(0, 112, 0));
 		private int actualAlternative = 0;
 		private int actualAnimationPhase = Constants.MinAnimationPhase;
 		private int actualGraphic;
@@ -38,7 +38,9 @@ namespace BahnEditor.Editor
 		private GraphicArchive zoom1Archive;
 		private GraphicArchive zoom2Archive;
 		private GraphicArchive zoom4Archive;
-		private int zoomLevel = 5;
+		private int zoomLevelZoom1 = 4;
+		private int zoomLevelZoom2 = 6;
+		private int zoomLevelZoom4 = 8;
 
 		#endregion Private Fields
 
@@ -71,6 +73,41 @@ namespace BahnEditor.Editor
 		#endregion Internal Properties
 
 		#region Private Properties
+
+		private int ZoomLevel
+		{
+			get
+			{
+				switch (this.actualZoomFactor)
+				{
+					case ZoomFactor.Zoom1:
+						return this.zoomLevelZoom1;
+					case ZoomFactor.Zoom2:
+						return this.zoomLevelZoom2;
+					case ZoomFactor.Zoom4:
+						return this.zoomLevelZoom4;
+					default:
+						return 6;
+				}
+			}
+			set
+			{
+				switch (this.actualZoomFactor)
+				{
+					case ZoomFactor.Zoom1:
+						this.zoomLevelZoom1 = value;
+						break;
+					case ZoomFactor.Zoom2:
+						this.zoomLevelZoom2 = value;
+						break;
+					case ZoomFactor.Zoom4:
+						this.zoomLevelZoom4 = value;
+						break;
+					default:
+						throw new ArgumentException("Unknown zoomFactor");
+				}
+			}
+		}
 
 		private Graphic ActualGraphic
 		{
@@ -173,7 +210,7 @@ namespace BahnEditor.Editor
 			this.lastPath = "";
 			this.UpdateProperties();
 			this.ResizeDrawPanel();
-			this.drawPanel.AutoScrollPosition = new Point(this.drawPanel.HorizontalScroll.Maximum, this.drawPanel.VerticalScroll.Maximum);
+			this.UpdateZoom();
 			this.drawPanel.Invalidate();
 			this.overviewPanel.Invalidate();
 			this.UpdateAnimation();
@@ -237,7 +274,7 @@ namespace BahnEditor.Editor
 				this.UserMadeChanges(false);
 				this.ChangeLayer(LayerID.Foreground);
 				this.ResizeDrawPanel();
-				this.drawPanel.AutoScrollPosition = new Point(this.drawPanel.HorizontalScroll.Maximum, this.drawPanel.VerticalScroll.Maximum / 2);
+				this.UpdateZoom();
 				this.drawPanel.Invalidate();
 				this.overviewPanel.Invalidate();
 				this.UpdateAnimation();
@@ -262,7 +299,7 @@ namespace BahnEditor.Editor
 						return false;
 					}
 				}
-				catch(ArchiveIsEmptyException)
+				catch (ArchiveIsEmptyException)
 				{
 					MessageBox.Show("The archive is empty!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 					return false;
@@ -303,43 +340,23 @@ namespace BahnEditor.Editor
 					(this.actualZoomFactor == ZoomFactor.Zoom2 && (this.ActualZoom2Graphic == null || this.ActualZoom2Graphic.GetLayer(this.actualLayer) == null)) ||
 					(this.actualZoomFactor == ZoomFactor.Zoom4 && (this.ActualZoom4Graphic == null || this.ActualZoom4Graphic.GetLayer(this.actualLayer) == null)))
 				{
-					g.TranslateTransform(drawPanel.AutoScrollPosition.X, drawPanel.AutoScrollPosition.Y);
-					//g.FillRectangle(transparentBrush, 20, 20, Constants.SYMBREITE * this.zoomLevel * 3, Constants.SYMHOEHE * this.zoomLevel * 8); //transparent 0, 112, 0
-					g.DrawImage(global::BahnEditor.Editor.Properties.Resources.background, 20.0f, 20.0f, Constants.ElementWidth * this.zoomLevel * 3, Constants.ElementHeight * this.zoomLevel * 8);
+					//g.FillRectangle(new SolidBrush(Color.FromArgb(0, 112, 0)), 0, 0, Constants.ElementWidth * this.ZoomLevel * 3, Constants.ElementHeight * this.ZoomLevel * 8); //transparent 0, 112, 0
+					g.FillRectangle(new TextureBrush(GetBackgroundBitmapByZoomlevel(this.ZoomLevel, this.actualZoomFactor)), 0, 0, Constants.ElementWidth * this.ZoomLevel * 3, Constants.ElementHeight * this.ZoomLevel * 8);
 				}
 				else
 				{
 					uint[,] element = this.GetElement();
 					if (element != null)
 					{
-						if (g.ClipBounds.Width == (this.zoomLevel * 2) / (int)this.actualZoomFactor && g.ClipBounds.Height == (this.zoomLevel * 2) / (int)this.actualZoomFactor)
+						if (g.ClipBounds.Width == (this.ZoomLevel * 2) / (int)this.actualZoomFactor && g.ClipBounds.Height == (this.ZoomLevel * 2) / (int)this.actualZoomFactor)
 						{
 							int x = (int)g.ClipBounds.X;
 							int y = (int)g.ClipBounds.Y;
-							int diffX = 0;
-							int diffY = 0;
-							if (x - drawPanel.AutoScrollPosition.X < 20)
-							{
-								x = 20;
-							}
-							else if (x - 20 - drawPanel.AutoScrollPosition.X + this.zoomLevel * 2 >= Constants.ElementWidth * 3 * this.zoomLevel)
-							{
-								diffX = (int)((x - 20 - drawPanel.AutoScrollPosition.X + this.zoomLevel * 2) - (Constants.ElementWidth * 3 * this.zoomLevel));
-							}
-							if (y - drawPanel.AutoScrollPosition.Y < 20)
-							{
-								y = 20;
-							}
-							else if (y - 20 - drawPanel.AutoScrollPosition.Y + this.zoomLevel * 2 >= Constants.ElementHeight * 8 * this.zoomLevel)
-							{
-								diffY = (int)((y - 20 - drawPanel.AutoScrollPosition.Y + this.zoomLevel * 2) - (Constants.ElementHeight * 8 * this.zoomLevel));
-							}
-							int xElement = (int)(((x - 20 - drawPanel.AutoScrollPosition.X) / (float)this.zoomLevel) * (int)this.actualZoomFactor);
-							int yElement = (int)(((20 + this.zoomLevel * element.GetLength(0) / (int)this.actualZoomFactor + drawPanel.AutoScrollPosition.Y - y) / (float)this.zoomLevel) * (int)this.actualZoomFactor);
-
-							//g.FillRectangle(transparentBrush, x, y, this.zoomLevel * 2 - diffX, this.zoomLevel * 2 - diffY);
-							g.DrawImage(global::BahnEditor.Editor.Properties.Resources.background, 20.0f, 20.0f, Constants.ElementWidth * this.zoomLevel * 3, Constants.ElementHeight * this.zoomLevel * 8);
-							g.TranslateTransform(drawPanel.AutoScrollPosition.X, drawPanel.AutoScrollPosition.Y);
+							int xElement = (int)((x / (float)this.ZoomLevel) * (int)this.actualZoomFactor);
+							int yElement = (int)((y / (float)this.ZoomLevel) * (int)this.actualZoomFactor);
+							yElement = ((Constants.ElementHeight * 8 * (int)this.actualZoomFactor) - yElement) - 1;
+							//g.FillRectangle(transparentBrush, x, y, this.ZoomLevel * 2, this.ZoomLevel * 2);
+							g.FillRectangle(new TextureBrush(GetBackgroundBitmapByZoomlevel(this.ZoomLevel, this.actualZoomFactor)), 0, 0, Constants.ElementWidth * this.ZoomLevel * 3, Constants.ElementHeight * this.ZoomLevel * 8);
 
 							if (yElement >= element.GetLength(0))
 							{
@@ -358,49 +375,54 @@ namespace BahnEditor.Editor
 									{
 										Brush brush;
 										if (Pixel.IsSpecial(element[i, j]))
-											brush = new HatchBrush(HatchStyle.Percent20, Color.FromArgb(140, 140, 140), PixelToColor(element[i, j]));
+											brush = new HatchBrush(HatchStyle.Percent30, Color.FromArgb(140, 140, 140), PixelToColor(element[i, j]));
 										else
 											brush = new SolidBrush(PixelToColor(element[i, j]));
-										g.FillRectangle(brush, j * (this.zoomLevel) / (int)this.actualZoomFactor + 20, (int)((((this.zoomLevel) * element.GetLength(0) / (float)this.actualZoomFactor) - ((this.zoomLevel) / (float)this.actualZoomFactor * (i + 1))) + 20), this.zoomLevel / (float)this.actualZoomFactor, this.zoomLevel / (float)this.actualZoomFactor);
+										g.FillRectangle(brush, (j * ZoomLevel) / (int)this.actualZoomFactor, ((ZoomLevel * element.GetLength(0)) - (ZoomLevel * (i + 1))) / (int)this.actualZoomFactor, ZoomLevel / (float)this.actualZoomFactor, ZoomLevel / (float)this.actualZoomFactor);
 									}
 								}
 							}
 						}
 						else
 						{
-							g.TranslateTransform(drawPanel.AutoScrollPosition.X + 20, drawPanel.AutoScrollPosition.Y + 20);
-							DrawElement(g, element, this.zoomLevel, true, this.actualZoomFactor);
-							g.TranslateTransform(-20, -20);
+							DrawElement(g, element, this.ZoomLevel, true, this.actualZoomFactor);
 						}
 					}
 				}
-				for (int i = 0; i < 3; i++)
+				// Grid
+				if (gridCheckBox.Checked)
 				{
-					for (int j = 0; j < 8; j++)
+					for (int i = 1; i < 3; i++)
 					{
-						g.DrawRectangle(Pens.Gray, 20 + (i * Constants.ElementWidth) * (this.zoomLevel), 20 + (j * Constants.ElementHeight) * (this.zoomLevel), Constants.ElementWidth * (this.zoomLevel), Constants.ElementHeight * (this.zoomLevel));
+						g.DrawLine(Pens.Gray, new Point(i * this.ZoomLevel * Constants.ElementWidth, 0), new Point(i * this.ZoomLevel * Constants.ElementWidth, this.ZoomLevel * Constants.ElementHeight * 8));
 					}
-				}
-				g.DrawRectangle(Pens.DarkGray, 20 + Constants.ElementWidth * (this.zoomLevel), 20 + (6 * Constants.ElementHeight) * (this.zoomLevel), Constants.ElementWidth * (this.zoomLevel), Constants.ElementHeight * (this.zoomLevel));
-				if (this.zoom1Archive.Animation != null && this.zoom1Archive.Animation[this.actualGraphic, this.actualAlternative] != null)
-				{
-					AnimationProgram program = this.zoom1Archive.Animation[this.actualGraphic, this.actualAlternative];
-					Point corner1 = new Point(program.XDiff + 1, 8 - (program.YDiff + 1));
-					Point corner2 = new Point(program.XDiff + 1 + program.Width, (8 - (program.YDiff + 1)) - program.Height);
+					for (int i = 1; i < 8; i++)
+					{
+						g.DrawLine(Pens.Gray, new Point(0, i * this.ZoomLevel * Constants.ElementHeight), new Point(this.ZoomLevel * Constants.ElementWidth * 3, i * this.ZoomLevel * Constants.ElementHeight));
+					}
+					g.DrawRectangle(Pens.DarkGray, Constants.ElementWidth * (this.ZoomLevel), (6 * Constants.ElementHeight) * (this.ZoomLevel), Constants.ElementWidth * (this.ZoomLevel), Constants.ElementHeight * (this.ZoomLevel));
 
-					corner1.X = 20 + (corner1.X * Constants.ElementWidth) * (this.zoomLevel);
-					corner1.Y = 20 + (corner1.Y * Constants.ElementHeight) * (this.zoomLevel);
-					corner2.X = 20 + (corner2.X * Constants.ElementWidth) * (this.zoomLevel);
-					corner2.Y = 20 + (corner2.Y * Constants.ElementHeight) * (this.zoomLevel);
+					// Grid for animations
+					if (this.zoom1Archive.Animation != null && this.zoom1Archive.Animation[this.actualGraphic, this.actualAlternative] != null)
+					{
+						AnimationProgram program = this.zoom1Archive.Animation[this.actualGraphic, this.actualAlternative];
+						Point corner1 = new Point(program.XDiff + 1, 8 - (program.YDiff + 1));
+						Point corner2 = new Point(program.XDiff + 1 + program.Width, (8 - (program.YDiff + 1)) - program.Height);
 
-					Rectangle rectangle = new Rectangle(Math.Min(corner1.X, corner2.X),
-														Math.Min(corner1.Y, corner2.Y),
-														Math.Abs(corner1.X - corner2.X),
-														Math.Abs(corner1.Y - corner2.Y));
-					Pen pen = new Pen(Brushes.Red);
-					float[] dashValues = { 3, 3 };
-					pen.DashPattern = dashValues;
-					g.DrawRectangle(pen, rectangle);
+						corner1.X = (corner1.X * Constants.ElementWidth) * (this.ZoomLevel);
+						corner1.Y = (corner1.Y * Constants.ElementHeight) * (this.ZoomLevel);
+						corner2.X = (corner2.X * Constants.ElementWidth) * (this.ZoomLevel);
+						corner2.Y = (corner2.Y * Constants.ElementHeight) * (this.ZoomLevel);
+
+						Rectangle rectangle = new Rectangle(Math.Min(corner1.X, corner2.X),
+															Math.Min(corner1.Y, corner2.Y),
+															Math.Abs(corner1.X - corner2.X),
+															Math.Abs(corner1.Y - corner2.Y));
+						Pen pen = new Pen(Brushes.Red);
+						float[] dashValues = { 3, 3 };
+						pen.DashPattern = dashValues;
+						g.DrawRectangle(pen, rectangle);
+					}
 				}
 			}
 			catch (IndexOutOfRangeException)
@@ -409,13 +431,12 @@ namespace BahnEditor.Editor
 			}
 		}
 
-		private static void DrawElement(Graphics g, uint[,] element, int zoomLevel, bool withHatchBrush, ZoomFactor zoomfactor)
+		private static void DrawElement(Graphics g, uint[,] element, int ZoomLevel, bool withHatchBrush, ZoomFactor zoomfactor)
 		{
 			if (withHatchBrush)
-				//g.FillRectangle(transparentBrush, 0, 0, element.GetLength(1) * zoomLevel / (int)zoomfactor, element.GetLength(0) * zoomLevel / (int)zoomfactor);
-				g.DrawImage(global::BahnEditor.Editor.Properties.Resources.background, 0, 0, element.GetLength(1) * zoomLevel / (int)zoomfactor, element.GetLength(0) * zoomLevel / (int)zoomfactor);
+				g.FillRectangle(new TextureBrush(GetBackgroundBitmapByZoomlevel(ZoomLevel, zoomfactor)), 0, 0, element.GetLength(1) * ZoomLevel / (int)zoomfactor, element.GetLength(0) * ZoomLevel / (int)zoomfactor);
 			else
-				g.FillRectangle(new SolidBrush(Color.FromArgb(0, 112, 0)), 0, 0, element.GetLength(1) * zoomLevel / (int)zoomfactor, element.GetLength(0) * zoomLevel / (int)zoomfactor);
+				g.FillRectangle(new SolidBrush(Color.FromArgb(0, 112, 0)), 0, 0, element.GetLength(1) * ZoomLevel / (int)zoomfactor, element.GetLength(0) * ZoomLevel / (int)zoomfactor);
 			for (int i = 0; i < element.GetLength(0); i++)
 			{
 				for (int j = 0; j < element.GetLength(1); j++)
@@ -423,13 +444,11 @@ namespace BahnEditor.Editor
 					if (Pixel.IsTransparent(element[i, j]) != true)
 					{
 						Brush brush;
-						if (!withHatchBrush)
-							brush = new SolidBrush(PixelToColor(element[i, j]));
-						else if (Pixel.IsSpecial(element[i, j]))
+						if (withHatchBrush && Pixel.IsSpecial(element[i, j]))
 							brush = new HatchBrush(HatchStyle.Percent20, Color.FromArgb(140, 140, 140), PixelToColor(element[i, j]));
 						else
 							brush = new SolidBrush(PixelToColor(element[i, j]));
-						g.FillRectangle(brush, (j * zoomLevel) / (int)zoomfactor, ((zoomLevel * element.GetLength(0)) - (zoomLevel * (i + 1))) / (int)zoomfactor, zoomLevel / (float)zoomfactor, zoomLevel / (float)zoomfactor);
+						g.FillRectangle(brush, (j * ZoomLevel) / (int)zoomfactor, ((ZoomLevel * element.GetLength(0)) - (ZoomLevel * (i + 1))) / (int)zoomfactor, ZoomLevel / (float)zoomfactor, ZoomLevel / (float)zoomfactor);
 					}
 				}
 			}
@@ -540,6 +559,223 @@ namespace BahnEditor.Editor
 				}
 			}
 			return element;
+		}
+
+		private void ClickGraphic(MouseEventArgs e)
+		{
+			if (this.hasLoadedGraphic == true)
+			{
+				this.hasLoadedGraphic = false;
+				return;
+			}
+			if (e.Button == MouseButtons.None)
+				return;
+			if (this.actualZoomFactor == ZoomFactor.Zoom1)
+			{
+				if (this.ActualZoom1Graphic == null)
+				{
+					Graphic graphic = new Graphic("No text");
+					this.zoom1Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
+					this.UserMadeChanges(true);
+					ChangePropertyComboBoxes(true);
+					this.overviewPanel.Invalidate();
+				}
+				if (this.ActualZoom1Graphic.GetLayer(this.actualLayer) == null)
+				{
+					LayerID LayerID = GetLayerIDBySelectedIndex();
+					this.ActualZoom1Graphic.AddTransparentLayer(LayerID);
+					this.UserMadeChanges(true);
+					this.ChangeLayer(LayerID);
+				}
+			}
+			else if (this.actualZoomFactor == ZoomFactor.Zoom2)
+			{
+				if (this.ActualZoom2Graphic == null)
+				{
+					Graphic graphic = new Graphic("No text", zoomFactor: ZoomFactor.Zoom2);
+					this.zoom2Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
+					this.UserMadeChanges(true);
+					ChangePropertyComboBoxes(true);
+					this.overviewPanel.Invalidate();
+				}
+				if (this.ActualZoom2Graphic.GetLayer(this.actualLayer) == null)
+				{
+					LayerID LayerID = GetLayerIDBySelectedIndex();
+					this.ActualZoom2Graphic.AddTransparentLayer(LayerID);
+					this.UserMadeChanges(true);
+					this.ChangeLayer(LayerID);
+				}
+			}
+			else if (this.actualZoomFactor == ZoomFactor.Zoom4)
+			{
+				if (this.ActualZoom4Graphic == null)
+				{
+					Graphic graphic = new Graphic("No text", zoomFactor: ZoomFactor.Zoom4);
+					this.zoom4Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
+					this.UserMadeChanges(true);
+					ChangePropertyComboBoxes(true);
+					this.overviewPanel.Invalidate();
+				}
+				if (this.ActualZoom4Graphic.GetLayer(this.actualLayer) == null)
+				{
+					LayerID LayerID = GetLayerIDBySelectedIndex();
+					this.ActualZoom4Graphic.AddTransparentLayer(LayerID);
+					this.UserMadeChanges(true);
+					this.ChangeLayer(LayerID);
+				}
+			}
+			try
+			{
+				uint[,] element = this.GetElement();
+
+				int xElement = (int)((e.X / (float)this.ZoomLevel) * (int)this.actualZoomFactor);
+				int yElement = (int)((e.Y / (float)this.ZoomLevel) * (int)this.actualZoomFactor);
+				yElement = ((Constants.ElementHeight * 8 * (int)this.actualZoomFactor) - yElement) - 1;
+				if (xElement >= 0 && yElement >= 0 && xElement < element.GetLength(1) && yElement < element.GetLength(0))
+				{
+					if (e.Button == MouseButtons.Left && !element[yElement, xElement].Equals(leftPixel))
+					{
+						element[yElement, xElement] = leftPixel;
+					}
+					else if (e.Button == MouseButtons.Right && !element[yElement, xElement].Equals(rightPixel))
+					{
+						element[yElement, xElement] = rightPixel;
+					}
+					else
+					{
+						return;
+					}
+					this.UserMadeChanges(true);
+					drawPanel.Invalidate(new Rectangle(e.X - this.ZoomLevel / ((int)this.actualZoomFactor), e.Y - this.ZoomLevel / ((int)this.actualZoomFactor), (this.ZoomLevel * 2) / (int)this.actualZoomFactor, (this.ZoomLevel * 2) / (int)this.actualZoomFactor));
+				}
+			}
+			catch (Exception)
+			{
+				MessageBox.Show("Internal Error!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+		}
+
+		private void ClickOverview(MouseEventArgs e)
+		{
+			if (!e.Button.HasFlag(MouseButtons.Left))
+				return;
+			int element = -1;
+			int x = e.X - 40;
+			if (x >= 0 && 31 >= x)
+				element = 0;
+			else if (x >= 42 && 73 >= x)
+				element = 1;
+			else if (x >= 84 && 115 >= x)
+				element = 2;
+			else if (x >= 126 && 157 >= x)
+				element = 3;
+			else if (x >= 168 && 199 >= x)
+				element = 4;
+			else if (x >= 210 && 241 >= x)
+				element = 5;
+			else if (x >= 252 && 283 >= x)
+				element = 6;
+			else if (x >= 294 && 325 >= x)
+				element = 7;
+			else if (x >= 336 && 367 >= x)
+				element = 8;
+			if (element != -1)
+			{
+				this.actualGraphic = (element * 2 + overviewAlternative) + ((overviewLine) * 18);
+
+				this.actualAnimationPhase = Constants.MinAnimationPhase;
+				this.animationPhaseCodeChanged = true;
+				this.animationNumericUpDown.Value = Constants.MinAnimationPhase;
+				this.animationPhaseCodeChanged = false;
+
+				this.alternativeCheckBoxCodeChanged = true;
+				if (this.zoom1Archive.HasAlternatives(this.actualGraphic))
+				{
+					this.alternativesCheckBox.Checked = true;
+					this.actualAlternative = 1;
+				}
+				else
+				{
+					this.alternativesCheckBox.Checked = false;
+					this.actualAlternative = 0;
+				}
+				this.alternativeCheckBoxCodeChanged = false;
+
+				this.UpdateProperties();
+				this.drawPanel.Invalidate();
+				this.overviewPanel.Invalidate();
+				this.UpdateAnimation();
+			}
+			else if (this.alternativesCheckBox.Checked)
+			{
+				int xa = e.X - 440;
+				int ya = e.Y - 5;
+				int alternative = -1;
+				if (xa >= 0 && Constants.ElementWidth >= xa)
+				{
+					if (ya >= 0 && 25 >= ya)
+					{
+						alternative = 1;
+					}
+					else if (ya >= 30 && 55 >= ya)
+					{
+						alternative = 3;
+					}
+				}
+				else if (xa >= Constants.ElementWidth + 10 && Constants.ElementWidth * 2 + 10 >= xa)
+				{
+					if (ya >= 0 && 25 >= ya)
+					{
+						alternative = 2;
+					}
+					else if (ya >= 30 && 55 >= ya)
+					{
+						alternative = 4;
+					}
+				}
+				if (alternative != -1 && alternative != this.actualAlternative)
+				{
+					this.actualAlternative = alternative;
+					this.UpdateProperties();
+					this.overviewPanel.Invalidate();
+					this.drawPanel.Invalidate();
+					this.UpdateAnimation();
+				}
+			}
+		}
+
+		private static Bitmap GetBackgroundBitmapByZoomlevel(int zoomLevel, ZoomFactor zoomFactor)
+		{
+			float zoom = (float)zoomLevel / (float)zoomFactor;
+			switch ((int)zoom)
+			{
+				case 1:
+				default:
+					return Properties.Resources.background;
+				case 2:
+					return Properties.Resources.background2;
+				case 3:
+					return Properties.Resources.background3;
+				case 4:
+					return Properties.Resources.background4;
+				case 5:
+					return Properties.Resources.background5;
+				case 6:
+					return Properties.Resources.background6;
+				case 7:
+					return Properties.Resources.background7;
+				case 8:
+					return Properties.Resources.background8;
+				case 9:
+					return Properties.Resources.background9;
+				case 10:
+					return Properties.Resources.background10;
+				case 11:
+					return Properties.Resources.background11;
+				case 12:
+					return Properties.Resources.background12;
+
+			}
 		}
 
 		private static uint PixelFromColor(Color color)
@@ -718,192 +954,6 @@ namespace BahnEditor.Editor
 				this.SaveGraphicArchive();
 			}
 		}
-
-		private void ClickGraphic(MouseEventArgs e)
-		{
-			if (this.hasLoadedGraphic == true)
-			{
-				this.hasLoadedGraphic = false;
-				return;
-			}
-			if (e.Button == MouseButtons.None)
-				return;
-			if (this.actualZoomFactor == ZoomFactor.Zoom1)
-			{
-				if (this.ActualZoom1Graphic == null)
-				{
-					Graphic graphic = new Graphic("No text");
-					this.zoom1Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
-					this.UserMadeChanges(true);
-					ChangePropertyComboBoxes(true);
-					this.overviewPanel.Invalidate();
-				}
-				if (this.ActualZoom1Graphic.GetLayer(this.actualLayer) == null)
-				{
-					LayerID LayerID = GetLayerIDBySelectedIndex();
-					this.ActualZoom1Graphic.AddTransparentLayer(LayerID);
-					this.UserMadeChanges(true);
-					this.ChangeLayer(LayerID);
-				}
-			}
-			else if (this.actualZoomFactor == ZoomFactor.Zoom2)
-			{
-				if (this.ActualZoom2Graphic == null)
-				{
-					Graphic graphic = new Graphic("No text", zoomFactor: ZoomFactor.Zoom2);
-					this.zoom2Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
-					this.UserMadeChanges(true);
-					ChangePropertyComboBoxes(true);
-					this.overviewPanel.Invalidate();
-				}
-				if (this.ActualZoom2Graphic.GetLayer(this.actualLayer) == null)
-				{
-					LayerID LayerID = GetLayerIDBySelectedIndex();
-					this.ActualZoom2Graphic.AddTransparentLayer(LayerID);
-					this.UserMadeChanges(true);
-					this.ChangeLayer(LayerID);
-				}
-			}
-			else if (this.actualZoomFactor == ZoomFactor.Zoom4)
-			{
-				if (this.ActualZoom4Graphic == null)
-				{
-					Graphic graphic = new Graphic("No text", zoomFactor: ZoomFactor.Zoom4);
-					this.zoom4Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
-					this.UserMadeChanges(true);
-					ChangePropertyComboBoxes(true);
-					this.overviewPanel.Invalidate();
-				}
-				if (this.ActualZoom4Graphic.GetLayer(this.actualLayer) == null)
-				{
-					LayerID LayerID = GetLayerIDBySelectedIndex();
-					this.ActualZoom4Graphic.AddTransparentLayer(LayerID);
-					this.UserMadeChanges(true);
-					this.ChangeLayer(LayerID);
-				}
-			}
-			try
-			{
-				uint[,] element = this.GetElement();
-
-				if (e.X - drawPanel.AutoScrollPosition.X >= 20 && e.Y - drawPanel.AutoScrollPosition.Y >= 20 && (20 + this.zoomLevel * element.GetLength(0) + drawPanel.AutoScrollPosition.Y - e.Y) > 0)
-				{
-					int xElement = (int)(((e.X - 20 - drawPanel.AutoScrollPosition.X) / (float)this.zoomLevel) * (int)this.actualZoomFactor);
-					int yElement = (int)(((20 + this.zoomLevel * element.GetLength(0) / (int)this.actualZoomFactor + drawPanel.AutoScrollPosition.Y - e.Y) / (float)this.zoomLevel) * (int)this.actualZoomFactor);
-					if (xElement >= 0 && yElement >= 0 && xElement < element.GetLength(1) && yElement < element.GetLength(0))
-					{
-						if (e.Button == MouseButtons.Left && !element[yElement, xElement].Equals(leftPixel))
-						{
-							element[yElement, xElement] = leftPixel;
-						}
-						else if (e.Button == MouseButtons.Right && !element[yElement, xElement].Equals(rightPixel))
-						{
-							element[yElement, xElement] = rightPixel;
-						}
-						else
-						{
-							return;
-						}
-						this.UserMadeChanges(true);
-						drawPanel.Invalidate(new Rectangle(e.X - this.zoomLevel / ((int)this.actualZoomFactor), e.Y - this.zoomLevel / ((int)this.actualZoomFactor), (this.zoomLevel * 2) / (int)this.actualZoomFactor, (this.zoomLevel * 2) / (int)this.actualZoomFactor));
-					}
-				}
-			}
-			catch (Exception)
-			{
-				MessageBox.Show("Internal Error!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-			}
-		}
-
-		private void ClickOverview(MouseEventArgs e)
-		{
-			if (!e.Button.HasFlag(MouseButtons.Left))
-				return;
-			int element = -1;
-			int x = e.X - 40;
-			if (x >= 0 && 31 >= x)
-				element = 0;
-			else if (x >= 42 && 73 >= x)
-				element = 1;
-			else if (x >= 84 && 115 >= x)
-				element = 2;
-			else if (x >= 126 && 157 >= x)
-				element = 3;
-			else if (x >= 168 && 199 >= x)
-				element = 4;
-			else if (x >= 210 && 241 >= x)
-				element = 5;
-			else if (x >= 252 && 283 >= x)
-				element = 6;
-			else if (x >= 294 && 325 >= x)
-				element = 7;
-			else if (x >= 336 && 367 >= x)
-				element = 8;
-			if (element != -1)
-			{
-				this.actualGraphic = (element * 2 + overviewAlternative) + ((overviewLine) * 18);
-
-				this.actualAnimationPhase = Constants.MinAnimationPhase;
-				this.animationPhaseCodeChanged = true;
-				this.animationNumericUpDown.Value = Constants.MinAnimationPhase;
-				this.animationPhaseCodeChanged = false;
-
-				this.alternativeCheckBoxCodeChanged = true;
-				if (this.zoom1Archive.HasAlternatives(this.actualGraphic))
-				{
-					this.alternativesCheckBox.Checked = true;
-					this.actualAlternative = 1;
-				}
-				else
-				{
-					this.alternativesCheckBox.Checked = false;
-					this.actualAlternative = 0;
-				}
-				this.alternativeCheckBoxCodeChanged = false;
-
-				this.UpdateProperties();
-				this.drawPanel.Invalidate();
-				this.overviewPanel.Invalidate();
-				this.UpdateAnimation();
-			}
-			else if (this.alternativesCheckBox.Checked)
-			{
-				int xa = e.X - 440;
-				int ya = e.Y - 5;
-				int alternative = -1;
-				if (xa >= 0 && Constants.ElementWidth >= xa)
-				{
-					if (ya >= 0 && 25 >= ya)
-					{
-						alternative = 1;
-					}
-					else if (ya >= 30 && 55 >= ya)
-					{
-						alternative = 3;
-					}
-				}
-				else if (xa >= Constants.ElementWidth + 10 && Constants.ElementWidth * 2 + 10 >= xa)
-				{
-					if (ya >= 0 && 25 >= ya)
-					{
-						alternative = 2;
-					}
-					else if (ya >= 30 && 55 >= ya)
-					{
-						alternative = 4;
-					}
-				}
-				if (alternative != -1 && alternative != this.actualAlternative)
-				{
-					this.actualAlternative = alternative;
-					this.UpdateProperties();
-					this.overviewPanel.Invalidate();
-					this.drawPanel.Invalidate();
-					this.UpdateAnimation();
-				}
-			}
-		}
-
 		private uint[,] GetElement()
 		{
 			Graphic graphic = this.ActualGraphic;
@@ -1072,7 +1122,7 @@ namespace BahnEditor.Editor
 
 		private void ResizeDrawPanel()
 		{
-			this.drawPanel.AutoScrollMinSize = new Size((int)((this.zoomLevel) * Constants.ElementWidth * 3 + 30), (int)((this.zoomLevel) * Constants.ElementHeight * 8 + 30));
+			this.drawPanel.Size = new Size((int)((this.ZoomLevel) * Constants.ElementWidth * 3), (int)((this.ZoomLevel) * Constants.ElementHeight * 8));
 		}
 
 		private void SelectLayer()
@@ -1203,7 +1253,7 @@ namespace BahnEditor.Editor
 				{
 					for (int animationPhase = 0; animationPhase <= Constants.MaxAnimationPhase; animationPhase++)
 					{
-						if(this.zoom1Archive[element, animationPhase, alternative] != null && this.zoom1Archive[element, animationPhase, alternative].IsTransparent())
+						if (this.zoom1Archive[element, animationPhase, alternative] != null && this.zoom1Archive[element, animationPhase, alternative].IsTransparent())
 						{
 							this.zoom1Archive.RemoveGraphic(element, animationPhase, alternative);
 						}
@@ -1224,6 +1274,43 @@ namespace BahnEditor.Editor
 		{
 			if (this.animationForm != null && !this.animationForm.IsDisposed)
 				this.animationForm.ChangeAnimationProgram();
+		}
+
+		private void ZoomInOut(bool zoomIn)
+		{
+			if (zoomIn)
+			{
+				this.ZoomLevel += 2;
+			}
+			else
+			{
+				this.ZoomLevel -= 2;
+			}
+
+			this.UpdateZoom();
+		}
+
+		private void UpdateZoom()
+		{
+			if (this.ZoomLevel > 10 + (int)this.actualZoomFactor)
+			{
+				this.zoomInButton.Enabled = false;
+			}
+			else
+			{
+				this.zoomInButton.Enabled = true;
+			}
+			if (this.ZoomLevel < 4 + (int)this.actualZoomFactor)
+			{
+				this.zoomOutButton.Enabled = false;
+			}
+			else
+			{
+				this.zoomOutButton.Enabled = true;
+			}
+			this.zoomLevelStatusLabel.Text = String.Format("Zoomlevel: {0}  Zoomfactor: {1}", this.ZoomLevel, this.actualZoomFactor.ToString());
+			this.ResizeDrawPanel();
+			this.drawPanel.Invalidate();
 		}
 
 		#endregion Private Methods
@@ -1841,7 +1928,7 @@ namespace BahnEditor.Editor
 		private void saveFileDialog_FileOk(object sender, CancelEventArgs e)
 		{
 			this.lastPath = this.saveFileDialog.FileName;
-			if(!this.SaveGraphicArchive())
+			if (!this.SaveGraphicArchive())
 			{
 				this.ClickOnSaveButton(true);
 			}
@@ -1872,6 +1959,7 @@ namespace BahnEditor.Editor
 					throw new Exception("Internal Error!");
 			}
 			this.UpdateProperties();
+			this.UpdateZoom();
 			this.drawPanel.Invalidate();
 		}
 
@@ -1882,33 +1970,12 @@ namespace BahnEditor.Editor
 
 		private void zoomInButton_Click(object sender, EventArgs e)
 		{
-			this.zoomLevel++;
-			if (!this.zoomOutButton.Enabled)
-			{
-				this.zoomOutButton.Enabled = true;
-			}
-			if (this.zoomLevel > 10 + (int)this.actualZoomFactor)
-			{
-				this.zoomInButton.Enabled = false;
-			}
-			this.ResizeDrawPanel();
-			this.drawPanel.Invalidate();
+			this.ZoomInOut(true);
 		}
 
 		private void zoomOutButton_Click(object sender, EventArgs e)
 		{
-			this.zoomLevel--;
-			if (!this.zoomInButton.Enabled)
-			{
-				this.zoomInButton.Enabled = true;
-			}
-
-			if (this.zoomLevel < 4 + (int)this.actualZoomFactor)
-			{
-				this.zoomOutButton.Enabled = false;
-			}
-			this.ResizeDrawPanel();
-			this.drawPanel.Invalidate();
+			this.ZoomInOut(false);
 		}
 
 		private void animationNumericUpDown_ValueChanged(object sender, EventArgs e)
@@ -2009,6 +2076,11 @@ namespace BahnEditor.Editor
 			this.overviewPanel.Invalidate();
 			this.drawPanel.Invalidate();
 			this.UpdateAnimation();
+		}
+
+		private void gridCheckBox_CheckedChanged(object sender, EventArgs e)
+		{
+			this.drawPanel.Invalidate();
 		}
 
 		#endregion Event-Handler

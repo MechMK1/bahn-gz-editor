@@ -126,6 +126,10 @@
 			this.animationPhaseLabel = new System.Windows.Forms.Label();
 			this.animationNumericUpDown = new System.Windows.Forms.NumericUpDown();
 			this.alternativesCheckBox = new System.Windows.Forms.CheckBox();
+			this.scrollPanel = new System.Windows.Forms.Panel();
+			this.gridCheckBox = new System.Windows.Forms.CheckBox();
+			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+			this.zoomLevelStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.drawPanel = new BahnEditor.Editor.DrawPanel();
 			this.overviewPanel = new BahnEditor.Editor.DrawPanel();
 			this.overviewDownButton = new System.Windows.Forms.Button();
@@ -146,6 +150,8 @@
 			this.menuStrip.SuspendLayout();
 			this.tabControl.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.animationNumericUpDown)).BeginInit();
+			this.scrollPanel.SuspendLayout();
+			this.statusStrip1.SuspendLayout();
 			this.overviewPanel.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -279,7 +285,7 @@
 			this.controlPanel.Controls.Add(this.leftColorButton);
 			this.controlPanel.Location = new System.Drawing.Point(794, 52);
 			this.controlPanel.Name = "controlPanel";
-			this.controlPanel.Size = new System.Drawing.Size(207, 666);
+			this.controlPanel.Size = new System.Drawing.Size(207, 653);
 			this.controlPanel.TabIndex = 2;
 			// 
 			// propertiesGroupBox
@@ -288,7 +294,7 @@
 			this.propertiesGroupBox.Controls.Add(this.cursorDirectionPanel);
 			this.propertiesGroupBox.Controls.Add(this.particlePropertiesPanel);
 			this.propertiesGroupBox.Controls.Add(this.clockPanel);
-			this.propertiesGroupBox.Location = new System.Drawing.Point(3, 350);
+			this.propertiesGroupBox.Location = new System.Drawing.Point(3, 337);
 			this.propertiesGroupBox.Name = "propertiesGroupBox";
 			this.propertiesGroupBox.Size = new System.Drawing.Size(200, 311);
 			this.propertiesGroupBox.TabIndex = 16;
@@ -759,8 +765,8 @@
             "as gravel",
             "as small gravel / sand",
             "as grassy (grass rail)",
-            "as path (Hintergrund)",
-            "as path (Fahrspur)",
+            "as path (background)",
+            "as path (foreground, tracks)",
             "as text"});
 			this.leftComboBox.Location = new System.Drawing.Point(5, 52);
 			this.leftComboBox.Name = "leftComboBox";
@@ -826,8 +832,8 @@
             "as gravel",
             "as small gravel / sand",
             "as grassy (grass rail)",
-            "as path (Hintergrund)",
-            "as path (Fahrspur)",
+            "as path (background)",
+            "as path (foreground, tracks)",
             "as text"});
 			this.rightComboBox.Location = new System.Drawing.Point(5, 129);
 			this.rightComboBox.Name = "rightComboBox";
@@ -1196,17 +1202,54 @@
 			this.alternativesCheckBox.UseVisualStyleBackColor = true;
 			this.alternativesCheckBox.CheckedChanged += new System.EventHandler(this.alternativesCheckBox_CheckedChanged);
 			// 
-			// drawPanel
+			// scrollPanel
 			// 
-			this.drawPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+			this.scrollPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.drawPanel.AutoScroll = true;
+			this.scrollPanel.AutoScroll = true;
+			this.scrollPanel.AutoScrollMargin = new System.Drawing.Size(20, 20);
+			this.scrollPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.scrollPanel.Controls.Add(this.drawPanel);
+			this.scrollPanel.Location = new System.Drawing.Point(13, 140);
+			this.scrollPanel.Name = "scrollPanel";
+			this.scrollPanel.Size = new System.Drawing.Size(775, 564);
+			this.scrollPanel.TabIndex = 8;
+			// 
+			// gridCheckBox
+			// 
+			this.gridCheckBox.AutoSize = true;
+			this.gridCheckBox.Checked = true;
+			this.gridCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.gridCheckBox.Location = new System.Drawing.Point(191, 119);
+			this.gridCheckBox.Name = "gridCheckBox";
+			this.gridCheckBox.Size = new System.Drawing.Size(45, 17);
+			this.gridCheckBox.TabIndex = 9;
+			this.gridCheckBox.Text = "Grid";
+			this.gridCheckBox.UseVisualStyleBackColor = true;
+			this.gridCheckBox.CheckedChanged += new System.EventHandler(this.gridCheckBox_CheckedChanged);
+			// 
+			// statusStrip1
+			// 
+			this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.zoomLevelStatusLabel});
+			this.statusStrip1.Location = new System.Drawing.Point(0, 708);
+			this.statusStrip1.Name = "statusStrip1";
+			this.statusStrip1.Size = new System.Drawing.Size(1008, 22);
+			this.statusStrip1.TabIndex = 10;
+			this.statusStrip1.Text = "statusStrip1";
+			// 
+			// zoomLevelStatusLabel
+			// 
+			this.zoomLevelStatusLabel.Name = "zoomLevelStatusLabel";
+			this.zoomLevelStatusLabel.Size = new System.Drawing.Size(0, 17);
+			// 
+			// drawPanel
+			// 
 			this.drawPanel.BackColor = System.Drawing.Color.Transparent;
-			this.drawPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.drawPanel.Location = new System.Drawing.Point(13, 140);
+			this.drawPanel.Location = new System.Drawing.Point(20, 20);
 			this.drawPanel.Name = "drawPanel";
-			this.drawPanel.Size = new System.Drawing.Size(775, 578);
+			this.drawPanel.Size = new System.Drawing.Size(732, 521);
 			this.drawPanel.TabIndex = 4;
 			this.drawPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.drawPanel_Paint);
 			this.drawPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.drawPanel_MouseClick);
@@ -1266,17 +1309,19 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(1008, 730);
+			this.Controls.Add(this.statusStrip1);
+			this.Controls.Add(this.gridCheckBox);
+			this.Controls.Add(this.scrollPanel);
 			this.Controls.Add(this.alternativesCheckBox);
 			this.Controls.Add(this.animationPhaseLabel);
 			this.Controls.Add(this.tabControl);
 			this.Controls.Add(this.animationNumericUpDown);
-			this.Controls.Add(this.drawPanel);
 			this.Controls.Add(this.overviewPanel);
 			this.Controls.Add(this.controlPanel);
 			this.Controls.Add(this.toolStrip);
 			this.Controls.Add(this.menuStrip);
 			this.MainMenuStrip = this.menuStrip;
-			this.MinimumSize = new System.Drawing.Size(800, 715);
+			this.MinimumSize = new System.Drawing.Size(800, 725);
 			this.Name = "Editor";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Bahn Editor";
@@ -1303,6 +1348,9 @@
 			this.menuStrip.PerformLayout();
 			this.tabControl.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.animationNumericUpDown)).EndInit();
+			this.scrollPanel.ResumeLayout(false);
+			this.statusStrip1.ResumeLayout(false);
+			this.statusStrip1.PerformLayout();
 			this.overviewPanel.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
@@ -1389,7 +1437,6 @@
 		private System.Windows.Forms.ComboBox cursorNormalDirectionComboBox;
 		private System.Windows.Forms.ToolStripMenuItem animationToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-		private DrawPanel drawPanel;
 		private System.Windows.Forms.NumericUpDown animationNumericUpDown;
 		private System.Windows.Forms.Label animationPhaseLabel;
 		private System.Windows.Forms.ToolTip toolTip;
@@ -1412,6 +1459,11 @@
 		private System.Windows.Forms.Label clockRotationLabel;
 		private System.Windows.Forms.Label clockLabel;
 		private System.Windows.Forms.CheckBox alternativesCheckBox;
+		private DrawPanel drawPanel;
+		private System.Windows.Forms.Panel scrollPanel;
+		private System.Windows.Forms.CheckBox gridCheckBox;
+		private System.Windows.Forms.StatusStrip statusStrip1;
+		private System.Windows.Forms.ToolStripStatusLabel zoomLevelStatusLabel;
 
 	}
 }
