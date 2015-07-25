@@ -236,6 +236,50 @@
         jZgOGLl0XmehOyE2G3GYdtHUuJvD+43/F66PwfAL6PbQwSdHnA8AAAAASUVORK5CYII=
 </value>
   </data>
+  <data name="normalModeToolStripRadioButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABPSURBVDhPYxh6oL6+/j+USToAaX4qo/KnsrLyJVSIeADS
+        DMNQIeIBSNP/k3wDrBkIGKHCxAGq2QwVIh4MnGZgIDGDNJKlGQTI1jjAgIEBAHF0VO+/VoMHAAAAAElF
+        TkSuQmCC
+</value>
+  </data>
+  <data name="lineToolStripRadioButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAjSURBVDhPY6AW+A/FZAOYAaOGIMCoIZhg1BBMQLEBUMDA
+        AAC7vCfZXKaSfgAAAABJRU5ErkJggg==
+</value>
+  </data>
+  <data name="rectangleToolStripRadioButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAeSURBVDhPYxg+4D+ZGA5QOESCUQOGpwHk4KEPGBgAzhor
+        1T5ReB4AAAAASUVORK5CYII=
+</value>
+  </data>
+  <data name="fillToolStripRadioButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABUSURBVDhP1Y5bCgAgCAS9/6ULoQXRVSE/ooGIHjMl37DO
+        uALiKPDuB/7lNmIFP4M0AhkDMIHtUbki3LNyF6HnNqBkkTTuA0q3DrAL2GvlipFcILIBMzcq1tEUz7QA
+        AAAASUVORK5CYII=
+</value>
+  </data>
+  <data name="selectToolStripRadioButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAApSURBVDhPYxg+4D8UwwCpfFQOkYAcPTQEFHthNAwgHGQB
+        UvlDFzAwAAByRBfpYz0sswAAAABJRU5ErkJggg==
+</value>
+  </data>
+  <data name="takeColorToolStripRadioButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABBSURBVDhPYxhy4D8SJhkgaybZAHTNRBmATRMMEw0o1gyj
+        ydYMAyQZgE0zMo0X4NJMNEDWQJZmZEwyIFvjQAIGBgBm8ivVJyiLpQAAAABJRU5ErkJggg==
+</value>
+  </data>
   <metadata name="toolTip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>612, 20</value>
   </metadata>

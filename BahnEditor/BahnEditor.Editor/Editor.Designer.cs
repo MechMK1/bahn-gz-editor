@@ -41,7 +41,21 @@
 			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
 			this.zoomInButton = new System.Windows.Forms.ToolStripButton();
 			this.zoomOutButton = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+			this.normalModeToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
+			this.lineToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
+			this.rectangleToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
+			this.fillToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
+			this.selectToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
+			this.takeColorToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
 			this.controlPanel = new System.Windows.Forms.Panel();
+			this.mouseButtonsGroupBox = new System.Windows.Forms.GroupBox();
+			this.leftColorButton = new System.Windows.Forms.Button();
+			this.leftLabel = new System.Windows.Forms.Label();
+			this.leftComboBox = new System.Windows.Forms.ComboBox();
+			this.rightLabel = new System.Windows.Forms.Label();
+			this.rightColorButton = new System.Windows.Forms.Button();
+			this.rightComboBox = new System.Windows.Forms.ComboBox();
 			this.propertiesGroupBox = new System.Windows.Forms.GroupBox();
 			this.cursorDirectionPanel = new System.Windows.Forms.Panel();
 			this.cursorReverseDirectionComboBox = new System.Windows.Forms.ComboBox();
@@ -80,12 +94,6 @@
 			this.backgroundRadioButton2 = new System.Windows.Forms.RadioButton();
 			this.backgroundRadioButton = new System.Windows.Forms.RadioButton();
 			this.foregroundRadioButton = new System.Windows.Forms.RadioButton();
-			this.leftComboBox = new System.Windows.Forms.ComboBox();
-			this.rightLabel = new System.Windows.Forms.Label();
-			this.leftLabel = new System.Windows.Forms.Label();
-			this.rightComboBox = new System.Windows.Forms.ComboBox();
-			this.rightColorButton = new System.Windows.Forms.Button();
-			this.leftColorButton = new System.Windows.Forms.Button();
 			this.loadFileDialog = new System.Windows.Forms.OpenFileDialog();
 			this.menuStrip = new System.Windows.Forms.MenuStrip();
 			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -127,16 +135,18 @@
 			this.animationNumericUpDown = new System.Windows.Forms.NumericUpDown();
 			this.alternativesCheckBox = new System.Windows.Forms.CheckBox();
 			this.scrollPanel = new System.Windows.Forms.Panel();
+			this.graphicPanel = new BahnEditor.Editor.GraphicPanel();
 			this.gridCheckBox = new System.Windows.Forms.CheckBox();
 			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
 			this.zoomLevelStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-			this.drawPanel = new BahnEditor.Editor.DrawPanel();
-			this.overviewPanel = new BahnEditor.Editor.DrawPanel();
+			this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+			this.overviewPanel = new System.Windows.Forms.PictureBox();
 			this.overviewDownButton = new System.Windows.Forms.Button();
 			this.overviewUpButton = new System.Windows.Forms.Button();
 			this.overviewLeftRightButton = new System.Windows.Forms.Button();
 			this.toolStrip.SuspendLayout();
 			this.controlPanel.SuspendLayout();
+			this.mouseButtonsGroupBox.SuspendLayout();
 			this.propertiesGroupBox.SuspendLayout();
 			this.cursorDirectionPanel.SuspendLayout();
 			this.particlePropertiesPanel.SuspendLayout();
@@ -152,6 +162,7 @@
 			((System.ComponentModel.ISupportInitialize)(this.animationNumericUpDown)).BeginInit();
 			this.scrollPanel.SuspendLayout();
 			this.statusStrip1.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.overviewPanel)).BeginInit();
 			this.overviewPanel.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -168,7 +179,14 @@
             this.pasteToolStripButton,
             this.toolStripSeparator4,
             this.zoomInButton,
-            this.zoomOutButton});
+            this.zoomOutButton,
+            this.toolStripSeparator2,
+            this.normalModeToolStripRadioButton,
+            this.lineToolStripRadioButton,
+            this.rectangleToolStripRadioButton,
+            this.fillToolStripRadioButton,
+            this.selectToolStripRadioButton,
+            this.takeColorToolStripRadioButton});
 			this.toolStrip.Location = new System.Drawing.Point(0, 24);
 			this.toolStrip.Name = "toolStrip";
 			this.toolStrip.Size = new System.Drawing.Size(1008, 25);
@@ -265,11 +283,85 @@
 			this.zoomOutButton.Text = "Zoom out";
 			this.zoomOutButton.Click += new System.EventHandler(this.zoomOutButton_Click);
 			// 
+			// toolStripSeparator2
+			// 
+			this.toolStripSeparator2.Name = "toolStripSeparator2";
+			this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+			// 
+			// normalModeToolStripRadioButton
+			// 
+			this.normalModeToolStripRadioButton.Checked = true;
+			this.normalModeToolStripRadioButton.CheckOnClick = true;
+			this.normalModeToolStripRadioButton.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.normalModeToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.normalModeToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("normalModeToolStripRadioButton.Image")));
+			this.normalModeToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.normalModeToolStripRadioButton.Name = "normalModeToolStripRadioButton";
+			this.normalModeToolStripRadioButton.RadioButtonGroupID = 0;
+			this.normalModeToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
+			this.normalModeToolStripRadioButton.Text = "Normal Mode";
+			// 
+			// lineToolStripRadioButton
+			// 
+			this.lineToolStripRadioButton.CheckOnClick = true;
+			this.lineToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.lineToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("lineToolStripRadioButton.Image")));
+			this.lineToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.lineToolStripRadioButton.Name = "lineToolStripRadioButton";
+			this.lineToolStripRadioButton.RadioButtonGroupID = 0;
+			this.lineToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
+			this.lineToolStripRadioButton.Text = "Line";
+			// 
+			// rectangleToolStripRadioButton
+			// 
+			this.rectangleToolStripRadioButton.CheckOnClick = true;
+			this.rectangleToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.rectangleToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("rectangleToolStripRadioButton.Image")));
+			this.rectangleToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.rectangleToolStripRadioButton.Name = "rectangleToolStripRadioButton";
+			this.rectangleToolStripRadioButton.RadioButtonGroupID = 0;
+			this.rectangleToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
+			this.rectangleToolStripRadioButton.Text = "Rectangle";
+			// 
+			// fillToolStripRadioButton
+			// 
+			this.fillToolStripRadioButton.CheckOnClick = true;
+			this.fillToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.fillToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("fillToolStripRadioButton.Image")));
+			this.fillToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.fillToolStripRadioButton.Name = "fillToolStripRadioButton";
+			this.fillToolStripRadioButton.RadioButtonGroupID = 0;
+			this.fillToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
+			this.fillToolStripRadioButton.Text = "Fill";
+			// 
+			// selectToolStripRadioButton
+			// 
+			this.selectToolStripRadioButton.CheckOnClick = true;
+			this.selectToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.selectToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("selectToolStripRadioButton.Image")));
+			this.selectToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.selectToolStripRadioButton.Name = "selectToolStripRadioButton";
+			this.selectToolStripRadioButton.RadioButtonGroupID = 0;
+			this.selectToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
+			this.selectToolStripRadioButton.Text = "Select area";
+			// 
+			// takeColorToolStripRadioButton
+			// 
+			this.takeColorToolStripRadioButton.CheckOnClick = true;
+			this.takeColorToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.takeColorToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("takeColorToolStripRadioButton.Image")));
+			this.takeColorToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.takeColorToolStripRadioButton.Name = "takeColorToolStripRadioButton";
+			this.takeColorToolStripRadioButton.RadioButtonGroupID = 0;
+			this.takeColorToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
+			this.takeColorToolStripRadioButton.Text = "Take color";
+			// 
 			// controlPanel
 			// 
 			this.controlPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.controlPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.controlPanel.Controls.Add(this.mouseButtonsGroupBox);
 			this.controlPanel.Controls.Add(this.propertiesGroupBox);
 			this.controlPanel.Controls.Add(this.frontRadioButton);
 			this.controlPanel.Controls.Add(this.foregroundAboveRadioButton);
@@ -277,16 +369,167 @@
 			this.controlPanel.Controls.Add(this.backgroundRadioButton2);
 			this.controlPanel.Controls.Add(this.backgroundRadioButton);
 			this.controlPanel.Controls.Add(this.foregroundRadioButton);
-			this.controlPanel.Controls.Add(this.leftComboBox);
-			this.controlPanel.Controls.Add(this.rightLabel);
-			this.controlPanel.Controls.Add(this.leftLabel);
-			this.controlPanel.Controls.Add(this.rightComboBox);
-			this.controlPanel.Controls.Add(this.rightColorButton);
-			this.controlPanel.Controls.Add(this.leftColorButton);
 			this.controlPanel.Location = new System.Drawing.Point(794, 52);
 			this.controlPanel.Name = "controlPanel";
 			this.controlPanel.Size = new System.Drawing.Size(207, 653);
 			this.controlPanel.TabIndex = 2;
+			// 
+			// mouseButtonsGroupBox
+			// 
+			this.mouseButtonsGroupBox.Controls.Add(this.leftColorButton);
+			this.mouseButtonsGroupBox.Controls.Add(this.leftLabel);
+			this.mouseButtonsGroupBox.Controls.Add(this.leftComboBox);
+			this.mouseButtonsGroupBox.Controls.Add(this.rightLabel);
+			this.mouseButtonsGroupBox.Controls.Add(this.rightColorButton);
+			this.mouseButtonsGroupBox.Controls.Add(this.rightComboBox);
+			this.mouseButtonsGroupBox.Location = new System.Drawing.Point(3, 1);
+			this.mouseButtonsGroupBox.Name = "mouseButtonsGroupBox";
+			this.mouseButtonsGroupBox.Size = new System.Drawing.Size(200, 138);
+			this.mouseButtonsGroupBox.TabIndex = 17;
+			this.mouseButtonsGroupBox.TabStop = false;
+			this.mouseButtonsGroupBox.Text = "Mousebuttons";
+			// 
+			// leftColorButton
+			// 
+			this.leftColorButton.BackColor = System.Drawing.Color.Black;
+			this.leftColorButton.FlatAppearance.BorderSize = 0;
+			this.leftColorButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.leftColorButton.Location = new System.Drawing.Point(9, 16);
+			this.leftColorButton.Name = "leftColorButton";
+			this.leftColorButton.Size = new System.Drawing.Size(60, 23);
+			this.leftColorButton.TabIndex = 0;
+			this.leftColorButton.TabStop = false;
+			this.leftColorButton.UseVisualStyleBackColor = false;
+			this.leftColorButton.Click += new System.EventHandler(this.leftColorButton_Click);
+			// 
+			// leftLabel
+			// 
+			this.leftLabel.AutoSize = true;
+			this.leftLabel.Location = new System.Drawing.Point(75, 21);
+			this.leftLabel.Name = "leftLabel";
+			this.leftLabel.Size = new System.Drawing.Size(31, 13);
+			this.leftLabel.TabIndex = 7;
+			this.leftLabel.Text = "Left: ";
+			// 
+			// leftComboBox
+			// 
+			this.leftComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.leftComboBox.FormattingEnabled = true;
+			this.leftComboBox.Items.AddRange(new object[] {
+            "Default",
+            "Transparent",
+            "Half transparent (behind glass)",
+            "Light (always bright)",
+            "Lamp white-yellow",
+            "Lamp cold white (LED)",
+            "Lamp red",
+            "Lamp yellow, light bulb",
+            "Lamp yellow, gas light",
+            "Window0 (yellow at night)",
+            "Window1 (yellow at night)",
+            "Window2 (yellow at night)",
+            "Window0 (neon at night)",
+            "Window1 (neon at night)",
+            "Window2 (neon at night)",
+            "as background",
+            "as sleepers 0",
+            "as sleepers 1",
+            "as sleepers 3",
+            "as rails on road 0",
+            "as rails on road 1",
+            "as rails on road 2",
+            "as rails on road 3",
+            "as rails on trackbed 0",
+            "as rails on trackbed 1",
+            "as rails on trackbed 2",
+            "as rails on trackbed 3",
+            "as marking points bus 0",
+            "as marking points bus 1",
+            "as marking points bus 2",
+            "as marking points bus 3",
+            "as marking points water",
+            "as gravel",
+            "as small gravel / sand",
+            "as grassy (grass rail)",
+            "as path (background)",
+            "as path (foreground, tracks)",
+            "as text"});
+			this.leftComboBox.Location = new System.Drawing.Point(6, 45);
+			this.leftComboBox.Name = "leftComboBox";
+			this.leftComboBox.Size = new System.Drawing.Size(188, 21);
+			this.leftComboBox.TabIndex = 4;
+			this.leftComboBox.SelectedIndexChanged += new System.EventHandler(this.leftComboBox_SelectedIndexChanged);
+			// 
+			// rightLabel
+			// 
+			this.rightLabel.AutoSize = true;
+			this.rightLabel.Location = new System.Drawing.Point(7, 88);
+			this.rightLabel.Name = "rightLabel";
+			this.rightLabel.Size = new System.Drawing.Size(38, 13);
+			this.rightLabel.TabIndex = 8;
+			this.rightLabel.Text = "Right: ";
+			// 
+			// rightColorButton
+			// 
+			this.rightColorButton.BackColor = System.Drawing.Color.White;
+			this.rightColorButton.FlatAppearance.BorderSize = 0;
+			this.rightColorButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.rightColorButton.Location = new System.Drawing.Point(131, 83);
+			this.rightColorButton.Name = "rightColorButton";
+			this.rightColorButton.Size = new System.Drawing.Size(60, 23);
+			this.rightColorButton.TabIndex = 1;
+			this.rightColorButton.TabStop = false;
+			this.rightColorButton.UseVisualStyleBackColor = false;
+			this.rightColorButton.Click += new System.EventHandler(this.rightColorButton_Click);
+			// 
+			// rightComboBox
+			// 
+			this.rightComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.rightComboBox.FormattingEnabled = true;
+			this.rightComboBox.Items.AddRange(new object[] {
+            "Default",
+            "Transparent",
+            "Half transparent (behind glass)",
+            "Light (always bright)",
+            "Lamp white-yellow",
+            "Lamp cold white (LED)",
+            "Lamp red",
+            "Lamp yellow, light bulb",
+            "Lamp yellow, gas light",
+            "Window0 (yellow at night)",
+            "Window1 (yellow at night)",
+            "Window2 (yellow at night)",
+            "Window0 (neon at night)",
+            "Window1 (neon at night)",
+            "Window2 (neon at night)",
+            "as background",
+            "as sleepers 0",
+            "as sleepers 1",
+            "as sleepers 3",
+            "as rails on road 0",
+            "as rails on road 1",
+            "as rails on road 2",
+            "as rails on road 3",
+            "as rails on trackbed 0",
+            "as rails on trackbed 1",
+            "as rails on trackbed 2",
+            "as rails on trackbed 3",
+            "as marking points bus 0",
+            "as marking points bus 1",
+            "as marking points bus 2",
+            "as marking points bus 3",
+            "as marking points water",
+            "as gravel",
+            "as small gravel / sand",
+            "as grassy (grass rail)",
+            "as path (background)",
+            "as path (foreground, tracks)",
+            "as text"});
+			this.rightComboBox.Location = new System.Drawing.Point(6, 112);
+			this.rightComboBox.Name = "rightComboBox";
+			this.rightComboBox.Size = new System.Drawing.Size(188, 21);
+			this.rightComboBox.TabIndex = 5;
+			this.rightComboBox.SelectedIndexChanged += new System.EventHandler(this.rightComboBox_SelectedIndexChanged);
 			// 
 			// propertiesGroupBox
 			// 
@@ -654,7 +897,7 @@
 			// frontRadioButton
 			// 
 			this.frontRadioButton.AutoSize = true;
-			this.frontRadioButton.Location = new System.Drawing.Point(15, 271);
+			this.frontRadioButton.Location = new System.Drawing.Point(15, 257);
 			this.frontRadioButton.Name = "frontRadioButton";
 			this.frontRadioButton.Size = new System.Drawing.Size(49, 17);
 			this.frontRadioButton.TabIndex = 15;
@@ -666,7 +909,7 @@
 			// foregroundAboveRadioButton
 			// 
 			this.foregroundAboveRadioButton.AutoSize = true;
-			this.foregroundAboveRadioButton.Location = new System.Drawing.Point(15, 248);
+			this.foregroundAboveRadioButton.Location = new System.Drawing.Point(15, 234);
 			this.foregroundAboveRadioButton.Name = "foregroundAboveRadioButton";
 			this.foregroundAboveRadioButton.Size = new System.Drawing.Size(112, 17);
 			this.foregroundAboveRadioButton.TabIndex = 14;
@@ -678,7 +921,7 @@
 			// toBackgroundRadioButton
 			// 
 			this.toBackgroundRadioButton.AutoSize = true;
-			this.toBackgroundRadioButton.Location = new System.Drawing.Point(15, 225);
+			this.toBackgroundRadioButton.Location = new System.Drawing.Point(15, 211);
 			this.toBackgroundRadioButton.Name = "toBackgroundRadioButton";
 			this.toBackgroundRadioButton.Size = new System.Drawing.Size(98, 17);
 			this.toBackgroundRadioButton.TabIndex = 13;
@@ -690,7 +933,7 @@
 			// backgroundRadioButton2
 			// 
 			this.backgroundRadioButton2.AutoSize = true;
-			this.backgroundRadioButton2.Location = new System.Drawing.Point(15, 202);
+			this.backgroundRadioButton2.Location = new System.Drawing.Point(15, 188);
 			this.backgroundRadioButton2.Name = "backgroundRadioButton2";
 			this.backgroundRadioButton2.Size = new System.Drawing.Size(98, 17);
 			this.backgroundRadioButton2.TabIndex = 12;
@@ -702,7 +945,7 @@
 			// backgroundRadioButton
 			// 
 			this.backgroundRadioButton.AutoSize = true;
-			this.backgroundRadioButton.Location = new System.Drawing.Point(15, 179);
+			this.backgroundRadioButton.Location = new System.Drawing.Point(15, 165);
 			this.backgroundRadioButton.Name = "backgroundRadioButton";
 			this.backgroundRadioButton.Size = new System.Drawing.Size(83, 17);
 			this.backgroundRadioButton.TabIndex = 11;
@@ -715,7 +958,7 @@
 			// 
 			this.foregroundRadioButton.AutoSize = true;
 			this.foregroundRadioButton.Checked = true;
-			this.foregroundRadioButton.Location = new System.Drawing.Point(15, 156);
+			this.foregroundRadioButton.Location = new System.Drawing.Point(15, 142);
 			this.foregroundRadioButton.Name = "foregroundRadioButton";
 			this.foregroundRadioButton.Size = new System.Drawing.Size(79, 17);
 			this.foregroundRadioButton.TabIndex = 10;
@@ -724,148 +967,6 @@
 			this.toolTip.SetToolTip(this.foregroundRadioButton, "Foreground (in front of driving way and train)");
 			this.foregroundRadioButton.UseVisualStyleBackColor = true;
 			this.foregroundRadioButton.CheckedChanged += new System.EventHandler(this.foregroundRadioButton_CheckedChanged);
-			// 
-			// leftComboBox
-			// 
-			this.leftComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.leftComboBox.FormattingEnabled = true;
-			this.leftComboBox.Items.AddRange(new object[] {
-            "Default",
-            "Transparent",
-            "Half transparent (behind glass)",
-            "Light (always bright)",
-            "Lamp white-yellow",
-            "Lamp cold white (LED)",
-            "Lamp red",
-            "Lamp yellow, light bulb",
-            "Lamp yellow, gas light",
-            "Window0 (yellow at night)",
-            "Window1 (yellow at night)",
-            "Window2 (yellow at night)",
-            "Window0 (neon at night)",
-            "Window1 (neon at night)",
-            "Window2 (neon at night)",
-            "as background",
-            "as sleepers 0",
-            "as sleepers 1",
-            "as sleepers 3",
-            "as rails on road 0",
-            "as rails on road 1",
-            "as rails on road 2",
-            "as rails on road 3",
-            "as rails on trackbed 0",
-            "as rails on trackbed 1",
-            "as rails on trackbed 2",
-            "as rails on trackbed 3",
-            "as marking points bus 0",
-            "as marking points bus 1",
-            "as marking points bus 2",
-            "as marking points bus 3",
-            "as marking points water",
-            "as gravel",
-            "as small gravel / sand",
-            "as grassy (grass rail)",
-            "as path (background)",
-            "as path (foreground, tracks)",
-            "as text"});
-			this.leftComboBox.Location = new System.Drawing.Point(5, 52);
-			this.leftComboBox.Name = "leftComboBox";
-			this.leftComboBox.Size = new System.Drawing.Size(196, 21);
-			this.leftComboBox.TabIndex = 4;
-			this.leftComboBox.SelectedIndexChanged += new System.EventHandler(this.leftComboBox_SelectedIndexChanged);
-			// 
-			// rightLabel
-			// 
-			this.rightLabel.AutoSize = true;
-			this.rightLabel.Location = new System.Drawing.Point(56, 84);
-			this.rightLabel.Name = "rightLabel";
-			this.rightLabel.Size = new System.Drawing.Size(97, 13);
-			this.rightLabel.TabIndex = 8;
-			this.rightLabel.Text = "Right Mousebutton";
-			// 
-			// leftLabel
-			// 
-			this.leftLabel.AutoSize = true;
-			this.leftLabel.Location = new System.Drawing.Point(58, 7);
-			this.leftLabel.Name = "leftLabel";
-			this.leftLabel.Size = new System.Drawing.Size(90, 13);
-			this.leftLabel.TabIndex = 7;
-			this.leftLabel.Text = "Left Mousebutton";
-			// 
-			// rightComboBox
-			// 
-			this.rightComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.rightComboBox.FormattingEnabled = true;
-			this.rightComboBox.Items.AddRange(new object[] {
-            "Default",
-            "Transparent",
-            "Half transparent (behind glass)",
-            "Light (always bright)",
-            "Lamp white-yellow",
-            "Lamp cold white (LED)",
-            "Lamp red",
-            "Lamp yellow, light bulb",
-            "Lamp yellow, gas light",
-            "Window0 (yellow at night)",
-            "Window1 (yellow at night)",
-            "Window2 (yellow at night)",
-            "Window0 (neon at night)",
-            "Window1 (neon at night)",
-            "Window2 (neon at night)",
-            "as background",
-            "as sleepers 0",
-            "as sleepers 1",
-            "as sleepers 3",
-            "as rails on road 0",
-            "as rails on road 1",
-            "as rails on road 2",
-            "as rails on road 3",
-            "as rails on trackbed 0",
-            "as rails on trackbed 1",
-            "as rails on trackbed 2",
-            "as rails on trackbed 3",
-            "as marking points bus 0",
-            "as marking points bus 1",
-            "as marking points bus 2",
-            "as marking points bus 3",
-            "as marking points water",
-            "as gravel",
-            "as small gravel / sand",
-            "as grassy (grass rail)",
-            "as path (background)",
-            "as path (foreground, tracks)",
-            "as text"});
-			this.rightComboBox.Location = new System.Drawing.Point(5, 129);
-			this.rightComboBox.Name = "rightComboBox";
-			this.rightComboBox.Size = new System.Drawing.Size(196, 21);
-			this.rightComboBox.TabIndex = 5;
-			this.rightComboBox.SelectedIndexChanged += new System.EventHandler(this.rightComboBox_SelectedIndexChanged);
-			// 
-			// rightColorButton
-			// 
-			this.rightColorButton.BackColor = System.Drawing.Color.White;
-			this.rightColorButton.FlatAppearance.BorderSize = 0;
-			this.rightColorButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.rightColorButton.Location = new System.Drawing.Point(58, 100);
-			this.rightColorButton.Name = "rightColorButton";
-			this.rightColorButton.Size = new System.Drawing.Size(90, 23);
-			this.rightColorButton.TabIndex = 1;
-			this.rightColorButton.TabStop = false;
-			this.rightColorButton.UseVisualStyleBackColor = false;
-			this.rightColorButton.Click += new System.EventHandler(this.rightColorButton_Click);
-			// 
-			// leftColorButton
-			// 
-			this.leftColorButton.BackColor = System.Drawing.Color.Black;
-			this.leftColorButton.FlatAppearance.BorderSize = 0;
-			this.leftColorButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.leftColorButton.Location = new System.Drawing.Point(58, 23);
-			this.leftColorButton.Name = "leftColorButton";
-			this.leftColorButton.Size = new System.Drawing.Size(90, 23);
-			this.leftColorButton.TabIndex = 0;
-			this.leftColorButton.TabStop = false;
-			this.leftColorButton.UseVisualStyleBackColor = false;
-			this.leftColorButton.Click += new System.EventHandler(this.leftColorButton_Click);
 			// 
 			// loadFileDialog
 			// 
@@ -1210,11 +1311,27 @@
 			this.scrollPanel.AutoScroll = true;
 			this.scrollPanel.AutoScrollMargin = new System.Drawing.Size(20, 20);
 			this.scrollPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.scrollPanel.Controls.Add(this.drawPanel);
+			this.scrollPanel.Controls.Add(this.graphicPanel);
 			this.scrollPanel.Location = new System.Drawing.Point(13, 140);
 			this.scrollPanel.Name = "scrollPanel";
 			this.scrollPanel.Size = new System.Drawing.Size(775, 564);
 			this.scrollPanel.TabIndex = 8;
+			// 
+			// graphicPanel
+			// 
+			this.graphicPanel.BackColor = System.Drawing.Color.Transparent;
+			this.graphicPanel.DisplayGrid = true;
+			this.graphicPanel.Location = new System.Drawing.Point(20, 20);
+			this.graphicPanel.Name = "graphicPanel";
+			this.graphicPanel.Size = new System.Drawing.Size(732, 521);
+			this.graphicPanel.TabIndex = 4;
+			this.graphicPanel.ZoomFactor = BahnEditor.BahnLib.ZoomFactor.Zoom1;
+			this.graphicPanel.ZoomLevel = 5;
+			this.graphicPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.drawPanel_Paint);
+			this.graphicPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.graphicPanel_MouseClick);
+			this.graphicPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.graphicPanel_MouseDown);
+			this.graphicPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.graphicPanel_MouseMove);
+			this.graphicPanel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.graphicPanel_MouseUp);
 			// 
 			// gridCheckBox
 			// 
@@ -1232,7 +1349,8 @@
 			// statusStrip1
 			// 
 			this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.zoomLevelStatusLabel});
+            this.zoomLevelStatusLabel,
+            this.toolStripStatusLabel1});
 			this.statusStrip1.Location = new System.Drawing.Point(0, 708);
 			this.statusStrip1.Name = "statusStrip1";
 			this.statusStrip1.Size = new System.Drawing.Size(1008, 22);
@@ -1244,17 +1362,11 @@
 			this.zoomLevelStatusLabel.Name = "zoomLevelStatusLabel";
 			this.zoomLevelStatusLabel.Size = new System.Drawing.Size(0, 17);
 			// 
-			// drawPanel
+			// toolStripStatusLabel1
 			// 
-			this.drawPanel.BackColor = System.Drawing.Color.Transparent;
-			this.drawPanel.Location = new System.Drawing.Point(20, 20);
-			this.drawPanel.Name = "drawPanel";
-			this.drawPanel.Size = new System.Drawing.Size(732, 521);
-			this.drawPanel.TabIndex = 4;
-			this.drawPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.drawPanel_Paint);
-			this.drawPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.drawPanel_MouseClick);
-			this.drawPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.drawPanel_MouseMove);
-			this.drawPanel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.drawPanel_MouseUp);
+			this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+			this.toolStripStatusLabel1.Size = new System.Drawing.Size(118, 17);
+			this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
 			// 
 			// overviewPanel
 			// 
@@ -1268,6 +1380,7 @@
 			this.overviewPanel.Name = "overviewPanel";
 			this.overviewPanel.Size = new System.Drawing.Size(775, 64);
 			this.overviewPanel.TabIndex = 5;
+			this.overviewPanel.TabStop = false;
 			this.overviewPanel.Click += new System.EventHandler(this.overviewPanel_Click);
 			this.overviewPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.overviewPanel_Paint);
 			// 
@@ -1321,7 +1434,7 @@
 			this.Controls.Add(this.toolStrip);
 			this.Controls.Add(this.menuStrip);
 			this.MainMenuStrip = this.menuStrip;
-			this.MinimumSize = new System.Drawing.Size(800, 725);
+			this.MinimumSize = new System.Drawing.Size(800, 710);
 			this.Name = "Editor";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Bahn Editor";
@@ -1331,6 +1444,8 @@
 			this.toolStrip.PerformLayout();
 			this.controlPanel.ResumeLayout(false);
 			this.controlPanel.PerformLayout();
+			this.mouseButtonsGroupBox.ResumeLayout(false);
+			this.mouseButtonsGroupBox.PerformLayout();
 			this.propertiesGroupBox.ResumeLayout(false);
 			this.cursorDirectionPanel.ResumeLayout(false);
 			this.cursorDirectionPanel.PerformLayout();
@@ -1351,6 +1466,7 @@
 			this.scrollPanel.ResumeLayout(false);
 			this.statusStrip1.ResumeLayout(false);
 			this.statusStrip1.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.overviewPanel)).EndInit();
 			this.overviewPanel.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
@@ -1371,7 +1487,7 @@
 		private System.Windows.Forms.ComboBox leftComboBox;
 		private System.Windows.Forms.Label rightLabel;
 		private System.Windows.Forms.Label leftLabel;
-		private DrawPanel overviewPanel;
+		private System.Windows.Forms.PictureBox overviewPanel;
 		private System.Windows.Forms.Button overviewLeftRightButton;
 		private System.Windows.Forms.Button overviewUpButton;
 		private System.Windows.Forms.Button overviewDownButton;
@@ -1459,11 +1575,20 @@
 		private System.Windows.Forms.Label clockRotationLabel;
 		private System.Windows.Forms.Label clockLabel;
 		private System.Windows.Forms.CheckBox alternativesCheckBox;
-		private DrawPanel drawPanel;
+		private GraphicPanel graphicPanel;
 		private System.Windows.Forms.Panel scrollPanel;
 		private System.Windows.Forms.CheckBox gridCheckBox;
 		private System.Windows.Forms.StatusStrip statusStrip1;
 		private System.Windows.Forms.ToolStripStatusLabel zoomLevelStatusLabel;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+		private ToolStripRadioButton normalModeToolStripRadioButton;
+		private ToolStripRadioButton lineToolStripRadioButton;
+		private ToolStripRadioButton rectangleToolStripRadioButton;
+		private ToolStripRadioButton fillToolStripRadioButton;
+		private ToolStripRadioButton selectToolStripRadioButton;
+		private ToolStripRadioButton takeColorToolStripRadioButton;
+		private System.Windows.Forms.GroupBox mouseButtonsGroupBox;
+		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
 
 	}
 }

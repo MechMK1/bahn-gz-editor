@@ -260,7 +260,7 @@ namespace BahnEditor.Editor
 
 		private void createAnimationProgramButton_Click(object sender, EventArgs e)
 		{
-			if(editor.Zoom1Archive.Animation == null)
+			if (editor.Zoom1Archive.Animation == null)
 				editor.Zoom1Archive.AddAnimation();
 			if (editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID] == null)
 				editor.Zoom1Archive.Animation.AddAnimationProgram(new AnimationProgram(0, 0, 1, 1), editor.ActualGraphicID, editor.ActualAlternativeID);
@@ -271,17 +271,17 @@ namespace BahnEditor.Editor
 
 		private void deleteAnimationButton_Click(object sender, EventArgs e)
 		{
-			if(editor.Zoom1Archive.Animation != null && editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID] != null)
+			if (editor.Zoom1Archive.Animation != null && editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID] != null)
 			{
 				DialogResult result = MessageBox.Show("Do you really want to delete the animation?", "Delete animation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-				if(result == DialogResult.Yes)
+				if (result == DialogResult.Yes)
 				{
 					editor.Zoom1Archive.Animation.RemoveAnimationProgram(editor.ActualGraphicID, editor.ActualAlternativeID);
-					if(editor.Zoom1Archive.Animation.AnimationProgramCount <= 0)
+					if (editor.Zoom1Archive.Animation.AnimationProgramCount <= 0)
 					{
 						editor.Zoom1Archive.RemoveAnimation();
 					}
-					if(MessageBox.Show("Do you also want to delete the graphics for the animationsteps?", "Delete graphics for animationsteps", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+					if (MessageBox.Show("Do you also want to delete the graphics for the animationsteps?", "Delete graphics for animationsteps", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
 					{
 						for (int i = 1; i <= Constants.MaxAnimationPhase; i++)
 						{
@@ -300,7 +300,7 @@ namespace BahnEditor.Editor
 		{
 			if (!this.numericCodeChanged && editor.Zoom1Archive.Animation != null && editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID] != null)
 			{
-				if(widthNumericUpDown.Value + xNumericUpDown.Value > 2)
+				if (widthNumericUpDown.Value + xNumericUpDown.Value > 2)
 				{
 					this.widthNumericUpDown.Value = 2 - (int)this.xNumericUpDown.Value;
 				}
@@ -328,10 +328,10 @@ namespace BahnEditor.Editor
 		{
 			if (!this.numericCodeChanged && editor.Zoom1Archive.Animation != null && editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID] != null)
 			{
-				if(widthNumericUpDown.Value + xNumericUpDown.Value > 2)
+				if (widthNumericUpDown.Value + xNumericUpDown.Value > 2)
 				{
 					int result = 2 - (int)xNumericUpDown.Value;
-					if(result == widthNumericUpDown.Value)
+					if (result == widthNumericUpDown.Value)
 						return;
 					this.widthNumericUpDown.Value = result;
 				}
@@ -352,7 +352,7 @@ namespace BahnEditor.Editor
 						return;
 					this.heightNumericUpDown.Value = result;
 				}
-				editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID].Height= (int)this.heightNumericUpDown.Value;
+				editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID].Height = (int)this.heightNumericUpDown.Value;
 				this.editor.UserMadeChanges(true);
 				editor.Invalidate();
 			}
@@ -360,7 +360,7 @@ namespace BahnEditor.Editor
 
 		private void AnimationForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			if(e.CloseReason == CloseReason.UserClosing)
+			if (e.CloseReason == CloseReason.UserClosing)
 			{
 				e.Cancel = true;
 				this.Hide();

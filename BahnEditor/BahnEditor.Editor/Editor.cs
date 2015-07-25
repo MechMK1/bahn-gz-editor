@@ -1,5 +1,6 @@
 ﻿using BahnEditor.BahnLib;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -17,7 +18,11 @@ namespace BahnEditor.Editor
 		private int actualAnimationPhase = Constants.MinAnimationPhase;
 		private int actualGraphic;
 		private LayerID actualLayer;
-		private ZoomFactor actualZoomFactor = ZoomFactor.Zoom1;
+		//private ZoomFactor actualZoomFactor = ZoomFactor.Zoom1;
+		private Point specialModeStartPoint;
+		private Point specialModeEndPoint;
+		private bool drawingSpecialMode = false;
+		private MouseButtons specialModeMouseButton;
 		private AnimationForm animationForm;
 		private bool hasLoadedGraphic = false;
 		private bool cursorNormalDirectionCBCodeChanged = false;
@@ -38,9 +43,7 @@ namespace BahnEditor.Editor
 		private GraphicArchive zoom1Archive;
 		private GraphicArchive zoom2Archive;
 		private GraphicArchive zoom4Archive;
-		private int zoomLevelZoom1 = 4;
-		private int zoomLevelZoom2 = 6;
-		private int zoomLevelZoom4 = 8;
+
 
 		#endregion Private Fields
 
@@ -74,46 +77,13 @@ namespace BahnEditor.Editor
 
 		#region Private Properties
 
-		private int ZoomLevel
-		{
-			get
-			{
-				switch (this.actualZoomFactor)
-				{
-					case ZoomFactor.Zoom1:
-						return this.zoomLevelZoom1;
-					case ZoomFactor.Zoom2:
-						return this.zoomLevelZoom2;
-					case ZoomFactor.Zoom4:
-						return this.zoomLevelZoom4;
-					default:
-						return 6;
-				}
-			}
-			set
-			{
-				switch (this.actualZoomFactor)
-				{
-					case ZoomFactor.Zoom1:
-						this.zoomLevelZoom1 = value;
-						break;
-					case ZoomFactor.Zoom2:
-						this.zoomLevelZoom2 = value;
-						break;
-					case ZoomFactor.Zoom4:
-						this.zoomLevelZoom4 = value;
-						break;
-					default:
-						throw new ArgumentException("Unknown zoomFactor");
-				}
-			}
-		}
+
 
 		private Graphic ActualGraphic
 		{
 			get
 			{
-				switch (this.actualZoomFactor)
+				switch (this.graphicPanel.ZoomFactor)
 				{
 					case ZoomFactor.Zoom1:
 						if (this.zoom1Archive != null)
@@ -209,9 +179,8 @@ namespace BahnEditor.Editor
 			this.animationPhaseCodeChanged = false;
 			this.lastPath = "";
 			this.UpdateProperties();
-			this.ResizeDrawPanel();
 			this.UpdateZoom();
-			this.drawPanel.Invalidate();
+			this.graphicPanel.Draw(this.GetElement());
 			this.overviewPanel.Invalidate();
 			this.UpdateAnimation();
 		}
@@ -252,7 +221,7 @@ namespace BahnEditor.Editor
 
 				this.actualGraphic = 0;
 				this.actualAnimationPhase = 0;
-				this.actualZoomFactor = ZoomFactor.Zoom1;
+				this.graphicPanel.ZoomFactor = ZoomFactor.Zoom1;
 				this.alternativeCheckBoxCodeChanged = true;
 				if (this.zoom1Archive.HasAlternatives(this.actualGraphic))
 				{
@@ -273,9 +242,8 @@ namespace BahnEditor.Editor
 				this.hasLoadedGraphic = true;
 				this.UserMadeChanges(false);
 				this.ChangeLayer(LayerID.Foreground);
-				this.ResizeDrawPanel();
 				this.UpdateZoom();
-				this.drawPanel.Invalidate();
+				this.graphicPanel.Draw(this.GetElement());
 				this.overviewPanel.Invalidate();
 				this.UpdateAnimation();
 			}
@@ -336,121 +304,33 @@ namespace BahnEditor.Editor
 		{
 			try
 			{
-				if ((this.actualZoomFactor == ZoomFactor.Zoom1 && (this.ActualZoom1Graphic == null || this.ActualZoom1Graphic.GetLayer(this.actualLayer) == null)) ||
-					(this.actualZoomFactor == ZoomFactor.Zoom2 && (this.ActualZoom2Graphic == null || this.ActualZoom2Graphic.GetLayer(this.actualLayer) == null)) ||
-					(this.actualZoomFactor == ZoomFactor.Zoom4 && (this.ActualZoom4Graphic == null || this.ActualZoom4Graphic.GetLayer(this.actualLayer) == null)))
+				this.DrawSpecial(g);
+				// Grid for animations
+				if (this.graphicPanel.DisplayGrid && this.zoom1Archive.Animation != null && this.zoom1Archive.Animation[this.actualGraphic, this.actualAlternative] != null)
 				{
-					//g.FillRectangle(new SolidBrush(Color.FromArgb(0, 112, 0)), 0, 0, Constants.ElementWidth * this.ZoomLevel * 3, Constants.ElementHeight * this.ZoomLevel * 8); //transparent 0, 112, 0
-					g.FillRectangle(new TextureBrush(GetBackgroundBitmapByZoomlevel(this.ZoomLevel, this.actualZoomFactor)), 0, 0, Constants.ElementWidth * this.ZoomLevel * 3, Constants.ElementHeight * this.ZoomLevel * 8);
-				}
-				else
-				{
-					uint[,] element = this.GetElement();
-					if (element != null)
-					{
-						if (g.ClipBounds.Width == (this.ZoomLevel * 2) / (int)this.actualZoomFactor && g.ClipBounds.Height == (this.ZoomLevel * 2) / (int)this.actualZoomFactor)
-						{
-							int x = (int)g.ClipBounds.X;
-							int y = (int)g.ClipBounds.Y;
-							int xElement = (int)((x / (float)this.ZoomLevel) * (int)this.actualZoomFactor);
-							int yElement = (int)((y / (float)this.ZoomLevel) * (int)this.actualZoomFactor);
-							yElement = ((Constants.ElementHeight * 8 * (int)this.actualZoomFactor) - yElement) - 1;
-							//g.FillRectangle(transparentBrush, x, y, this.ZoomLevel * 2, this.ZoomLevel * 2);
-							g.FillRectangle(new TextureBrush(GetBackgroundBitmapByZoomlevel(this.ZoomLevel, this.actualZoomFactor)), 0, 0, Constants.ElementWidth * this.ZoomLevel * 3, Constants.ElementHeight * this.ZoomLevel * 8);
+					AnimationProgram program = this.zoom1Archive.Animation[this.actualGraphic, this.actualAlternative];
+					Point corner1 = new Point(program.XDiff + 1, 8 - (program.YDiff + 1));
+					Point corner2 = new Point(program.XDiff + 1 + program.Width, (8 - (program.YDiff + 1)) - program.Height);
 
-							if (yElement >= element.GetLength(0))
-							{
-								yElement = element.GetLength(0) - 1;
-							}
-							if (xElement >= element.GetLength(1))
-							{
-								xElement = element.GetLength(1) - 1;
-							}
+					corner1.X = (corner1.X * Constants.ElementWidth) * (this.graphicPanel.ZoomLevel);
+					corner1.Y = (corner1.Y * Constants.ElementHeight) * (this.graphicPanel.ZoomLevel);
+					corner2.X = (corner2.X * Constants.ElementWidth) * (this.graphicPanel.ZoomLevel);
+					corner2.Y = (corner2.Y * Constants.ElementHeight) * (this.graphicPanel.ZoomLevel);
 
-							for (int i = yElement; (i > yElement - 3) && i < element.GetLength(0) && i >= 0; i--)
-							{
-								for (int j = xElement; (j < xElement + 3) && j < element.GetLength(1); j++)
-								{
-									if (Pixel.IsTransparent(element[i, j]) != true)
-									{
-										Brush brush;
-										if (Pixel.IsSpecial(element[i, j]))
-											brush = new HatchBrush(HatchStyle.Percent30, Color.FromArgb(140, 140, 140), PixelToColor(element[i, j]));
-										else
-											brush = new SolidBrush(PixelToColor(element[i, j]));
-										g.FillRectangle(brush, (j * ZoomLevel) / (int)this.actualZoomFactor, ((ZoomLevel * element.GetLength(0)) - (ZoomLevel * (i + 1))) / (int)this.actualZoomFactor, ZoomLevel / (float)this.actualZoomFactor, ZoomLevel / (float)this.actualZoomFactor);
-									}
-								}
-							}
-						}
-						else
-						{
-							DrawElement(g, element, this.ZoomLevel, true, this.actualZoomFactor);
-						}
-					}
-				}
-				// Grid
-				if (gridCheckBox.Checked)
-				{
-					for (int i = 1; i < 3; i++)
-					{
-						g.DrawLine(Pens.Gray, new Point(i * this.ZoomLevel * Constants.ElementWidth, 0), new Point(i * this.ZoomLevel * Constants.ElementWidth, this.ZoomLevel * Constants.ElementHeight * 8));
-					}
-					for (int i = 1; i < 8; i++)
-					{
-						g.DrawLine(Pens.Gray, new Point(0, i * this.ZoomLevel * Constants.ElementHeight), new Point(this.ZoomLevel * Constants.ElementWidth * 3, i * this.ZoomLevel * Constants.ElementHeight));
-					}
-					g.DrawRectangle(Pens.DarkGray, Constants.ElementWidth * (this.ZoomLevel), (6 * Constants.ElementHeight) * (this.ZoomLevel), Constants.ElementWidth * (this.ZoomLevel), Constants.ElementHeight * (this.ZoomLevel));
+					Rectangle rectangle = new Rectangle(Math.Min(corner1.X, corner2.X),
+														Math.Min(corner1.Y, corner2.Y),
+														Math.Abs(corner1.X - corner2.X),
+														Math.Abs(corner1.Y - corner2.Y));
+					Pen pen = new Pen(Brushes.Red);
+					float[] dashValues = { 3, 3 };
+					pen.DashPattern = dashValues;
+					g.DrawRectangle(pen, rectangle);
 
-					// Grid for animations
-					if (this.zoom1Archive.Animation != null && this.zoom1Archive.Animation[this.actualGraphic, this.actualAlternative] != null)
-					{
-						AnimationProgram program = this.zoom1Archive.Animation[this.actualGraphic, this.actualAlternative];
-						Point corner1 = new Point(program.XDiff + 1, 8 - (program.YDiff + 1));
-						Point corner2 = new Point(program.XDiff + 1 + program.Width, (8 - (program.YDiff + 1)) - program.Height);
-
-						corner1.X = (corner1.X * Constants.ElementWidth) * (this.ZoomLevel);
-						corner1.Y = (corner1.Y * Constants.ElementHeight) * (this.ZoomLevel);
-						corner2.X = (corner2.X * Constants.ElementWidth) * (this.ZoomLevel);
-						corner2.Y = (corner2.Y * Constants.ElementHeight) * (this.ZoomLevel);
-
-						Rectangle rectangle = new Rectangle(Math.Min(corner1.X, corner2.X),
-															Math.Min(corner1.Y, corner2.Y),
-															Math.Abs(corner1.X - corner2.X),
-															Math.Abs(corner1.Y - corner2.Y));
-						Pen pen = new Pen(Brushes.Red);
-						float[] dashValues = { 3, 3 };
-						pen.DashPattern = dashValues;
-						g.DrawRectangle(pen, rectangle);
-					}
 				}
 			}
 			catch (IndexOutOfRangeException)
 			{
 				MessageBox.Show("Internal Error!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-			}
-		}
-
-		private static void DrawElement(Graphics g, uint[,] element, int ZoomLevel, bool withHatchBrush, ZoomFactor zoomfactor)
-		{
-			if (withHatchBrush)
-				g.FillRectangle(new TextureBrush(GetBackgroundBitmapByZoomlevel(ZoomLevel, zoomfactor)), 0, 0, element.GetLength(1) * ZoomLevel / (int)zoomfactor, element.GetLength(0) * ZoomLevel / (int)zoomfactor);
-			else
-				g.FillRectangle(new SolidBrush(Color.FromArgb(0, 112, 0)), 0, 0, element.GetLength(1) * ZoomLevel / (int)zoomfactor, element.GetLength(0) * ZoomLevel / (int)zoomfactor);
-			for (int i = 0; i < element.GetLength(0); i++)
-			{
-				for (int j = 0; j < element.GetLength(1); j++)
-				{
-					if (Pixel.IsTransparent(element[i, j]) != true)
-					{
-						Brush brush;
-						if (withHatchBrush && Pixel.IsSpecial(element[i, j]))
-							brush = new HatchBrush(HatchStyle.Percent20, Color.FromArgb(140, 140, 140), PixelToColor(element[i, j]));
-						else
-							brush = new SolidBrush(PixelToColor(element[i, j]));
-						g.FillRectangle(brush, (j * ZoomLevel) / (int)zoomfactor, ((ZoomLevel * element.GetLength(0)) - (ZoomLevel * (i + 1))) / (int)zoomfactor, ZoomLevel / (float)zoomfactor, ZoomLevel / (float)zoomfactor);
-					}
-				}
 			}
 		}
 
@@ -463,7 +343,7 @@ namespace BahnEditor.Editor
 				{
 					if (this.zoom1Archive[i] != null)
 					{
-						DrawElement(g, GraphicPreview(this.zoom1Archive[i]), 1, false, ZoomFactor.Zoom1);
+						GraphicPanel.DrawElement(g, GraphicPreview(this.zoom1Archive[i]), 1, false, ZoomFactor.Zoom1);
 					}
 					else
 					{
@@ -482,7 +362,7 @@ namespace BahnEditor.Editor
 					/*alternative a*/
 					if (this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 1] != null)
 					{
-						DrawElement(g, GraphicPreview(this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 1]), 1, false, ZoomFactor.Zoom1);
+						GraphicPanel.DrawElement(g, GraphicPreview(this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 1]), 1, false, ZoomFactor.Zoom1);
 					}
 					else
 					{
@@ -496,7 +376,7 @@ namespace BahnEditor.Editor
 					g.TranslateTransform(Constants.ElementWidth + 10, 0);
 					if (this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 2] != null)
 					{
-						DrawElement(g, GraphicPreview(this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 2]), 1, false, ZoomFactor.Zoom1);
+						GraphicPanel.DrawElement(g, GraphicPreview(this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 2]), 1, false, ZoomFactor.Zoom1);
 					}
 					else
 					{
@@ -510,7 +390,7 @@ namespace BahnEditor.Editor
 					g.TranslateTransform(-Constants.ElementWidth - 10, 30);
 					if (this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 3] != null)
 					{
-						DrawElement(g, GraphicPreview(this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 3]), 1, false, ZoomFactor.Zoom1);
+						GraphicPanel.DrawElement(g, GraphicPreview(this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 3]), 1, false, ZoomFactor.Zoom1);
 					}
 					else
 					{
@@ -524,7 +404,7 @@ namespace BahnEditor.Editor
 					g.TranslateTransform(Constants.ElementWidth + 10, 0);
 					if (this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 4] != null)
 					{
-						DrawElement(g, GraphicPreview(this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 4]), 1, false, ZoomFactor.Zoom1);
+						GraphicPanel.DrawElement(g, GraphicPreview(this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 4]), 1, false, ZoomFactor.Zoom1);
 					}
 					else
 					{
@@ -533,6 +413,75 @@ namespace BahnEditor.Editor
 					if (this.actualAlternative == 4)
 						g.DrawRectangle(Pens.Blue, -1, -1, Constants.ElementWidth + 1, Constants.ElementHeight + 1);
 					g.DrawString("d", DefaultFont, Brushes.Black, 10, 15);
+				}
+			}
+		}
+
+		private void DrawSpecial(Graphics g)
+		{
+			if (this.drawingSpecialMode)
+			{
+				if (this.rectangleToolStripRadioButton.Checked)
+				{
+					uint pixel = 0;
+					if (this.specialModeMouseButton == MouseButtons.Left)
+						pixel = this.leftPixel;
+					else if (this.specialModeMouseButton == MouseButtons.Right)
+						pixel = this.rightPixel;
+
+					Brush brush;
+					if (Pixel.IsTransparent(pixel))
+						brush = new TextureBrush(GetBackgroundBitmapByZoomlevel(this.graphicPanel.ZoomLevel, this.graphicPanel.ZoomFactor));
+					else if (Pixel.IsSpecial(pixel))
+						brush = new HatchBrush(HatchStyle.Percent20, Color.FromArgb(140, 140, 140), PixelToColor(pixel));
+					else
+						brush = new SolidBrush(PixelToColor(pixel));
+
+					float elementSize = (this.graphicPanel.ZoomLevel) / (int)this.graphicPanel.ZoomFactor;
+					Point corner1 = this.specialModeStartPoint;
+					Point corner2 = this.specialModeEndPoint;
+
+					corner1.Y = ((Constants.ElementHeight * 8 * (int)this.graphicPanel.ZoomFactor) - corner1.Y);
+					corner2.Y = ((Constants.ElementHeight * 8 * (int)this.graphicPanel.ZoomFactor) - corner2.Y);
+					corner1.X = (int)(corner1.X * elementSize);
+					corner1.Y = (int)(corner1.Y * elementSize);
+					corner2.X = (int)(corner2.X * elementSize);
+					corner2.Y = (int)(corner2.Y * elementSize);
+
+					RectangleF rectangle = new RectangleF(Math.Min(corner1.X, corner2.X),
+														Math.Min(corner1.Y, corner2.Y) - elementSize,
+														Math.Abs(corner1.X - corner2.X) + elementSize,
+														Math.Abs(corner1.Y - corner2.Y) + elementSize);
+					g.FillRectangle(brush, rectangle);
+					brush.Dispose();
+				}
+				else if (this.lineToolStripRadioButton.Checked)
+				{
+					uint pixel = 0;
+					if (this.specialModeMouseButton == MouseButtons.Left)
+						pixel = this.leftPixel;
+					else if (this.specialModeMouseButton == MouseButtons.Right)
+						pixel = this.rightPixel;
+
+					Brush brush;
+					if (Pixel.IsTransparent(pixel))
+						brush = new TextureBrush(GetBackgroundBitmapByZoomlevel(this.graphicPanel.ZoomLevel, this.graphicPanel.ZoomFactor));
+					else if (Pixel.IsSpecial(pixel))
+						brush = new HatchBrush(HatchStyle.Percent20, Color.FromArgb(140, 140, 140), PixelToColor(pixel));
+					else
+						brush = new SolidBrush(PixelToColor(pixel));
+
+					Point[] pixels = CalculateLine(this.specialModeStartPoint.X, this.specialModeStartPoint.Y, this.specialModeEndPoint.X, this.specialModeEndPoint.Y);
+
+					foreach (Point item in pixels)
+					{
+						g.FillRectangle(brush,
+							(item.X * graphicPanel.ZoomLevel) / (int)this.graphicPanel.ZoomFactor,
+							((graphicPanel.ZoomLevel * Constants.ElementHeight * 8 * (int)this.graphicPanel.ZoomFactor) -
+							(graphicPanel.ZoomLevel * (item.Y + 1))) / (int)this.graphicPanel.ZoomFactor,
+							graphicPanel.ZoomLevel / (float)this.graphicPanel.ZoomFactor,
+							graphicPanel.ZoomLevel / (float)this.graphicPanel.ZoomFactor);
+					}
 				}
 			}
 		}
@@ -568,85 +517,92 @@ namespace BahnEditor.Editor
 				this.hasLoadedGraphic = false;
 				return;
 			}
-			if (e.Button == MouseButtons.None)
+			if (!e.Button.HasFlag(MouseButtons.Left) && !e.Button.HasFlag(MouseButtons.Right))
 				return;
-			if (this.actualZoomFactor == ZoomFactor.Zoom1)
-			{
-				if (this.ActualZoom1Graphic == null)
-				{
-					Graphic graphic = new Graphic("No text");
-					this.zoom1Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
-					this.UserMadeChanges(true);
-					ChangePropertyComboBoxes(true);
-					this.overviewPanel.Invalidate();
-				}
-				if (this.ActualZoom1Graphic.GetLayer(this.actualLayer) == null)
-				{
-					LayerID LayerID = GetLayerIDBySelectedIndex();
-					this.ActualZoom1Graphic.AddTransparentLayer(LayerID);
-					this.UserMadeChanges(true);
-					this.ChangeLayer(LayerID);
-				}
-			}
-			else if (this.actualZoomFactor == ZoomFactor.Zoom2)
-			{
-				if (this.ActualZoom2Graphic == null)
-				{
-					Graphic graphic = new Graphic("No text", zoomFactor: ZoomFactor.Zoom2);
-					this.zoom2Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
-					this.UserMadeChanges(true);
-					ChangePropertyComboBoxes(true);
-					this.overviewPanel.Invalidate();
-				}
-				if (this.ActualZoom2Graphic.GetLayer(this.actualLayer) == null)
-				{
-					LayerID LayerID = GetLayerIDBySelectedIndex();
-					this.ActualZoom2Graphic.AddTransparentLayer(LayerID);
-					this.UserMadeChanges(true);
-					this.ChangeLayer(LayerID);
-				}
-			}
-			else if (this.actualZoomFactor == ZoomFactor.Zoom4)
-			{
-				if (this.ActualZoom4Graphic == null)
-				{
-					Graphic graphic = new Graphic("No text", zoomFactor: ZoomFactor.Zoom4);
-					this.zoom4Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
-					this.UserMadeChanges(true);
-					ChangePropertyComboBoxes(true);
-					this.overviewPanel.Invalidate();
-				}
-				if (this.ActualZoom4Graphic.GetLayer(this.actualLayer) == null)
-				{
-					LayerID LayerID = GetLayerIDBySelectedIndex();
-					this.ActualZoom4Graphic.AddTransparentLayer(LayerID);
-					this.UserMadeChanges(true);
-					this.ChangeLayer(LayerID);
-				}
-			}
+			this.CreateGraphic();
 			try
 			{
 				uint[,] element = this.GetElement();
 
-				int xElement = (int)((e.X / (float)this.ZoomLevel) * (int)this.actualZoomFactor);
-				int yElement = (int)((e.Y / (float)this.ZoomLevel) * (int)this.actualZoomFactor);
-				yElement = ((Constants.ElementHeight * 8 * (int)this.actualZoomFactor) - yElement) - 1;
+				Point p = this.TransformCoordinates(e.X, e.Y);
+				int xElement = p.X;
+				int yElement = p.Y;
 				if (xElement >= 0 && yElement >= 0 && xElement < element.GetLength(1) && yElement < element.GetLength(0))
 				{
-					if (e.Button == MouseButtons.Left && !element[yElement, xElement].Equals(leftPixel))
+					if (this.normalModeToolStripRadioButton.Checked)
 					{
-						element[yElement, xElement] = leftPixel;
+						if (e.Button == MouseButtons.Left && !element[yElement, xElement].Equals(leftPixel))
+						{
+							element[yElement, xElement] = leftPixel;
+						}
+						else if (e.Button == MouseButtons.Right && !element[yElement, xElement].Equals(rightPixel))
+						{
+							element[yElement, xElement] = rightPixel;
+						}
+						else
+							return;
+						this.UserMadeChanges(true);
+						//graphicPanel.Invalidate(new Rectangle(e.X - this.ZoomLevel / ((int)this.actualZoomFactor), e.Y - this.ZoomLevel / ((int)this.actualZoomFactor), (this.ZoomLevel * 2) / (int)this.actualZoomFactor, (this.ZoomLevel * 2) / (int)this.actualZoomFactor));
+						//this.graphicPanel.Draw(this.GetElement());
+						this.graphicPanel.Draw(new Point[] { new Point(xElement, yElement) }, element[yElement, xElement]);
 					}
-					else if (e.Button == MouseButtons.Right && !element[yElement, xElement].Equals(rightPixel))
+					else if (this.takeColorToolStripRadioButton.Checked)
 					{
-						element[yElement, xElement] = rightPixel;
+						uint el = element[yElement, xElement];
+						Color c = PixelToColor(el);
+						if (e.Button == MouseButtons.Left && !el.Equals(leftPixel))
+						{
+							leftPixel = el;
+							leftColorButton.BackColor = c;
+							leftComboBoxSelectedCodeChanged = true;
+							leftComboBox.SelectedIndex = PixelToComboBoxIndex(el);
+							leftComboBoxSelectedCodeChanged = false;
+							this.leftLabel.Text = String.Format("Left: {0} - {1} - {2}", c.R, c.G, c.B);
+						}
+						else if (e.Button == MouseButtons.Right && !el.Equals(rightPixel))
+						{
+							rightPixel = el;
+							rightColorButton.BackColor = c;
+							rightComboBoxSelectedCodeChanged = true;
+							rightComboBox.SelectedIndex = PixelToComboBoxIndex(el);
+							rightComboBoxSelectedCodeChanged = false;
+							this.rightLabel.Text = String.Format("Right: {0} - {1} - {2}", c.R, c.G, c.B);
+						}
 					}
-					else
+					else if (this.fillToolStripRadioButton.Checked)
 					{
-						return;
+						uint oldColor = element[yElement, xElement];
+						uint newColor = 0;
+						if (e.Button == MouseButtons.Left)
+							newColor = this.leftPixel;
+						else if (e.Button == MouseButtons.Right)
+							newColor = this.rightPixel;
+
+						if (newColor == oldColor)
+							return;
+						int x = xElement;
+						int y = yElement;
+
+						Stack<Point> stack = new Stack<Point>();
+						stack.Push(new Point(x, y));
+						while (stack.Count > 0)
+						{
+							Point point = stack.Pop();
+							if (point.X >= 0 && point.Y >= 0 && point.X < element.GetLength(1) && point.Y < element.GetLength(0))
+							{
+								if (element[point.Y, point.X] == oldColor)
+								{
+									element[point.Y, point.X] = newColor;
+									stack.Push(new Point(point.X, point.Y + 1));
+									stack.Push(new Point(point.X, point.Y - 1));
+									stack.Push(new Point(point.X + 1, point.Y));
+									stack.Push(new Point(point.X - 1, point.Y));
+								}
+							}
+						}
+						this.UserMadeChanges(true);
+						this.graphicPanel.Draw(this.GetElement());
 					}
-					this.UserMadeChanges(true);
-					drawPanel.Invalidate(new Rectangle(e.X - this.ZoomLevel / ((int)this.actualZoomFactor), e.Y - this.ZoomLevel / ((int)this.actualZoomFactor), (this.ZoomLevel * 2) / (int)this.actualZoomFactor, (this.ZoomLevel * 2) / (int)this.actualZoomFactor));
 				}
 			}
 			catch (Exception)
@@ -702,7 +658,8 @@ namespace BahnEditor.Editor
 				this.alternativeCheckBoxCodeChanged = false;
 
 				this.UpdateProperties();
-				this.drawPanel.Invalidate();
+				//this.graphicPanel.Invalidate();
+				this.graphicPanel.Draw(this.GetElement());
 				this.overviewPanel.Invalidate();
 				this.UpdateAnimation();
 			}
@@ -738,7 +695,8 @@ namespace BahnEditor.Editor
 					this.actualAlternative = alternative;
 					this.UpdateProperties();
 					this.overviewPanel.Invalidate();
-					this.drawPanel.Invalidate();
+					//this.graphicPanel.Invalidate();
+					this.graphicPanel.Draw(this.GetElement());
 					this.UpdateAnimation();
 				}
 			}
@@ -752,29 +710,191 @@ namespace BahnEditor.Editor
 				case 1:
 				default:
 					return Properties.Resources.background;
+
 				case 2:
 					return Properties.Resources.background2;
+
 				case 3:
 					return Properties.Resources.background3;
+
 				case 4:
 					return Properties.Resources.background4;
+
 				case 5:
 					return Properties.Resources.background5;
+
 				case 6:
 					return Properties.Resources.background6;
+
 				case 7:
 					return Properties.Resources.background7;
+
 				case 8:
 					return Properties.Resources.background8;
+
 				case 9:
 					return Properties.Resources.background9;
+
 				case 10:
 					return Properties.Resources.background10;
+
 				case 11:
 					return Properties.Resources.background11;
+
 				case 12:
 					return Properties.Resources.background12;
+			}
+		}
 
+		private void DrawSpecialOnGraphic()
+		{
+			if (this.rectangleToolStripRadioButton.Checked)
+			{
+				uint pixel = 0;
+				if (this.specialModeMouseButton == MouseButtons.Left)
+					pixel = this.leftPixel;
+				else if (this.specialModeMouseButton == MouseButtons.Right)
+					pixel = this.rightPixel;
+				this.CreateGraphic();
+				uint[,] element = this.GetElement();
+				int startX = Math.Min(this.specialModeStartPoint.X, this.specialModeEndPoint.X);
+				int startY = Math.Min(this.specialModeStartPoint.Y, this.specialModeEndPoint.Y);
+				int width = Math.Abs(this.specialModeStartPoint.X - this.specialModeEndPoint.X) + 1;
+				int height = Math.Abs(this.specialModeStartPoint.Y - this.specialModeEndPoint.Y) + 1;
+				for (int i = 0; i < width && i + startX < element.GetLength(1); i++)
+				{
+					for (int j = 0; j < height && j + startY < element.GetLength(0); j++)
+					{
+						element[j + startY, i + startX] = pixel;
+					}
+				}
+				this.graphicPanel.Draw(this.GetElement());
+			}
+			else if (this.lineToolStripRadioButton.Checked)
+			{
+				uint pixel = 0;
+				if (this.specialModeMouseButton == MouseButtons.Left)
+					pixel = this.leftPixel;
+				else if (this.specialModeMouseButton == MouseButtons.Right)
+					pixel = this.rightPixel;
+				this.CreateGraphic();
+				uint[,] element = this.GetElement();
+				Point[] pixels = CalculateLine(this.specialModeStartPoint.X, this.specialModeStartPoint.Y, this.specialModeEndPoint.X, this.specialModeEndPoint.Y);
+				foreach (Point item in pixels)
+				{
+					if ((item.X >= 0 && item.Y >= 0 && item.X < element.GetLength(1) && item.Y < element.GetLength(0)))
+						element[item.Y, item.X] = pixel;
+				}
+				this.graphicPanel.Draw(this.GetElement());
+			}
+		}
+
+		private static Point[] CalculateLine(int startX, int startY, int endX, int endY)
+		{
+			int dx = endX - startX;
+			int dy = endY - startY;
+
+			int incX = GetSignOfInteger(dx);
+			int incY = GetSignOfInteger(dy);
+			if (dx < 0) dx = -dx;
+			if (dy < 0) dy = -dy;
+
+			int pdx, pdy, ddx, ddy, es, el;
+			if (dx > dy)
+			{
+				/* x ist schnelle Richtung */
+				pdx = incX; pdy = 0;    /* pd. ist Parallelschritt */
+				ddx = incX; ddy = incY; /* dd. ist Diagonalschritt */
+				es = dy; el = dx;   /* Fehlerschritte schnell, langsam */
+			}
+			else
+			{
+				/* y ist schnelle Richtung */
+				pdx = 0; pdy = incY; /* pd. ist Parallelschritt */
+				ddx = incX; ddy = incY; /* dd. ist Diagonalschritt */
+				es = dx; el = dy;   /* Fehlerschritte schnell, langsam */
+			}
+
+			int x = startX, y = startY;
+			int err = el / 2;
+			List<Point> pixels = new List<Point>();
+			pixels.Add(new Point(x, y));
+
+			for (int i = 0; i < el; ++i)
+			{
+				err -= es;
+				if (err < 0)
+				{
+					err += el;
+					x += ddx;
+					y += ddy;
+				}
+				else
+				{
+					x += pdx;
+					y += pdy;
+				}
+				pixels.Add(new Point(x, y));
+			}
+
+			return pixels.ToArray();
+		}
+
+		private void CreateGraphic()
+		{
+			if (this.graphicPanel.ZoomFactor == ZoomFactor.Zoom1)
+			{
+				if (this.ActualZoom1Graphic == null)
+				{
+					Graphic graphic = new Graphic("No text");
+					this.zoom1Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
+					this.UserMadeChanges(true);
+					ChangePropertyComboBoxes(true);
+					this.overviewPanel.Invalidate();
+				}
+				if (this.ActualZoom1Graphic.GetLayer(this.actualLayer) == null)
+				{
+					LayerID LayerID = GetLayerIDBySelectedIndex();
+					this.ActualZoom1Graphic.AddTransparentLayer(LayerID);
+					this.UserMadeChanges(true);
+					this.ChangeLayer(LayerID);
+				}
+			}
+			else if (this.graphicPanel.ZoomFactor == ZoomFactor.Zoom2)
+			{
+				if (this.ActualZoom2Graphic == null)
+				{
+					Graphic graphic = new Graphic("No text", zoomFactor: ZoomFactor.Zoom2);
+					this.zoom2Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
+					this.UserMadeChanges(true);
+					ChangePropertyComboBoxes(true);
+					this.overviewPanel.Invalidate();
+				}
+				if (this.ActualZoom2Graphic.GetLayer(this.actualLayer) == null)
+				{
+					LayerID LayerID = GetLayerIDBySelectedIndex();
+					this.ActualZoom2Graphic.AddTransparentLayer(LayerID);
+					this.UserMadeChanges(true);
+					this.ChangeLayer(LayerID);
+				}
+			}
+			else if (this.graphicPanel.ZoomFactor == ZoomFactor.Zoom4)
+			{
+				if (this.ActualZoom4Graphic == null)
+				{
+					Graphic graphic = new Graphic("No text", zoomFactor: ZoomFactor.Zoom4);
+					this.zoom4Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
+					this.UserMadeChanges(true);
+					ChangePropertyComboBoxes(true);
+					this.overviewPanel.Invalidate();
+				}
+				if (this.ActualZoom4Graphic.GetLayer(this.actualLayer) == null)
+				{
+					LayerID LayerID = GetLayerIDBySelectedIndex();
+					this.ActualZoom4Graphic.AddTransparentLayer(LayerID);
+					this.UserMadeChanges(true);
+					this.ChangeLayer(LayerID);
+				}
 			}
 		}
 
@@ -954,6 +1074,7 @@ namespace BahnEditor.Editor
 				this.SaveGraphicArchive();
 			}
 		}
+
 		private uint[,] GetElement()
 		{
 			Graphic graphic = this.ActualGraphic;
@@ -982,7 +1103,106 @@ namespace BahnEditor.Editor
 				throw new Exception("Internal Error");
 		}
 
-		private uint GetPixelFromComboBox(int index, uint lastPixel)
+		private static int PixelToComboBoxIndex(uint pixel)
+		{
+			if (Pixel.IsTransparent(pixel))
+				return 1;
+			else if (Pixel.UsesRgb(pixel) && !Pixel.IsSpecial(pixel))
+				return 0;
+			else if (Pixel.UsesRgb(pixel) && Pixel.IsSpecial(pixel))
+			{
+				switch (Pixel.GetProperty(pixel))
+				{
+					case Pixel.PixelProperty.AlwaysBright:
+						return 3;
+					case Pixel.PixelProperty.LampYellow:
+						return 4;
+					case Pixel.PixelProperty.LampColdWhite:
+						return 5;
+					case Pixel.PixelProperty.LampRed:
+						return 6;
+					case Pixel.PixelProperty.LampYellowWhite:
+						return 7;
+					case Pixel.PixelProperty.LampGasYellow:
+						return 8;
+					case Pixel.PixelProperty.WindowYellow0:
+						return 9;
+					case Pixel.PixelProperty.WindowYellow1:
+						return 10;
+					case Pixel.PixelProperty.WindowYellow2:
+						return 11;
+					case Pixel.PixelProperty.WindowNeon0:
+						return 12;
+					case Pixel.PixelProperty.WindowNeon1:
+						return 13;
+					case Pixel.PixelProperty.WindowNeon2:
+						return 14;
+					default:
+						MessageBox.Show("Unknown pixelproperty (uses rgb)");
+						break;
+				}
+			}
+			else if (Pixel.IsSpecial(pixel) && !Pixel.UsesRgb(pixel))
+			{
+				switch (pixel)
+				{
+					case (uint)Pixel.PixelProperty.BehindGlass:
+						return 2;
+					case (uint)Pixel.PixelProperty.AsBG:
+						return 15;
+					case (uint)Pixel.PixelProperty.AsSleepers0:
+						return 16;
+					case (uint)Pixel.PixelProperty.AsSleepers1:
+						return 17;
+					case (uint)Pixel.PixelProperty.AsSleepers3:
+						return 18;
+					case (uint)Pixel.PixelProperty.AsRailsRoad0:
+						return 19;
+					case (uint)Pixel.PixelProperty.AsRailsRoad1:
+						return 20;
+					case (uint)Pixel.PixelProperty.AsRailsRoad2:
+						return 21;
+					case (uint)Pixel.PixelProperty.AsRailsRoad3:
+						return 22;
+					case (uint)Pixel.PixelProperty.AsRailsTrackbed0:
+						return 23;
+					case (uint)Pixel.PixelProperty.AsRailsTrackbed1:
+						return 24;
+					case (uint)Pixel.PixelProperty.AsRailsTrackbed2:
+						return 25;
+					case (uint)Pixel.PixelProperty.AsRailsTrackbed3:
+						return 26;
+					case (uint)Pixel.PixelProperty.AsMarkingPointBus0:
+						return 27;
+					case (uint)Pixel.PixelProperty.AsMarkingPointBus1:
+						return 28;
+					case (uint)Pixel.PixelProperty.AsMarkingPointBus2:
+						return 29;
+					case (uint)Pixel.PixelProperty.AsMarkingPointBus3:
+						return 30;
+					case (uint)Pixel.PixelProperty.AsMarkingPointWater:
+						return 31;
+					case (uint)Pixel.PixelProperty.AsGravel:
+						return 32;
+					case (uint)Pixel.PixelProperty.AsSmallGravel:
+						return 33;
+					case (uint)Pixel.PixelProperty.AsGrassy:
+						return 34;
+					case (uint)Pixel.PixelProperty.AsPathBG:
+						return 35;
+					case (uint)Pixel.PixelProperty.AsPathFG:
+						return 36;
+					case (uint)Pixel.PixelProperty.AsText:
+						return 37;
+					default:
+						MessageBox.Show("Unknown pixelproperty (!uses rgb)");
+						break;
+				}
+			}
+			return 0;
+		}
+
+		private static uint PixelFromComboBox(int index, uint lastPixel)
 		{
 			byte r = 0;
 			byte g = 0;
@@ -1120,11 +1340,6 @@ namespace BahnEditor.Editor
 			animationForm.Show();
 		}
 
-		private void ResizeDrawPanel()
-		{
-			this.drawPanel.Size = new Size((int)((this.ZoomLevel) * Constants.ElementWidth * 3), (int)((this.ZoomLevel) * Constants.ElementHeight * 8));
-		}
-
 		private void SelectLayer()
 		{
 			if (this.layerSelectBoxCodeChanged)
@@ -1134,7 +1349,8 @@ namespace BahnEditor.Editor
 			else
 			{
 				this.actualLayer = this.GetLayerIDBySelectedIndex();
-				this.drawPanel.Invalidate();
+				//this.graphicPanel.Invalidate();
+				this.graphicPanel.Draw(this.GetElement());
 			}
 		}
 
@@ -1280,11 +1496,11 @@ namespace BahnEditor.Editor
 		{
 			if (zoomIn)
 			{
-				this.ZoomLevel += 2;
+				this.graphicPanel.ZoomLevel += (int)this.graphicPanel.ZoomFactor;
 			}
 			else
 			{
-				this.ZoomLevel -= 2;
+				this.graphicPanel.ZoomLevel -= (int)this.graphicPanel.ZoomFactor;
 			}
 
 			this.UpdateZoom();
@@ -1292,7 +1508,7 @@ namespace BahnEditor.Editor
 
 		private void UpdateZoom()
 		{
-			if (this.ZoomLevel > 10 + (int)this.actualZoomFactor)
+			if (this.graphicPanel.ZoomLevel > 7 * (int)this.graphicPanel.ZoomFactor)
 			{
 				this.zoomInButton.Enabled = false;
 			}
@@ -1300,7 +1516,7 @@ namespace BahnEditor.Editor
 			{
 				this.zoomInButton.Enabled = true;
 			}
-			if (this.ZoomLevel < 4 + (int)this.actualZoomFactor)
+			if (this.graphicPanel.ZoomLevel < 1 * (int)this.graphicPanel.ZoomFactor + 1)
 			{
 				this.zoomOutButton.Enabled = false;
 			}
@@ -1308,9 +1524,21 @@ namespace BahnEditor.Editor
 			{
 				this.zoomOutButton.Enabled = true;
 			}
-			this.zoomLevelStatusLabel.Text = String.Format("Zoomlevel: {0}  Zoomfactor: {1}", this.ZoomLevel, this.actualZoomFactor.ToString());
-			this.ResizeDrawPanel();
-			this.drawPanel.Invalidate();
+			this.zoomLevelStatusLabel.Text = String.Format("Zoomlevel: {0}  Zoomfactor: {1}", this.graphicPanel.ZoomLevel, this.graphicPanel.ZoomFactor.ToString());
+			this.graphicPanel.Draw(this.GetElement());
+		}
+
+		private Point TransformCoordinates(int x, int y)
+		{
+			int xElement = (int)((x / (float)this.graphicPanel.ZoomLevel) * (int)this.graphicPanel.ZoomFactor);
+			int yElement = (int)((y / (float)this.graphicPanel.ZoomLevel) * (int)this.graphicPanel.ZoomFactor);
+			yElement = ((Constants.ElementHeight * 8 * (int)this.graphicPanel.ZoomFactor) - yElement) - 1;
+			return new Point(xElement, yElement);
+		}
+
+		private static int GetSignOfInteger(int x)
+		{
+			return (x > 0) ? 1 : (x < 0) ? -1 : 0;
 		}
 
 		#endregion Private Methods
@@ -1327,7 +1555,8 @@ namespace BahnEditor.Editor
 			{
 				this.animationNumericUpDown.Enabled = false;
 			}
-			drawPanel.Invalidate();
+			//graphicPanel.Invalidate();
+			this.graphicPanel.Draw(this.GetElement());
 		}
 
 		internal void ResetAnimationNumericUpDown()
@@ -1577,18 +1806,59 @@ namespace BahnEditor.Editor
 			}
 		}
 
-		private void drawPanel_MouseClick(object sender, MouseEventArgs e)
+		private void graphicPanel_MouseClick(object sender, MouseEventArgs e)
 		{
 			this.ClickGraphic(e);
 		}
 
-		private void drawPanel_MouseMove(object sender, MouseEventArgs e)
+		private void graphicPanel_MouseDown(object sender, MouseEventArgs e)
 		{
-			this.ClickGraphic(e);
+			if (this.lineToolStripRadioButton.Checked || this.rectangleToolStripRadioButton.Checked)
+			{
+				this.specialModeStartPoint = this.TransformCoordinates(e.X, e.Y);
+				this.specialModeMouseButton = e.Button;
+				this.drawingSpecialMode = true;
+				this.toolStripStatusLabel1.Text = String.Format("{0}, {1}, {2}, {3}", this.specialModeStartPoint.ToString(), this.drawingSpecialMode, this.specialModeEndPoint.ToString(), this.specialModeMouseButton.ToString());
+			}
 		}
 
-		private void drawPanel_MouseUp(object sender, MouseEventArgs e)
+		private void graphicPanel_MouseMove(object sender, MouseEventArgs e)
 		{
+			if (this.drawingSpecialMode && (this.lineToolStripRadioButton.Checked || this.rectangleToolStripRadioButton.Checked))
+			{
+				if (this.specialModeMouseButton != e.Button)
+				{
+					this.drawingSpecialMode = false;
+				}
+				else
+				{
+					Point p = this.TransformCoordinates(e.X, e.Y);
+					if (this.specialModeEndPoint != p)
+					{
+						this.specialModeEndPoint = p;
+					}
+					else
+						return;
+				}
+				this.toolStripStatusLabel1.Text = String.Format("{0}, {1}, {2}, {3}", this.specialModeStartPoint.ToString(), this.drawingSpecialMode, this.specialModeEndPoint.ToString(), this.specialModeMouseButton.ToString());
+				this.graphicPanel.Invalidate();
+				//this.graphicPanel.Draw(this.GetElement());
+			}
+			else
+			{
+				this.ClickGraphic(e);
+			}
+		}
+
+		private void graphicPanel_MouseUp(object sender, MouseEventArgs e)
+		{
+			if (this.drawingSpecialMode && (this.lineToolStripRadioButton.Checked || this.rectangleToolStripRadioButton.Checked))
+			{
+				this.drawingSpecialMode = false;
+				this.toolStripStatusLabel1.Text = String.Format("{0}, {1}, {2}, {3}", this.specialModeStartPoint.ToString(), this.drawingSpecialMode, this.specialModeEndPoint.ToString(), this.specialModeMouseButton.ToString());
+				this.DrawSpecialOnGraphic();
+			}
+
 			this.overviewPanel.Invalidate();
 		}
 
@@ -1629,6 +1899,7 @@ namespace BahnEditor.Editor
 
 		private void leftColorButton_Click(object sender, EventArgs e)
 		{
+			this.colorDialog.Color = PixelToColor(this.leftPixel);
 			DialogResult dr = this.colorDialog.ShowDialog();
 			if (dr == DialogResult.OK)
 			{
@@ -1645,6 +1916,7 @@ namespace BahnEditor.Editor
 					this.leftPixel = PixelFromColor(c);
 				}
 				this.leftColorButton.BackColor = c;
+				this.leftLabel.Text = String.Format("Left: {0} - {1} - {2}", c.R, c.G, c.B);
 			}
 		}
 
@@ -1689,7 +1961,7 @@ namespace BahnEditor.Editor
 				{
 					lastPixel = this.lastLeftPixel;
 				}
-				uint pixel = this.GetPixelFromComboBox(this.leftComboBox.SelectedIndex, lastPixel);
+				uint pixel = PixelFromComboBox(this.leftComboBox.SelectedIndex, lastPixel);
 				if (pixel != 0)
 				{
 					if (!Pixel.IsTransparent(this.leftPixel) && Pixel.UsesRgb(this.leftPixel))
@@ -1703,7 +1975,9 @@ namespace BahnEditor.Editor
 					MessageBox.Show("Internal Error", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}
 			}
-			this.leftColorButton.BackColor = PixelToColor(this.leftPixel);
+			Color color = PixelToColor(this.leftPixel);
+			this.leftColorButton.BackColor = color;
+			this.leftLabel.Text = String.Format("Left: {0} - {1} - {2}", color.R, color.G, color.B);
 		}
 
 		private void loadFileDialog_FileOk(object sender, CancelEventArgs e)
@@ -1732,7 +2006,7 @@ namespace BahnEditor.Editor
 				this.overviewLine--;
 				this.overviewPanel.Invalidate();
 			}
-			drawPanel.Focus();
+			graphicPanel.Focus();
 		}
 
 		private void overviewLeftRightButton_Click(object sender, EventArgs e)
@@ -1742,7 +2016,7 @@ namespace BahnEditor.Editor
 			else
 				this.overviewAlternative = 1;
 			this.overviewPanel.Invalidate();
-			drawPanel.Focus();
+			graphicPanel.Focus();
 		}
 
 		private void overviewPanel_Click(object sender, EventArgs e)
@@ -1766,7 +2040,7 @@ namespace BahnEditor.Editor
 				this.overviewLine++;
 				this.overviewPanel.Invalidate();
 			}
-			drawPanel.Focus();
+			graphicPanel.Focus();
 		}
 
 		private void particleComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -1843,6 +2117,7 @@ namespace BahnEditor.Editor
 
 		private void rightColorButton_Click(object sender, EventArgs e)
 		{
+			this.colorDialog.Color = PixelToColor(this.rightPixel);
 			DialogResult dr = this.colorDialog.ShowDialog();
 			if (dr == DialogResult.OK)
 			{
@@ -1859,6 +2134,7 @@ namespace BahnEditor.Editor
 					this.rightPixel = PixelFromColor(c);
 				}
 				this.rightColorButton.BackColor = c;
+				this.rightLabel.Text = String.Format("Right: {0} - {1} - {2}", c.R, c.G, c.B);
 			}
 		}
 
@@ -1903,7 +2179,7 @@ namespace BahnEditor.Editor
 				{
 					lastPixel = this.lastRightPixel;
 				}
-				uint pixel = this.GetPixelFromComboBox(this.rightComboBox.SelectedIndex, lastPixel);
+				uint pixel = PixelFromComboBox(this.rightComboBox.SelectedIndex, lastPixel);
 				if (pixel != 0)
 				{
 					if (!Pixel.IsTransparent(this.rightPixel) && Pixel.UsesRgb(this.rightPixel))
@@ -1917,7 +2193,9 @@ namespace BahnEditor.Editor
 					MessageBox.Show("Internal Error", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}
 			}
-			this.rightColorButton.BackColor = PixelToColor(this.rightPixel);
+			Color color = PixelToColor(this.rightPixel);
+			this.rightColorButton.BackColor = color;
+			this.rightLabel.Text = String.Format("Right: {0} - {1} - {2}", color.R, color.G, color.B);
 		}
 
 		private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1944,15 +2222,15 @@ namespace BahnEditor.Editor
 			switch (e.TabPage.Name)
 			{
 				case "zoom1Tab":
-					this.actualZoomFactor = ZoomFactor.Zoom1;
+					this.graphicPanel.ZoomFactor = ZoomFactor.Zoom1;
 					break;
 
 				case "zoom2Tab":
-					this.actualZoomFactor = ZoomFactor.Zoom2;
+					this.graphicPanel.ZoomFactor = ZoomFactor.Zoom2;
 					break;
 
 				case "zoom4Tab":
-					this.actualZoomFactor = ZoomFactor.Zoom4;
+					this.graphicPanel.ZoomFactor = ZoomFactor.Zoom4;
 					break;
 
 				default:
@@ -1960,7 +2238,8 @@ namespace BahnEditor.Editor
 			}
 			this.UpdateProperties();
 			this.UpdateZoom();
-			this.drawPanel.Invalidate();
+			//this.graphicPanel.Invalidate();
+			this.graphicPanel.Draw(this.GetElement());
 		}
 
 		private void toBackgroundRadioButton_CheckedChanged(object sender, EventArgs e)
@@ -1984,7 +2263,8 @@ namespace BahnEditor.Editor
 				return;
 			this.actualAnimationPhase = (int)this.animationNumericUpDown.Value;
 			this.UpdateProperties();
-			this.drawPanel.Invalidate();
+			//this.graphicPanel.Invalidate();
+			this.graphicPanel.Draw(this.GetElement());
 		}
 
 		private void propertiesGroupBox_Paint(object sender, PaintEventArgs e)
@@ -2074,13 +2354,16 @@ namespace BahnEditor.Editor
 				this.UserMadeChanges(true);
 			}
 			this.overviewPanel.Invalidate();
-			this.drawPanel.Invalidate();
+			//this.graphicPanel.Invalidate();
+			this.graphicPanel.Draw(this.GetElement());
 			this.UpdateAnimation();
 		}
 
 		private void gridCheckBox_CheckedChanged(object sender, EventArgs e)
 		{
-			this.drawPanel.Invalidate();
+			//this.graphicPanel.Invalidate();
+			this.graphicPanel.DisplayGrid = this.gridCheckBox.Checked;
+			this.graphicPanel.Draw(this.GetElement());
 		}
 
 		#endregion Event-Handler
