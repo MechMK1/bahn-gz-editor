@@ -51,11 +51,18 @@ namespace BahnEditor.Editor
 		{
 			if (this.Parent != null && updateButtonGroup)
 			{
-				foreach (ToolStripRadioButton radioButton in this.Parent.Items.OfType<ToolStripRadioButton>())
+				if (!this.Checked)
 				{
-					if (radioButton != this && radioButton.RadioButtonGroupID == this.RadioButtonGroupID)
+					this.SetCheckValue(true);
+				}
+				else
+				{
+					foreach (ToolStripRadioButton radioButton in this.Parent.Items.OfType<ToolStripRadioButton>())
 					{
-						radioButton.SetCheckValue(false);
+						if (radioButton != this && radioButton.RadioButtonGroupID == this.RadioButtonGroupID)
+						{
+							radioButton.SetCheckValue(false);
+						}
 					}
 				}
 			}

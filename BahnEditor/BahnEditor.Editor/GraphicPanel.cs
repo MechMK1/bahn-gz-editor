@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace BahnEditor.Editor
 {
-	public class GraphicPanel : PictureBox
+	public class GraphicPanel : Control
 	{
 		private Bitmap canvas = new Bitmap(Constants.ElementWidth, Constants.ElementHeight);
 		private int zoomLevelZoom1 = 4;
@@ -74,9 +74,8 @@ namespace BahnEditor.Editor
 		public void Draw(uint[,] graphic)
 		{
 			this.canvas.Dispose();
-			this.Size = new Size((int)((this.ZoomLevel) * Constants.ElementWidth * 3), (int)((this.ZoomLevel) * Constants.ElementHeight * 8));
-			this.canvas = new Bitmap(this.Size.Width, this.Size.Height);
-			this.canvas.SetResolution(16, 16);
+			Size size = new Size((int)((this.ZoomLevel) * Constants.ElementWidth * 3)+1, (int)((this.ZoomLevel) * Constants.ElementHeight * 8)+1);
+			this.canvas = new Bitmap(size.Width, size.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 			using (Graphics g = Graphics.FromImage(canvas))
 			{
 				if (graphic == null)
@@ -92,8 +91,8 @@ namespace BahnEditor.Editor
 				}
 				DrawGrid(g);
 			}
+			this.Size = size;
 			this.Invalidate();
-			//this.Image = canvas;
 		}
 
 		public void Draw(Point[] points, uint pixel)
@@ -121,7 +120,6 @@ namespace BahnEditor.Editor
 					brush.Dispose();
 				}
 				this.Invalidate();
-				//this.Image = canvas;
 			}
 		}
 
@@ -129,14 +127,70 @@ namespace BahnEditor.Editor
 		{
 			if (canvas != null)
 			{
-				e.Graphics.InterpolationMode = InterpolationMode.Low;
+				e.Graphics.InterpolationMode = InterpolationMode.NearestNeighbor;
 				e.Graphics.SmoothingMode = SmoothingMode.HighSpeed;
 				e.Graphics.CompositingQuality = CompositingQuality.HighSpeed;
+				e.Graphics.CompositingMode = CompositingMode.SourceCopy;
 				e.Graphics.PixelOffsetMode = PixelOffsetMode.HighSpeed;
 				e.Graphics.DrawImage(canvas, e.ClipRectangle, e.ClipRectangle, GraphicsUnit.Pixel);
-				//e.Graphics.DrawImageUnscaled(canvas, 0, 0);
+				System.Threading.Thread.Sleep(10);
 			}
 			base.OnPaint(e);
+		}
+
+		protected override void OnPaintBackground(PaintEventArgs e)
+		{
+		}
+
+		private void DrawGrid(Graphics g)
+		{
+			if (this.DisplayGrid)
+			{
+				for (int i = 1; i < 3; i++)
+				{
+					g.DrawLine(Pens.Gray, new Point(i * this.ZoomLevel * Constants.ElementWidth, 0), new Point(i * this.ZoomLevel * Constants.ElementWidth, this.ZoomLevel * Constants.ElementHeight * 8));
+				}
+				for (int i = 1; i < 8; i++)
+				{
+					g.DrawLine(Pens.Gray, new Point(0, i * this.ZoomLevel * Constants.ElementHeight), new Point(this.ZoomLevel * Constants.ElementWidth * 3, i * this.ZoomLevel * Constants.ElementHeight));
+				}
+				g.DrawRectangle(Pens.DarkGray, Constants.ElementWidth * (this.ZoomLevel), (6 * Constants.ElementHeight) * (this.ZoomLevel), Constants.ElementWidth * (this.ZoomLevel), Constants.ElementHeight * (this.ZoomLevel));
+				g.DrawRectangle(Pens.Gray, 0, 0, Constants.ElementWidth * 3 * this.ZoomLevel, Constants.ElementHeight * 8 * this.ZoomLevel);
+			}
+		}
+
+		internal static void DrawElement(Graphics g, uint[,] element, int ZoomLevel, bool withHatchBrush, ZoomFactor zoomFactor)
+		{
+			if (withHatchBrush)
+			{
+				using (TextureBrush backgroundBrush = new TextureBrush(GetBackgroundBitmapByZoomlevel(ZoomLevel, zoomFactor)))
+				{
+					g.FillRectangle(backgroundBrush, 0, 0, element.GetLength(1) * ZoomLevel / (int)zoomFactor, element.GetLength(0) * ZoomLevel / (int)zoomFactor);
+				}
+			}
+			else
+			{
+				using (SolidBrush backgroundBrush = new SolidBrush(Color.FromArgb(0, 112, 0)))
+				{
+					g.FillRectangle(backgroundBrush, 0, 0, element.GetLength(1) * ZoomLevel / (int)zoomFactor, element.GetLength(0) * ZoomLevel / (int)zoomFactor);
+				}
+			}
+			for (int i = 0; i < element.GetLength(0); i++)
+			{
+				for (int j = 0; j < element.GetLength(1); j++)
+				{
+					if (Pixel.IsTransparent(element[i, j]) != true)
+					{
+						Brush brush;
+						if (withHatchBrush && Pixel.IsSpecial(element[i, j]))
+							brush = new HatchBrush(HatchStyle.Percent20, Color.FromArgb(140, 140, 140), PixelToColor(element[i, j]));
+						else
+							brush = new SolidBrush(PixelToColor(element[i, j]));
+						g.FillRectangle(brush, (j * ZoomLevel) / (int)zoomFactor, ((ZoomLevel * element.GetLength(0)) - (ZoomLevel * (i + 1))) / (int)zoomFactor, ZoomLevel / (float)zoomFactor, ZoomLevel / (float)zoomFactor);
+						brush.Dispose();
+					}
+				}
+			}
 		}
 
 		private static Bitmap GetBackgroundBitmapByZoomlevel(int zoomLevel, ZoomFactor zoomFactor)
@@ -180,56 +234,6 @@ namespace BahnEditor.Editor
 
 				case 12:
 					return Properties.Resources.background12;
-			}
-		}
-
-		private void DrawGrid(Graphics g)
-		{
-			if (this.DisplayGrid)
-			{
-				for (int i = 1; i < 3; i++)
-				{
-					g.DrawLine(Pens.Gray, new Point(i * this.ZoomLevel * Constants.ElementWidth, 0), new Point(i * this.ZoomLevel * Constants.ElementWidth, this.ZoomLevel * Constants.ElementHeight * 8));
-				}
-				for (int i = 1; i < 8; i++)
-				{
-					g.DrawLine(Pens.Gray, new Point(0, i * this.ZoomLevel * Constants.ElementHeight), new Point(this.ZoomLevel * Constants.ElementWidth * 3, i * this.ZoomLevel * Constants.ElementHeight));
-				}
-				g.DrawRectangle(Pens.DarkGray, Constants.ElementWidth * (this.ZoomLevel), (6 * Constants.ElementHeight) * (this.ZoomLevel), Constants.ElementWidth * (this.ZoomLevel), Constants.ElementHeight * (this.ZoomLevel));
-			}
-		}
-
-		internal static void DrawElement(Graphics g, uint[,] element, int ZoomLevel, bool withHatchBrush, ZoomFactor zoomFactor)
-		{
-			if (withHatchBrush)
-			{
-				using (TextureBrush backgroundBrush = new TextureBrush(GetBackgroundBitmapByZoomlevel(ZoomLevel, zoomFactor)))
-				{
-					g.FillRectangle(backgroundBrush, 0, 0, element.GetLength(1) * ZoomLevel / (int)zoomFactor, element.GetLength(0) * ZoomLevel / (int)zoomFactor);
-				}
-			}
-			else
-			{
-				using (SolidBrush backgroundBrush = new SolidBrush(Color.FromArgb(0, 112, 0)))
-				{
-					g.FillRectangle(backgroundBrush, 0, 0, element.GetLength(1) * ZoomLevel / (int)zoomFactor, element.GetLength(0) * ZoomLevel / (int)zoomFactor);
-				}
-			}
-			for (int i = 0; i < element.GetLength(0); i++)
-			{
-				for (int j = 0; j < element.GetLength(1); j++)
-				{
-					if (Pixel.IsTransparent(element[i, j]) != true)
-					{
-						Brush brush;
-						if (withHatchBrush && Pixel.IsSpecial(element[i, j]))
-							brush = new HatchBrush(HatchStyle.Percent20, Color.FromArgb(140, 140, 140), PixelToColor(element[i, j]));
-						else
-							brush = new SolidBrush(PixelToColor(element[i, j]));
-						g.FillRectangle(brush, (j * ZoomLevel) / (int)zoomFactor, ((ZoomLevel * element.GetLength(0)) - (ZoomLevel * (i + 1))) / (int)zoomFactor, ZoomLevel / (float)zoomFactor, ZoomLevel / (float)zoomFactor);
-						brush.Dispose();
-					}
-				}
 			}
 		}
 

@@ -18,11 +18,14 @@ namespace BahnEditor.Editor
 		private int actualAnimationPhase = Constants.MinAnimationPhase;
 		private int actualGraphic;
 		private LayerID actualLayer;
-		//private ZoomFactor actualZoomFactor = ZoomFactor.Zoom1;
 		private Point specialModeStartPoint;
 		private Point specialModeEndPoint;
 		private bool drawingSpecialMode = false;
 		private MouseButtons specialModeMouseButton;
+		private Point selectStartPoint;
+		private Point selectEndPoint;
+		private bool selected = false;
+		private bool drawingSelection = false;
 		private AnimationForm animationForm;
 		private bool hasLoadedGraphic = false;
 		private bool cursorNormalDirectionCBCodeChanged = false;
@@ -304,6 +307,7 @@ namespace BahnEditor.Editor
 		{
 			try
 			{
+				this.DrawSelection(g);
 				this.DrawSpecial(g);
 				// Grid for animations
 				if (this.graphicPanel.DisplayGrid && this.zoom1Archive.Animation != null && this.zoom1Archive.Animation[this.actualGraphic, this.actualAlternative] != null)
@@ -325,7 +329,7 @@ namespace BahnEditor.Editor
 					float[] dashValues = { 3, 3 };
 					pen.DashPattern = dashValues;
 					g.DrawRectangle(pen, rectangle);
-
+					pen.Dispose();
 				}
 			}
 			catch (IndexOutOfRangeException)
@@ -482,7 +486,35 @@ namespace BahnEditor.Editor
 							graphicPanel.ZoomLevel / (float)this.graphicPanel.ZoomFactor,
 							graphicPanel.ZoomLevel / (float)this.graphicPanel.ZoomFactor);
 					}
+					brush.Dispose();
 				}
+			}
+		}
+
+		private void DrawSelection(Graphics g)
+		{
+			if (this.selected)
+			{
+				float elementSize = (this.graphicPanel.ZoomLevel) / (int)this.graphicPanel.ZoomFactor;
+				Point corner1 = this.selectStartPoint;
+				Point corner2 = this.selectEndPoint;
+
+				corner1.Y = ((Constants.ElementHeight * 8 * (int)this.graphicPanel.ZoomFactor) - corner1.Y);
+				corner2.Y = ((Constants.ElementHeight * 8 * (int)this.graphicPanel.ZoomFactor) - corner2.Y);
+				corner1.X = (int)(corner1.X * elementSize);
+				corner1.Y = (int)(corner1.Y * elementSize);
+				corner2.X = (int)(corner2.X * elementSize);
+				corner2.Y = (int)(corner2.Y * elementSize);
+
+				Rectangle rectangle = new Rectangle(Math.Min(corner1.X, corner2.X),
+													(Math.Min(corner1.Y, corner2.Y) - (int)elementSize),
+													(Math.Abs(corner1.X - corner2.X) + (int)elementSize),
+													(Math.Abs(corner1.Y - corner2.Y) + (int)elementSize));
+				Pen pen = new Pen(Brushes.Black);
+				float[] dashValues = { 3, 3 };
+				pen.DashPattern = dashValues;
+				g.DrawRectangle(pen, rectangle);
+				pen.Dispose();
 			}
 		}
 
@@ -542,8 +574,6 @@ namespace BahnEditor.Editor
 						else
 							return;
 						this.UserMadeChanges(true);
-						//graphicPanel.Invalidate(new Rectangle(e.X - this.ZoomLevel / ((int)this.actualZoomFactor), e.Y - this.ZoomLevel / ((int)this.actualZoomFactor), (this.ZoomLevel * 2) / (int)this.actualZoomFactor, (this.ZoomLevel * 2) / (int)this.actualZoomFactor));
-						//this.graphicPanel.Draw(this.GetElement());
 						this.graphicPanel.Draw(new Point[] { new Point(xElement, yElement) }, element[yElement, xElement]);
 					}
 					else if (this.takeColorToolStripRadioButton.Checked)
@@ -1818,7 +1848,14 @@ namespace BahnEditor.Editor
 				this.specialModeStartPoint = this.TransformCoordinates(e.X, e.Y);
 				this.specialModeMouseButton = e.Button;
 				this.drawingSpecialMode = true;
-				this.toolStripStatusLabel1.Text = String.Format("{0}, {1}, {2}, {3}", this.specialModeStartPoint.ToString(), this.drawingSpecialMode, this.specialModeEndPoint.ToString(), this.specialModeMouseButton.ToString());
+				this.toolStripStatusLabel1.Text = String.Format("Special: {0}, {1}, {2}, {3}", this.specialModeStartPoint.ToString(), this.drawingSpecialMode, this.specialModeEndPoint.ToString(), this.specialModeMouseButton.ToString());
+			}
+			else if(this.selectToolStripRadioButton.Checked)
+			{
+				this.selectStartPoint = this.TransformCoordinates(e.X, e.Y);
+				this.selected = true;
+				this.drawingSelection = true;
+				this.toolStripStatusLabel1.Text = String.Format("Select: {0}, {1}, {2}, {3}", this.selectStartPoint.ToString(), this.drawingSelection, this.selectEndPoint.ToString(), this.selected);
 			}
 		}
 
@@ -1840,9 +1877,18 @@ namespace BahnEditor.Editor
 					else
 						return;
 				}
-				this.toolStripStatusLabel1.Text = String.Format("{0}, {1}, {2}, {3}", this.specialModeStartPoint.ToString(), this.drawingSpecialMode, this.specialModeEndPoint.ToString(), this.specialModeMouseButton.ToString());
+				this.toolStripStatusLabel1.Text = String.Format("Special: {0}, {1}, {2}, {3}", this.specialModeStartPoint.ToString(), this.drawingSpecialMode, this.specialModeEndPoint.ToString(), this.specialModeMouseButton.ToString());
 				this.graphicPanel.Invalidate();
-				//this.graphicPanel.Draw(this.GetElement());
+			}
+			else if (this.selected && this.drawingSelection && this.selectToolStripRadioButton.Checked)
+			{
+				Point p = this.TransformCoordinates(e.X, e.Y);
+				if(this.selectEndPoint != p)
+				{
+					this.selectEndPoint = p;
+					this.toolStripStatusLabel1.Text = String.Format("Select: {0}, {1}, {2}, {3}", this.selectStartPoint.ToString(), this.drawingSelection, this.selectEndPoint.ToString(), this.selected);
+					this.graphicPanel.Invalidate();
+				}
 			}
 			else
 			{
@@ -1855,8 +1901,14 @@ namespace BahnEditor.Editor
 			if (this.drawingSpecialMode && (this.lineToolStripRadioButton.Checked || this.rectangleToolStripRadioButton.Checked))
 			{
 				this.drawingSpecialMode = false;
-				this.toolStripStatusLabel1.Text = String.Format("{0}, {1}, {2}, {3}", this.specialModeStartPoint.ToString(), this.drawingSpecialMode, this.specialModeEndPoint.ToString(), this.specialModeMouseButton.ToString());
+				this.toolStripStatusLabel1.Text = String.Format("Special: {0}, {1}, {2}, {3}", this.specialModeStartPoint.ToString(), this.drawingSpecialMode, this.specialModeEndPoint.ToString(), this.specialModeMouseButton.ToString());
 				this.DrawSpecialOnGraphic();
+			}
+			else if(this.selected && this.drawingSelection)
+			{
+				this.drawingSelection = false;
+				this.toolStripStatusLabel1.Text = String.Format("Select: {0}, {1}, {2}, {3}", this.selectStartPoint.ToString(), this.drawingSelection, this.selectEndPoint.ToString(), this.selected);
+				this.graphicPanel.Invalidate();
 			}
 
 			this.overviewPanel.Invalidate();
@@ -2364,6 +2416,15 @@ namespace BahnEditor.Editor
 			//this.graphicPanel.Invalidate();
 			this.graphicPanel.DisplayGrid = this.gridCheckBox.Checked;
 			this.graphicPanel.Draw(this.GetElement());
+		}
+
+		private void selectAllToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			this.selected = true;
+			this.selectStartPoint = new Point(0, 0);
+			this.selectEndPoint = new Point(Constants.ElementWidth * 3 * (int)this.graphicPanel.ZoomFactor - 1, Constants.ElementHeight * 8 * (int)this.graphicPanel.ZoomFactor - 1);
+			this.toolStripStatusLabel1.Text = String.Format("Select: {0}, {1}, {2}, {3}", this.selectStartPoint.ToString(), this.drawingSelection, this.selectEndPoint.ToString(), this.selected);
+			this.graphicPanel.Invalidate();
 		}
 
 		#endregion Event-Handler
