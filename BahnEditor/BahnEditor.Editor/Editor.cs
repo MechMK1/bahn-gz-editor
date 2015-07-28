@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
 
@@ -47,7 +48,6 @@ namespace BahnEditor.Editor
 		private GraphicArchive zoom2Archive;
 		private GraphicArchive zoom4Archive;
 
-
 		#endregion Private Fields
 
 		#region Internal Properties
@@ -79,8 +79,6 @@ namespace BahnEditor.Editor
 		#endregion Internal Properties
 
 		#region Private Properties
-
-
 
 		private Graphic ActualGraphic
 		{
@@ -1145,28 +1143,40 @@ namespace BahnEditor.Editor
 				{
 					case Pixel.PixelProperty.AlwaysBright:
 						return 3;
+
 					case Pixel.PixelProperty.LampYellow:
 						return 4;
+
 					case Pixel.PixelProperty.LampColdWhite:
 						return 5;
+
 					case Pixel.PixelProperty.LampRed:
 						return 6;
+
 					case Pixel.PixelProperty.LampYellowWhite:
 						return 7;
+
 					case Pixel.PixelProperty.LampGasYellow:
 						return 8;
+
 					case Pixel.PixelProperty.WindowYellow0:
 						return 9;
+
 					case Pixel.PixelProperty.WindowYellow1:
 						return 10;
+
 					case Pixel.PixelProperty.WindowYellow2:
 						return 11;
+
 					case Pixel.PixelProperty.WindowNeon0:
 						return 12;
+
 					case Pixel.PixelProperty.WindowNeon1:
 						return 13;
+
 					case Pixel.PixelProperty.WindowNeon2:
 						return 14;
+
 					default:
 						MessageBox.Show("Unknown pixelproperty (uses rgb)");
 						break;
@@ -1178,52 +1188,76 @@ namespace BahnEditor.Editor
 				{
 					case (uint)Pixel.PixelProperty.BehindGlass:
 						return 2;
+
 					case (uint)Pixel.PixelProperty.AsBG:
 						return 15;
+
 					case (uint)Pixel.PixelProperty.AsSleepers0:
 						return 16;
+
 					case (uint)Pixel.PixelProperty.AsSleepers1:
 						return 17;
+
 					case (uint)Pixel.PixelProperty.AsSleepers3:
 						return 18;
+
 					case (uint)Pixel.PixelProperty.AsRailsRoad0:
 						return 19;
+
 					case (uint)Pixel.PixelProperty.AsRailsRoad1:
 						return 20;
+
 					case (uint)Pixel.PixelProperty.AsRailsRoad2:
 						return 21;
+
 					case (uint)Pixel.PixelProperty.AsRailsRoad3:
 						return 22;
+
 					case (uint)Pixel.PixelProperty.AsRailsTrackbed0:
 						return 23;
+
 					case (uint)Pixel.PixelProperty.AsRailsTrackbed1:
 						return 24;
+
 					case (uint)Pixel.PixelProperty.AsRailsTrackbed2:
 						return 25;
+
 					case (uint)Pixel.PixelProperty.AsRailsTrackbed3:
 						return 26;
+
 					case (uint)Pixel.PixelProperty.AsMarkingPointBus0:
 						return 27;
+
 					case (uint)Pixel.PixelProperty.AsMarkingPointBus1:
 						return 28;
+
 					case (uint)Pixel.PixelProperty.AsMarkingPointBus2:
 						return 29;
+
 					case (uint)Pixel.PixelProperty.AsMarkingPointBus3:
 						return 30;
+
 					case (uint)Pixel.PixelProperty.AsMarkingPointWater:
 						return 31;
+
 					case (uint)Pixel.PixelProperty.AsGravel:
 						return 32;
+
 					case (uint)Pixel.PixelProperty.AsSmallGravel:
 						return 33;
+
 					case (uint)Pixel.PixelProperty.AsGrassy:
 						return 34;
+
 					case (uint)Pixel.PixelProperty.AsPathBG:
 						return 35;
+
 					case (uint)Pixel.PixelProperty.AsPathFG:
 						return 36;
+
 					case (uint)Pixel.PixelProperty.AsText:
 						return 37;
+
 					default:
 						MessageBox.Show("Unknown pixelproperty (!uses rgb)");
 						break;
@@ -1571,6 +1605,62 @@ namespace BahnEditor.Editor
 			return (x > 0) ? 1 : (x < 0) ? -1 : 0;
 		}
 
+		private void PasteGraphic()
+		{
+			if (Clipboard.ContainsImage())
+			{
+				MessageBox.Show("Image");
+			}
+			else if (Clipboard.ContainsText())
+			{
+				MessageBox.Show("Text: " + Clipboard.GetText());
+			}
+		}
+
+		private void CopyGraphic()
+		{
+
+		}
+
+		private void CopyGraphicToBitmap(bool cut, int multiplier)
+		{
+			uint[,] graphic = this.GetElement();
+
+			int startX = Math.Min(selectStartPoint.X, selectEndPoint.X);
+			int startY = Math.Min(selectStartPoint.Y, selectEndPoint.Y);
+			int height = Math.Abs(selectStartPoint.Y - selectEndPoint.Y + 1);
+			int width = Math.Abs(selectStartPoint.X - selectEndPoint.X - 1);
+
+			Bitmap copy = new Bitmap(width, height, PixelFormat.Format24bppRgb);
+			Rectangle rect = new Rectangle(0, 0, width, height);
+			BitmapData bmpData = copy.LockBits(rect, ImageLockMode.WriteOnly, copy.PixelFormat);
+			IntPtr ptr = bmpData.Scan0;
+
+			int bytes = Math.Abs(bmpData.Stride) * copy.Height;
+			byte[] rgb = new byte[bytes];
+			int counter = 0;
+
+			System.Runtime.InteropServices.Marshal.Copy(ptr, rgb, 0, bytes);
+
+			for (int i = startY + height - 1; i >= 0 && i >= startY; i--) //Y - height
+			{
+				for (int j = startX; j < graphic.GetLength(1) && j < startX + width; j++) //X - width
+				{
+					uint pixel = graphic[i, j];
+					Color c = PixelToColor(pixel);
+					rgb[counter++] = c.R;
+					rgb[counter++] = c.G;
+					rgb[counter++] = c.B;
+				}
+			}
+
+			System.Runtime.InteropServices.Marshal.Copy(rgb, 0, ptr, bytes);
+
+			copy.UnlockBits(bmpData);
+
+			Clipboard.SetImage(copy);
+		}
+
 		#endregion Private Methods
 
 		#region Internal Methods
@@ -1850,7 +1940,7 @@ namespace BahnEditor.Editor
 				this.drawingSpecialMode = true;
 				this.toolStripStatusLabel1.Text = String.Format("Special: {0}, {1}, {2}, {3}", this.specialModeStartPoint.ToString(), this.drawingSpecialMode, this.specialModeEndPoint.ToString(), this.specialModeMouseButton.ToString());
 			}
-			else if(this.selectToolStripRadioButton.Checked)
+			else if (this.selectToolStripRadioButton.Checked)
 			{
 				this.selectStartPoint = this.TransformCoordinates(e.X, e.Y);
 				this.selected = true;
@@ -1883,7 +1973,7 @@ namespace BahnEditor.Editor
 			else if (this.selected && this.drawingSelection && this.selectToolStripRadioButton.Checked)
 			{
 				Point p = this.TransformCoordinates(e.X, e.Y);
-				if(this.selectEndPoint != p)
+				if (this.selectEndPoint != p)
 				{
 					this.selectEndPoint = p;
 					this.toolStripStatusLabel1.Text = String.Format("Select: {0}, {1}, {2}, {3}", this.selectStartPoint.ToString(), this.drawingSelection, this.selectEndPoint.ToString(), this.selected);
@@ -1904,7 +1994,7 @@ namespace BahnEditor.Editor
 				this.toolStripStatusLabel1.Text = String.Format("Special: {0}, {1}, {2}, {3}", this.specialModeStartPoint.ToString(), this.drawingSpecialMode, this.specialModeEndPoint.ToString(), this.specialModeMouseButton.ToString());
 				this.DrawSpecialOnGraphic();
 			}
-			else if(this.selected && this.drawingSelection)
+			else if (this.selected && this.drawingSelection)
 			{
 				this.drawingSelection = false;
 				this.toolStripStatusLabel1.Text = String.Format("Select: {0}, {1}, {2}, {3}", this.selectStartPoint.ToString(), this.drawingSelection, this.selectEndPoint.ToString(), this.selected);
@@ -2425,6 +2515,20 @@ namespace BahnEditor.Editor
 			this.selectEndPoint = new Point(Constants.ElementWidth * 3 * (int)this.graphicPanel.ZoomFactor - 1, Constants.ElementHeight * 8 * (int)this.graphicPanel.ZoomFactor - 1);
 			this.toolStripStatusLabel1.Text = String.Format("Select: {0}, {1}, {2}, {3}", this.selectStartPoint.ToString(), this.drawingSelection, this.selectEndPoint.ToString(), this.selected);
 			this.graphicPanel.Invalidate();
+		}
+
+		private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			this.PasteGraphic();
+		}
+
+		private void copyToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+		}
+
+		private void toolStripMenuItem1_Click(object sender, EventArgs e)
+		{
+			this.CopyGraphicToBitmap(false, 1);
 		}
 
 		#endregion Event-Handler
