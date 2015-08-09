@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Text;
 using System.Windows.Forms;
 
 namespace BahnEditor.Editor
@@ -1607,58 +1608,148 @@ namespace BahnEditor.Editor
 
 		private void PasteGraphic()
 		{
+			this.CreateGraphic();
 			if (Clipboard.ContainsImage())
 			{
-				MessageBox.Show("Image");
 			}
 			else if (Clipboard.ContainsText())
 			{
-				MessageBox.Show("Text: " + Clipboard.GetText());
-			}
-		}
-
-		private void CopyGraphic()
-		{
-
-		}
-
-		private void CopyGraphicToBitmap(bool cut, int multiplier)
-		{
-			uint[,] graphic = this.GetElement();
-
-			int startX = Math.Min(selectStartPoint.X, selectEndPoint.X);
-			int startY = Math.Min(selectStartPoint.Y, selectEndPoint.Y);
-			int height = Math.Abs(selectStartPoint.Y - selectEndPoint.Y + 1);
-			int width = Math.Abs(selectStartPoint.X - selectEndPoint.X - 1);
-
-			Bitmap copy = new Bitmap(width, height, PixelFormat.Format24bppRgb);
-			Rectangle rect = new Rectangle(0, 0, width, height);
-			BitmapData bmpData = copy.LockBits(rect, ImageLockMode.WriteOnly, copy.PixelFormat);
-			IntPtr ptr = bmpData.Scan0;
-
-			int bytes = Math.Abs(bmpData.Stride) * copy.Height;
-			byte[] rgb = new byte[bytes];
-			int counter = 0;
-
-			System.Runtime.InteropServices.Marshal.Copy(ptr, rgb, 0, bytes);
-
-			for (int i = startY + height - 1; i >= 0 && i >= startY; i--) //Y - height
-			{
-				for (int j = startX; j < graphic.GetLength(1) && j < startX + width; j++) //X - width
+				uint[,] graphic = this.GetElement();
+				string[] array = Clipboard.GetText().Split(' ');
+				if (array[0] == "bahneditor" && array[1] == "copy")
 				{
-					uint pixel = graphic[i, j];
-					Color c = PixelToColor(pixel);
-					rgb[counter++] = c.R;
-					rgb[counter++] = c.G;
-					rgb[counter++] = c.B;
+					//ZoomFactor zoomFactor;
+					int width;
+					int height;
+					int startX = Math.Min(selectStartPoint.X, selectEndPoint.X); //X - width
+					int startY = Math.Min(selectStartPoint.Y, selectEndPoint.Y); //Y - height
+					if (array[2] != "1")
+					{
+						MessageBox.Show("An error happened during pasting!" + Environment.NewLine + "Wrong version!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+						return;
+					}
+
+					if (!int.TryParse(array[4], out width)) return;
+					if (!int.TryParse(array[5], out height)) return;
+
+					List<uint> list = new List<uint>();
+
+					for (int i = 6; i < array.Length; i++)
+					{
+						string[] split = array[i].Split('-');
+						uint pixel;
+						int count;
+						if (!uint.TryParse(split[0], out pixel) || !int.TryParse(split[1], out count))
+						{
+							MessageBox.Show("An error happened during pasting!" + Environment.NewLine + "Data was in wrong format!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+							return;
+						}
+						for (int j = 0; j < count; j++)
+						{
+							list.Add(pixel);
+						}
+
+					}
+					int counter = 0;
+					for (int y = 0; y < height && y + startY < graphic.GetLength(0); y++)
+					{
+						for (int x = 0; x < width && x + startX < graphic.GetLength(1); x++)
+						{
+							graphic[y + startY, x + startX] = list[counter];
+							counter++;
+							if(x + startX >= graphic.GetLength(1) - 1)
+							{
+								counter += width - x - 1;
+							}
+						}
+						if(y + startY >= graphic.GetLength(0) - 1)
+						{
+							counter += height - y - 1;
+						}
+					}
+
+					this.graphicPanel.Draw(this.GetElement());
 				}
 			}
+		}
 
-			System.Runtime.InteropServices.Marshal.Copy(rgb, 0, ptr, bytes);
+		private void CopyGraphic(bool cut)
+		{
+			uint[,] graphic = this.GetElement();
+			if (this.selected && graphic != null)
+			{
+				StringBuilder builder = new StringBuilder();
 
-			copy.UnlockBits(bmpData);
+				int startX = Math.Min(selectStartPoint.X, selectEndPoint.X);
+				int startY = Math.Min(selectStartPoint.Y, selectEndPoint.Y);
+				int height = Math.Abs(selectStartPoint.Y - selectEndPoint.Y + 1);
+				int width = Math.Abs(selectStartPoint.X - selectEndPoint.X - 1);
 
-			Clipboard.SetImage(copy);
+				builder.Append(String.Format("bahneditor copy {0} {1} {2} {3} ", "1", this.graphicPanel.ZoomFactor, width, height));
+				int counter = 0;
+				uint last = graphic[startY, startX];
+
+				for (int i = startY; i < startY + height && i < graphic.GetLength(0); i++) //Y - height
+				{
+					for (int j = startX; j < startX + width && j < graphic.GetLength(1); j++) //X - width
+					{
+						if (last != graphic[i, j])
+						{
+							builder.Append(String.Format("{0}-{1} ", last, counter));
+							last = graphic[i, j];
+							counter = 1;
+						}
+						else
+							counter++;
+						if (cut) graphic[i, j] = Constants.ColorTransparent;
+					}
+				}
+				builder.Append(String.Format("{0}-{1}", last, counter));
+
+				Clipboard.SetText(builder.ToString());
+				if (cut) this.graphicPanel.Draw(this.GetElement());
+			}
+		}
+
+		private void CopyGraphicToBitmap(int multiplier)
+		{
+			uint[,] graphic = this.GetElement();
+			if (this.selected && graphic != null)
+			{
+				int startX = Math.Min(selectStartPoint.X, selectEndPoint.X);
+				int startY = Math.Min(selectStartPoint.Y, selectEndPoint.Y);
+				int height = Math.Abs(selectStartPoint.Y - selectEndPoint.Y + 1);
+				int width = Math.Abs(selectStartPoint.X - selectEndPoint.X - 1);
+
+				Bitmap copy = new Bitmap(width, height, PixelFormat.Format24bppRgb);
+				Rectangle rect = new Rectangle(0, 0, width, height);
+				BitmapData bmpData = copy.LockBits(rect, ImageLockMode.WriteOnly, copy.PixelFormat);
+				IntPtr ptr = bmpData.Scan0;
+
+				int bytes = Math.Abs(bmpData.Stride) * copy.Height;
+				byte[] rgb = new byte[bytes];
+				int counter = 0;
+
+				System.Runtime.InteropServices.Marshal.Copy(ptr, rgb, 0, bytes);
+
+				for (int i = startY + height - 1; i >= 0 && i >= startY; i--) //Y - height
+				{
+					for (int j = startX; j < graphic.GetLength(1) && j < startX + width; j++) //X - width
+					{
+						uint pixel = graphic[i, j];
+						Color c = PixelToColor(pixel);
+						rgb[counter++] = c.R;
+						rgb[counter++] = c.G;
+						rgb[counter++] = c.B;
+					}
+				}
+
+				System.Runtime.InteropServices.Marshal.Copy(rgb, 0, ptr, bytes);
+
+				copy.UnlockBits(bmpData);
+
+				Clipboard.SetImage(copy);
+			}
 		}
 
 		#endregion Private Methods
@@ -2524,11 +2615,28 @@ namespace BahnEditor.Editor
 
 		private void copyToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			this.CopyGraphic(false);
 		}
 
-		private void toolStripMenuItem1_Click(object sender, EventArgs e)
+		private void cutToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			this.CopyGraphicToBitmap(false, 1);
+			this.CopyGraphic(true);
+		}
+
+		private void copyToBitmapToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			this.CopyGraphicToBitmap(1);
+		}
+
+		private void Editor_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.KeyData == Keys.Escape && this.selected)
+			{
+				this.selected = false;
+				this.selectEndPoint = new Point();
+				this.selectStartPoint = new Point();
+				this.graphicPanel.Invalidate();
+			}
 		}
 
 		#endregion Event-Handler
