@@ -575,7 +575,7 @@ namespace BahnEditor.Editor
 						this.UserMadeChanges(true);
 						this.graphicPanel.Draw(new Point[] { new Point(xElement, yElement) }, element[yElement, xElement]);
 					}
-					else if (this.takeColorToolStripRadioButton.Checked)
+					else if (this.pickColorToolStripRadioButton.Checked)
 					{
 						uint el = element[yElement, xElement];
 						Color c = PixelToColor(el);
@@ -1648,7 +1648,6 @@ namespace BahnEditor.Editor
 						{
 							list.Add(pixel);
 						}
-
 					}
 					int counter = 0;
 					for (int y = 0; y < height && y + startY < graphic.GetLength(0); y++)
@@ -1657,12 +1656,12 @@ namespace BahnEditor.Editor
 						{
 							graphic[y + startY, x + startX] = list[counter];
 							counter++;
-							if(x + startX >= graphic.GetLength(1) - 1)
+							if (x + startX >= graphic.GetLength(1) - 1)
 							{
 								counter += width - x - 1;
 							}
 						}
-						if(y + startY >= graphic.GetLength(0) - 1)
+						if (y + startY >= graphic.GetLength(0) - 1)
 						{
 							counter += height - y - 1;
 						}
@@ -2636,6 +2635,38 @@ namespace BahnEditor.Editor
 				this.selectEndPoint = new Point();
 				this.selectStartPoint = new Point();
 				this.graphicPanel.Invalidate();
+			}
+			else
+			{
+				switch (e.KeyData)
+				{
+					case Keys.D1:
+						this.normalModeToolStripRadioButton.Checked = true;
+						break;
+
+					case Keys.D2:
+						this.lineToolStripRadioButton.Checked = true;
+						break;
+
+					case Keys.D3:
+						this.rectangleToolStripRadioButton.Checked = true;
+						break;
+
+					case Keys.D4:
+						this.fillToolStripRadioButton.Checked = true;
+						break;
+
+					case Keys.D5:
+						this.selectToolStripRadioButton.Checked = true;
+						break;
+
+					case Keys.D6:
+						this.pickColorToolStripRadioButton.Checked = true;
+						break;
+
+					default:
+						break;
+				}
 			}
 		}
 
