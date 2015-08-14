@@ -1150,7 +1150,7 @@
             this.customizeToolStripMenuItem,
             this.optionsToolStripMenuItem});
 			this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-			this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
+			this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
 			this.toolsToolStripMenuItem.Text = "&Tools";
 			// 
 			// animationToolStripMenuItem
@@ -1586,7 +1586,6 @@
 		private System.Windows.Forms.Label clockRotationLabel;
 		private System.Windows.Forms.Label clockLabel;
 		private System.Windows.Forms.CheckBox alternativesCheckBox;
-		private GraphicPanel graphicPanel;
 		private System.Windows.Forms.Panel scrollPanel;
 		private System.Windows.Forms.CheckBox gridCheckBox;
 		private System.Windows.Forms.StatusStrip statusStrip1;
@@ -1601,6 +1600,7 @@
 		private System.Windows.Forms.GroupBox mouseButtonsGroupBox;
 		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
 		private System.Windows.Forms.ToolStripMenuItem copyToBitmapToolStripMenuItem;
+		internal GraphicPanel graphicPanel;
 
 	}
 }
