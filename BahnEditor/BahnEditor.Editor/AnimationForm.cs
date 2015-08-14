@@ -306,7 +306,7 @@ namespace BahnEditor.Editor
 				}
 				editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID].XDiff = (int)this.xNumericUpDown.Value;
 				this.editor.UserMadeChanges(true);
-				editor.Invalidate();
+				editor.graphicPanel.Invalidate();
 			}
 		}
 
@@ -320,7 +320,7 @@ namespace BahnEditor.Editor
 				}
 				editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID].YDiff = (int)this.yNumericUpDown.Value;
 				this.editor.UserMadeChanges(true);
-				editor.Invalidate();
+				editor.graphicPanel.Invalidate();
 			}
 		}
 
@@ -337,7 +337,7 @@ namespace BahnEditor.Editor
 				}
 				editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID].Width = (int)this.widthNumericUpDown.Value;
 				this.editor.UserMadeChanges(true);
-				editor.Invalidate();
+				editor.graphicPanel.Invalidate();
 			}
 		}
 
@@ -354,7 +354,7 @@ namespace BahnEditor.Editor
 				}
 				editor.Zoom1Archive.Animation[editor.ActualGraphicID, editor.ActualAlternativeID].Height = (int)this.heightNumericUpDown.Value;
 				this.editor.UserMadeChanges(true);
-				editor.Invalidate();
+				editor.graphicPanel.Invalidate();
 			}
 		}
 

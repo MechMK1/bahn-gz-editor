@@ -15,9 +15,6 @@ namespace BahnEditor.Test
 			string infoTextExpected = "Test";
 			short heightExpected = (short)(Constants.ElementHeight * 8);
 			short widthExpected = (short)(Constants.ElementWidth * 3);
-			//short x0Expected = 7;
-			//short y0Expected = 5;
-			//uint colorInSchematicModeExpected = 50 << 16 | 50 << 8 | 50;
 			uint[,] elementExpected = new uint[heightExpected, widthExpected];
 			for (int i = 0; i < elementExpected.GetLength(0); i++)
 			{
@@ -102,19 +99,6 @@ namespace BahnEditor.Test
 			expectedGraphic.Save("testProperties.gz1", true);
 
 			Graphic graphic = Graphic.Load("testProperties.gz1");
-			Assert.AreEqual(expectedGraphic.Properties.RawData, graphic.Properties.RawData);
-			Assert.AreEqual(expectedGraphic.Properties.ParticleX, graphic.Properties.ParticleX);
-			Assert.AreEqual(expectedGraphic.Properties.ParticleY, graphic.Properties.ParticleY);
-			Assert.AreEqual(expectedGraphic.Properties.ParticleWidth, graphic.Properties.ParticleWidth);
-			Assert.AreEqual(expectedGraphic.Properties.ColorInSchematicMode, graphic.Properties.ColorInSchematicMode);
-			Assert.AreEqual(expectedGraphic.Properties.ClockX, graphic.Properties.ClockX);
-			Assert.AreEqual(expectedGraphic.Properties.ClockY, graphic.Properties.ClockY);
-			Assert.AreEqual(expectedGraphic.Properties.ClockZ, graphic.Properties.ClockZ);
-			Assert.AreEqual(expectedGraphic.Properties.ClockProperties, graphic.Properties.ClockProperties);
-			Assert.AreEqual(expectedGraphic.Properties.ClockHeight, graphic.Properties.ClockHeight);
-			Assert.AreEqual(expectedGraphic.Properties.ClockWidth, graphic.Properties.ClockWidth);
-			Assert.AreEqual(expectedGraphic.Properties.ClockColorHoursPointer, graphic.Properties.ClockColorHoursPointer);
-			Assert.AreEqual(expectedGraphic.Properties.ClockColorMinutesPointer, graphic.Properties.ClockColorMinutesPointer);
 			CompareGraphic(expectedGraphic, graphic);
 
 			System.IO.File.Delete("testProperties.gz1");
@@ -290,6 +274,49 @@ namespace BahnEditor.Test
 			Assert.IsTrue(archive.HasAlternatives(4));
 		}
 
+		[TestMethod]
+		[ExpectedException(typeof(AssertFailedException))]
+		public void TestCompareGraphic()
+		{
+			Graphic g1 = new Graphic("TestGraphic");
+			g1.AddTransparentLayer(LayerID.Foreground);
+			g1.GetLayer(LayerID.Foreground)[10, 10] = 100 << 16 | 50 << 8 | 20;
+
+			Graphic g2 = new Graphic("TestGraphic");
+			g2.AddTransparentLayer(LayerID.Background0);
+			g2.GetLayer(LayerID.Background0)[10, 10] = 100 << 16 | 50 << 8 | 20;
+
+			CompareGraphic(g1, g2);
+		}
+
+		[TestMethod]
+		public void TestLoadOriginalGraphic()
+		{
+			Graphic expectedGraphic = new Graphic("(keine Daten vorhanden)");
+			expectedGraphic.AddTransparentLayer(LayerID.Foreground);
+			uint[,] layer = expectedGraphic.GetLayer(LayerID.Foreground);
+			uint black = Pixel.Create(0, 0, 0);
+			uint white = Pixel.Create(255, 255, 255);
+			layer[16, 32] = white;
+			layer[17, 32] = black;
+			layer[16, 33] = black;
+			layer[17, 33] = white;
+			layer[16, 34] = black;
+			layer[17, 35] = black;
+			layer[18, 36] = black;
+
+			expectedGraphic.Properties.RawData |= GraphicProperties.Properties.ColorSchematicMode;
+			expectedGraphic.Properties.ColorInSchematicMode = Constants.ColorTransparent;
+
+			expectedGraphic.Properties.RawData |= GraphicProperties.Properties.Cursor;
+			expectedGraphic.Properties.CursorNormalDirection = Direction.South;
+			expectedGraphic.Properties.CursorReverseDirection = Direction.North;
+
+			Graphic originalGraphic = Graphic.Load("testGraphicOriginal.gz1");
+
+			CompareGraphic(expectedGraphic, originalGraphic);
+		}
+
 		#endregion Tests
 
 		#region Private Methods
@@ -297,15 +324,44 @@ namespace BahnEditor.Test
 		{
 			Assert.AreEqual<string>(expectedGraphic.InfoText, graphic.InfoText);
 			Assert.AreEqual<ZoomFactor>(expectedGraphic.ZoomFactor, graphic.ZoomFactor);
-			Assert.AreEqual<uint>(expectedGraphic.Properties.ColorInSchematicMode, graphic.Properties.ColorInSchematicMode);
-
-			for (int i = 0; i < expectedGraphic.GetLayer(LayerID.Foreground).GetLength(0); i++)
+			CompareGraphicProperties(expectedGraphic.Properties, graphic.Properties);
+			for (int layer = 1; layer <= 6; layer++)
 			{
-				for (int j = 0; j < expectedGraphic.GetLayer(LayerID.Foreground).GetLength(1); j++)
+				if (expectedGraphic.GetLayer((LayerID)layer) == null && graphic.GetLayer((LayerID)layer) == null)
+					continue;
+				else if ((expectedGraphic.GetLayer((LayerID)layer) == null || graphic.GetLayer((LayerID)layer) == null))
+					Assert.Fail("One layer of a graphic is null, the other layer is not null");
+				else
 				{
-					Assert.AreEqual<uint>(expectedGraphic.GetLayer(LayerID.Foreground)[i, j], graphic.GetLayer(LayerID.Foreground)[i, j]);
+					for (int i = 0; i < expectedGraphic.GetLayer(LayerID.Foreground).GetLength(0); i++)
+					{
+						for (int j = 0; j < expectedGraphic.GetLayer(LayerID.Foreground).GetLength(1); j++)
+						{
+							Assert.AreEqual<uint>(expectedGraphic.GetLayer((LayerID)layer)[i, j], graphic.GetLayer((LayerID)layer)[i, j]);
+						}
+					}
 				}
 			}
+		}
+
+		private void CompareGraphicProperties(GraphicProperties expectedProperties, GraphicProperties properties)
+		{
+			Assert.AreEqual<GraphicProperties.Properties>(expectedProperties.RawData, properties.RawData);
+			Assert.AreEqual<uint>(expectedProperties.ColorInSchematicMode, properties.ColorInSchematicMode);
+			Assert.AreEqual<int>(expectedProperties.ParticleX, properties.ParticleX);
+			Assert.AreEqual<int>(expectedProperties.ParticleY, properties.ParticleY);
+			Assert.AreEqual<int>(expectedProperties.ParticleWidth, properties.ParticleWidth);
+			Assert.AreEqual<int>(expectedProperties.ClockX, properties.ClockX);
+			Assert.AreEqual<int>(expectedProperties.ClockY, properties.ClockY);
+			Assert.AreEqual<LayerID>(expectedProperties.ClockZ, properties.ClockZ);
+			Assert.AreEqual<int>(expectedProperties.ClockWidth, properties.ClockWidth);
+			Assert.AreEqual<int>(expectedProperties.ClockHeight, properties.ClockHeight);
+			Assert.AreEqual<ClockProperties>(expectedProperties.ClockProperties, properties.ClockProperties);
+			Assert.AreEqual<uint>(expectedProperties.ClockColorHoursPointer, properties.ClockColorHoursPointer);
+			Assert.AreEqual<uint>(expectedProperties.ClockColorMinutesPointer, properties.ClockColorMinutesPointer);
+			Assert.AreEqual<Direction>(expectedProperties.CursorNormalDirection, properties.CursorNormalDirection);
+			Assert.AreEqual<Direction>(expectedProperties.CursorReverseDirection, properties.CursorReverseDirection);
+
 		}
 
 		private void CompareDrivingWay(DrivingWayElement expectedDrivingWayElement, DrivingWayElement drivingWayElement)

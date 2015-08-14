@@ -66,6 +66,7 @@ namespace BahnEditor.BahnLib
 			this.layers = new Dictionary<LayerID, uint[,]>();
 			this.DrivingWay = new List<DrivingWayElement>();
 			this.Properties = new GraphicProperties();
+			this.Properties.RawData |= GraphicProperties.Properties.ColorFormat24BPP; //Set ColorFormat24BPP in Properties because the pixel-data is saved in 24bpp-format
 		}
 
 		#endregion Private Constructors
@@ -324,7 +325,6 @@ namespace BahnEditor.BahnLib
 			bw.Write(Constants.GraphicFileFormat);    //Major Version
 			bw.Write((byte)0);                        //Minor Version, normally a byte[2] array, but first element of the array is empty
 			bw.Write((byte)this.Version);             //Minor Version
-			this.Properties.RawData |= GraphicProperties.Properties.ColorFormat24BPP; //Set ColorFormat24BPP in any case because of reasons. Reasons that prevent people from getting any sleep. So many reasons.
 			bw.Write((int)this.Properties.RawData); //Properties
 			if (this.Properties.HasParticles)
 			{
@@ -343,7 +343,7 @@ namespace BahnEditor.BahnLib
 				bw.Write(this.Properties.ClockHeight);
 				bw.Write(this.Properties.ClockColorHoursPointer);
 				bw.Write(this.Properties.ClockColorMinutesPointer);
-				bw.Write(this.Properties.ClockColorHoursPointer); //HoursPointer is written twice because of reasons. So many reasons. Lord Inglip has been summoned.
+				bw.Write(this.Properties.ClockColorHoursPointer); //HoursPointer is written twice because space is reserved for future use
 			}
 
 			if (this.Properties.RawData.HasFlag(GraphicProperties.Properties.Cursor))
