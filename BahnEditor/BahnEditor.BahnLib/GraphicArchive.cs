@@ -88,17 +88,6 @@ namespace BahnEditor.BahnLib
 				ArchiveElement element = this.graphics.SingleOrDefault(x => x.ElementNumber == elementNumber && x.AnimationPhase == animationPhase && x.Alternative == alternative);
 				if (element != null)
 				{
-					if (element.Graphic.IsEmpty() && this.FileName != null)
-					{
-						using (FileStream stream = File.Open(this.FileName, FileMode.Open))
-						{
-							stream.Seek(element.SeekPositionGraphicData, SeekOrigin.Begin);
-							using (BinaryReader br = new BinaryReader(stream))
-							{
-								element.Graphic.LoadData(br);
-							}
-						}
-					}
 					return element.Graphic;
 				}
 				return null;
@@ -221,7 +210,7 @@ namespace BahnEditor.BahnLib
 		/// <param name="overwrite">If the file should be overwritten when existing</param>
 		/// <returns>Returns true if succeeded, else false</returns>
 		/// <exception cref="BahnEditor.BahnLib.ArchiveIsEmptyException"/>
-		/// <exception cref="BahnEditor.BahnLib.ElementIsEmptyException"/>
+		/// <exception cref="BahnEditor.BahnLib.LayerIsEmptyException"/>
 		/// <exception cref="System.ArgumentNullException"/>
 		public bool Save(string path, bool overwrite)
 		{
@@ -241,7 +230,7 @@ namespace BahnEditor.BahnLib
 				{
 					if (item.Graphic.IsTransparent())
 					{
-						throw new ElementIsEmptyException("a graphic is empty");
+						throw new LayerIsEmptyException("a layer is empty");
 					}
 				}
 				using (FileStream stream = File.OpenWrite(path))
@@ -318,19 +307,16 @@ namespace BahnEditor.BahnLib
 					}
 					br.ReadInt32();                          //skipping data (bauform)
 					br.ReadInt32();                          //skipping data (fwSig)
-					int animationPhase = br.ReadInt32(); //AnimationPhase
-					int alternative = br.ReadInt32();    //Alternative
+					int animationPhase = br.ReadInt32();     //AnimationPhase
+					int alternative = br.ReadInt32();        //Alternative
 					ArchiveElement archiveElement = new ArchiveElement(elementNumber, animationPhase, alternative, null); //Graphic loaded later
 					archiveElement.SeekPosition = ((int)(br.BaseStream.Position + 4 + br.ReadInt32())); // +4 Used for unknown reasons. Possibly because of C/C# incompatibility
 					graphics.Add(archiveElement);
 				}
 				foreach (var item in graphics)
 				{
-					br.BaseStream.Seek(item.SeekPosition + sizeof(int) * 5, SeekOrigin.Begin); // sizeof(int) * 5 => Skip 5 integer-sized fields
-					br.ReadInt32(); //Length
-					br.ReadInt32(); //Date
-					item.Graphic = Graphic.LoadHeader(br);
-					item.SeekPositionGraphicData = br.BaseStream.Position;
+					br.BaseStream.Seek(item.SeekPosition + sizeof(int) * 7, SeekOrigin.Begin); // sizeof(int) * 7 => Skip 7 integer-sized fields
+					item.Graphic = Graphic.Load(br);
 				}
 				GraphicArchive archive;
 				switch (zoomFactor)
@@ -433,8 +419,6 @@ namespace BahnEditor.BahnLib
 			/// Seekposition in the archive-file (prepared for later)
 			/// </summary>
 			public int SeekPosition { get; set; }
-
-			public long SeekPositionGraphicData { get; set; }
 
 			#endregion Properties
 

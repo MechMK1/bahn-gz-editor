@@ -120,7 +120,7 @@
 			this.noAnimationLabel.Name = "noAnimationLabel";
 			this.noAnimationLabel.Size = new System.Drawing.Size(308, 18);
 			this.noAnimationLabel.TabIndex = 1;
-			this.noAnimationLabel.Text = "No animation defined for the selected graphic.";
+			this.noAnimationLabel.Text = "No animation defined for the selected layer.";
 			// 
 			// addAnimationStepButton
 			// 
@@ -174,7 +174,7 @@
 			this.createAnimationProgramButton.Name = "createAnimationProgramButton";
 			this.createAnimationProgramButton.Size = new System.Drawing.Size(241, 23);
 			this.createAnimationProgramButton.TabIndex = 7;
-			this.createAnimationProgramButton.Text = "Create new animationprogram for this graphic";
+			this.createAnimationProgramButton.Text = "Create new animationprogram for this layer";
 			this.createAnimationProgramButton.UseVisualStyleBackColor = true;
 			this.createAnimationProgramButton.Click += new System.EventHandler(this.createAnimationProgramButton_Click);
 			// 
