@@ -282,6 +282,20 @@ namespace BahnEditor.Test
 		}
 
 		[TestMethod]
+		public void TestMeasureTimeOfDecompress()
+		{
+			Graphic g = new Graphic("TestGraphic");
+			uint[,] layer = g[LayerID.Foreground];
+			layer[10, 10] = 100 << 16 | 50 << 8 | 20;
+			g[LayerID.Foreground] = layer;
+
+			for (int i = 0; i < 1000; i++)
+			{
+				layer = g[LayerID.Foreground];
+			}
+		}
+
+		[TestMethod]
 		[ExpectedException(typeof(AssertFailedException))]
 		public void TestCompareGraphic()
 		{

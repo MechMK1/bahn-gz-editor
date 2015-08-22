@@ -83,7 +83,7 @@ namespace BahnEditor.BahnLib
 		}
 
 		/// <summary>
-		/// Gets or sets a layer of the graphic. Null-value represents an empty or fully transparent layer. 
+		/// Gets or sets a layer of the graphic. Null-value represents an empty or fully transparent layer.
 		/// </summary>
 		/// <param name="layerID">The LayerID</param>
 		/// <returns>The layer</returns>
@@ -386,6 +386,97 @@ namespace BahnEditor.BahnLib
 
 		#region Private Methods
 
+		private bool IsLayerTransparent(uint[,] layer)
+		{
+			for (int x = 0; x < layer.GetLength(Width); x++)
+			{
+				for (int y = 0; y < layer.GetLength(Height); y++)
+				{
+					if (!Pixel.IsTransparent(layer[y, x]))
+						return false;
+				}
+			}
+			return true;
+		}
+
+		private static uint[,] DecompressLayer(CompressedLayer layer, ZoomFactor zoomFactor)
+		{
+			int arrayPosition = 0;
+			List<uint> colors = new List<uint>();
+			for (int i = 0; i < layer.LayerData.Length; i++)
+			{
+				uint item = layer.LayerData[arrayPosition++];
+				int count = 0;
+				if ((item & Constants.ColorAdditionalDataMask) == Constants.ColorCompressed)
+				{
+					count = (int)(item & Constants.ColorMaskCompressedCount) + 2;
+					if ((item & Constants.ColorMaskCompressedTransparent) != 0)
+					{
+						// item is transparent
+						for (int k = 0; k < count; k++)
+						{
+							colors.Add(Constants.ColorTransparent);
+						}
+					}
+					else if ((item & Constants.ColorMaskCompressedSystemcolor) != 0)
+					{
+						// item is a system-color
+						for (int k = 0; k < count; k++)
+						{
+							colors.Add(((item & Constants.ColorMaskCompressedSFB) >> 8) + Constants.ColorAsMin);
+						}
+					}
+					else
+					{
+						// item is a color, may be a set of colors
+						uint wdhlen = ((item & Constants.ColorMaskCompressedLength) >> 8) + 1;
+						if (wdhlen > Constants.MaxRepeatedColorsLength)
+							throw new InvalidDataException("color repetition length out of range");
+						List<uint> buffer = new List<uint>();
+						for (int j = 0; j < wdhlen; j++)
+						{
+							buffer.Add(layer.LayerData[arrayPosition++]);
+							i++;
+						}
+						for (int j = 0; j < count; j++)
+						{
+							colors.AddRange(buffer);
+						}
+					}
+				}
+				else
+				{
+					// not packed, single pixel
+					count = 1;
+					colors.Add(item);
+				}
+			}
+			int height = Constants.ElementHeight * 8 * (int)zoomFactor;
+			int width = Constants.ElementWidth * 3 * (int)zoomFactor;
+			uint[,] layerElement = new uint[height, width];
+			int x0 = (int)(layer.X0 + Constants.ElementWidth * (int)zoomFactor);
+			int y0 = (int)(layer.Y0 + Constants.ElementHeight * (int)zoomFactor);
+			int _x0 = x0 + layer.Width;
+			int _y0 = y0 + layer.Height;
+
+			int position = 0;
+			for (int i = 0; i < height; i++)
+			{
+				for (int j = 0; j < width; j++)
+				{
+					if (i >= y0 && i < _y0 && j >= x0 && j < _x0)
+					{
+						layerElement[i, j] = colors[position];
+					}
+					else
+					{
+						layerElement[i, j] = Constants.ColorTransparent;
+					}
+				}
+			}
+			return layerElement;
+		}
+
 		//CALL STACK: LoadData -> ReadLayerFromStream -> _FillLayer
 		private static uint[,] _FillLayer(uint[,] layer, int x0, int y0, ZoomFactor zoomFactor)
 		{
@@ -407,6 +498,151 @@ namespace BahnEditor.BahnLib
 				}
 			}
 			return newLayer;
+		}
+
+		private static CompressedLayer CompressLayer(uint[,] decompressedLayer, ZoomFactor zoomFactor)
+		{
+			int layerWidth = decompressedLayer.GetLength(Width);
+			int layerHeight = decompressedLayer.GetLength(Height);
+			int minx = layerWidth;
+			int miny = layerHeight;
+			int maxx = 0;
+			int maxy = 0;
+			for (int i = 0; i < layerHeight; i++)
+			{
+				for (int j = 0; j < layerWidth; j++)
+				{
+					if (decompressedLayer[i, j] != Constants.ColorTransparent)
+					{
+						if (minx > j)
+						{
+							minx = j;
+						}
+						if (maxx < j)
+						{
+							maxx = j;
+						}
+						if (miny > i)
+						{
+							miny = i;
+						}
+						if (maxy < i)
+						{
+							maxy = i;
+						}
+					}
+				}
+			}
+			if (maxx == 0 && maxy == 0)
+			{
+				return null;
+			}
+			maxx++;
+			maxy++;
+			List<uint> pixels = new List<uint>();
+			int trimmedHeight = maxy - miny;
+			int trimmedWidth = maxx - minx;
+			for (int i = 0; i < trimmedHeight; i++)
+			{
+				for (int j = 0; j < trimmedWidth; j++)
+				{
+					pixels.Add(decompressedLayer[i + miny, j + minx]);
+				}
+			}
+			short x0 = (short)(minx - Constants.ElementWidth * (int)zoomFactor);
+			short y0 = (short)(miny - Constants.ElementHeight * (int)zoomFactor);
+
+			List<uint> colors = new List<uint>();
+			int colorposition = 0;
+			while (colorposition < pixels.Count)
+			{
+				int length = 0;
+				uint lastcolor = pixels[colorposition];
+				for (; colorposition < pixels.Count; colorposition++)
+				{
+					if (lastcolor != pixels[colorposition] || length > 256)
+					{
+						break;
+					}
+					length++;
+					lastcolor = pixels[colorposition];
+				}
+				if (length <= 1)
+				{
+					colors.Add(lastcolor);
+				}
+				else if (lastcolor == Constants.ColorTransparent)
+				{
+					colors.Add(Constants.ColorCompressedTransparent | (uint)(length - 2));
+				}
+				else if (((lastcolor & Constants.ColorLogic) != 0) && lastcolor != (uint)Pixel.PixelProperty.BehindGlass)
+				{
+					uint color = lastcolor - Constants.ColorAsMin;
+					color = color << 8;
+					color = color | Constants.ColorCompressedSystemcolor;
+					colors.Add(color | (uint)(length - 2));
+				}
+				else
+				{
+					colors.Add(Constants.ColorCompressed | (uint)(length - 2));
+					colors.Add(lastcolor);
+				}
+			}
+			CompressedLayer layer = new CompressedLayer();
+			layer.LayerData = colors.ToArray();
+			layer.X0 = x0;
+			layer.Y0 = y0;
+			layer.Height = (short)trimmedHeight;
+			layer.Width = (short)trimmedWidth;
+			return layer;
+		}
+		private static void _WriteLayerToStream(CompressedLayer layer, BinaryWriter bw, BahnLib.ZoomFactor zoomFactor)
+		{
+			if (bw == null)
+				throw new ArgumentNullException("bw");
+
+			bw.Write(layer.X0); //x0
+			bw.Write(layer.Y0); //y0
+			bw.Write(layer.Width); //width
+			bw.Write(layer.Height); //height
+			bw.Write(layer.LayerData.Length);
+			foreach (uint item in layer.LayerData)
+			{
+				bw.Write(item);
+			}
+		}
+
+		//CALL STACK: LoadData -> ReadLayerFromStream
+		private static CompressedLayer _ReadLayerFromStream(BinaryReader br, BahnLib.ZoomFactor zoomFactor, GraphicVersion graphicVersion)
+		{
+			if (br == null)
+				throw new ArgumentNullException("br");
+
+			CompressedLayer l = new CompressedLayer();
+			l.X0 = br.ReadInt16();
+			l.Y0 = br.ReadInt16();
+			l.Width = br.ReadInt16();
+			l.Height = br.ReadInt16();
+			if (graphicVersion == GraphicVersion.Version2)
+			{
+				int layerLength = br.ReadInt32();
+				List<uint> data = new List<uint>();
+				for (int i = 0; i < layerLength; i++)
+				{
+					data.Add(br.ReadUInt32());
+				}
+				l.LayerData = data.ToArray();
+			}
+			else if (graphicVersion < GraphicVersion.Version2)
+			{
+				uint[,] decompressedLayer = _ReadLayerFromStreamVersion0(br, l.Width, l.Height);
+				l = CompressLayer(_FillLayer(decompressedLayer, l.X0, l.Y0, zoomFactor), zoomFactor);
+			}
+			else
+			{
+				throw new ArgumentOutOfRangeException("graphicVersion");
+			}
+			return l;
 		}
 
 		//CALL STACK: LoadData -> ReadLayerFromStream -> _ReadLayerFromSteamVersion0
@@ -458,380 +694,6 @@ namespace BahnEditor.BahnLib
 				}
 			}
 			return element;
-		}
-
-		//CALL STACK: LoadData -> ReadLayerFromStream -> _ReadLayerFromSteamVersion2
-		/*private static uint[,] _ReadLayerFromSteamVersion2(BinaryReader br, short width, short height)
-		{
-			List<uint> colors = new List<uint>();
-			int elementSize = br.ReadInt32();
-			for (int i = 0; i < elementSize; i++)
-			{
-				uint item = br.ReadUInt32();
-				int count = 0;
-				if ((item & Constants.ColorAdditionalDataMask) == Constants.ColorCompressed)
-				{
-					count = (int)(item & Constants.ColorMaskCompressedCount) + 2;
-					if ((item & Constants.ColorMaskCompressedTransparent) != 0)
-					{
-						// item is transparent
-						for (int k = 0; k < count; k++)
-						{
-							colors.Add(Constants.ColorTransparent);
-						}
-					}
-					else if ((item & Constants.ColorMaskCompressedSystemcolor) != 0)
-					{
-						// item is a system-color
-						for (int k = 0; k < count; k++)
-						{
-							colors.Add(((item & Constants.ColorMaskCompressedSFB) >> 8) + Constants.ColorAsMin);
-						}
-					}
-					else
-					{
-						// item is a color, may be a set of colors
-						uint wdhlen = ((item & Constants.ColorMaskCompressedLength) >> 8) + 1;
-						if (wdhlen > Constants.MaxRepeatedColorsLength)
-							throw new InvalidDataException("color repetition length out of range");
-						List<uint> buffer = new List<uint>();
-						for (int j = 0; j < wdhlen; j++)
-						{
-							buffer.Add(br.ReadUInt32());
-							i++;
-						}
-						for (int j = 0; j < count; j++)
-						{
-							foreach (var b in buffer)
-							{
-								colors.Add(b);
-							}
-						}
-					}
-				}
-				else
-				{
-					// not packed, single pixel
-					count = 1;
-					colors.Add(item);
-				}
-			}
-
-			uint[,] element = new uint[height, width];
-			int position = 0;
-			for (int i = 0; i < height; i++)
-			{
-				for (int j = 0; j < width; j++)
-				{
-					element[i, j] = colors[position];
-					position++;
-				}
-			}
-			return element;
-		}*/
-
-		private static uint[,] DecompressLayer(CompressedLayer layer, ZoomFactor zoomFactor)
-		{
-			int arrayPosition = 0;
-			List<uint> colors = new List<uint>();
-			for (int i = 0; i < layer.LayerData.Length; i++)
-			{
-				uint item = layer.LayerData[arrayPosition++];
-				int count = 0;
-				if ((item & Constants.ColorAdditionalDataMask) == Constants.ColorCompressed)
-				{
-					count = (int)(item & Constants.ColorMaskCompressedCount) + 2;
-					if ((item & Constants.ColorMaskCompressedTransparent) != 0)
-					{
-						// item is transparent
-						for (int k = 0; k < count; k++)
-						{
-							colors.Add(Constants.ColorTransparent);
-						}
-					}
-					else if ((item & Constants.ColorMaskCompressedSystemcolor) != 0)
-					{
-						// item is a system-color
-						for (int k = 0; k < count; k++)
-						{
-							colors.Add(((item & Constants.ColorMaskCompressedSFB) >> 8) + Constants.ColorAsMin);
-						}
-					}
-					else
-					{
-						// item is a color, may be a set of colors
-						uint wdhlen = ((item & Constants.ColorMaskCompressedLength) >> 8) + 1;
-						if (wdhlen > Constants.MaxRepeatedColorsLength)
-							throw new InvalidDataException("color repetition length out of range");
-						List<uint> buffer = new List<uint>();
-						for (int j = 0; j < wdhlen; j++)
-						{
-							buffer.Add(layer.LayerData[arrayPosition++]);
-							i++;
-						}
-						for (int j = 0; j < count; j++)
-						{
-							foreach (var b in buffer)
-							{
-								colors.Add(b);
-							}
-						}
-					}
-				}
-				else
-				{
-					// not packed, single pixel
-					count = 1;
-					colors.Add(item);
-				}
-			}
-
-			uint[,] element = new uint[layer.Height, layer.Width];
-			int position = 0;
-			for (int i = 0; i < layer.Height; i++)
-			{
-				for (int j = 0; j < layer.Width; j++)
-				{
-					element[i, j] = colors[position];
-					position++;
-				}
-			}
-			element = _FillLayer(element, layer.X0, layer.Y0, zoomFactor);
-			return element;
-		}
-
-		private static CompressedLayer CompressLayer(uint[,] decompressedLayer, ZoomFactor zoomFactor)
-		{
-			short x0;
-			short y0;
-			uint[,] trimmedLayer;
-			try
-			{
-				trimmedLayer = _TrimLayer(decompressedLayer, out x0, out y0, zoomFactor);
-			}
-			catch (LayerIsEmptyException)
-			{
-				return null;
-			}
-			List<uint> pixels = new List<uint>();
-			for (int j = 0; j <= trimmedLayer.GetLength(Height) - 1; j++)
-			{
-				for (int k = 0; k <= trimmedLayer.GetLength(Width) - 1; k++)
-				{
-					pixels.Add(trimmedLayer[j, k]);
-				}
-			}
-
-			List<uint> colors = new List<uint>();
-			int colorposition = 0;
-			while (colorposition < pixels.Count)
-			{
-				int length = 0;
-				uint lastcolor = pixels[colorposition];
-				for (; colorposition < pixels.Count; colorposition++)
-				{
-					if (lastcolor != pixels[colorposition] || length > 256)
-					{
-						break;
-					}
-					length++;
-					lastcolor = pixels[colorposition];
-				}
-				if (length <= 1)
-				{
-					colors.Add(lastcolor);
-				}
-				else if (lastcolor == Constants.ColorTransparent)
-				{
-					colors.Add(Constants.ColorCompressedTransparent | (uint)(length - 2));
-				}
-				else if (((lastcolor & Constants.ColorLogic) != 0) && lastcolor != (uint)Pixel.PixelProperty.BehindGlass)
-				{
-					uint color = lastcolor - Constants.ColorAsMin;
-					color = color << 8;
-					color = color | Constants.ColorCompressedSystemcolor;
-					colors.Add(color | (uint)(length - 2));
-				}
-				else
-				{
-					colors.Add(Constants.ColorCompressed | (uint)(length - 2));
-					colors.Add(lastcolor);
-				}
-			}
-			CompressedLayer layer = new CompressedLayer();
-			layer.LayerData = colors.ToArray();
-			layer.X0 = x0;
-			layer.Y0 = y0;
-			layer.Height = (short)trimmedLayer.GetLength(Height);
-			layer.Width = (short)trimmedLayer.GetLength(Width);
-			//colors.Insert(0, (uint)(colors.Count));
-			return layer;
-		}
-
-		private static uint[,] _TrimLayer(uint[,] layer, out short x0, out short y0, BahnLib.ZoomFactor zoomFactor)
-		{
-			int minx = layer.GetLength(Width);
-			int miny = layer.GetLength(Height);
-			int maxx = 0;
-			int maxy = 0;
-			for (int i = 0; i < layer.GetLength(Height); i++)
-			{
-				for (int j = 0; j < layer.GetLength(Width); j++)
-				{
-					if (layer[i, j] != Constants.ColorTransparent)
-					{
-						if (minx > j)
-						{
-							minx = j;
-						}
-						if (maxx < j)
-						{
-							maxx = j;
-						}
-						if (miny > i)
-						{
-							miny = i;
-						}
-						if (maxy < i)
-						{
-							maxy = i;
-						}
-					}
-				}
-			}
-			if (maxx == 0 && maxy == 0)
-			{
-				throw new LayerIsEmptyException("CompressedLayer is Empty");
-			}
-			maxx++;
-			maxy++;
-			uint[,] newElement = new uint[maxy - miny, maxx - minx];
-			for (int i = 0; i < newElement.GetLength(Height); i++)
-			{
-				for (int j = 0; j < newElement.GetLength(Width); j++)
-				{
-					newElement[i, j] = layer[i + miny, j + minx];
-				}
-			}
-			x0 = (short)(minx - Constants.ElementWidth * (int)zoomFactor);
-			y0 = (short)(miny - Constants.ElementHeight * (int)zoomFactor);
-			return newElement;
-		}
-
-		/*private static void _WriteElementToStreamVersion2(uint[,] layer, BinaryWriter bw)
-		{
-			List<uint> pixels = new List<uint>();
-			for (int j = 0; j <= layer.GetLength(Height) - 1; j++)
-			{
-				for (int k = 0; k <= layer.GetLength(Width) - (short)1; k++)
-				{
-					pixels.Add(layer[j, k]);
-				}
-			}
-			List<uint> colors = new List<uint>();
-			int colorposition = 0;
-			while (colorposition < pixels.Count)
-			{
-				int length = 0;
-				uint lastcolor = pixels[colorposition];
-				for (; colorposition < pixels.Count; colorposition++)
-				{
-					if (lastcolor != pixels[colorposition] || length > 256)
-					{
-						break;
-					}
-					length++;
-					lastcolor = pixels[colorposition];
-				}
-				if (length <= 1)
-				{
-					colors.Add(lastcolor);
-				}
-				else if (lastcolor == Constants.ColorTransparent)
-				{
-					colors.Add(Constants.ColorCompressedTransparent | (uint)(length - 2));
-				}
-				else if (((lastcolor & Constants.ColorLogic) != 0) && lastcolor != (uint)Pixel.PixelProperty.BehindGlass)
-				{
-					uint color = lastcolor - Constants.ColorAsMin;
-					color = color << 8;
-					color = color | Constants.ColorCompressedSystemcolor;
-					colors.Add(color | (uint)(length - 2));
-				}
-				else
-				{
-					colors.Add(Constants.ColorCompressed | (uint)(length - 2));
-					colors.Add(lastcolor);
-				}
-			}
-			colors.Insert(0, (uint)(colors.Count));
-			uint[] compressed = colors.ToArray();
-			for (int j = 0; j < compressed.Length; j++)
-			{
-				bw.Write(compressed[j]);
-			}
-		}*/
-
-		private static void _WriteLayerToStream(CompressedLayer layer, BinaryWriter bw, BahnLib.ZoomFactor zoomFactor)
-		{
-			if (bw == null)
-				throw new ArgumentNullException("bw");
-
-			bw.Write(layer.X0); //x0
-			bw.Write(layer.Y0); //y0
-			bw.Write(layer.Width); //width
-			bw.Write(layer.Height); //height
-			bw.Write(layer.LayerData.Length);
-			foreach (uint item in layer.LayerData)
-			{
-				bw.Write(item);
-			}
-		}
-
-		//CALL STACK: LoadData -> ReadLayerFromStream
-		private static CompressedLayer _ReadLayerFromStream(BinaryReader br, BahnLib.ZoomFactor zoomFactor, GraphicVersion graphicVersion)
-		{
-			if (br == null)
-				throw new ArgumentNullException("br");
-
-			CompressedLayer l = new CompressedLayer();
-			l.X0 = br.ReadInt16();
-			l.Y0 = br.ReadInt16();
-			l.Width = br.ReadInt16();
-			l.Height = br.ReadInt16();
-			if (graphicVersion == GraphicVersion.Version2)
-			{
-				int layerLength = br.ReadInt32();
-				List<uint> data = new List<uint>();
-				for (int i = 0; i < layerLength; i++)
-				{
-					data.Add(br.ReadUInt32());
-				}
-				l.LayerData = data.ToArray();
-			}
-			else if (graphicVersion < GraphicVersion.Version2)
-			{
-				uint[,] decompressedLayer = _ReadLayerFromStreamVersion0(br, l.Width, l.Height);
-				l = CompressLayer(_FillLayer(decompressedLayer, l.X0, l.Y0, zoomFactor), zoomFactor);
-			}
-			else
-			{
-				throw new ArgumentOutOfRangeException("graphicVersion");
-			}
-			return l;
-		}
-
-		private bool IsLayerTransparent(uint[,] layer)
-		{
-			for (int x = 0; x < layer.GetLength(Width); x++)
-			{
-				for (int y = 0; y < layer.GetLength(Height); y++)
-				{
-					if (!Pixel.IsTransparent(layer[y, x]))
-						return false;
-				}
-			}
-			return true;
 		}
 
 		#endregion Private Methods

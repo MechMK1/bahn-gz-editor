@@ -529,7 +529,7 @@ namespace BahnEditor.Editor
 			}
 			LayerID[] layerIDs = { LayerID.ForegroundAbove, LayerID.Foreground, LayerID.Front, LayerID.Background1, LayerID.Background0 };
 
-			foreach(LayerID layer in layerIDs)
+			foreach (LayerID layer in layerIDs)
 			{
 				if (!graphic.IsTransparent(layer))
 				{
