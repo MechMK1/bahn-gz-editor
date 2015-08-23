@@ -296,7 +296,7 @@ namespace BahnEditor.Editor
 			}
 			catch (LayerIsEmptyException)
 			{
-				MessageBox.Show("A layer is empty (transparent)!", "Invalid layer!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				MessageBox.Show("A graphic is empty (fully transparent)!", "Invalid graphic!", MessageBoxButtons.OK, MessageBoxIcon.Information);
 				return false;
 			}
 		}
@@ -2413,7 +2413,7 @@ namespace BahnEditor.Editor
 			this.lastPath = this.saveFileDialog.FileName;
 			if (!this.SaveGraphicArchive())
 			{
-				this.ClickOnSaveButton(true);
+				e.Cancel = true;
 			}
 		}
 
