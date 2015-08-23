@@ -108,9 +108,15 @@ namespace BahnEditor.BahnLib
 			set
 			{
 				if (value == null)
-					this.layersCompressed[layerID] = null;
+					this.layersCompressed.Remove(layerID);
 				else
-					this.layersCompressed[layerID] = CompressLayer(value, this.ZoomFactor);
+				{
+					CompressedLayer compressedLayer = CompressLayer(value, this.ZoomFactor);
+					if (compressedLayer == null)
+						this.layersCompressed.Remove(layerID);
+					else
+						this.layersCompressed[layerID] = compressedLayer;
+				}
 			}
 		}
 

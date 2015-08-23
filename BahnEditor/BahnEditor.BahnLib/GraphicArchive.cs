@@ -224,13 +224,13 @@ namespace BahnEditor.BahnLib
 			{
 				if (this.graphics.Count <= 0)
 				{
-					throw new ArchiveIsEmptyException("the archive is empty");
+					throw new ArchiveIsEmptyException("The archive is empty.");
 				}
 				foreach (var item in this.graphics)
 				{
 					if (item.Graphic.IsTransparent())
 					{
-						throw new LayerIsEmptyException("a layer is empty");
+						throw new LayerIsEmptyException("The graphic has no layers (fully transparent).");
 					}
 				}
 				using (FileStream stream = File.OpenWrite(path))

@@ -260,7 +260,6 @@ namespace BahnEditor.Editor
 		{
 			try
 			{
-				this.RemoveUnusedGraphics();
 				try
 				{
 					if (!this.zoom1Archive.Save(lastPath, true))
@@ -1519,31 +1518,6 @@ namespace BahnEditor.Editor
 				this.cursorReverseDirectionComboBox.SelectedIndex = -1;
 				this.cursorNormalDirectionCBCodeChanged = false;
 				this.cursorReverseDirectionCBCodeChanged = false;
-			}
-		}
-
-		private void RemoveUnusedGraphics()
-		{
-			for (int element = 0; element < Constants.MaxElementsInArchive; element++)
-			{
-				for (int alternative = 0; alternative <= Constants.MaxAlternative; alternative++)
-				{
-					for (int animationPhase = 0; animationPhase <= Constants.MaxAnimationPhase; animationPhase++)
-					{
-						if (this.zoom1Archive[element, animationPhase, alternative] != null && this.zoom1Archive[element, animationPhase, alternative].IsTransparent())
-						{
-							this.zoom1Archive.RemoveGraphic(element, animationPhase, alternative);
-						}
-						if (this.zoom2Archive[element, animationPhase, alternative] != null && this.zoom2Archive[element, animationPhase, alternative].IsTransparent())
-						{
-							this.zoom2Archive.RemoveGraphic(element, animationPhase, alternative);
-						}
-						if (this.zoom4Archive[element, animationPhase, alternative] != null && this.zoom4Archive[element, animationPhase, alternative].IsTransparent())
-						{
-							this.zoom4Archive.RemoveGraphic(element, animationPhase, alternative);
-						}
-					}
-				}
 			}
 		}
 
