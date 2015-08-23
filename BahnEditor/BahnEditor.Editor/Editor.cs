@@ -645,9 +645,9 @@ namespace BahnEditor.Editor
 					}
 				}
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				MessageBox.Show("Internal Error!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(String.Format("Internal Error!{0}{1}", Environment.NewLine, ex.ToString()), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 		}
 
@@ -1036,7 +1036,7 @@ namespace BahnEditor.Editor
 		{
 			if (this.userMadeChanges == true)
 			{
-				DialogResult dr = MessageBox.Show("Do you want to save the layer?", "Save", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+				DialogResult dr = MessageBox.Show("Do you want to save the graphic?", "Save", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
 				if (dr == DialogResult.Cancel)
 				{
 					return false;
@@ -1097,7 +1097,7 @@ namespace BahnEditor.Editor
 		private uint[,] GetLayer()
 		{
 			Graphic graphic = this.ActualGraphic;
-			if (graphic != null && !graphic.IsTransparent(this.actualLayer))
+			if (graphic != null)
 			{
 				return graphic[this.actualLayer];
 			}
@@ -1106,7 +1106,9 @@ namespace BahnEditor.Editor
 
 		private void SetLayer(uint[,] layer)
 		{
-			this.ActualGraphic[this.actualLayer] = layer;
+			Graphic graphic = this.ActualGraphic;
+			if (graphic != null)
+				graphic[this.actualLayer] = layer;
 		}
 
 		private LayerID GetLayerIDBySelectedIndex()

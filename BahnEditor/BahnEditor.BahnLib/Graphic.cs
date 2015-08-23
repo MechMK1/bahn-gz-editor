@@ -440,7 +440,10 @@ namespace BahnEditor.BahnLib
 						}
 						for (int j = 0; j < count; j++)
 						{
-							colors.AddRange(buffer);
+							foreach (var b in buffer)
+							{
+								colors.Add(b);
+							}
 						}
 					}
 				}
@@ -466,7 +469,7 @@ namespace BahnEditor.BahnLib
 				{
 					if (i >= y0 && i < _y0 && j >= x0 && j < _x0)
 					{
-						layerElement[i, j] = colors[position];
+						layerElement[i, j] = colors[position++];
 					}
 					else
 					{
