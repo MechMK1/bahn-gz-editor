@@ -38,7 +38,7 @@ namespace BahnEditor.Test
 
 			Graphic graphic = new Graphic(infoTextExpected, ZoomFactor.Zoom1);
 
-			graphic.SetLayer(LayerID.Foreground, elementExpected);
+			graphic[LayerID.Foreground] = elementExpected;
 			graphic.Save("test.gz1", true);
 			Graphic newGraphic = Graphic.Load("test.gz1");
 
@@ -56,11 +56,11 @@ namespace BahnEditor.Test
 			Graphic expectedGraphic1 = new Graphic("test1", ZoomFactor.Zoom1);
 			Graphic expectedGraphic2 = new Graphic("test2", ZoomFactor.Zoom1);
 
-			expectedGraphic1.AddTransparentLayer(LayerID.Foreground);
-			expectedGraphic2.AddTransparentLayer(LayerID.Foreground);
+			//expectedGraphic1.AddTransparentLayer(LayerID.Foreground);
+			//expectedGraphic2.AddTransparentLayer(LayerID.Foreground);
 
-			expectedGraphic1.GetLayer(LayerID.Foreground)[10, 10] = 100 << 16 | 50 << 8 | 20;
-			expectedGraphic2.GetLayer(LayerID.Foreground)[50, 40] = 150 << 16 | 63 << 8 | 123;
+			expectedGraphic1[LayerID.Foreground, 10, 10] = 100 << 16 | 50 << 8 | 20;
+			expectedGraphic2[LayerID.Foreground, 50, 40] = 150 << 16 | 63 << 8 | 123;
 
 			GraphicArchive expectedArchive = new GraphicArchive(ZoomFactor.Zoom1);
 			expectedArchive.AddGraphic(expectedGraphic1);
@@ -81,8 +81,7 @@ namespace BahnEditor.Test
 		public void TestGraphicProperties()
 		{
 			Graphic expectedGraphic = new Graphic("test");
-			expectedGraphic.AddTransparentLayer(LayerID.Foreground);
-			expectedGraphic.GetLayer(LayerID.Foreground)[10, 10] = 123 << 16 | 123 << 8 | 123;
+			expectedGraphic[LayerID.Foreground, 10, 10] = 123 << 16 | 123 << 8 | 123;
 			expectedGraphic.Properties.RawData = GraphicProperties.Properties.Clock | GraphicProperties.Properties.ColorSchematicMode | GraphicProperties.Properties.Smoke;
 			expectedGraphic.Properties.ParticleX = 10;
 			expectedGraphic.Properties.ParticleY = 10;
@@ -108,8 +107,7 @@ namespace BahnEditor.Test
 		public void TestDrivingWay()
 		{
 			Graphic expectedGraphic = new Graphic("TestDrivingWay");
-			expectedGraphic.AddTransparentLayer(LayerID.Foreground);
-			expectedGraphic.GetLayer(LayerID.Foreground)[10, 10] = (uint)(123 << 16 | 123 << 8 | 123);
+			expectedGraphic[LayerID.Foreground, 10, 10] = (uint)(123 << 16 | 123 << 8 | 123);
 
 			expectedGraphic.Properties.RawData = GraphicProperties.Properties.Cursor | GraphicProperties.Properties.DrivingWay | GraphicProperties.Properties.ColorSchematicMode | GraphicProperties.Properties.ColorFormat24BPP;
 			expectedGraphic.Properties.CursorNormalDirection = Direction.South;
@@ -210,15 +208,10 @@ namespace BahnEditor.Test
 			Graphic graphic3 = new Graphic("test3", ZoomFactor.Zoom1);
 			Graphic graphic4 = new Graphic("test4", ZoomFactor.Zoom1);
 
-			graphic1.AddTransparentLayer(LayerID.Foreground);
-			graphic2.AddTransparentLayer(LayerID.Foreground);
-			graphic3.AddTransparentLayer(LayerID.Foreground);
-			graphic4.AddTransparentLayer(LayerID.Foreground);
-
-			graphic1.GetLayer(LayerID.Foreground)[10, 10] = 100 << 16 | 50 << 8 | 20;
-			graphic2.GetLayer(LayerID.Foreground)[50, 40] = 150 << 16 | 63 << 8 | 123;
-			graphic3.GetLayer(LayerID.Foreground)[50, 40] = 150 << 16 | 63 << 8 | 123;
-			graphic4.GetLayer(LayerID.Foreground)[50, 40] = 150 << 16 | 63 << 8 | 123;
+			graphic1[LayerID.Foreground, 10, 10] = 100 << 16 | 50 << 8 | 20;
+			graphic2[LayerID.Foreground, 50, 40] = 150 << 16 | 63 << 8 | 123;
+			graphic3[LayerID.Foreground, 50, 40] = 150 << 16 | 63 << 8 | 123;
+			graphic4[LayerID.Foreground, 50, 40] = 150 << 16 | 63 << 8 | 123;
 
 			expectedArchive.AddGraphic(0, 0, Constants.NoAlternative, graphic1);
 			expectedArchive.AddGraphic(0, 1, Constants.NoAlternative, graphic2);
@@ -254,8 +247,9 @@ namespace BahnEditor.Test
 		{
 			GraphicArchive archive = new GraphicArchive(ZoomFactor.Zoom1);
 			Graphic g = new Graphic("TestGraphic");
-			g.AddTransparentLayer(LayerID.Foreground);
-			g.GetLayer(LayerID.Foreground)[10, 10] = 100 << 16 | 50 << 8 | 20;
+			uint[,] layer = g[LayerID.Foreground];
+			layer[10, 10] = 100 << 16 | 50 << 8 | 20;
+			g[LayerID.Foreground] = layer;
 
 			archive.AddGraphic(0, 0, 0, g);
 			archive.AddGraphic(0, 1, 0, g);
@@ -275,16 +269,45 @@ namespace BahnEditor.Test
 		}
 
 		[TestMethod]
+		public void TestMeasureTimeOfCompress()
+		{
+			Graphic g = new Graphic("TestGraphic");
+			uint[,] layer = g[LayerID.Foreground]; //new layer created
+			layer[10, 10] = 100 << 16 | 50 << 8 | 20;
+			for (int i = 0; i < 1000; i++)
+			{
+				g[LayerID.Foreground] = layer;
+			}
+			
+		}
+
+		[TestMethod]
+		public void TestMeasureTimeOfDecompress()
+		{
+			Graphic g = new Graphic("TestGraphic");
+			uint[,] layer = g[LayerID.Foreground];
+			layer[10, 10] = 100 << 16 | 50 << 8 | 20;
+			g[LayerID.Foreground] = layer;
+
+			for (int i = 0; i < 1000; i++)
+			{
+				layer = g[LayerID.Foreground];
+			}
+		}
+
+		[TestMethod]
 		[ExpectedException(typeof(AssertFailedException))]
 		public void TestCompareGraphic()
 		{
 			Graphic g1 = new Graphic("TestGraphic");
-			g1.AddTransparentLayer(LayerID.Foreground);
-			g1.GetLayer(LayerID.Foreground)[10, 10] = 100 << 16 | 50 << 8 | 20;
+			uint[,] layer = g1[LayerID.Foreground];
+			layer[10, 10] = 100 << 16 | 50 << 8 | 20;
+			g1[LayerID.Foreground] = layer;
 
 			Graphic g2 = new Graphic("TestGraphic");
-			g2.AddTransparentLayer(LayerID.Background0);
-			g2.GetLayer(LayerID.Background0)[10, 10] = 100 << 16 | 50 << 8 | 20;
+			layer = g2[LayerID.Background0];
+			layer[10, 10] = 100 << 16 | 50 << 8 | 20;
+			g2[LayerID.Background0] = layer;
 
 			CompareGraphic(g1, g2);
 		}
@@ -293,8 +316,7 @@ namespace BahnEditor.Test
 		public void TestLoadOriginalGraphic()
 		{
 			Graphic expectedGraphic = new Graphic("(keine Daten vorhanden)");
-			expectedGraphic.AddTransparentLayer(LayerID.Foreground);
-			uint[,] layer = expectedGraphic.GetLayer(LayerID.Foreground);
+			uint[,] layer = expectedGraphic[LayerID.Foreground];
 			uint black = Pixel.Create(0, 0, 0);
 			uint white = Pixel.Create(255, 255, 255);
 			layer[16, 32] = white;
@@ -304,6 +326,9 @@ namespace BahnEditor.Test
 			layer[16, 34] = black;
 			layer[17, 35] = black;
 			layer[18, 36] = black;
+
+			expectedGraphic[LayerID.Foreground] = layer;
+
 
 			expectedGraphic.Properties.RawData |= GraphicProperties.Properties.ColorSchematicMode;
 			expectedGraphic.Properties.ColorInSchematicMode = Constants.ColorTransparent;
@@ -327,17 +352,19 @@ namespace BahnEditor.Test
 			CompareGraphicProperties(expectedGraphic.Properties, graphic.Properties);
 			for (int layer = 1; layer <= 6; layer++)
 			{
-				if (expectedGraphic.GetLayer((LayerID)layer) == null && graphic.GetLayer((LayerID)layer) == null)
+				if (expectedGraphic.IsTransparent((LayerID)layer) && graphic.IsTransparent((LayerID)layer))
 					continue;
-				else if ((expectedGraphic.GetLayer((LayerID)layer) == null || graphic.GetLayer((LayerID)layer) == null))
+				else if ((expectedGraphic.IsTransparent((LayerID)layer) || graphic.IsTransparent((LayerID)layer)))
 					Assert.Fail("One layer of a graphic is null, the other layer is not null");
 				else
 				{
-					for (int i = 0; i < expectedGraphic.GetLayer(LayerID.Foreground).GetLength(0); i++)
+					uint[,] expectedLayer = expectedGraphic[(LayerID)layer];
+					uint[,] actualLayer = graphic[(LayerID)layer];
+					for (int i = 0; i < expectedLayer.GetLength(0); i++)
 					{
-						for (int j = 0; j < expectedGraphic.GetLayer(LayerID.Foreground).GetLength(1); j++)
+						for (int j = 0; j < expectedLayer.GetLength(1); j++)
 						{
-							Assert.AreEqual<uint>(expectedGraphic.GetLayer((LayerID)layer)[i, j], graphic.GetLayer((LayerID)layer)[i, j]);
+							Assert.AreEqual<uint>(expectedLayer[i, j], actualLayer[i, j]);
 						}
 					}
 				}

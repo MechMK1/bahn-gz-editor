@@ -60,7 +60,7 @@ namespace BahnEditor.Editor
 		public bool DisplayGrid { get; set; }
 
 		public GraphicPanel()
-			: this(ZoomFactor.Zoom1, 5)
+			: this(ZoomFactor.Zoom1, 6)
 		{
 		}
 

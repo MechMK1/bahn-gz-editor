@@ -182,7 +182,7 @@ namespace BahnEditor.Editor
 			this.lastPath = "";
 			this.UpdateProperties();
 			this.UpdateZoom();
-			this.graphicPanel.Draw(this.GetElement());
+			this.graphicPanel.Draw(this.GetLayer());
 			this.overviewPanel.Invalidate();
 			this.UpdateAnimation();
 		}
@@ -245,7 +245,7 @@ namespace BahnEditor.Editor
 				this.UserMadeChanges(false);
 				this.ChangeLayer(LayerID.Foreground);
 				this.UpdateZoom();
-				this.graphicPanel.Draw(this.GetElement());
+				this.graphicPanel.Draw(this.GetLayer());
 				this.overviewPanel.Invalidate();
 				this.UpdateAnimation();
 			}
@@ -260,7 +260,6 @@ namespace BahnEditor.Editor
 		{
 			try
 			{
-				this.RemoveUnusedGraphics();
 				try
 				{
 					if (!this.zoom1Archive.Save(lastPath, true))
@@ -295,9 +294,9 @@ namespace BahnEditor.Editor
 				this.UserMadeChanges(false);
 				return true;
 			}
-			catch (ElementIsEmptyException)
+			catch (LayerIsEmptyException)
 			{
-				MessageBox.Show("A graphic is empty (transparent)!", "Invalid graphic!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				MessageBox.Show("A graphic is empty (fully transparent)!", "Invalid graphic!", MessageBoxButtons.OK, MessageBoxIcon.Information);
 				return false;
 			}
 		}
@@ -519,26 +518,35 @@ namespace BahnEditor.Editor
 
 		private static uint[,] GraphicPreview(Graphic graphic)
 		{
-			uint[,] element = new uint[Constants.ElementHeight, Constants.ElementWidth];
-			for (int i = 0; i < element.GetLength(0); i++)
+			uint[,] result = new uint[Constants.ElementHeight, Constants.ElementWidth];
+			for (int i = 0; i < result.GetLength(0); i++)
 			{
-				for (int j = 0; j < element.GetLength(1); j++)
+				for (int j = 0; j < result.GetLength(1); j++)
 				{
-					if (graphic.GetLayer(LayerID.ForegroundAbove) != null && !Pixel.IsTransparent(graphic.GetLayer(LayerID.ForegroundAbove)[i + Constants.ElementHeight, j + Constants.ElementWidth]))
-						element[i, j] = graphic.GetLayer(LayerID.ForegroundAbove)[i + Constants.ElementHeight, j + Constants.ElementWidth];
-					else if (graphic.GetLayer(LayerID.Foreground) != null && !Pixel.IsTransparent(graphic.GetLayer(LayerID.Foreground)[i + Constants.ElementHeight, j + Constants.ElementWidth]))
-						element[i, j] = graphic.GetLayer(LayerID.Foreground)[i + Constants.ElementHeight, j + Constants.ElementWidth];
-					else if (graphic.GetLayer(LayerID.Front) != null && !Pixel.IsTransparent(graphic.GetLayer(LayerID.Front)[i + Constants.ElementHeight, j + Constants.ElementWidth]))
-						element[i, j] = graphic.GetLayer(LayerID.Front)[i + Constants.ElementHeight, j + Constants.ElementWidth];
-					else if (graphic.GetLayer(LayerID.Background1) != null && !Pixel.IsTransparent(graphic.GetLayer(LayerID.Background1)[i + Constants.ElementHeight, j + Constants.ElementWidth]))
-						element[i, j] = graphic.GetLayer(LayerID.Background1)[i + Constants.ElementHeight, j + Constants.ElementWidth];
-					else if (graphic.GetLayer(LayerID.Background0) != null && !Pixel.IsTransparent(graphic.GetLayer(LayerID.Background0)[i + Constants.ElementHeight, j + Constants.ElementWidth]))
-						element[i, j] = graphic.GetLayer(LayerID.Background0)[i + Constants.ElementHeight, j + Constants.ElementWidth];
-					else
-						element[i, j] = Pixel.Create(0, 0, 0, Pixel.PixelProperty.Transparent);
+					result[i, j] = Constants.ColorTransparent;
 				}
 			}
-			return element;
+			LayerID[] layerIDs = { LayerID.ForegroundAbove, LayerID.Foreground, LayerID.Front, LayerID.Background1, LayerID.Background0 };
+
+			foreach (LayerID layer in layerIDs)
+			{
+				if (!graphic.IsTransparent(layer))
+				{
+					uint[,] layerElement = graphic[layer];
+					for (int i = 0; i < result.GetLength(0); i++)
+					{
+						for (int j = 0; j < result.GetLength(1); j++)
+						{
+							if (!Pixel.IsTransparent(layerElement[i + Constants.ElementHeight, j + Constants.ElementWidth]) && Pixel.IsTransparent(result[i, j]))
+							{
+								result[i, j] = layerElement[i + Constants.ElementHeight, j + Constants.ElementWidth];
+							}
+						}
+					}
+				}
+			}
+
+			return result;
 		}
 
 		private void ClickGraphic(MouseEventArgs e)
@@ -553,31 +561,32 @@ namespace BahnEditor.Editor
 			this.CreateGraphic();
 			try
 			{
-				uint[,] element = this.GetElement();
+				uint[,] layer = this.GetLayer();
 
 				Point p = this.TransformCoordinates(e.X, e.Y);
 				int xElement = p.X;
 				int yElement = p.Y;
-				if (xElement >= 0 && yElement >= 0 && xElement < element.GetLength(1) && yElement < element.GetLength(0))
+				if (xElement >= 0 && yElement >= 0 && xElement < layer.GetLength(1) && yElement < layer.GetLength(0))
 				{
 					if (this.normalModeToolStripRadioButton.Checked)
 					{
-						if (e.Button == MouseButtons.Left && !element[yElement, xElement].Equals(leftPixel))
+						if (e.Button == MouseButtons.Left && !layer[yElement, xElement].Equals(leftPixel))
 						{
-							element[yElement, xElement] = leftPixel;
+							layer[yElement, xElement] = leftPixel;
 						}
-						else if (e.Button == MouseButtons.Right && !element[yElement, xElement].Equals(rightPixel))
+						else if (e.Button == MouseButtons.Right && !layer[yElement, xElement].Equals(rightPixel))
 						{
-							element[yElement, xElement] = rightPixel;
+							layer[yElement, xElement] = rightPixel;
 						}
 						else
 							return;
 						this.UserMadeChanges(true);
-						this.graphicPanel.Draw(new Point[] { new Point(xElement, yElement) }, element[yElement, xElement]);
+						this.SetLayer(layer);
+						this.graphicPanel.Draw(new Point[] { new Point(xElement, yElement) }, layer[yElement, xElement]);
 					}
 					else if (this.pickColorToolStripRadioButton.Checked)
 					{
-						uint el = element[yElement, xElement];
+						uint el = layer[yElement, xElement];
 						Color c = PixelToColor(el);
 						if (e.Button == MouseButtons.Left && !el.Equals(leftPixel))
 						{
@@ -600,7 +609,7 @@ namespace BahnEditor.Editor
 					}
 					else if (this.fillToolStripRadioButton.Checked)
 					{
-						uint oldColor = element[yElement, xElement];
+						uint oldColor = layer[yElement, xElement];
 						uint newColor = 0;
 						if (e.Button == MouseButtons.Left)
 							newColor = this.leftPixel;
@@ -617,11 +626,11 @@ namespace BahnEditor.Editor
 						while (stack.Count > 0)
 						{
 							Point point = stack.Pop();
-							if (point.X >= 0 && point.Y >= 0 && point.X < element.GetLength(1) && point.Y < element.GetLength(0))
+							if (point.X >= 0 && point.Y >= 0 && point.X < layer.GetLength(1) && point.Y < layer.GetLength(0))
 							{
-								if (element[point.Y, point.X] == oldColor)
+								if (layer[point.Y, point.X] == oldColor)
 								{
-									element[point.Y, point.X] = newColor;
+									layer[point.Y, point.X] = newColor;
 									stack.Push(new Point(point.X, point.Y + 1));
 									stack.Push(new Point(point.X, point.Y - 1));
 									stack.Push(new Point(point.X + 1, point.Y));
@@ -630,13 +639,14 @@ namespace BahnEditor.Editor
 							}
 						}
 						this.UserMadeChanges(true);
-						this.graphicPanel.Draw(this.GetElement());
+						this.SetLayer(layer);
+						this.graphicPanel.Draw(layer);
 					}
 				}
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				MessageBox.Show("Internal Error!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(String.Format("Internal Error!{0}{1}", Environment.NewLine, ex.ToString()), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 		}
 
@@ -687,8 +697,7 @@ namespace BahnEditor.Editor
 				this.alternativeCheckBoxCodeChanged = false;
 
 				this.UpdateProperties();
-				//this.graphicPanel.Invalidate();
-				this.graphicPanel.Draw(this.GetElement());
+				this.graphicPanel.Draw(this.GetLayer());
 				this.overviewPanel.Invalidate();
 				this.UpdateAnimation();
 			}
@@ -724,8 +733,7 @@ namespace BahnEditor.Editor
 					this.actualAlternative = alternative;
 					this.UpdateProperties();
 					this.overviewPanel.Invalidate();
-					//this.graphicPanel.Invalidate();
-					this.graphicPanel.Draw(this.GetElement());
+					this.graphicPanel.Draw(this.GetLayer());
 					this.UpdateAnimation();
 				}
 			}
@@ -785,19 +793,20 @@ namespace BahnEditor.Editor
 				else if (this.specialModeMouseButton == MouseButtons.Right)
 					pixel = this.rightPixel;
 				this.CreateGraphic();
-				uint[,] element = this.GetElement();
+				uint[,] layer = this.GetLayer();
 				int startX = Math.Min(this.specialModeStartPoint.X, this.specialModeEndPoint.X);
 				int startY = Math.Min(this.specialModeStartPoint.Y, this.specialModeEndPoint.Y);
 				int width = Math.Abs(this.specialModeStartPoint.X - this.specialModeEndPoint.X) + 1;
 				int height = Math.Abs(this.specialModeStartPoint.Y - this.specialModeEndPoint.Y) + 1;
-				for (int i = 0; i < width && i + startX < element.GetLength(1); i++)
+				for (int i = 0; i < width && i + startX < layer.GetLength(1); i++)
 				{
-					for (int j = 0; j < height && j + startY < element.GetLength(0); j++)
+					for (int j = 0; j < height && j + startY < layer.GetLength(0); j++)
 					{
-						element[j + startY, i + startX] = pixel;
+						layer[j + startY, i + startX] = pixel;
 					}
 				}
-				this.graphicPanel.Draw(this.GetElement());
+				this.SetLayer(layer);
+				this.graphicPanel.Draw(layer);
 			}
 			else if (this.lineToolStripRadioButton.Checked)
 			{
@@ -807,14 +816,15 @@ namespace BahnEditor.Editor
 				else if (this.specialModeMouseButton == MouseButtons.Right)
 					pixel = this.rightPixel;
 				this.CreateGraphic();
-				uint[,] element = this.GetElement();
+				uint[,] layer = this.GetLayer();
 				Point[] pixels = CalculateLine(this.specialModeStartPoint.X, this.specialModeStartPoint.Y, this.specialModeEndPoint.X, this.specialModeEndPoint.Y);
 				foreach (Point item in pixels)
 				{
-					if ((item.X >= 0 && item.Y >= 0 && item.X < element.GetLength(1) && item.Y < element.GetLength(0)))
-						element[item.Y, item.X] = pixel;
+					if ((item.X >= 0 && item.Y >= 0 && item.X < layer.GetLength(1) && item.Y < layer.GetLength(0)))
+						layer[item.Y, item.X] = pixel;
 				}
-				this.graphicPanel.Draw(this.GetElement());
+				this.SetLayer(layer);
+				this.graphicPanel.Draw(layer);
 			}
 		}
 
@@ -881,13 +891,6 @@ namespace BahnEditor.Editor
 					ChangePropertyComboBoxes(true);
 					this.overviewPanel.Invalidate();
 				}
-				if (this.ActualZoom1Graphic.GetLayer(this.actualLayer) == null)
-				{
-					LayerID LayerID = GetLayerIDBySelectedIndex();
-					this.ActualZoom1Graphic.AddTransparentLayer(LayerID);
-					this.UserMadeChanges(true);
-					this.ChangeLayer(LayerID);
-				}
 			}
 			else if (this.graphicPanel.ZoomFactor == ZoomFactor.Zoom2)
 			{
@@ -899,13 +902,6 @@ namespace BahnEditor.Editor
 					ChangePropertyComboBoxes(true);
 					this.overviewPanel.Invalidate();
 				}
-				if (this.ActualZoom2Graphic.GetLayer(this.actualLayer) == null)
-				{
-					LayerID LayerID = GetLayerIDBySelectedIndex();
-					this.ActualZoom2Graphic.AddTransparentLayer(LayerID);
-					this.UserMadeChanges(true);
-					this.ChangeLayer(LayerID);
-				}
 			}
 			else if (this.graphicPanel.ZoomFactor == ZoomFactor.Zoom4)
 			{
@@ -916,13 +912,6 @@ namespace BahnEditor.Editor
 					this.UserMadeChanges(true);
 					ChangePropertyComboBoxes(true);
 					this.overviewPanel.Invalidate();
-				}
-				if (this.ActualZoom4Graphic.GetLayer(this.actualLayer) == null)
-				{
-					LayerID LayerID = GetLayerIDBySelectedIndex();
-					this.ActualZoom4Graphic.AddTransparentLayer(LayerID);
-					this.UserMadeChanges(true);
-					this.ChangeLayer(LayerID);
 				}
 			}
 		}
@@ -1104,14 +1093,21 @@ namespace BahnEditor.Editor
 			}
 		}
 
-		private uint[,] GetElement()
+		private uint[,] GetLayer()
 		{
 			Graphic graphic = this.ActualGraphic;
-			if (graphic != null && graphic.GetLayer(this.actualLayer) != null)
+			if (graphic != null)
 			{
-				return graphic.GetLayer(this.actualLayer);
+				return graphic[this.actualLayer];
 			}
 			return null;
+		}
+
+		private void SetLayer(uint[,] layer)
+		{
+			Graphic graphic = this.ActualGraphic;
+			if (graphic != null)
+				graphic[this.actualLayer] = layer;
 		}
 
 		private LayerID GetLayerIDBySelectedIndex()
@@ -1414,8 +1410,7 @@ namespace BahnEditor.Editor
 			else
 			{
 				this.actualLayer = this.GetLayerIDBySelectedIndex();
-				//this.graphicPanel.Invalidate();
-				this.graphicPanel.Draw(this.GetElement());
+				this.graphicPanel.Draw(this.GetLayer());
 			}
 		}
 
@@ -1526,31 +1521,6 @@ namespace BahnEditor.Editor
 			}
 		}
 
-		private void RemoveUnusedGraphics()
-		{
-			for (int element = 0; element < Constants.MaxElementsInArchive; element++)
-			{
-				for (int alternative = 0; alternative <= Constants.MaxAlternative; alternative++)
-				{
-					for (int animationPhase = 0; animationPhase <= Constants.MaxAnimationPhase; animationPhase++)
-					{
-						if (this.zoom1Archive[element, animationPhase, alternative] != null && this.zoom1Archive[element, animationPhase, alternative].IsTransparent())
-						{
-							this.zoom1Archive.RemoveGraphic(element, animationPhase, alternative);
-						}
-						if (this.zoom2Archive[element, animationPhase, alternative] != null && this.zoom2Archive[element, animationPhase, alternative].IsTransparent())
-						{
-							this.zoom2Archive.RemoveGraphic(element, animationPhase, alternative);
-						}
-						if (this.zoom4Archive[element, animationPhase, alternative] != null && this.zoom4Archive[element, animationPhase, alternative].IsTransparent())
-						{
-							this.zoom4Archive.RemoveGraphic(element, animationPhase, alternative);
-						}
-					}
-				}
-			}
-		}
-
 		private void UpdateAnimation()
 		{
 			if (this.animationForm != null && !this.animationForm.IsDisposed)
@@ -1590,7 +1560,7 @@ namespace BahnEditor.Editor
 				this.zoomOutButton.Enabled = true;
 			}
 			this.zoomLevelStatusLabel.Text = String.Format("Zoomlevel: {0}  Zoomfactor: {1}", this.graphicPanel.ZoomLevel, this.graphicPanel.ZoomFactor.ToString());
-			this.graphicPanel.Draw(this.GetElement());
+			this.graphicPanel.Draw(this.GetLayer());
 		}
 
 		private Point TransformCoordinates(int x, int y)
@@ -1614,7 +1584,7 @@ namespace BahnEditor.Editor
 			}
 			else if (Clipboard.ContainsText())
 			{
-				uint[,] graphic = this.GetElement();
+				uint[,] layer = this.GetLayer();
 				string[] array = Clipboard.GetText().Split(' ');
 				if (array[0] == "bahneditor" && array[1] == "copy")
 				{
@@ -1650,32 +1620,32 @@ namespace BahnEditor.Editor
 						}
 					}
 					int counter = 0;
-					for (int y = 0; y < height && y + startY < graphic.GetLength(0); y++)
+					for (int y = 0; y < height && y + startY < layer.GetLength(0); y++)
 					{
-						for (int x = 0; x < width && x + startX < graphic.GetLength(1); x++)
+						for (int x = 0; x < width && x + startX < layer.GetLength(1); x++)
 						{
-							graphic[y + startY, x + startX] = list[counter];
+							layer[y + startY, x + startX] = list[counter];
 							counter++;
-							if (x + startX >= graphic.GetLength(1) - 1)
+							if (x + startX >= layer.GetLength(1) - 1)
 							{
 								counter += width - x - 1;
 							}
 						}
-						if (y + startY >= graphic.GetLength(0) - 1)
+						if (y + startY >= layer.GetLength(0) - 1)
 						{
 							counter += height - y - 1;
 						}
 					}
-
-					this.graphicPanel.Draw(this.GetElement());
+					this.SetLayer(layer);
+					this.graphicPanel.Draw(layer);
 				}
 			}
 		}
 
 		private void CopyGraphic(bool cut)
 		{
-			uint[,] graphic = this.GetElement();
-			if (this.selected && graphic != null)
+			uint[,] layer = this.GetLayer();
+			if (this.selected && layer != null)
 			{
 				StringBuilder builder = new StringBuilder();
 
@@ -1686,33 +1656,37 @@ namespace BahnEditor.Editor
 
 				builder.Append(String.Format("bahneditor copy {0} {1} {2} {3} ", "1", this.graphicPanel.ZoomFactor, width, height));
 				int counter = 0;
-				uint last = graphic[startY, startX];
+				uint last = layer[startY, startX];
 
-				for (int i = startY; i < startY + height && i < graphic.GetLength(0); i++) //Y - height
+				for (int i = startY; i < startY + height && i < layer.GetLength(0); i++) //Y - height
 				{
-					for (int j = startX; j < startX + width && j < graphic.GetLength(1); j++) //X - width
+					for (int j = startX; j < startX + width && j < layer.GetLength(1); j++) //X - width
 					{
-						if (last != graphic[i, j])
+						if (last != layer[i, j])
 						{
 							builder.Append(String.Format("{0}-{1} ", last, counter));
-							last = graphic[i, j];
+							last = layer[i, j];
 							counter = 1;
 						}
 						else
 							counter++;
-						if (cut) graphic[i, j] = Constants.ColorTransparent;
+						if (cut) layer[i, j] = Constants.ColorTransparent;
 					}
 				}
 				builder.Append(String.Format("{0}-{1}", last, counter));
 
 				Clipboard.SetText(builder.ToString());
-				if (cut) this.graphicPanel.Draw(this.GetElement());
+				if (cut)
+				{
+					this.SetLayer(layer);
+					this.graphicPanel.Draw(layer);
+				}
 			}
 		}
 
 		private void CopyGraphicToBitmap(int multiplier)
 		{
-			uint[,] graphic = this.GetElement();
+			uint[,] graphic = this.GetLayer();
 			if (this.selected && graphic != null)
 			{
 				int startX = Math.Min(selectStartPoint.X, selectEndPoint.X);
@@ -1765,8 +1739,7 @@ namespace BahnEditor.Editor
 			{
 				this.animationNumericUpDown.Enabled = false;
 			}
-			//graphicPanel.Invalidate();
-			this.graphicPanel.Draw(this.GetElement());
+			this.graphicPanel.Draw(this.GetLayer());
 		}
 
 		internal void ResetAnimationNumericUpDown()
@@ -2440,7 +2413,7 @@ namespace BahnEditor.Editor
 			this.lastPath = this.saveFileDialog.FileName;
 			if (!this.SaveGraphicArchive())
 			{
-				this.ClickOnSaveButton(true);
+				e.Cancel = true;
 			}
 		}
 
@@ -2470,8 +2443,7 @@ namespace BahnEditor.Editor
 			}
 			this.UpdateProperties();
 			this.UpdateZoom();
-			//this.graphicPanel.Invalidate();
-			this.graphicPanel.Draw(this.GetElement());
+			this.graphicPanel.Draw(this.GetLayer());
 		}
 
 		private void toBackgroundRadioButton_CheckedChanged(object sender, EventArgs e)
@@ -2495,8 +2467,7 @@ namespace BahnEditor.Editor
 				return;
 			this.actualAnimationPhase = (int)this.animationNumericUpDown.Value;
 			this.UpdateProperties();
-			//this.graphicPanel.Invalidate();
-			this.graphicPanel.Draw(this.GetElement());
+			this.graphicPanel.Draw(this.GetLayer());
 		}
 
 		private void propertiesGroupBox_Paint(object sender, PaintEventArgs e)
@@ -2586,16 +2557,14 @@ namespace BahnEditor.Editor
 				this.UserMadeChanges(true);
 			}
 			this.overviewPanel.Invalidate();
-			//this.graphicPanel.Invalidate();
-			this.graphicPanel.Draw(this.GetElement());
+			this.graphicPanel.Draw(this.GetLayer());
 			this.UpdateAnimation();
 		}
 
 		private void gridCheckBox_CheckedChanged(object sender, EventArgs e)
 		{
-			//this.graphicPanel.Invalidate();
 			this.graphicPanel.DisplayGrid = this.gridCheckBox.Checked;
-			this.graphicPanel.Draw(this.GetElement());
+			this.graphicPanel.Draw(this.GetLayer());
 		}
 
 		private void selectAllToolStripMenuItem_Click(object sender, EventArgs e)
