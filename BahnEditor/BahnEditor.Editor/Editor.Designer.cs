@@ -38,16 +38,13 @@
 			this.cutToolStripButton = new System.Windows.Forms.ToolStripButton();
 			this.copyToolStripButton = new System.Windows.Forms.ToolStripButton();
 			this.pasteToolStripButton = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+			this.undoToolStripButton = new System.Windows.Forms.ToolStripButton();
+			this.redoToolStripButton = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
 			this.zoomInButton = new System.Windows.Forms.ToolStripButton();
 			this.zoomOutButton = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-			this.normalModeToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
-			this.lineToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
-			this.rectangleToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
-			this.fillToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
-			this.selectToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
-			this.pickColorToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
 			this.controlPanel = new System.Windows.Forms.Panel();
 			this.mouseButtonsGroupBox = new System.Windows.Forms.GroupBox();
 			this.leftColorButton = new System.Windows.Forms.Button();
@@ -136,15 +133,20 @@
 			this.animationNumericUpDown = new System.Windows.Forms.NumericUpDown();
 			this.alternativesCheckBox = new System.Windows.Forms.CheckBox();
 			this.scrollPanel = new System.Windows.Forms.Panel();
-			this.graphicPanel = new BahnEditor.Editor.GraphicPanel();
 			this.gridCheckBox = new System.Windows.Forms.CheckBox();
 			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
 			this.zoomLevelStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-			this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
 			this.overviewPanel = new System.Windows.Forms.PictureBox();
 			this.overviewDownButton = new System.Windows.Forms.Button();
 			this.overviewUpButton = new System.Windows.Forms.Button();
 			this.overviewLeftRightButton = new System.Windows.Forms.Button();
+			this.graphicPanel = new BahnEditor.Editor.GraphicPanel();
+			this.normalModeToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
+			this.lineToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
+			this.rectangleToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
+			this.fillToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
+			this.selectToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
+			this.pickColorToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
 			this.toolStrip.SuspendLayout();
 			this.controlPanel.SuspendLayout();
 			this.mouseButtonsGroupBox.SuspendLayout();
@@ -178,6 +180,9 @@
             this.cutToolStripButton,
             this.copyToolStripButton,
             this.pasteToolStripButton,
+            this.toolStripSeparator3,
+            this.undoToolStripButton,
+            this.redoToolStripButton,
             this.toolStripSeparator4,
             this.zoomInButton,
             this.zoomOutButton,
@@ -259,6 +264,32 @@
 			this.pasteToolStripButton.Text = "&Paste";
 			this.pasteToolStripButton.Click += new System.EventHandler(this.pasteToolStripMenuItem_Click);
 			// 
+			// toolStripSeparator3
+			// 
+			this.toolStripSeparator3.Name = "toolStripSeparator3";
+			this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
+			// 
+			// undoToolStripButton
+			// 
+			this.undoToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.undoToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("undoToolStripButton.Image")));
+			this.undoToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.undoToolStripButton.Name = "undoToolStripButton";
+			this.undoToolStripButton.Size = new System.Drawing.Size(23, 22);
+			this.undoToolStripButton.Text = "Undo";
+			this.undoToolStripButton.ToolTipText = "Undo";
+			this.undoToolStripButton.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
+			// 
+			// redoToolStripButton
+			// 
+			this.redoToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.redoToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("redoToolStripButton.Image")));
+			this.redoToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.redoToolStripButton.Name = "redoToolStripButton";
+			this.redoToolStripButton.Size = new System.Drawing.Size(23, 22);
+			this.redoToolStripButton.Text = "Redo";
+			this.redoToolStripButton.Click += new System.EventHandler(this.redoToolStripMenuItem_Click);
+			// 
 			// toolStripSeparator4
 			// 
 			this.toolStripSeparator4.Name = "toolStripSeparator4";
@@ -288,74 +319,6 @@
 			// 
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
 			this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
-			// 
-			// normalModeToolStripRadioButton
-			// 
-			this.normalModeToolStripRadioButton.Checked = true;
-			this.normalModeToolStripRadioButton.CheckOnClick = true;
-			this.normalModeToolStripRadioButton.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.normalModeToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.normalModeToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("normalModeToolStripRadioButton.Image")));
-			this.normalModeToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.normalModeToolStripRadioButton.Name = "normalModeToolStripRadioButton";
-			this.normalModeToolStripRadioButton.RadioButtonGroupID = 0;
-			this.normalModeToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
-			this.normalModeToolStripRadioButton.Text = "Normal Mode";
-			// 
-			// lineToolStripRadioButton
-			// 
-			this.lineToolStripRadioButton.CheckOnClick = true;
-			this.lineToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.lineToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("lineToolStripRadioButton.Image")));
-			this.lineToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.lineToolStripRadioButton.Name = "lineToolStripRadioButton";
-			this.lineToolStripRadioButton.RadioButtonGroupID = 0;
-			this.lineToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
-			this.lineToolStripRadioButton.Text = "Line";
-			// 
-			// rectangleToolStripRadioButton
-			// 
-			this.rectangleToolStripRadioButton.CheckOnClick = true;
-			this.rectangleToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.rectangleToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("rectangleToolStripRadioButton.Image")));
-			this.rectangleToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.rectangleToolStripRadioButton.Name = "rectangleToolStripRadioButton";
-			this.rectangleToolStripRadioButton.RadioButtonGroupID = 0;
-			this.rectangleToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
-			this.rectangleToolStripRadioButton.Text = "Rectangle";
-			// 
-			// fillToolStripRadioButton
-			// 
-			this.fillToolStripRadioButton.CheckOnClick = true;
-			this.fillToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.fillToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("fillToolStripRadioButton.Image")));
-			this.fillToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.fillToolStripRadioButton.Name = "fillToolStripRadioButton";
-			this.fillToolStripRadioButton.RadioButtonGroupID = 0;
-			this.fillToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
-			this.fillToolStripRadioButton.Text = "Fill";
-			// 
-			// selectToolStripRadioButton
-			// 
-			this.selectToolStripRadioButton.CheckOnClick = true;
-			this.selectToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.selectToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("selectToolStripRadioButton.Image")));
-			this.selectToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.selectToolStripRadioButton.Name = "selectToolStripRadioButton";
-			this.selectToolStripRadioButton.RadioButtonGroupID = 0;
-			this.selectToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
-			this.selectToolStripRadioButton.Text = "Select area";
-			// 
-			// pickColorToolStripRadioButton
-			// 
-			this.pickColorToolStripRadioButton.CheckOnClick = true;
-			this.pickColorToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.pickColorToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("pickColorToolStripRadioButton.Image")));
-			this.pickColorToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.pickColorToolStripRadioButton.Name = "pickColorToolStripRadioButton";
-			this.pickColorToolStripRadioButton.RadioButtonGroupID = 0;
-			this.pickColorToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
-			this.pickColorToolStripRadioButton.Text = "Pick color";
 			// 
 			// controlPanel
 			// 
@@ -1073,19 +1036,21 @@
 			// 
 			// undoToolStripMenuItem
 			// 
-			this.undoToolStripMenuItem.Enabled = false;
+			this.undoToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("undoToolStripMenuItem.Image")));
 			this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
 			this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
 			this.undoToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
 			this.undoToolStripMenuItem.Text = "&Undo";
+			this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
 			// 
 			// redoToolStripMenuItem
 			// 
-			this.redoToolStripMenuItem.Enabled = false;
+			this.redoToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("redoToolStripMenuItem.Image")));
 			this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
 			this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
 			this.redoToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
 			this.redoToolStripMenuItem.Text = "&Redo";
+			this.redoToolStripMenuItem.Click += new System.EventHandler(this.redoToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator8
 			// 
@@ -1327,21 +1292,6 @@
 			this.scrollPanel.Size = new System.Drawing.Size(775, 564);
 			this.scrollPanel.TabIndex = 8;
 			// 
-			// graphicPanel
-			// 
-			this.graphicPanel.DisplayGrid = true;
-			this.graphicPanel.Location = new System.Drawing.Point(20, 20);
-			this.graphicPanel.Name = "graphicPanel";
-			this.graphicPanel.Size = new System.Drawing.Size(732, 521);
-			this.graphicPanel.TabIndex = 4;
-			this.graphicPanel.ZoomFactor = BahnEditor.BahnLib.ZoomFactor.Zoom1;
-			this.graphicPanel.ZoomLevel = 5;
-			this.graphicPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.drawPanel_Paint);
-			this.graphicPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.graphicPanel_MouseClick);
-			this.graphicPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.graphicPanel_MouseDown);
-			this.graphicPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.graphicPanel_MouseMove);
-			this.graphicPanel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.graphicPanel_MouseUp);
-			// 
 			// gridCheckBox
 			// 
 			this.gridCheckBox.AutoSize = true;
@@ -1358,8 +1308,7 @@
 			// statusStrip1
 			// 
 			this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.zoomLevelStatusLabel,
-            this.toolStripStatusLabel1});
+            this.zoomLevelStatusLabel});
 			this.statusStrip1.Location = new System.Drawing.Point(0, 708);
 			this.statusStrip1.Name = "statusStrip1";
 			this.statusStrip1.Size = new System.Drawing.Size(1008, 22);
@@ -1370,12 +1319,6 @@
 			// 
 			this.zoomLevelStatusLabel.Name = "zoomLevelStatusLabel";
 			this.zoomLevelStatusLabel.Size = new System.Drawing.Size(0, 17);
-			// 
-			// toolStripStatusLabel1
-			// 
-			this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-			this.toolStripStatusLabel1.Size = new System.Drawing.Size(118, 17);
-			this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
 			// 
 			// overviewPanel
 			// 
@@ -1425,6 +1368,88 @@
 			this.overviewLeftRightButton.TabStop = false;
 			this.overviewLeftRightButton.UseVisualStyleBackColor = true;
 			this.overviewLeftRightButton.Click += new System.EventHandler(this.overviewLeftRightButton_Click);
+			// 
+			// graphicPanel
+			// 
+			this.graphicPanel.DisplayGrid = true;
+			this.graphicPanel.Location = new System.Drawing.Point(20, 20);
+			this.graphicPanel.Name = "graphicPanel";
+			this.graphicPanel.Size = new System.Drawing.Size(732, 521);
+			this.graphicPanel.TabIndex = 4;
+			this.graphicPanel.ZoomFactor = BahnEditor.BahnLib.ZoomFactor.Zoom1;
+			this.graphicPanel.ZoomLevel = 5;
+			this.graphicPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.drawPanel_Paint);
+			this.graphicPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.graphicPanel_MouseDown);
+			this.graphicPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.graphicPanel_MouseMove);
+			this.graphicPanel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.graphicPanel_MouseUp);
+			// 
+			// normalModeToolStripRadioButton
+			// 
+			this.normalModeToolStripRadioButton.Checked = true;
+			this.normalModeToolStripRadioButton.CheckOnClick = true;
+			this.normalModeToolStripRadioButton.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.normalModeToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.normalModeToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("normalModeToolStripRadioButton.Image")));
+			this.normalModeToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.normalModeToolStripRadioButton.Name = "normalModeToolStripRadioButton";
+			this.normalModeToolStripRadioButton.RadioButtonGroupID = 0;
+			this.normalModeToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
+			this.normalModeToolStripRadioButton.Text = "Normal Mode";
+			// 
+			// lineToolStripRadioButton
+			// 
+			this.lineToolStripRadioButton.CheckOnClick = true;
+			this.lineToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.lineToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("lineToolStripRadioButton.Image")));
+			this.lineToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.lineToolStripRadioButton.Name = "lineToolStripRadioButton";
+			this.lineToolStripRadioButton.RadioButtonGroupID = 0;
+			this.lineToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
+			this.lineToolStripRadioButton.Text = "Line";
+			// 
+			// rectangleToolStripRadioButton
+			// 
+			this.rectangleToolStripRadioButton.CheckOnClick = true;
+			this.rectangleToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.rectangleToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("rectangleToolStripRadioButton.Image")));
+			this.rectangleToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.rectangleToolStripRadioButton.Name = "rectangleToolStripRadioButton";
+			this.rectangleToolStripRadioButton.RadioButtonGroupID = 0;
+			this.rectangleToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
+			this.rectangleToolStripRadioButton.Text = "Rectangle";
+			// 
+			// fillToolStripRadioButton
+			// 
+			this.fillToolStripRadioButton.CheckOnClick = true;
+			this.fillToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.fillToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("fillToolStripRadioButton.Image")));
+			this.fillToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.fillToolStripRadioButton.Name = "fillToolStripRadioButton";
+			this.fillToolStripRadioButton.RadioButtonGroupID = 0;
+			this.fillToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
+			this.fillToolStripRadioButton.Text = "Fill";
+			// 
+			// selectToolStripRadioButton
+			// 
+			this.selectToolStripRadioButton.CheckOnClick = true;
+			this.selectToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.selectToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("selectToolStripRadioButton.Image")));
+			this.selectToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.selectToolStripRadioButton.Name = "selectToolStripRadioButton";
+			this.selectToolStripRadioButton.RadioButtonGroupID = 0;
+			this.selectToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
+			this.selectToolStripRadioButton.Text = "Select area";
+			// 
+			// pickColorToolStripRadioButton
+			// 
+			this.pickColorToolStripRadioButton.CheckOnClick = true;
+			this.pickColorToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.pickColorToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("pickColorToolStripRadioButton.Image")));
+			this.pickColorToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.pickColorToolStripRadioButton.Name = "pickColorToolStripRadioButton";
+			this.pickColorToolStripRadioButton.RadioButtonGroupID = 0;
+			this.pickColorToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
+			this.pickColorToolStripRadioButton.Text = "Pick color";
 			// 
 			// Editor
 			// 
@@ -1598,9 +1623,11 @@
 		private ToolStripRadioButton selectToolStripRadioButton;
 		private ToolStripRadioButton pickColorToolStripRadioButton;
 		private System.Windows.Forms.GroupBox mouseButtonsGroupBox;
-		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
 		private System.Windows.Forms.ToolStripMenuItem copyToBitmapToolStripMenuItem;
 		internal GraphicPanel graphicPanel;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+		private System.Windows.Forms.ToolStripButton undoToolStripButton;
+		private System.Windows.Forms.ToolStripButton redoToolStripButton;
 
 	}
 }

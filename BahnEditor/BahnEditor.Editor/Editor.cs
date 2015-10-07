@@ -29,7 +29,6 @@ namespace BahnEditor.Editor
 		private bool selected = false;
 		private bool drawingSelection = false;
 		private AnimationForm animationForm;
-		private bool hasLoadedGraphic = false;
 		private bool cursorNormalDirectionCBCodeChanged = false;
 		private bool cursorReverseDirectionCBCodeChanged = false;
 		private uint lastLeftPixel = 0;
@@ -48,6 +47,9 @@ namespace BahnEditor.Editor
 		private GraphicArchive zoom1Archive;
 		private GraphicArchive zoom2Archive;
 		private GraphicArchive zoom4Archive;
+		private Dictionary<Tuple<int, int, int, LayerID, ZoomFactor>, UndoRedoStack> urStack;
+		private List<Point> changes;
+		private bool isMouseCaptured = false;
 
 		#endregion Private Fields
 
@@ -80,6 +82,27 @@ namespace BahnEditor.Editor
 		#endregion Internal Properties
 
 		#region Private Properties
+
+		private UndoRedoStack UndoRedo
+		{
+			get
+			{
+				Tuple<int, int, int, LayerID, ZoomFactor> tuple = Tuple.Create<int, int, int, LayerID, ZoomFactor>(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, this.actualLayer, this.graphicPanel.ZoomFactor);
+
+				if (!urStack.ContainsKey(tuple))
+					urStack.Add(tuple, new UndoRedoStack());
+
+				return urStack[tuple];
+			}
+		}
+
+		private bool UndoRedoExists
+		{
+			get
+			{
+				return urStack.ContainsKey(Tuple.Create<int, int, int, LayerID, ZoomFactor>(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, this.actualLayer, this.graphicPanel.ZoomFactor));
+			}
+		}
 
 		private Graphic ActualGraphic
 		{
@@ -168,6 +191,7 @@ namespace BahnEditor.Editor
 			this.zoom1Archive = new GraphicArchive(ZoomFactor.Zoom1);
 			this.zoom2Archive = new GraphicArchive(ZoomFactor.Zoom2);
 			this.zoom4Archive = new GraphicArchive(ZoomFactor.Zoom4);
+			this.urStack = new Dictionary<Tuple<int, int, int, LayerID, ZoomFactor>, UndoRedoStack>();
 			this.actualGraphic = 0;
 			this.actualAlternative = 0;
 			this.alternativeCheckBoxCodeChanged = true;
@@ -182,6 +206,7 @@ namespace BahnEditor.Editor
 			this.lastPath = "";
 			this.UpdateProperties();
 			this.UpdateZoom();
+			this.UpdateUndoRedoButtons();
 			this.graphicPanel.Draw(this.GetLayer());
 			this.overviewPanel.Invalidate();
 			this.UpdateAnimation();
@@ -221,6 +246,7 @@ namespace BahnEditor.Editor
 					this.zoom4Archive = new GraphicArchive(ZoomFactor.Zoom4);
 				}
 
+				this.urStack = new Dictionary<Tuple<int, int, int, LayerID, ZoomFactor>, UndoRedoStack>();
 				this.actualGraphic = 0;
 				this.actualAnimationPhase = 0;
 				this.graphicPanel.ZoomFactor = ZoomFactor.Zoom1;
@@ -241,10 +267,10 @@ namespace BahnEditor.Editor
 				this.animationPhaseCodeChanged = false;
 				this.UpdateProperties();
 				this.lastPath = this.zoom1Archive.FileName;
-				this.hasLoadedGraphic = true;
 				this.UserMadeChanges(false);
 				this.ChangeLayer(LayerID.Foreground);
 				this.UpdateZoom();
+				this.UpdateUndoRedoButtons();
 				this.graphicPanel.Draw(this.GetLayer());
 				this.overviewPanel.Invalidate();
 				this.UpdateAnimation();
@@ -549,108 +575,221 @@ namespace BahnEditor.Editor
 			return result;
 		}
 
-		private void ClickGraphic(MouseEventArgs e)
+		private void MouseDownOnGraphic(MouseEventArgs e)
 		{
-			if (this.hasLoadedGraphic == true)
-			{
-				this.hasLoadedGraphic = false;
-				return;
-			}
+			this.isMouseCaptured = true;
 			if (!e.Button.HasFlag(MouseButtons.Left) && !e.Button.HasFlag(MouseButtons.Right))
 				return;
+
+			Point p = this.TransformCoordinates(e.X, e.Y);
 			this.CreateGraphic();
-			try
+			uint[,] layer = this.GetLayer();
+			if (p.X >= 0 && p.Y >= 0 && p.X < layer.GetLength(1) && p.Y < layer.GetLength(0))
 			{
-				uint[,] layer = this.GetLayer();
-
-				Point p = this.TransformCoordinates(e.X, e.Y);
-				int xElement = p.X;
-				int yElement = p.Y;
-				if (xElement >= 0 && yElement >= 0 && xElement < layer.GetLength(1) && yElement < layer.GetLength(0))
+				if (this.lineToolStripRadioButton.Checked || this.rectangleToolStripRadioButton.Checked)
 				{
-					if (this.normalModeToolStripRadioButton.Checked)
+					this.specialModeStartPoint = p;
+					this.specialModeMouseButton = e.Button;
+					this.drawingSpecialMode = true;
+				}
+				else if (this.selectToolStripRadioButton.Checked)
+				{
+					this.selectStartPoint = p;
+					this.selected = true;
+					this.drawingSelection = true;
+				}
+				else
+				{
+					try
 					{
-						if (e.Button == MouseButtons.Left && !layer[yElement, xElement].Equals(leftPixel))
+						if (this.normalModeToolStripRadioButton.Checked)
 						{
-							layer[yElement, xElement] = leftPixel;
-						}
-						else if (e.Button == MouseButtons.Right && !layer[yElement, xElement].Equals(rightPixel))
-						{
-							layer[yElement, xElement] = rightPixel;
-						}
-						else
-							return;
-						this.UserMadeChanges(true);
-						this.SetLayer(layer);
-						this.graphicPanel.Draw(new Point[] { new Point(xElement, yElement) }, layer[yElement, xElement]);
-					}
-					else if (this.pickColorToolStripRadioButton.Checked)
-					{
-						uint el = layer[yElement, xElement];
-						Color c = PixelToColor(el);
-						if (e.Button == MouseButtons.Left && !el.Equals(leftPixel))
-						{
-							leftPixel = el;
-							leftColorButton.BackColor = c;
-							leftComboBoxSelectedCodeChanged = true;
-							leftComboBox.SelectedIndex = PixelToComboBoxIndex(el);
-							leftComboBoxSelectedCodeChanged = false;
-							this.leftLabel.Text = String.Format("Left: {0} - {1} - {2}", c.R, c.G, c.B);
-						}
-						else if (e.Button == MouseButtons.Right && !el.Equals(rightPixel))
-						{
-							rightPixel = el;
-							rightColorButton.BackColor = c;
-							rightComboBoxSelectedCodeChanged = true;
-							rightComboBox.SelectedIndex = PixelToComboBoxIndex(el);
-							rightComboBoxSelectedCodeChanged = false;
-							this.rightLabel.Text = String.Format("Right: {0} - {1} - {2}", c.R, c.G, c.B);
-						}
-					}
-					else if (this.fillToolStripRadioButton.Checked)
-					{
-						uint oldColor = layer[yElement, xElement];
-						uint newColor = 0;
-						if (e.Button == MouseButtons.Left)
-							newColor = this.leftPixel;
-						else if (e.Button == MouseButtons.Right)
-							newColor = this.rightPixel;
-
-						if (newColor == oldColor)
-							return;
-						int x = xElement;
-						int y = yElement;
-
-						Stack<Point> stack = new Stack<Point>();
-						stack.Push(new Point(x, y));
-						while (stack.Count > 0)
-						{
-							Point point = stack.Pop();
-							if (point.X >= 0 && point.Y >= 0 && point.X < layer.GetLength(1) && point.Y < layer.GetLength(0))
+							this.changes = new List<Point>();
+							uint pixel;
+							if (e.Button == MouseButtons.Left && !layer[p.Y, p.X].Equals(leftPixel))
 							{
-								if (layer[point.Y, point.X] == oldColor)
-								{
-									layer[point.Y, point.X] = newColor;
-									stack.Push(new Point(point.X, point.Y + 1));
-									stack.Push(new Point(point.X, point.Y - 1));
-									stack.Push(new Point(point.X + 1, point.Y));
-									stack.Push(new Point(point.X - 1, point.Y));
-								}
+								pixel = leftPixel;
+							}
+							else if (e.Button == MouseButtons.Right && !layer[p.Y, p.X].Equals(rightPixel))
+							{
+								pixel = rightPixel;
+							}
+							else
+								return;
+
+							this.changes.Add(p);
+							this.UserMadeChanges(true);
+							this.graphicPanel.Draw(new Point[] { new Point(p.X, p.Y) }, pixel);
+						}
+						else if (this.pickColorToolStripRadioButton.Checked)
+						{
+							uint el = layer[p.Y, p.X];
+							Color c = PixelToColor(el);
+							if (e.Button == MouseButtons.Left && !el.Equals(leftPixel))
+							{
+								leftPixel = el;
+								leftColorButton.BackColor = c;
+								leftComboBoxSelectedCodeChanged = true;
+								leftComboBox.SelectedIndex = PixelToComboBoxIndex(el);
+								leftComboBoxSelectedCodeChanged = false;
+								this.leftLabel.Text = String.Format("Left: {0} - {1} - {2}", c.R, c.G, c.B);
+							}
+							else if (e.Button == MouseButtons.Right && !el.Equals(rightPixel))
+							{
+								rightPixel = el;
+								rightColorButton.BackColor = c;
+								rightComboBoxSelectedCodeChanged = true;
+								rightComboBox.SelectedIndex = PixelToComboBoxIndex(el);
+								rightComboBoxSelectedCodeChanged = false;
+								this.rightLabel.Text = String.Format("Right: {0} - {1} - {2}", c.R, c.G, c.B);
 							}
 						}
-						this.UserMadeChanges(true);
-						this.SetLayer(layer);
-						this.graphicPanel.Draw(layer);
+						else if (this.fillToolStripRadioButton.Checked)
+						{
+							uint oldColor = layer[p.Y, p.X];
+							uint newColor = 0;
+							if (e.Button == MouseButtons.Left)
+								newColor = this.leftPixel;
+							else if (e.Button == MouseButtons.Right)
+								newColor = this.rightPixel;
+
+							if (newColor == oldColor)
+								return;
+							int x = p.X;
+							int y = p.Y;
+							List<Point> changes = new List<Point>();
+
+							Stack<Point> stack = new Stack<Point>();
+							stack.Push(new Point(x, y));
+							while (stack.Count > 0)
+							{
+								Point point = stack.Pop();
+								if (point.X >= 0 && point.Y >= 0 && point.X < layer.GetLength(1) && point.Y < layer.GetLength(0))
+								{
+									if (layer[point.Y, point.X] == oldColor)
+									{
+										changes.Add(point);
+										stack.Push(new Point(point.X, point.Y + 1));
+										stack.Push(new Point(point.X, point.Y - 1));
+										stack.Push(new Point(point.X + 1, point.Y));
+										stack.Push(new Point(point.X - 1, point.Y));
+									}
+								}
+							}
+							this.UndoRedo.Do(new ChangePixelsCommand(newColor, changes.ToArray()), layer);
+							this.UserMadeChanges(true);
+							this.SetLayer(layer);
+							this.UpdateUndoRedoButtons();
+							this.graphicPanel.Draw(layer);
+						}
+					}
+					catch (Exception ex)
+					{
+						MessageBox.Show(String.Format("Internal Error!{0}{1}", Environment.NewLine, ex.ToString()), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 					}
 				}
 			}
-			catch (Exception ex)
+		}
+
+		private void MouseMoveOnGraphic(MouseEventArgs e)
+		{
+			if ((!e.Button.HasFlag(MouseButtons.Left) && !e.Button.HasFlag(MouseButtons.Right)) || !this.isMouseCaptured)
+				return;
+
+			Point p = this.TransformCoordinates(e.X, e.Y);
+			uint[,] layer = this.GetLayer();
+
+			if (p.X >= 0 && p.Y >= 0 && p.X < layer.GetLength(1) && p.Y < layer.GetLength(0))
 			{
-				MessageBox.Show(String.Format("Internal Error!{0}{1}", Environment.NewLine, ex.ToString()), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				if (this.drawingSpecialMode && (this.lineToolStripRadioButton.Checked || this.rectangleToolStripRadioButton.Checked))
+				{
+					if (this.specialModeMouseButton != e.Button)
+					{
+						this.drawingSpecialMode = false;
+					}
+					else
+					{
+						if (this.specialModeEndPoint != p)
+						{
+							this.specialModeEndPoint = p;
+						}
+						else
+							return;
+					}
+					this.graphicPanel.Invalidate();
+				}
+				else if (this.selected && this.drawingSelection && this.selectToolStripRadioButton.Checked)
+				{
+					if (this.selectEndPoint != p)
+					{
+						this.selectEndPoint = p;
+						this.graphicPanel.Invalidate();
+					}
+				}
+				else if (this.normalModeToolStripRadioButton.Checked)
+				{
+					if (!this.changes.Contains(p))
+					{
+						uint pixel;
+						if (e.Button == MouseButtons.Left && !layer[p.Y, p.X].Equals(leftPixel))
+						{
+							pixel = leftPixel;
+						}
+						else if (e.Button == MouseButtons.Right && !layer[p.Y, p.X].Equals(rightPixel))
+						{
+							pixel = rightPixel;
+						}
+						else
+							return;
+
+						this.changes.Add(p);
+						this.graphicPanel.Draw(new Point[] { new Point(p.X, p.Y) }, pixel);
+					}
+				}
 			}
 		}
 
-		private void ClickOverview(MouseEventArgs e)
+		private void MouseUpOnGraphic(MouseEventArgs e)
+		{
+			if ((!e.Button.HasFlag(MouseButtons.Left) && !e.Button.HasFlag(MouseButtons.Right)) || !this.isMouseCaptured)
+				return;
+
+			this.isMouseCaptured = false;
+			if (this.drawingSpecialMode && (this.lineToolStripRadioButton.Checked || this.rectangleToolStripRadioButton.Checked))
+			{
+				this.drawingSpecialMode = false;
+				this.DrawSpecialOnGraphic();
+			}
+			else if (this.selected && this.drawingSelection)
+			{
+				this.drawingSelection = false;
+				this.graphicPanel.Invalidate();
+			}
+			else if (this.normalModeToolStripRadioButton.Checked)
+			{
+				uint pixel;
+				if (e.Button == MouseButtons.Left)
+				{
+					pixel = leftPixel;
+				}
+				else if (e.Button == MouseButtons.Right)
+				{
+					pixel = rightPixel;
+				}
+				else
+					return;
+
+				uint[,] layer = this.GetLayer();
+				layer = this.UndoRedo.Do(new ChangePixelsCommand(pixel, this.changes.ToArray()), layer);
+				this.changes = null;
+				this.SetLayer(layer);
+				this.UpdateUndoRedoButtons();
+				this.graphicPanel.Draw(layer);
+			}
+			this.overviewPanel.Invalidate();
+		}
+
+		private void MouseClickOnOverview(MouseEventArgs e)
 		{
 			if (!e.Button.HasFlag(MouseButtons.Left))
 				return;
@@ -697,6 +836,7 @@ namespace BahnEditor.Editor
 				this.alternativeCheckBoxCodeChanged = false;
 
 				this.UpdateProperties();
+				this.UpdateUndoRedoButtons();
 				this.graphicPanel.Draw(this.GetLayer());
 				this.overviewPanel.Invalidate();
 				this.UpdateAnimation();
@@ -793,6 +933,7 @@ namespace BahnEditor.Editor
 				else if (this.specialModeMouseButton == MouseButtons.Right)
 					pixel = this.rightPixel;
 				this.CreateGraphic();
+				List<Point> changes = new List<Point>();
 				uint[,] layer = this.GetLayer();
 				int startX = Math.Min(this.specialModeStartPoint.X, this.specialModeEndPoint.X);
 				int startY = Math.Min(this.specialModeStartPoint.Y, this.specialModeEndPoint.Y);
@@ -802,10 +943,13 @@ namespace BahnEditor.Editor
 				{
 					for (int j = 0; j < height && j + startY < layer.GetLength(0); j++)
 					{
-						layer[j + startY, i + startX] = pixel;
+						changes.Add(new Point(i + startX, j + startY));
 					}
 				}
+				layer = this.UndoRedo.Do(new ChangePixelsCommand(pixel, changes.ToArray()), layer);
 				this.SetLayer(layer);
+				this.UpdateUndoRedoButtons();
+				this.UserMadeChanges(true);
 				this.graphicPanel.Draw(layer);
 			}
 			else if (this.lineToolStripRadioButton.Checked)
@@ -818,12 +962,10 @@ namespace BahnEditor.Editor
 				this.CreateGraphic();
 				uint[,] layer = this.GetLayer();
 				Point[] pixels = CalculateLine(this.specialModeStartPoint.X, this.specialModeStartPoint.Y, this.specialModeEndPoint.X, this.specialModeEndPoint.Y);
-				foreach (Point item in pixels)
-				{
-					if ((item.X >= 0 && item.Y >= 0 && item.X < layer.GetLength(1) && item.Y < layer.GetLength(0)))
-						layer[item.Y, item.X] = pixel;
-				}
+				layer = this.UndoRedo.Do(new ChangePixelsCommand(pixel, pixels), layer);
 				this.SetLayer(layer);
+				this.UpdateUndoRedoButtons();
+				this.UserMadeChanges(true);
 				this.graphicPanel.Draw(layer);
 			}
 		}
@@ -877,6 +1019,26 @@ namespace BahnEditor.Editor
 			}
 
 			return pixels.ToArray();
+		}
+
+		private void Undo()
+		{
+			uint[,] layer = this.GetLayer();
+			this.UndoRedo.Undo(layer);
+			this.SetLayer(layer);
+			this.UpdateUndoRedoButtons();
+			this.UserMadeChanges(true);
+			this.graphicPanel.Draw(layer);
+		}
+
+		private void Redo()
+		{
+			uint[,] layer = this.GetLayer();
+			this.UndoRedo.Redo(layer);
+			this.SetLayer(layer);
+			this.UpdateUndoRedoButtons();
+			this.UserMadeChanges(true);
+			this.graphicPanel.Draw(layer);
 		}
 
 		private void CreateGraphic()
@@ -1410,6 +1572,7 @@ namespace BahnEditor.Editor
 			else
 			{
 				this.actualLayer = this.GetLayerIDBySelectedIndex();
+				this.UpdateUndoRedoButtons();
 				this.graphicPanel.Draw(this.GetLayer());
 			}
 		}
@@ -1563,6 +1726,37 @@ namespace BahnEditor.Editor
 			this.graphicPanel.Draw(this.GetLayer());
 		}
 
+		private void UpdateUndoRedoButtons()
+		{
+			if (this.UndoRedoExists)
+			{
+				this.undoToolStripButton.Enabled = false;
+				this.undoToolStripMenuItem.Enabled = false;
+				this.redoToolStripButton.Enabled = false;
+				this.redoToolStripMenuItem.Enabled = false;
+			}
+			if (this.UndoRedo.UndoCount <= 0)
+			{
+				this.undoToolStripButton.Enabled = false;
+				this.undoToolStripMenuItem.Enabled = false;
+			}
+			else
+			{
+				this.undoToolStripButton.Enabled = true;
+				this.undoToolStripMenuItem.Enabled = true;
+			}
+			if (this.UndoRedo.RedoCount <= 0)
+			{
+				this.redoToolStripButton.Enabled = false;
+				this.redoToolStripMenuItem.Enabled = false;
+			}
+			else
+			{
+				this.redoToolStripButton.Enabled = true;
+				this.redoToolStripMenuItem.Enabled = true;
+			}
+		}
+
 		private Point TransformCoordinates(int x, int y)
 		{
 			int xElement = (int)((x / (float)this.graphicPanel.ZoomLevel) * (int)this.graphicPanel.ZoomFactor);
@@ -1654,6 +1848,8 @@ namespace BahnEditor.Editor
 				int height = Math.Abs(selectStartPoint.Y - selectEndPoint.Y + 1);
 				int width = Math.Abs(selectStartPoint.X - selectEndPoint.X - 1);
 
+				List<Point> changes = new List<Point>();
+
 				builder.Append(String.Format("bahneditor copy {0} {1} {2} {3} ", "1", this.graphicPanel.ZoomFactor, width, height));
 				int counter = 0;
 				uint last = layer[startY, startX];
@@ -1670,7 +1866,8 @@ namespace BahnEditor.Editor
 						}
 						else
 							counter++;
-						if (cut) layer[i, j] = Constants.ColorTransparent;
+						if (cut)
+							changes.Add(new Point(j, i));
 					}
 				}
 				builder.Append(String.Format("{0}-{1}", last, counter));
@@ -1678,7 +1875,10 @@ namespace BahnEditor.Editor
 				Clipboard.SetText(builder.ToString());
 				if (cut)
 				{
+					layer = this.UndoRedo.Do(new ChangePixelsCommand(Constants.ColorTransparent, changes.ToArray()), layer);
 					this.SetLayer(layer);
+					this.UpdateUndoRedoButtons();
+					this.UserMadeChanges(true);
 					this.graphicPanel.Draw(layer);
 				}
 			}
@@ -1724,7 +1924,6 @@ namespace BahnEditor.Editor
 				Clipboard.SetImage(copy);
 			}
 		}
-
 		#endregion Private Methods
 
 		#region Internal Methods
@@ -1748,6 +1947,7 @@ namespace BahnEditor.Editor
 			this.animationPhaseCodeChanged = true;
 			this.animationNumericUpDown.Value = 0;
 			this.animationPhaseCodeChanged = false;
+			this.UpdateUndoRedoButtons();
 		}
 
 		internal void UserMadeChanges(bool userMadeChanges)
@@ -1989,82 +2189,19 @@ namespace BahnEditor.Editor
 			}
 		}
 
-		private void graphicPanel_MouseClick(object sender, MouseEventArgs e)
-		{
-			this.ClickGraphic(e);
-		}
-
 		private void graphicPanel_MouseDown(object sender, MouseEventArgs e)
 		{
-			if (this.lineToolStripRadioButton.Checked || this.rectangleToolStripRadioButton.Checked)
-			{
-				this.specialModeStartPoint = this.TransformCoordinates(e.X, e.Y);
-				this.specialModeMouseButton = e.Button;
-				this.drawingSpecialMode = true;
-				this.toolStripStatusLabel1.Text = String.Format("Special: {0}, {1}, {2}, {3}", this.specialModeStartPoint.ToString(), this.drawingSpecialMode, this.specialModeEndPoint.ToString(), this.specialModeMouseButton.ToString());
-			}
-			else if (this.selectToolStripRadioButton.Checked)
-			{
-				this.selectStartPoint = this.TransformCoordinates(e.X, e.Y);
-				this.selected = true;
-				this.drawingSelection = true;
-				this.toolStripStatusLabel1.Text = String.Format("Select: {0}, {1}, {2}, {3}", this.selectStartPoint.ToString(), this.drawingSelection, this.selectEndPoint.ToString(), this.selected);
-			}
+			this.MouseDownOnGraphic(e);
 		}
 
 		private void graphicPanel_MouseMove(object sender, MouseEventArgs e)
 		{
-			if (this.drawingSpecialMode && (this.lineToolStripRadioButton.Checked || this.rectangleToolStripRadioButton.Checked))
-			{
-				if (this.specialModeMouseButton != e.Button)
-				{
-					this.drawingSpecialMode = false;
-				}
-				else
-				{
-					Point p = this.TransformCoordinates(e.X, e.Y);
-					if (this.specialModeEndPoint != p)
-					{
-						this.specialModeEndPoint = p;
-					}
-					else
-						return;
-				}
-				this.toolStripStatusLabel1.Text = String.Format("Special: {0}, {1}, {2}, {3}", this.specialModeStartPoint.ToString(), this.drawingSpecialMode, this.specialModeEndPoint.ToString(), this.specialModeMouseButton.ToString());
-				this.graphicPanel.Invalidate();
-			}
-			else if (this.selected && this.drawingSelection && this.selectToolStripRadioButton.Checked)
-			{
-				Point p = this.TransformCoordinates(e.X, e.Y);
-				if (this.selectEndPoint != p)
-				{
-					this.selectEndPoint = p;
-					this.toolStripStatusLabel1.Text = String.Format("Select: {0}, {1}, {2}, {3}", this.selectStartPoint.ToString(), this.drawingSelection, this.selectEndPoint.ToString(), this.selected);
-					this.graphicPanel.Invalidate();
-				}
-			}
-			else
-			{
-				this.ClickGraphic(e);
-			}
+			this.MouseMoveOnGraphic(e);
 		}
 
 		private void graphicPanel_MouseUp(object sender, MouseEventArgs e)
 		{
-			if (this.drawingSpecialMode && (this.lineToolStripRadioButton.Checked || this.rectangleToolStripRadioButton.Checked))
-			{
-				this.drawingSpecialMode = false;
-				this.toolStripStatusLabel1.Text = String.Format("Special: {0}, {1}, {2}, {3}", this.specialModeStartPoint.ToString(), this.drawingSpecialMode, this.specialModeEndPoint.ToString(), this.specialModeMouseButton.ToString());
-				this.DrawSpecialOnGraphic();
-			}
-			else if (this.selected && this.drawingSelection)
-			{
-				this.drawingSelection = false;
-				this.toolStripStatusLabel1.Text = String.Format("Select: {0}, {1}, {2}, {3}", this.selectStartPoint.ToString(), this.drawingSelection, this.selectEndPoint.ToString(), this.selected);
-				this.graphicPanel.Invalidate();
-			}
-
-			this.overviewPanel.Invalidate();
+			this.MouseUpOnGraphic(e);
 		}
 
 		private void drawPanel_Paint(object sender, PaintEventArgs e)
@@ -2228,7 +2365,7 @@ namespace BahnEditor.Editor
 		{
 			MouseEventArgs me = e as MouseEventArgs;
 			if (me != null)
-				ClickOverview(me);
+				MouseClickOnOverview(me);
 			else
 				MessageBox.Show("Internal Error", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 		}
@@ -2443,6 +2580,7 @@ namespace BahnEditor.Editor
 			}
 			this.UpdateProperties();
 			this.UpdateZoom();
+			this.UpdateUndoRedoButtons();
 			this.graphicPanel.Draw(this.GetLayer());
 		}
 
@@ -2466,6 +2604,7 @@ namespace BahnEditor.Editor
 			if (this.animationPhaseCodeChanged)
 				return;
 			this.actualAnimationPhase = (int)this.animationNumericUpDown.Value;
+			this.UpdateUndoRedoButtons();
 			this.UpdateProperties();
 			this.graphicPanel.Draw(this.GetLayer());
 		}
@@ -2556,6 +2695,7 @@ namespace BahnEditor.Editor
 				this.actualAlternative = Constants.NoAlternative;
 				this.UserMadeChanges(true);
 			}
+			this.UpdateUndoRedoButtons();
 			this.overviewPanel.Invalidate();
 			this.graphicPanel.Draw(this.GetLayer());
 			this.UpdateAnimation();
@@ -2572,7 +2712,7 @@ namespace BahnEditor.Editor
 			this.selected = true;
 			this.selectStartPoint = new Point(0, 0);
 			this.selectEndPoint = new Point(Constants.ElementWidth * 3 * (int)this.graphicPanel.ZoomFactor - 1, Constants.ElementHeight * 8 * (int)this.graphicPanel.ZoomFactor - 1);
-			this.toolStripStatusLabel1.Text = String.Format("Select: {0}, {1}, {2}, {3}", this.selectStartPoint.ToString(), this.drawingSelection, this.selectEndPoint.ToString(), this.selected);
+			//this.toolStripStatusLabel1.Text = String.Format("Select: {0}, {1}, {2}, {3}", this.selectStartPoint.ToString(), this.drawingSelection, this.selectEndPoint.ToString(), this.selected);
 			this.graphicPanel.Invalidate();
 		}
 
@@ -2639,6 +2779,148 @@ namespace BahnEditor.Editor
 			}
 		}
 
+		private void undoToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			this.Undo();
+		}
+
+		private void redoToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			this.Redo();
+		}
+
 		#endregion Event-Handler
+
+		#region Nested Classes
+
+		private interface ICommand<T>
+		{
+			T Do(T input);
+			T Undo(T input);
+		}
+
+		private class ChangePixelsCommand : ICommand<uint[,]>
+		{
+			private uint[] oldValues;
+
+			public uint Value { get; set; }
+
+			public Point[] Positions { get; set; }
+
+			public ChangePixelsCommand()
+			{
+				this.Value = 0;
+			}
+
+			public ChangePixelsCommand(uint value, Point[] positions)
+			{
+				this.Value = value;
+				this.Positions = positions;
+			}
+
+			public uint[,] Do(uint[,] graphic)
+			{
+				if (graphic == null)
+					throw new ArgumentNullException("graphic");
+				List<uint> oldValues = new List<uint>();
+				foreach (Point point in Positions)
+				{
+					if ((point.X < 0 && point.Y < 0 && point.X >= graphic.GetLength(1) && point.Y >= graphic.GetLength(0)))
+						throw new ArgumentOutOfRangeException("Position not in graphic");
+					oldValues.Add(graphic[point.Y, point.X]);
+					graphic[point.Y, point.X] = Value;
+				}
+				if (oldValues.Count != Positions.Length)
+					throw new ArgumentException("Length of arrays not equal");
+				this.oldValues = oldValues.ToArray();
+				return graphic;
+			}
+
+			public uint[,] Undo(uint[,] graphic)
+			{
+				if (graphic == null)
+					throw new ArgumentNullException("graphic");
+				if (this.oldValues == null || this.oldValues.Length <= 0)
+					throw new ArgumentException("Cannot undo changes that are not done yet!");
+				for (int i = 0; i < this.Positions.Length; i++)
+				{
+					graphic[this.Positions[i].Y, this.Positions[i].X] = this.oldValues[i];
+				}
+				return graphic;
+			}
+		}
+
+		private class UndoRedoStack
+		{
+			private Stack<ICommand<uint[,]>> undo;
+			private Stack<ICommand<uint[,]>> redo;
+
+			public UndoRedoStack()
+			{
+				Reset();
+			}
+
+			public void Reset()
+			{
+				this.undo = new Stack<ICommand<uint[,]>>();
+				this.redo = new Stack<ICommand<uint[,]>>();
+			}
+
+			public int UndoCount
+			{
+				get
+				{
+					return undo.Count;
+				}
+			}
+
+			public int RedoCount
+			{
+				get
+				{
+					return redo.Count;
+				}
+			}
+
+			public uint[,] Do(ICommand<uint[,]> cmd, uint[,] graphic)
+			{
+				uint[,] output = cmd.Do(graphic);
+				this.undo.Push(cmd);
+				this.redo.Clear();
+				return output;
+			}
+
+			public uint[,] Undo(uint[,] graphic)
+			{
+				if (this.undo.Count > 0)
+				{
+					ICommand<uint[,]> cmd = this.undo.Pop();
+					uint[,] output = cmd.Undo(graphic);
+					this.redo.Push(cmd);
+					return output;
+				}
+				else
+				{
+					return graphic;
+				}
+			}
+
+			public uint[,] Redo(uint[,] graphic)
+			{
+				if (this.redo.Count > 0)
+				{
+					ICommand<uint[,]> cmd = this.redo.Pop();
+					uint[,] output = cmd.Do(graphic);
+					this.undo.Push(cmd);
+					return output;
+				}
+				else
+				{
+					return graphic;
+				}
+			}
+		}
+
+		#endregion Nested Classes
 	}
 }
