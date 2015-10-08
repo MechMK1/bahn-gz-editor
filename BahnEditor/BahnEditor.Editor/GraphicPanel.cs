@@ -10,7 +10,7 @@ namespace BahnEditor.Editor
 	public class GraphicPanel : Control
 	{
 		private Bitmap canvas = new Bitmap(Constants.ElementWidth, Constants.ElementHeight);
-		private int zoomLevelZoom1 = 4;
+		private int zoomLevelZoom1 = 6;
 		private int zoomLevelZoom2 = 6;
 		private int zoomLevelZoom4 = 8;
 
@@ -193,7 +193,7 @@ namespace BahnEditor.Editor
 			}
 		}
 
-		private static Bitmap GetBackgroundBitmapByZoomlevel(int zoomLevel, ZoomFactor zoomFactor)
+		internal static Bitmap GetBackgroundBitmapByZoomlevel(int zoomLevel, ZoomFactor zoomFactor)
 		{
 			float zoom = (float)zoomLevel / (float)zoomFactor;
 			switch ((int)zoom)

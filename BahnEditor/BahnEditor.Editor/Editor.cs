@@ -15,35 +15,58 @@ namespace BahnEditor.Editor
 	{
 		#region Private Fields
 
+		//transparent brush
 		private static Brush transparentBrush = new HatchBrush(HatchStyle.Percent10, Color.FromArgb(140, 140, 140), Color.FromArgb(0, 112, 0));
+
+		//actual selected graphic
+
 		private int actualAlternative = 0;
 		private int actualAnimationPhase = Constants.MinAnimationPhase;
 		private int actualGraphic;
 		private LayerID actualLayer;
+
+		//special drawing
+
+		private bool drawingSpecialMode = false;
 		private Point specialModeStartPoint;
 		private Point specialModeEndPoint;
-		private bool drawingSpecialMode = false;
 		private MouseButtons specialModeMouseButton;
+
+		//selection
+
 		private Point selectStartPoint;
 		private Point selectEndPoint;
 		private bool selected = false;
 		private bool drawingSelection = false;
-		private AnimationForm animationForm;
-		private bool cursorNormalDirectionCBCodeChanged = false;
-		private bool cursorReverseDirectionCBCodeChanged = false;
+
+		//variables to check if value was changed in the code
+
+		private bool cursorNormalDirectionComboBoxCC = false;
+		private bool cursorReverseDirectionComboBoxCC = false;
+		private bool tabControlSelectedCC = false;
+		private bool rightComboBoxCC = false;
+		private bool leftComboBoxCC = false;
+		private bool layerSelectBoxCC = false;
+		private bool animationNumbericUpDownCC = false;
+		private bool alternativeCheckBoxCC = false;
+
+		//variables for color of left and right mousebuttons
+
 		private uint lastLeftPixel = 0;
-		private string lastPath = "";
 		private uint lastRightPixel = 0;
-		private bool rightComboBoxSelectedCodeChanged = false;
-		private bool leftComboBoxSelectedCodeChanged = false;
-		private bool layerSelectBoxCodeChanged = false;
-		private bool animationPhaseCodeChanged = false;
-		private bool alternativeCheckBoxCodeChanged = false;
 		private uint leftPixel = 0;
+		private uint rightPixel = 255 << 16 | 255 << 8 | 255;
+
+		//position in the overviews
+
 		private int overviewAlternative = 0;
 		private int overviewLine = 0;
-		private uint rightPixel = 255 << 16 | 255 << 8 | 255;
+
+		//other variables
+
+		private string lastPath = "";
 		private bool userMadeChanges = false;
+		private AnimationForm animationForm;
 		private GraphicArchive zoom1Archive;
 		private GraphicArchive zoom2Archive;
 		private GraphicArchive zoom4Archive;
@@ -175,6 +198,8 @@ namespace BahnEditor.Editor
 
 		#region Private Methods
 
+		#region Editor Methods
+
 		private void EditorLoaded()
 		{
 			this.rightComboBox.SelectedIndex = 1;
@@ -194,20 +219,24 @@ namespace BahnEditor.Editor
 			this.urStack = new Dictionary<Tuple<int, int, int, LayerID, ZoomFactor>, UndoRedoStack>();
 			this.actualGraphic = 0;
 			this.actualAlternative = 0;
-			this.alternativeCheckBoxCodeChanged = true;
+			this.alternativeCheckBoxCC = true;
 			this.alternativesCheckBox.Checked = false;
-			this.alternativeCheckBoxCodeChanged = false;
+			this.alternativeCheckBoxCC = false;
 			this.actualAnimationPhase = 0;
+			this.graphicPanel.ZoomFactor = ZoomFactor.Zoom1;
+			this.tabControlSelectedCC = true;
+			this.tabControl.SelectedIndex = 0;
+			this.tabControlSelectedCC = false;
 			this.ChangeLayer(LayerID.Foreground);
 			this.UserMadeChanges(false);
-			this.animationPhaseCodeChanged = true;
+			this.animationNumbericUpDownCC = true;
 			this.animationNumericUpDown.Value = Constants.MinAnimationPhase;
-			this.animationPhaseCodeChanged = false;
+			this.animationNumbericUpDownCC = false;
 			this.lastPath = "";
 			this.UpdateProperties();
 			this.UpdateZoom();
 			this.UpdateUndoRedoButtons();
-			this.graphicPanel.Draw(this.GetLayer());
+			this.graphicPanel.Draw(this.GetGraphicLayer());
 			this.overviewPanel.Invalidate();
 			this.UpdateAnimation();
 		}
@@ -250,7 +279,10 @@ namespace BahnEditor.Editor
 				this.actualGraphic = 0;
 				this.actualAnimationPhase = 0;
 				this.graphicPanel.ZoomFactor = ZoomFactor.Zoom1;
-				this.alternativeCheckBoxCodeChanged = true;
+				this.tabControlSelectedCC = true;
+				this.tabControl.SelectedIndex = 0;
+				this.tabControlSelectedCC = false;
+				this.alternativeCheckBoxCC = true;
 				if (this.zoom1Archive.HasAlternatives(this.actualGraphic))
 				{
 					this.alternativesCheckBox.Checked = true;
@@ -261,17 +293,17 @@ namespace BahnEditor.Editor
 					this.alternativesCheckBox.Checked = false;
 					this.actualAlternative = 0;
 				}
-				this.alternativeCheckBoxCodeChanged = false;
-				this.animationPhaseCodeChanged = true;
+				this.alternativeCheckBoxCC = false;
+				this.animationNumbericUpDownCC = true;
 				this.animationNumericUpDown.Value = Constants.MinAnimationPhase;
-				this.animationPhaseCodeChanged = false;
+				this.animationNumbericUpDownCC = false;
 				this.UpdateProperties();
 				this.lastPath = this.zoom1Archive.FileName;
 				this.UserMadeChanges(false);
 				this.ChangeLayer(LayerID.Foreground);
 				this.UpdateZoom();
 				this.UpdateUndoRedoButtons();
-				this.graphicPanel.Draw(this.GetLayer());
+				this.graphicPanel.Draw(this.GetGraphicLayer());
 				this.overviewPanel.Invalidate();
 				this.UpdateAnimation();
 			}
@@ -326,6 +358,65 @@ namespace BahnEditor.Editor
 				return false;
 			}
 		}
+
+		private void ClickOnSaveButton(bool forceSave)
+		{
+			if (lastPath == "" || forceSave)
+			{
+				this.saveFileDialog.ShowDialog();
+			}
+			else
+			{
+				this.SaveGraphicArchive();
+			}
+		}
+
+		private bool AskSaveGraphic()
+		{
+			if (this.userMadeChanges == true)
+			{
+				DialogResult dr = MessageBox.Show("Do you want to save the graphic?", "Save", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+				if (dr == DialogResult.Cancel)
+				{
+					return false;
+				}
+				else if (dr == DialogResult.Yes)
+				{
+					this.ClickOnSaveButton(false);
+				}
+			}
+			return true;
+		}
+
+		private void OpenAnimationForm()
+		{
+			if (animationForm.Created && animationForm.Visible)
+			{
+				animationForm.Hide();
+				return;
+			}
+			if (animationForm.IsDisposed)
+				animationForm = new AnimationForm(this);
+			animationForm.Show();
+		}
+
+		private void ZoomInOut(bool zoomIn)
+		{
+			if (zoomIn)
+			{
+				this.graphicPanel.ZoomLevel += (int)this.graphicPanel.ZoomFactor;
+			}
+			else
+			{
+				this.graphicPanel.ZoomLevel -= (int)this.graphicPanel.ZoomFactor;
+			}
+
+			this.UpdateZoom();
+		}
+
+		#endregion Editor Methods
+
+		#region Drawing
 
 		private void DrawGraphic(Graphics g)
 		{
@@ -459,7 +550,7 @@ namespace BahnEditor.Editor
 
 					Brush brush;
 					if (Pixel.IsTransparent(pixel))
-						brush = new TextureBrush(GetBackgroundBitmapByZoomlevel(this.graphicPanel.ZoomLevel, this.graphicPanel.ZoomFactor));
+						brush = new TextureBrush(GraphicPanel.GetBackgroundBitmapByZoomlevel(this.graphicPanel.ZoomLevel, this.graphicPanel.ZoomFactor));
 					else if (Pixel.IsSpecial(pixel))
 						brush = new HatchBrush(HatchStyle.Percent20, Color.FromArgb(140, 140, 140), PixelToColor(pixel));
 					else
@@ -493,7 +584,7 @@ namespace BahnEditor.Editor
 
 					Brush brush;
 					if (Pixel.IsTransparent(pixel))
-						brush = new TextureBrush(GetBackgroundBitmapByZoomlevel(this.graphicPanel.ZoomLevel, this.graphicPanel.ZoomFactor));
+						brush = new TextureBrush(GraphicPanel.GetBackgroundBitmapByZoomlevel(this.graphicPanel.ZoomLevel, this.graphicPanel.ZoomFactor));
 					else if (Pixel.IsSpecial(pixel))
 						brush = new HatchBrush(HatchStyle.Percent20, Color.FromArgb(140, 140, 140), PixelToColor(pixel));
 					else
@@ -575,6 +666,10 @@ namespace BahnEditor.Editor
 			return result;
 		}
 
+		#endregion Drawing
+
+		#region Mouse-events
+
 		private void MouseDownOnGraphic(MouseEventArgs e)
 		{
 			this.isMouseCaptured = true;
@@ -583,7 +678,7 @@ namespace BahnEditor.Editor
 
 			Point p = this.TransformCoordinates(e.X, e.Y);
 			this.CreateGraphic();
-			uint[,] layer = this.GetLayer();
+			uint[,] layer = this.GetGraphicLayer();
 			if (p.X >= 0 && p.Y >= 0 && p.X < layer.GetLength(1) && p.Y < layer.GetLength(0))
 			{
 				if (this.lineToolStripRadioButton.Checked || this.rectangleToolStripRadioButton.Checked)
@@ -629,18 +724,18 @@ namespace BahnEditor.Editor
 							{
 								leftPixel = el;
 								leftColorButton.BackColor = c;
-								leftComboBoxSelectedCodeChanged = true;
+								leftComboBoxCC = true;
 								leftComboBox.SelectedIndex = PixelToComboBoxIndex(el);
-								leftComboBoxSelectedCodeChanged = false;
+								leftComboBoxCC = false;
 								this.leftLabel.Text = String.Format("Left: {0} - {1} - {2}", c.R, c.G, c.B);
 							}
 							else if (e.Button == MouseButtons.Right && !el.Equals(rightPixel))
 							{
 								rightPixel = el;
 								rightColorButton.BackColor = c;
-								rightComboBoxSelectedCodeChanged = true;
+								rightComboBoxCC = true;
 								rightComboBox.SelectedIndex = PixelToComboBoxIndex(el);
-								rightComboBoxSelectedCodeChanged = false;
+								rightComboBoxCC = false;
 								this.rightLabel.Text = String.Format("Right: {0} - {1} - {2}", c.R, c.G, c.B);
 							}
 						}
@@ -678,7 +773,7 @@ namespace BahnEditor.Editor
 							}
 							this.UndoRedo.Do(new ChangePixelsCommand(newColor, changes.ToArray()), layer);
 							this.UserMadeChanges(true);
-							this.SetLayer(layer);
+							this.SetGraphicLayer(layer);
 							this.UpdateUndoRedoButtons();
 							this.graphicPanel.Draw(layer);
 						}
@@ -697,7 +792,7 @@ namespace BahnEditor.Editor
 				return;
 
 			Point p = this.TransformCoordinates(e.X, e.Y);
-			uint[,] layer = this.GetLayer();
+			uint[,] layer = this.GetGraphicLayer();
 
 			if (p.X >= 0 && p.Y >= 0 && p.X < layer.GetLength(1) && p.Y < layer.GetLength(0))
 			{
@@ -758,7 +853,7 @@ namespace BahnEditor.Editor
 			if (this.drawingSpecialMode && (this.lineToolStripRadioButton.Checked || this.rectangleToolStripRadioButton.Checked))
 			{
 				this.drawingSpecialMode = false;
-				this.DrawSpecialOnGraphic();
+				this.PrintSpecialOnGraphic();
 			}
 			else if (this.selected && this.drawingSelection)
 			{
@@ -779,10 +874,10 @@ namespace BahnEditor.Editor
 				else
 					return;
 
-				uint[,] layer = this.GetLayer();
+				uint[,] layer = this.GetGraphicLayer();
 				layer = this.UndoRedo.Do(new ChangePixelsCommand(pixel, this.changes.ToArray()), layer);
 				this.changes = null;
-				this.SetLayer(layer);
+				this.SetGraphicLayer(layer);
 				this.UpdateUndoRedoButtons();
 				this.graphicPanel.Draw(layer);
 			}
@@ -818,11 +913,11 @@ namespace BahnEditor.Editor
 				this.actualGraphic = (element * 2 + overviewAlternative) + ((overviewLine) * 18);
 
 				this.actualAnimationPhase = Constants.MinAnimationPhase;
-				this.animationPhaseCodeChanged = true;
+				this.animationNumbericUpDownCC = true;
 				this.animationNumericUpDown.Value = Constants.MinAnimationPhase;
-				this.animationPhaseCodeChanged = false;
+				this.animationNumbericUpDownCC = false;
 
-				this.alternativeCheckBoxCodeChanged = true;
+				this.alternativeCheckBoxCC = true;
 				if (this.zoom1Archive.HasAlternatives(this.actualGraphic))
 				{
 					this.alternativesCheckBox.Checked = true;
@@ -833,11 +928,11 @@ namespace BahnEditor.Editor
 					this.alternativesCheckBox.Checked = false;
 					this.actualAlternative = 0;
 				}
-				this.alternativeCheckBoxCodeChanged = false;
+				this.alternativeCheckBoxCC = false;
 
 				this.UpdateProperties();
 				this.UpdateUndoRedoButtons();
-				this.graphicPanel.Draw(this.GetLayer());
+				this.graphicPanel.Draw(this.GetGraphicLayer());
 				this.overviewPanel.Invalidate();
 				this.UpdateAnimation();
 			}
@@ -873,173 +968,15 @@ namespace BahnEditor.Editor
 					this.actualAlternative = alternative;
 					this.UpdateProperties();
 					this.overviewPanel.Invalidate();
-					this.graphicPanel.Draw(this.GetLayer());
+					this.graphicPanel.Draw(this.GetGraphicLayer());
 					this.UpdateAnimation();
 				}
 			}
 		}
 
-		private static Bitmap GetBackgroundBitmapByZoomlevel(int zoomLevel, ZoomFactor zoomFactor)
-		{
-			float zoom = (float)zoomLevel / (float)zoomFactor;
-			switch ((int)zoom)
-			{
-				case 1:
-				default:
-					return Properties.Resources.background;
+		#endregion Mouse-events
 
-				case 2:
-					return Properties.Resources.background2;
-
-				case 3:
-					return Properties.Resources.background3;
-
-				case 4:
-					return Properties.Resources.background4;
-
-				case 5:
-					return Properties.Resources.background5;
-
-				case 6:
-					return Properties.Resources.background6;
-
-				case 7:
-					return Properties.Resources.background7;
-
-				case 8:
-					return Properties.Resources.background8;
-
-				case 9:
-					return Properties.Resources.background9;
-
-				case 10:
-					return Properties.Resources.background10;
-
-				case 11:
-					return Properties.Resources.background11;
-
-				case 12:
-					return Properties.Resources.background12;
-			}
-		}
-
-		private void DrawSpecialOnGraphic()
-		{
-			if (this.rectangleToolStripRadioButton.Checked)
-			{
-				uint pixel = 0;
-				if (this.specialModeMouseButton == MouseButtons.Left)
-					pixel = this.leftPixel;
-				else if (this.specialModeMouseButton == MouseButtons.Right)
-					pixel = this.rightPixel;
-				this.CreateGraphic();
-				List<Point> changes = new List<Point>();
-				uint[,] layer = this.GetLayer();
-				int startX = Math.Min(this.specialModeStartPoint.X, this.specialModeEndPoint.X);
-				int startY = Math.Min(this.specialModeStartPoint.Y, this.specialModeEndPoint.Y);
-				int width = Math.Abs(this.specialModeStartPoint.X - this.specialModeEndPoint.X) + 1;
-				int height = Math.Abs(this.specialModeStartPoint.Y - this.specialModeEndPoint.Y) + 1;
-				for (int i = 0; i < width && i + startX < layer.GetLength(1); i++)
-				{
-					for (int j = 0; j < height && j + startY < layer.GetLength(0); j++)
-					{
-						changes.Add(new Point(i + startX, j + startY));
-					}
-				}
-				layer = this.UndoRedo.Do(new ChangePixelsCommand(pixel, changes.ToArray()), layer);
-				this.SetLayer(layer);
-				this.UpdateUndoRedoButtons();
-				this.UserMadeChanges(true);
-				this.graphicPanel.Draw(layer);
-			}
-			else if (this.lineToolStripRadioButton.Checked)
-			{
-				uint pixel = 0;
-				if (this.specialModeMouseButton == MouseButtons.Left)
-					pixel = this.leftPixel;
-				else if (this.specialModeMouseButton == MouseButtons.Right)
-					pixel = this.rightPixel;
-				this.CreateGraphic();
-				uint[,] layer = this.GetLayer();
-				Point[] pixels = CalculateLine(this.specialModeStartPoint.X, this.specialModeStartPoint.Y, this.specialModeEndPoint.X, this.specialModeEndPoint.Y);
-				layer = this.UndoRedo.Do(new ChangePixelsCommand(pixel, pixels), layer);
-				this.SetLayer(layer);
-				this.UpdateUndoRedoButtons();
-				this.UserMadeChanges(true);
-				this.graphicPanel.Draw(layer);
-			}
-		}
-
-		private static Point[] CalculateLine(int startX, int startY, int endX, int endY)
-		{
-			int dx = endX - startX;
-			int dy = endY - startY;
-
-			int incX = GetSignOfInteger(dx);
-			int incY = GetSignOfInteger(dy);
-			if (dx < 0) dx = -dx;
-			if (dy < 0) dy = -dy;
-
-			int pdx, pdy, ddx, ddy, es, el;
-			if (dx > dy)
-			{
-				/* x ist schnelle Richtung */
-				pdx = incX; pdy = 0;    /* pd. ist Parallelschritt */
-				ddx = incX; ddy = incY; /* dd. ist Diagonalschritt */
-				es = dy; el = dx;   /* Fehlerschritte schnell, langsam */
-			}
-			else
-			{
-				/* y ist schnelle Richtung */
-				pdx = 0; pdy = incY; /* pd. ist Parallelschritt */
-				ddx = incX; ddy = incY; /* dd. ist Diagonalschritt */
-				es = dx; el = dy;   /* Fehlerschritte schnell, langsam */
-			}
-
-			int x = startX, y = startY;
-			int err = el / 2;
-			List<Point> pixels = new List<Point>();
-			pixels.Add(new Point(x, y));
-
-			for (int i = 0; i < el; ++i)
-			{
-				err -= es;
-				if (err < 0)
-				{
-					err += el;
-					x += ddx;
-					y += ddy;
-				}
-				else
-				{
-					x += pdx;
-					y += pdy;
-				}
-				pixels.Add(new Point(x, y));
-			}
-
-			return pixels.ToArray();
-		}
-
-		private void Undo()
-		{
-			uint[,] layer = this.GetLayer();
-			this.UndoRedo.Undo(layer);
-			this.SetLayer(layer);
-			this.UpdateUndoRedoButtons();
-			this.UserMadeChanges(true);
-			this.graphicPanel.Draw(layer);
-		}
-
-		private void Redo()
-		{
-			uint[,] layer = this.GetLayer();
-			this.UndoRedo.Redo(layer);
-			this.SetLayer(layer);
-			this.UpdateUndoRedoButtons();
-			this.UserMadeChanges(true);
-			this.graphicPanel.Draw(layer);
-		}
+		#region Graphic Methods
 
 		private void CreateGraphic()
 		{
@@ -1077,6 +1014,305 @@ namespace BahnEditor.Editor
 				}
 			}
 		}
+
+		private uint[,] GetGraphicLayer()
+		{
+			Graphic graphic = this.ActualGraphic;
+			if (graphic != null)
+			{
+				return graphic[this.actualLayer];
+			}
+			return null;
+		}
+
+		private void SetGraphicLayer(uint[,] layer)
+		{
+			Graphic graphic = this.ActualGraphic;
+			if (graphic != null)
+				graphic[this.actualLayer] = layer;
+		}
+
+		private void PrintSpecialOnGraphic()
+		{
+			if (this.rectangleToolStripRadioButton.Checked)
+			{
+				uint pixel = 0;
+				if (this.specialModeMouseButton == MouseButtons.Left)
+					pixel = this.leftPixel;
+				else if (this.specialModeMouseButton == MouseButtons.Right)
+					pixel = this.rightPixel;
+				this.CreateGraphic();
+				List<Point> changes = new List<Point>();
+				uint[,] layer = this.GetGraphicLayer();
+				int startX = Math.Min(this.specialModeStartPoint.X, this.specialModeEndPoint.X);
+				int startY = Math.Min(this.specialModeStartPoint.Y, this.specialModeEndPoint.Y);
+				int width = Math.Abs(this.specialModeStartPoint.X - this.specialModeEndPoint.X) + 1;
+				int height = Math.Abs(this.specialModeStartPoint.Y - this.specialModeEndPoint.Y) + 1;
+				for (int i = 0; i < width && i + startX < layer.GetLength(1); i++)
+				{
+					for (int j = 0; j < height && j + startY < layer.GetLength(0); j++)
+					{
+						changes.Add(new Point(i + startX, j + startY));
+					}
+				}
+				layer = this.UndoRedo.Do(new ChangePixelsCommand(pixel, changes.ToArray()), layer);
+				this.SetGraphicLayer(layer);
+				this.UpdateUndoRedoButtons();
+				this.UserMadeChanges(true);
+				this.graphicPanel.Draw(layer);
+			}
+			else if (this.lineToolStripRadioButton.Checked)
+			{
+				uint pixel = 0;
+				if (this.specialModeMouseButton == MouseButtons.Left)
+					pixel = this.leftPixel;
+				else if (this.specialModeMouseButton == MouseButtons.Right)
+					pixel = this.rightPixel;
+				this.CreateGraphic();
+				uint[,] layer = this.GetGraphicLayer();
+				Point[] pixels = CalculateLine(this.specialModeStartPoint.X, this.specialModeStartPoint.Y, this.specialModeEndPoint.X, this.specialModeEndPoint.Y);
+				layer = this.UndoRedo.Do(new ChangePixelsCommand(pixel, pixels), layer);
+				this.SetGraphicLayer(layer);
+				this.UpdateUndoRedoButtons();
+				this.UserMadeChanges(true);
+				this.graphicPanel.Draw(layer);
+			}
+		}
+
+		#endregion Graphic Methods
+
+		#region Update Methods
+
+		private void UpdateProperties()
+		{
+			Graphic graphic = this.ActualGraphic;
+			if (graphic == null)
+			{
+				ChangePropertyComboBoxes(false);
+			}
+			else
+			{
+				ChangePropertyComboBoxes(true);
+			}
+			if (graphic != null && graphic.Properties.HasParticles)
+			{
+				if (graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Steam))
+					this.particleComboBox.SelectedIndex = 1;
+				else
+					this.particleComboBox.SelectedIndex = 2;
+				this.particleWidthNumericUpDown.Enabled = true;
+				this.particleXNumericUpDown.Enabled = true;
+				this.particleYNumericUpDown.Enabled = true;
+				this.particleWidthNumericUpDown.Value = graphic.Properties.ParticleWidth;
+				this.particleXNumericUpDown.Value = graphic.Properties.ParticleX;
+				this.particleYNumericUpDown.Value = graphic.Properties.ParticleY;
+			}
+			else if (this.particleComboBox.SelectedIndex != 0)
+			{
+				this.particleComboBox.SelectedIndex = 0;
+				this.particleWidthNumericUpDown.Enabled = false;
+				this.particleXNumericUpDown.Enabled = false;
+				this.particleYNumericUpDown.Enabled = false;
+				this.particleWidthNumericUpDown.Value = 0;
+				this.particleXNumericUpDown.Value = 0;
+				this.particleYNumericUpDown.Value = 0;
+			}
+			if (graphic != null && graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Clock))
+			{
+				if (graphic.Properties.ClockProperties.HasFlag(ClockProperties.Display24h))
+					this.clockComboBox.SelectedIndex = 2;
+				else
+					this.clockComboBox.SelectedIndex = 1;
+				this.clockColorHoursPointerButton.Enabled = true;
+				this.clockColorMinutesPointerButton.Enabled = true;
+				this.clockMinutesPointerCheckBox.Enabled = true;
+				this.clockRotationComboBox.Enabled = true;
+				this.clockWidthNumericUpDown.Enabled = true;
+				this.clockXNumericUpDown.Enabled = true;
+				this.clockYNumericUpDown.Enabled = true;
+				this.clockXNumericUpDown.Value = graphic.Properties.ClockX;
+				this.clockYNumericUpDown.Value = graphic.Properties.ClockY;
+				this.clockWidthNumericUpDown.Value = graphic.Properties.ClockWidth;
+				this.clockMinutesPointerCheckBox.Checked = graphic.Properties.ClockProperties.HasFlag(ClockProperties.MinutePointer);
+				if (graphic.Properties.ClockProperties.HasFlag(ClockProperties.RotatedNorthWest))
+					this.clockRotationComboBox.SelectedIndex = 1;
+				else if (graphic.Properties.ClockProperties.HasFlag(ClockProperties.RotatedNorthEast))
+					this.clockRotationComboBox.SelectedIndex = 2;
+				else
+					this.clockRotationComboBox.SelectedIndex = 0;
+				this.clockColorHoursPointerButton.BackColor = PixelToColor(graphic.Properties.ClockColorHoursPointer);
+				this.clockColorMinutesPointerButton.BackColor = PixelToColor(graphic.Properties.ClockColorMinutesPointer);
+			}
+			else if (this.clockComboBox.SelectedIndex != 0)
+			{
+				this.clockComboBox.SelectedIndex = 0;
+				this.clockColorHoursPointerButton.Enabled = false;
+				this.clockColorMinutesPointerButton.Enabled = false;
+				this.clockMinutesPointerCheckBox.Enabled = false;
+				this.clockRotationComboBox.Enabled = false;
+				this.clockWidthNumericUpDown.Enabled = false;
+				this.clockXNumericUpDown.Enabled = false;
+				this.clockYNumericUpDown.Enabled = false;
+				this.clockXNumericUpDown.Value = 0;
+				this.clockYNumericUpDown.Value = 0;
+				this.clockWidthNumericUpDown.Value = 0;
+				this.clockMinutesPointerCheckBox.Checked = false;
+				this.clockRotationComboBox.SelectedIndex = 0;
+				this.clockColorHoursPointerButton.BackColor = Color.Black;
+				this.clockColorMinutesPointerButton.BackColor = Color.Black;
+			}
+			Graphic z1Graphic = this.ActualZoom1Graphic;
+			if (z1Graphic != null && z1Graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Cursor))
+			{
+				this.cursorNormalDirectionComboBoxCC = true;
+				this.cursorReverseDirectionComboBoxCC = true;
+				this.cursorNormalDirectionComboBox.SelectedIndex = (int)z1Graphic.Properties.CursorNormalDirection + 1;
+				this.cursorReverseDirectionComboBox.SelectedIndex = (int)z1Graphic.Properties.CursorReverseDirection + 1;
+				this.cursorNormalDirectionComboBoxCC = false;
+				this.cursorReverseDirectionComboBoxCC = false;
+			}
+			else if (this.cursorNormalDirectionComboBox.SelectedIndex > -1 || this.cursorReverseDirectionComboBox.SelectedIndex > -1)
+			{
+				this.cursorNormalDirectionComboBoxCC = true;
+				this.cursorReverseDirectionComboBoxCC = true;
+				this.cursorNormalDirectionComboBox.SelectedIndex = -1;
+				this.cursorReverseDirectionComboBox.SelectedIndex = -1;
+				this.cursorNormalDirectionComboBoxCC = false;
+				this.cursorReverseDirectionComboBoxCC = false;
+			}
+		}
+
+		private void UpdateAnimation()
+		{
+			if (this.animationForm != null && !this.animationForm.IsDisposed)
+				this.animationForm.ChangeAnimationProgram();
+		}
+
+		private void UpdateZoom()
+		{
+			if (this.graphicPanel.ZoomLevel > 7 * (int)this.graphicPanel.ZoomFactor)
+			{
+				this.zoomInButton.Enabled = false;
+			}
+			else
+			{
+				this.zoomInButton.Enabled = true;
+			}
+			if (this.graphicPanel.ZoomLevel < 1 * (int)this.graphicPanel.ZoomFactor + 1)
+			{
+				this.zoomOutButton.Enabled = false;
+			}
+			else
+			{
+				this.zoomOutButton.Enabled = true;
+			}
+			this.zoomLevelStatusLabel.Text = String.Format("Zoomlevel: {0}  Zoomfactor: {1}", this.graphicPanel.ZoomLevel, this.graphicPanel.ZoomFactor.ToString());
+			this.graphicPanel.Draw(this.GetGraphicLayer());
+		}
+
+		private void UpdateUndoRedoButtons()
+		{
+			if (this.UndoRedoExists)
+			{
+				this.undoToolStripButton.Enabled = false;
+				this.undoToolStripMenuItem.Enabled = false;
+				this.redoToolStripButton.Enabled = false;
+				this.redoToolStripMenuItem.Enabled = false;
+			}
+			if (this.UndoRedo.UndoCount <= 0)
+			{
+				this.undoToolStripButton.Enabled = false;
+				this.undoToolStripMenuItem.Enabled = false;
+			}
+			else
+			{
+				this.undoToolStripButton.Enabled = true;
+				this.undoToolStripMenuItem.Enabled = true;
+			}
+			if (this.UndoRedo.RedoCount <= 0)
+			{
+				this.redoToolStripButton.Enabled = false;
+				this.redoToolStripMenuItem.Enabled = false;
+			}
+			else
+			{
+				this.redoToolStripButton.Enabled = true;
+				this.redoToolStripMenuItem.Enabled = true;
+			}
+		}
+
+		#endregion Update Methods
+
+		#region Layer Methods
+
+		private void ChangeLayer(LayerID id)
+		{
+			if (this.actualLayer != id)
+			{
+				this.actualLayer = id;
+				switch (id)
+				{
+					case LayerID.ToBackground:
+						this.toBackgroundRadioButton.Checked = true;
+						break;
+
+					case LayerID.Foreground:
+						this.foregroundRadioButton.Checked = true;
+						break;
+
+					case LayerID.Background0:
+						this.backgroundRadioButton.Checked = true;
+						break;
+
+					case LayerID.Front:
+						this.frontRadioButton.Checked = true;
+						break;
+
+					case LayerID.ForegroundAbove:
+						this.foregroundAboveRadioButton.Checked = true;
+						break;
+
+					default:
+						throw new Exception("Internal Error");
+				}
+			}
+		}
+
+		private void SelectLayer()
+		{
+			if (this.layerSelectBoxCC)
+			{
+				this.layerSelectBoxCC = false;
+			}
+			else
+			{
+				this.actualLayer = this.GetLayerIDBySelectedIndex();
+				this.UpdateUndoRedoButtons();
+				this.graphicPanel.Draw(this.GetGraphicLayer());
+			}
+		}
+
+		private LayerID GetLayerIDBySelectedIndex()
+		{
+			if (this.foregroundRadioButton.Checked)
+				return LayerID.Foreground;
+			else if (this.backgroundRadioButton.Checked)
+				return LayerID.Background0;
+			else if (this.backgroundRadioButton2.Checked)
+				return LayerID.Background1;
+			else if (this.toBackgroundRadioButton.Checked)
+				return LayerID.ToBackground;
+			else if (this.foregroundAboveRadioButton.Checked)
+				return LayerID.ForegroundAbove;
+			else if (this.frontRadioButton.Checked)
+				return LayerID.Front;
+			else
+				throw new Exception("Internal Error");
+		}
+
+		#endregion Layer Methods
+
+		#region Pixel Methods
 
 		private static uint PixelFromColor(Color color)
 		{
@@ -1191,103 +1427,6 @@ namespace BahnEditor.Editor
 				default:
 					throw new ArgumentOutOfRangeException("property", "A property which was not defined here was encountered");
 			}
-		}
-
-		private bool AskSaveGraphic()
-		{
-			if (this.userMadeChanges == true)
-			{
-				DialogResult dr = MessageBox.Show("Do you want to save the graphic?", "Save", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
-				if (dr == DialogResult.Cancel)
-				{
-					return false;
-				}
-				else if (dr == DialogResult.Yes)
-				{
-					this.ClickOnSaveButton(false);
-				}
-			}
-			return true;
-		}
-
-		private void ChangeLayer(LayerID id)
-		{
-			if (this.actualLayer != id)
-			{
-				this.actualLayer = id;
-				switch (id)
-				{
-					case LayerID.ToBackground:
-						this.toBackgroundRadioButton.Checked = true;
-						break;
-
-					case LayerID.Foreground:
-						this.foregroundRadioButton.Checked = true;
-						break;
-
-					case LayerID.Background0:
-						this.backgroundRadioButton.Checked = true;
-						break;
-
-					case LayerID.Front:
-						this.frontRadioButton.Checked = true;
-						break;
-
-					case LayerID.ForegroundAbove:
-						this.foregroundAboveRadioButton.Checked = true;
-						break;
-
-					default:
-						throw new Exception("Internal Error");
-				}
-			}
-		}
-
-		private void ClickOnSaveButton(bool forceSave)
-		{
-			if (lastPath == "" || forceSave)
-			{
-				this.saveFileDialog.ShowDialog();
-			}
-			else
-			{
-				this.SaveGraphicArchive();
-			}
-		}
-
-		private uint[,] GetLayer()
-		{
-			Graphic graphic = this.ActualGraphic;
-			if (graphic != null)
-			{
-				return graphic[this.actualLayer];
-			}
-			return null;
-		}
-
-		private void SetLayer(uint[,] layer)
-		{
-			Graphic graphic = this.ActualGraphic;
-			if (graphic != null)
-				graphic[this.actualLayer] = layer;
-		}
-
-		private LayerID GetLayerIDBySelectedIndex()
-		{
-			if (this.foregroundRadioButton.Checked)
-				return LayerID.Foreground;
-			else if (this.backgroundRadioButton.Checked)
-				return LayerID.Background0;
-			else if (this.backgroundRadioButton2.Checked)
-				return LayerID.Background1;
-			else if (this.toBackgroundRadioButton.Checked)
-				return LayerID.ToBackground;
-			else if (this.foregroundAboveRadioButton.Checked)
-				return LayerID.ForegroundAbove;
-			else if (this.frontRadioButton.Checked)
-				return LayerID.Front;
-			else
-				throw new Exception("Internal Error");
 		}
 
 		private static int PixelToComboBoxIndex(uint pixel)
@@ -1425,7 +1564,7 @@ namespace BahnEditor.Editor
 			return 0;
 		}
 
-		private static uint PixelFromComboBox(int index, uint lastPixel)
+		private static uint PixelFromComboBoxIndex(int index, uint lastPixel)
 		{
 			byte r = 0;
 			byte g = 0;
@@ -1551,31 +1690,9 @@ namespace BahnEditor.Editor
 			}
 		}
 
-		private void OpenAnimationForm()
-		{
-			if (animationForm.Created && animationForm.Visible)
-			{
-				animationForm.Hide();
-				return;
-			}
-			if (animationForm.IsDisposed)
-				animationForm = new AnimationForm(this);
-			animationForm.Show();
-		}
+		#endregion Pixel Methods
 
-		private void SelectLayer()
-		{
-			if (this.layerSelectBoxCodeChanged)
-			{
-				this.layerSelectBoxCodeChanged = false;
-			}
-			else
-			{
-				this.actualLayer = this.GetLayerIDBySelectedIndex();
-				this.UpdateUndoRedoButtons();
-				this.graphicPanel.Draw(this.GetLayer());
-			}
-		}
+		#region Helper
 
 		private void ChangePropertyComboBoxes(bool enabled)
 		{
@@ -1583,178 +1700,6 @@ namespace BahnEditor.Editor
 			this.clockComboBox.Enabled = enabled;
 			this.cursorNormalDirectionComboBox.Enabled = enabled;
 			this.cursorReverseDirectionComboBox.Enabled = enabled;
-		}
-
-		private void UpdateProperties()
-		{
-			Graphic graphic = this.ActualGraphic;
-			if (graphic == null)
-			{
-				ChangePropertyComboBoxes(false);
-			}
-			else
-			{
-				ChangePropertyComboBoxes(true);
-			}
-			if (graphic != null && graphic.Properties.HasParticles)
-			{
-				if (graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Steam))
-					this.particleComboBox.SelectedIndex = 1;
-				else
-					this.particleComboBox.SelectedIndex = 2;
-				this.particleWidthNumericUpDown.Enabled = true;
-				this.particleXNumericUpDown.Enabled = true;
-				this.particleYNumericUpDown.Enabled = true;
-				this.particleWidthNumericUpDown.Value = graphic.Properties.ParticleWidth;
-				this.particleXNumericUpDown.Value = graphic.Properties.ParticleX;
-				this.particleYNumericUpDown.Value = graphic.Properties.ParticleY;
-			}
-			else if (this.particleComboBox.SelectedIndex != 0)
-			{
-				this.particleComboBox.SelectedIndex = 0;
-				this.particleWidthNumericUpDown.Enabled = false;
-				this.particleXNumericUpDown.Enabled = false;
-				this.particleYNumericUpDown.Enabled = false;
-				this.particleWidthNumericUpDown.Value = 0;
-				this.particleXNumericUpDown.Value = 0;
-				this.particleYNumericUpDown.Value = 0;
-			}
-			if (graphic != null && graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Clock))
-			{
-				if (graphic.Properties.ClockProperties.HasFlag(ClockProperties.Display24h))
-					this.clockComboBox.SelectedIndex = 2;
-				else
-					this.clockComboBox.SelectedIndex = 1;
-				this.clockColorHoursPointerButton.Enabled = true;
-				this.clockColorMinutesPointerButton.Enabled = true;
-				this.clockMinutesPointerCheckBox.Enabled = true;
-				this.clockRotationComboBox.Enabled = true;
-				this.clockWidthNumericUpDown.Enabled = true;
-				this.clockXNumericUpDown.Enabled = true;
-				this.clockYNumericUpDown.Enabled = true;
-				this.clockXNumericUpDown.Value = graphic.Properties.ClockX;
-				this.clockYNumericUpDown.Value = graphic.Properties.ClockY;
-				this.clockWidthNumericUpDown.Value = graphic.Properties.ClockWidth;
-				this.clockMinutesPointerCheckBox.Checked = graphic.Properties.ClockProperties.HasFlag(ClockProperties.MinutePointer);
-				if (graphic.Properties.ClockProperties.HasFlag(ClockProperties.RotatedNorthWest))
-					this.clockRotationComboBox.SelectedIndex = 1;
-				else if (graphic.Properties.ClockProperties.HasFlag(ClockProperties.RotatedNorthEast))
-					this.clockRotationComboBox.SelectedIndex = 2;
-				else
-					this.clockRotationComboBox.SelectedIndex = 0;
-				this.clockColorHoursPointerButton.BackColor = PixelToColor(graphic.Properties.ClockColorHoursPointer);
-				this.clockColorMinutesPointerButton.BackColor = PixelToColor(graphic.Properties.ClockColorMinutesPointer);
-			}
-			else if (this.clockComboBox.SelectedIndex != 0)
-			{
-				this.clockComboBox.SelectedIndex = 0;
-				this.clockColorHoursPointerButton.Enabled = false;
-				this.clockColorMinutesPointerButton.Enabled = false;
-				this.clockMinutesPointerCheckBox.Enabled = false;
-				this.clockRotationComboBox.Enabled = false;
-				this.clockWidthNumericUpDown.Enabled = false;
-				this.clockXNumericUpDown.Enabled = false;
-				this.clockYNumericUpDown.Enabled = false;
-				this.clockXNumericUpDown.Value = 0;
-				this.clockYNumericUpDown.Value = 0;
-				this.clockWidthNumericUpDown.Value = 0;
-				this.clockMinutesPointerCheckBox.Checked = false;
-				this.clockRotationComboBox.SelectedIndex = 0;
-				this.clockColorHoursPointerButton.BackColor = Color.Black;
-				this.clockColorMinutesPointerButton.BackColor = Color.Black;
-			}
-			Graphic z1Graphic = this.ActualZoom1Graphic;
-			if (z1Graphic != null && z1Graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Cursor))
-			{
-				this.cursorNormalDirectionCBCodeChanged = true;
-				this.cursorReverseDirectionCBCodeChanged = true;
-				this.cursorNormalDirectionComboBox.SelectedIndex = (int)z1Graphic.Properties.CursorNormalDirection + 1;
-				this.cursorReverseDirectionComboBox.SelectedIndex = (int)z1Graphic.Properties.CursorReverseDirection + 1;
-				this.cursorNormalDirectionCBCodeChanged = false;
-				this.cursorReverseDirectionCBCodeChanged = false;
-			}
-			else if (this.cursorNormalDirectionComboBox.SelectedIndex > -1 || this.cursorReverseDirectionComboBox.SelectedIndex > -1)
-			{
-				this.cursorNormalDirectionCBCodeChanged = true;
-				this.cursorReverseDirectionCBCodeChanged = true;
-				this.cursorNormalDirectionComboBox.SelectedIndex = -1;
-				this.cursorReverseDirectionComboBox.SelectedIndex = -1;
-				this.cursorNormalDirectionCBCodeChanged = false;
-				this.cursorReverseDirectionCBCodeChanged = false;
-			}
-		}
-
-		private void UpdateAnimation()
-		{
-			if (this.animationForm != null && !this.animationForm.IsDisposed)
-				this.animationForm.ChangeAnimationProgram();
-		}
-
-		private void ZoomInOut(bool zoomIn)
-		{
-			if (zoomIn)
-			{
-				this.graphicPanel.ZoomLevel += (int)this.graphicPanel.ZoomFactor;
-			}
-			else
-			{
-				this.graphicPanel.ZoomLevel -= (int)this.graphicPanel.ZoomFactor;
-			}
-
-			this.UpdateZoom();
-		}
-
-		private void UpdateZoom()
-		{
-			if (this.graphicPanel.ZoomLevel > 7 * (int)this.graphicPanel.ZoomFactor)
-			{
-				this.zoomInButton.Enabled = false;
-			}
-			else
-			{
-				this.zoomInButton.Enabled = true;
-			}
-			if (this.graphicPanel.ZoomLevel < 1 * (int)this.graphicPanel.ZoomFactor + 1)
-			{
-				this.zoomOutButton.Enabled = false;
-			}
-			else
-			{
-				this.zoomOutButton.Enabled = true;
-			}
-			this.zoomLevelStatusLabel.Text = String.Format("Zoomlevel: {0}  Zoomfactor: {1}", this.graphicPanel.ZoomLevel, this.graphicPanel.ZoomFactor.ToString());
-			this.graphicPanel.Draw(this.GetLayer());
-		}
-
-		private void UpdateUndoRedoButtons()
-		{
-			if (this.UndoRedoExists)
-			{
-				this.undoToolStripButton.Enabled = false;
-				this.undoToolStripMenuItem.Enabled = false;
-				this.redoToolStripButton.Enabled = false;
-				this.redoToolStripMenuItem.Enabled = false;
-			}
-			if (this.UndoRedo.UndoCount <= 0)
-			{
-				this.undoToolStripButton.Enabled = false;
-				this.undoToolStripMenuItem.Enabled = false;
-			}
-			else
-			{
-				this.undoToolStripButton.Enabled = true;
-				this.undoToolStripMenuItem.Enabled = true;
-			}
-			if (this.UndoRedo.RedoCount <= 0)
-			{
-				this.redoToolStripButton.Enabled = false;
-				this.redoToolStripMenuItem.Enabled = false;
-			}
-			else
-			{
-				this.redoToolStripButton.Enabled = true;
-				this.redoToolStripMenuItem.Enabled = true;
-			}
 		}
 
 		private Point TransformCoordinates(int x, int y)
@@ -1770,6 +1715,150 @@ namespace BahnEditor.Editor
 			return (x > 0) ? 1 : (x < 0) ? -1 : 0;
 		}
 
+		private static Point[] CalculateLine(int startX, int startY, int endX, int endY)
+		{
+			int dx = endX - startX;
+			int dy = endY - startY;
+
+			int incX = GetSignOfInteger(dx);
+			int incY = GetSignOfInteger(dy);
+			if (dx < 0) dx = -dx;
+			if (dy < 0) dy = -dy;
+
+			int pdx, pdy, ddx, ddy, es, el;
+			if (dx > dy)
+			{
+				/* x ist schnelle Richtung */
+				pdx = incX; pdy = 0;    /* pd. ist Parallelschritt */
+				ddx = incX; ddy = incY; /* dd. ist Diagonalschritt */
+				es = dy; el = dx;   /* Fehlerschritte schnell, langsam */
+			}
+			else
+			{
+				/* y ist schnelle Richtung */
+				pdx = 0; pdy = incY; /* pd. ist Parallelschritt */
+				ddx = incX; ddy = incY; /* dd. ist Diagonalschritt */
+				es = dx; el = dy;   /* Fehlerschritte schnell, langsam */
+			}
+
+			int x = startX, y = startY;
+			int err = el / 2;
+			List<Point> pixels = new List<Point>();
+			pixels.Add(new Point(x, y));
+
+			for (int i = 0; i < el; ++i)
+			{
+				err -= es;
+				if (err < 0)
+				{
+					err += el;
+					x += ddx;
+					y += ddy;
+				}
+				else
+				{
+					x += pdx;
+					y += pdy;
+				}
+				pixels.Add(new Point(x, y));
+			}
+
+			return pixels.ToArray();
+		}
+
+		#endregion Helper
+
+		#region Copy and Paste
+
+		private void CopyGraphic(bool cut)
+		{
+			uint[,] layer = this.GetGraphicLayer();
+			if (this.selected && layer != null)
+			{
+				StringBuilder builder = new StringBuilder();
+
+				int startX = Math.Min(selectStartPoint.X, selectEndPoint.X);
+				int startY = Math.Min(selectStartPoint.Y, selectEndPoint.Y);
+				int height = Math.Abs(selectStartPoint.Y - selectEndPoint.Y + 1);
+				int width = Math.Abs(selectStartPoint.X - selectEndPoint.X - 1);
+
+				List<Point> changes = new List<Point>();
+
+				builder.Append(String.Format("bahneditor copy {0} {1} {2} {3} ", "1", this.graphicPanel.ZoomFactor, width, height));
+				int counter = 0;
+				uint last = layer[startY, startX];
+
+				for (int i = startY; i < startY + height && i < layer.GetLength(0); i++) //Y - height
+				{
+					for (int j = startX; j < startX + width && j < layer.GetLength(1); j++) //X - width
+					{
+						if (last != layer[i, j])
+						{
+							builder.Append(String.Format("{0}-{1} ", last, counter));
+							last = layer[i, j];
+							counter = 1;
+						}
+						else
+							counter++;
+						if (cut)
+							changes.Add(new Point(j, i));
+					}
+				}
+				builder.Append(String.Format("{0}-{1}", last, counter));
+
+				Clipboard.SetText(builder.ToString());
+				if (cut)
+				{
+					layer = this.UndoRedo.Do(new ChangePixelsCommand(Constants.ColorTransparent, changes.ToArray()), layer);
+					this.SetGraphicLayer(layer);
+					this.UpdateUndoRedoButtons();
+					this.UserMadeChanges(true);
+					this.graphicPanel.Draw(layer);
+				}
+			}
+		}
+
+		private void CopyGraphicToBitmap(int multiplier)
+		{
+			uint[,] graphic = this.GetGraphicLayer();
+			if (this.selected && graphic != null)
+			{
+				int startX = Math.Min(selectStartPoint.X, selectEndPoint.X);
+				int startY = Math.Min(selectStartPoint.Y, selectEndPoint.Y);
+				int height = Math.Abs(selectStartPoint.Y - selectEndPoint.Y + 1);
+				int width = Math.Abs(selectStartPoint.X - selectEndPoint.X - 1);
+
+				Bitmap copy = new Bitmap(width, height, PixelFormat.Format24bppRgb);
+				Rectangle rect = new Rectangle(0, 0, width, height);
+				BitmapData bmpData = copy.LockBits(rect, ImageLockMode.WriteOnly, copy.PixelFormat);
+				IntPtr ptr = bmpData.Scan0;
+
+				int bytes = Math.Abs(bmpData.Stride) * copy.Height;
+				byte[] rgb = new byte[bytes];
+				int counter = 0;
+
+				System.Runtime.InteropServices.Marshal.Copy(ptr, rgb, 0, bytes);
+
+				for (int i = startY + height - 1; i >= 0 && i >= startY; i--) //Y - height
+				{
+					for (int j = startX; j < graphic.GetLength(1) && j < startX + width; j++) //X - width
+					{
+						uint pixel = graphic[i, j];
+						Color c = PixelToColor(pixel);
+						rgb[counter++] = c.R;
+						rgb[counter++] = c.G;
+						rgb[counter++] = c.B;
+					}
+				}
+
+				System.Runtime.InteropServices.Marshal.Copy(rgb, 0, ptr, bytes);
+
+				copy.UnlockBits(bmpData);
+
+				Clipboard.SetImage(copy);
+			}
+		}
+
 		private void PasteGraphic()
 		{
 			this.CreateGraphic();
@@ -1778,7 +1867,7 @@ namespace BahnEditor.Editor
 			}
 			else if (Clipboard.ContainsText())
 			{
-				uint[,] layer = this.GetLayer();
+				uint[,] layer = this.GetGraphicLayer();
 				string[] array = Clipboard.GetText().Split(' ');
 				if (array[0] == "bahneditor" && array[1] == "copy")
 				{
@@ -1830,100 +1919,38 @@ namespace BahnEditor.Editor
 							counter += height - y - 1;
 						}
 					}
-					this.SetLayer(layer);
+					this.SetGraphicLayer(layer);
 					this.graphicPanel.Draw(layer);
 				}
 			}
 		}
 
-		private void CopyGraphic(bool cut)
+		#endregion Copy and Paste
+
+		#region Undo and Redo
+
+		private void Undo()
 		{
-			uint[,] layer = this.GetLayer();
-			if (this.selected && layer != null)
-			{
-				StringBuilder builder = new StringBuilder();
-
-				int startX = Math.Min(selectStartPoint.X, selectEndPoint.X);
-				int startY = Math.Min(selectStartPoint.Y, selectEndPoint.Y);
-				int height = Math.Abs(selectStartPoint.Y - selectEndPoint.Y + 1);
-				int width = Math.Abs(selectStartPoint.X - selectEndPoint.X - 1);
-
-				List<Point> changes = new List<Point>();
-
-				builder.Append(String.Format("bahneditor copy {0} {1} {2} {3} ", "1", this.graphicPanel.ZoomFactor, width, height));
-				int counter = 0;
-				uint last = layer[startY, startX];
-
-				for (int i = startY; i < startY + height && i < layer.GetLength(0); i++) //Y - height
-				{
-					for (int j = startX; j < startX + width && j < layer.GetLength(1); j++) //X - width
-					{
-						if (last != layer[i, j])
-						{
-							builder.Append(String.Format("{0}-{1} ", last, counter));
-							last = layer[i, j];
-							counter = 1;
-						}
-						else
-							counter++;
-						if (cut)
-							changes.Add(new Point(j, i));
-					}
-				}
-				builder.Append(String.Format("{0}-{1}", last, counter));
-
-				Clipboard.SetText(builder.ToString());
-				if (cut)
-				{
-					layer = this.UndoRedo.Do(new ChangePixelsCommand(Constants.ColorTransparent, changes.ToArray()), layer);
-					this.SetLayer(layer);
-					this.UpdateUndoRedoButtons();
-					this.UserMadeChanges(true);
-					this.graphicPanel.Draw(layer);
-				}
-			}
+			uint[,] layer = this.GetGraphicLayer();
+			this.UndoRedo.Undo(layer);
+			this.SetGraphicLayer(layer);
+			this.UpdateUndoRedoButtons();
+			this.UserMadeChanges(true);
+			this.graphicPanel.Draw(layer);
 		}
 
-		private void CopyGraphicToBitmap(int multiplier)
+		private void Redo()
 		{
-			uint[,] graphic = this.GetLayer();
-			if (this.selected && graphic != null)
-			{
-				int startX = Math.Min(selectStartPoint.X, selectEndPoint.X);
-				int startY = Math.Min(selectStartPoint.Y, selectEndPoint.Y);
-				int height = Math.Abs(selectStartPoint.Y - selectEndPoint.Y + 1);
-				int width = Math.Abs(selectStartPoint.X - selectEndPoint.X - 1);
-
-				Bitmap copy = new Bitmap(width, height, PixelFormat.Format24bppRgb);
-				Rectangle rect = new Rectangle(0, 0, width, height);
-				BitmapData bmpData = copy.LockBits(rect, ImageLockMode.WriteOnly, copy.PixelFormat);
-				IntPtr ptr = bmpData.Scan0;
-
-				int bytes = Math.Abs(bmpData.Stride) * copy.Height;
-				byte[] rgb = new byte[bytes];
-				int counter = 0;
-
-				System.Runtime.InteropServices.Marshal.Copy(ptr, rgb, 0, bytes);
-
-				for (int i = startY + height - 1; i >= 0 && i >= startY; i--) //Y - height
-				{
-					for (int j = startX; j < graphic.GetLength(1) && j < startX + width; j++) //X - width
-					{
-						uint pixel = graphic[i, j];
-						Color c = PixelToColor(pixel);
-						rgb[counter++] = c.R;
-						rgb[counter++] = c.G;
-						rgb[counter++] = c.B;
-					}
-				}
-
-				System.Runtime.InteropServices.Marshal.Copy(rgb, 0, ptr, bytes);
-
-				copy.UnlockBits(bmpData);
-
-				Clipboard.SetImage(copy);
-			}
+			uint[,] layer = this.GetGraphicLayer();
+			this.UndoRedo.Redo(layer);
+			this.SetGraphicLayer(layer);
+			this.UpdateUndoRedoButtons();
+			this.UserMadeChanges(true);
+			this.graphicPanel.Draw(layer);
 		}
+
+		#endregion Undo and Redo
+
 		#endregion Private Methods
 
 		#region Internal Methods
@@ -1938,15 +1965,15 @@ namespace BahnEditor.Editor
 			{
 				this.animationNumericUpDown.Enabled = false;
 			}
-			this.graphicPanel.Draw(this.GetLayer());
+			this.graphicPanel.Draw(this.GetGraphicLayer());
 		}
 
 		internal void ResetAnimationNumericUpDown()
 		{
 			this.actualAnimationPhase = 0;
-			this.animationPhaseCodeChanged = true;
+			this.animationNumbericUpDownCC = true;
 			this.animationNumericUpDown.Value = 0;
-			this.animationPhaseCodeChanged = false;
+			this.animationNumbericUpDownCC = false;
 			this.UpdateUndoRedoButtons();
 		}
 
@@ -1960,49 +1987,285 @@ namespace BahnEditor.Editor
 
 		#region Event-Handler
 
-		private void animationToolStripMenuItem_Click(object sender, EventArgs e)
+		#region Editor
+
+		private void Editor_Load(object sender, EventArgs e)
 		{
-			this.OpenAnimationForm();
+			this.EditorLoaded();
 		}
 
-		private void backgroundRadioButton_CheckedChanged(object sender, EventArgs e)
+		private void Editor_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			this.SelectLayer();
+			e.Cancel = !this.AskSaveGraphic();
 		}
 
-		private void backgroundRadioButton2_CheckedChanged(object sender, EventArgs e)
+		private void Editor_KeyDown(object sender, KeyEventArgs e)
 		{
-			this.SelectLayer();
-		}
-
-		private void clockColorHoursPointerButton_Click(object sender, EventArgs e)
-		{
-			Graphic graphic = this.ActualGraphic;
-			if (graphic != null && graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Clock))
+			if (e.KeyData == Keys.Escape && this.selected)
 			{
-				DialogResult dr = this.colorDialog.ShowDialog();
-				if (dr == DialogResult.OK)
+				this.selected = false;
+				this.selectEndPoint = new Point();
+				this.selectStartPoint = new Point();
+				this.graphicPanel.Invalidate();
+			}
+			else
+			{
+				switch (e.KeyData)
 				{
-					graphic.Properties.ClockColorHoursPointer = PixelFromColor(this.colorDialog.Color);
-					this.UserMadeChanges(true);
-					this.clockColorHoursPointerButton.BackColor = this.colorDialog.Color;
+					case Keys.D1:
+						this.normalModeToolStripRadioButton.Checked = true;
+						break;
+
+					case Keys.D2:
+						this.lineToolStripRadioButton.Checked = true;
+						break;
+
+					case Keys.D3:
+						this.rectangleToolStripRadioButton.Checked = true;
+						break;
+
+					case Keys.D4:
+						this.fillToolStripRadioButton.Checked = true;
+						break;
+
+					case Keys.D5:
+						this.selectToolStripRadioButton.Checked = true;
+						break;
+
+					case Keys.D6:
+						this.pickColorToolStripRadioButton.Checked = true;
+						break;
+
+					default:
+						break;
 				}
 			}
 		}
 
-		private void clockColorMinutesPointerButton_Click(object sender, EventArgs e)
+		private void tabControl_Selecting(object sender, TabControlCancelEventArgs e)
 		{
-			Graphic graphic = this.ActualGraphic;
-			if (graphic != null && graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Clock))
+			if (tabControlSelectedCC)
+				return;
+
+			switch (e.TabPage.Name)
 			{
-				DialogResult dr = this.colorDialog.ShowDialog();
-				if (dr == DialogResult.OK)
-				{
-					graphic.Properties.ClockColorMinutesPointer = PixelFromColor(this.colorDialog.Color);
-					this.UserMadeChanges(true);
-					this.clockColorMinutesPointerButton.BackColor = this.colorDialog.Color;
-				}
+				case "zoom1Tab":
+					this.graphicPanel.ZoomFactor = ZoomFactor.Zoom1;
+					break;
+
+				case "zoom2Tab":
+					this.graphicPanel.ZoomFactor = ZoomFactor.Zoom2;
+					break;
+
+				case "zoom4Tab":
+					this.graphicPanel.ZoomFactor = ZoomFactor.Zoom4;
+					break;
+
+				default:
+					throw new Exception("Internal Error!");
 			}
+			this.UpdateProperties();
+			this.UpdateZoom();
+			this.UpdateUndoRedoButtons();
+			this.graphicPanel.Draw(this.GetGraphicLayer());
+		}
+
+		private void loadFileDialog_FileOk(object sender, CancelEventArgs e)
+		{
+			this.LoadGraphicArchive();
+		}
+
+		private void saveFileDialog_FileOk(object sender, CancelEventArgs e)
+		{
+			this.lastPath = this.saveFileDialog.FileName;
+			if (!this.SaveGraphicArchive())
+			{
+				e.Cancel = true;
+			}
+		}
+
+		#endregion Editor
+
+		#region Overview
+
+		private void overviewPanel_Paint(object sender, PaintEventArgs e)
+		{
+			this.DrawOverview(e.Graphics);
+		}
+
+		private void overviewPanel_Click(object sender, EventArgs e)
+		{
+			MouseEventArgs me = e as MouseEventArgs;
+			if (me != null)
+				MouseClickOnOverview(me);
+			else
+				MessageBox.Show("Internal Error", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+		}
+
+		private void overviewUpButton_Click(object sender, EventArgs e)
+		{
+			if (this.overviewLine < 4)
+			{
+				this.overviewLine++;
+				this.overviewPanel.Invalidate();
+			}
+			this.overviewPanel.Focus();
+		}
+
+		private void overviewDownButton_Click(object sender, EventArgs e)
+		{
+			if (this.overviewLine > 0)
+			{
+				this.overviewLine--;
+				this.overviewPanel.Invalidate();
+			}
+			overviewPanel.Focus();
+		}
+
+		private void overviewLeftRightButton_Click(object sender, EventArgs e)
+		{
+			if (this.overviewAlternative == 1)
+				this.overviewAlternative = 0;
+			else
+				this.overviewAlternative = 1;
+			this.overviewPanel.Invalidate();
+			overviewPanel.Focus();
+		}
+
+		private void animationNumericUpDown_ValueChanged(object sender, EventArgs e)
+		{
+			if (this.animationNumbericUpDownCC)
+				return;
+			this.actualAnimationPhase = (int)this.animationNumericUpDown.Value;
+			this.UpdateUndoRedoButtons();
+			this.UpdateProperties();
+			this.graphicPanel.Draw(this.GetGraphicLayer());
+		}
+
+		private void alternativesCheckBox_CheckedChanged(object sender, EventArgs e)
+		{
+			if (alternativeCheckBoxCC)
+				return;
+			if (this.alternativesCheckBox.Checked)
+			{
+				if (this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative] != null && !this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative].IsTransparent())
+				{
+					this.zoom1Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, 1, this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative]);
+					this.zoom1Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative);
+					if (this.zoom2Archive[this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative] != null && !this.zoom2Archive[this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative].IsTransparent())
+					{
+						this.zoom2Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, 1, this.zoom2Archive[this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative]);
+						this.zoom2Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative);
+					}
+					if (this.zoom4Archive[this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative] != null && !this.zoom4Archive[this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative].IsTransparent())
+					{
+						this.zoom4Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, 1, this.zoom4Archive[this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative]);
+						this.zoom4Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative);
+					}
+					if (this.zoom1Archive.Animation != null && this.zoom1Archive.Animation[this.actualGraphic, Constants.NoAlternative] != null)
+					{
+						this.zoom1Archive.Animation.AddAnimationProgram(this.zoom1Archive.Animation[this.actualGraphic, Constants.NoAlternative], this.actualGraphic, 1);
+						this.zoom1Archive.Animation.RemoveAnimationProgram(this.actualGraphic, Constants.NoAlternative);
+					}
+				}
+				this.actualAlternative = 1;
+				this.UserMadeChanges(true);
+			}
+			else
+			{
+				if (this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 1] != null && !this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 1].IsTransparent())
+				{
+					if ((this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 2] != null && !this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 2].IsTransparent())
+						|| (this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 3] != null && !this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 3].IsTransparent())
+						|| (this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 4] != null && !this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 4].IsTransparent()))
+					{
+						if (MessageBox.Show("Only the first alternative will be saved!" + Environment.NewLine + "The other alternatives will be deleted!", "Alternatives", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) == DialogResult.Cancel)
+						{
+							this.alternativeCheckBoxCC = true;
+							this.alternativesCheckBox.Checked = true;
+							this.alternativeCheckBoxCC = false;
+							return;
+						}
+						else
+						{
+							for (int i = 2; i <= Constants.MaxAlternative; i++)
+							{
+								if (this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, i] != null)
+								{
+									this.zoom1Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, i);
+									if (this.zoom2Archive[this.actualGraphic, this.actualAnimationPhase, i] != null) this.zoom2Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, i);
+									if (this.zoom4Archive[this.actualGraphic, this.actualAnimationPhase, i] != null) this.zoom4Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, i);
+									if (this.zoom1Archive.Animation != null && this.zoom1Archive.Animation[this.actualGraphic, i] != null) this.zoom1Archive.Animation.RemoveAnimationProgram(this.actualGraphic, i);
+								}
+							}
+						}
+					}
+
+					this.zoom1Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative, this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 1]);
+					this.zoom1Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, 1);
+					if (this.zoom2Archive[this.actualGraphic, this.actualAnimationPhase, 1] != null && !this.zoom2Archive[this.actualGraphic, this.actualAnimationPhase, 1].IsTransparent())
+					{
+						this.zoom2Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative, this.zoom2Archive[this.actualGraphic, this.actualAnimationPhase, 1]);
+						this.zoom2Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, 1);
+					}
+					if (this.zoom4Archive[this.actualGraphic, this.actualAnimationPhase, 1] != null && !this.zoom4Archive[this.actualGraphic, this.actualAnimationPhase, 1].IsTransparent())
+					{
+						this.zoom4Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative, this.zoom4Archive[this.actualGraphic, this.actualAnimationPhase, 1]);
+						this.zoom4Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, 1);
+					}
+					if (this.zoom1Archive.Animation != null && this.zoom1Archive.Animation[this.actualGraphic, 1] != null)
+					{
+						this.zoom1Archive.Animation.AddAnimationProgram(this.zoom1Archive.Animation[this.actualGraphic, 1], this.actualGraphic, Constants.NoAlternative);
+						this.zoom1Archive.Animation.RemoveAnimationProgram(this.actualGraphic, 1);
+					}
+				}
+				this.actualAlternative = Constants.NoAlternative;
+				this.UserMadeChanges(true);
+			}
+			this.UpdateUndoRedoButtons();
+			this.overviewPanel.Invalidate();
+			this.graphicPanel.Draw(this.GetGraphicLayer());
+			this.UpdateAnimation();
+		}
+
+		#endregion Overview
+
+		#region GraphicPanel
+
+		private void graphicPanel_MouseDown(object sender, MouseEventArgs e)
+		{
+			this.MouseDownOnGraphic(e);
+		}
+
+		private void graphicPanel_MouseMove(object sender, MouseEventArgs e)
+		{
+			this.MouseMoveOnGraphic(e);
+		}
+
+		private void graphicPanel_MouseUp(object sender, MouseEventArgs e)
+		{
+			this.MouseUpOnGraphic(e);
+		}
+
+		private void graphicPanel_Paint(object sender, PaintEventArgs e)
+		{
+			this.DrawGraphic(e.Graphics);
+		}
+
+		private void gridCheckBox_CheckedChanged(object sender, EventArgs e)
+		{
+			this.graphicPanel.DisplayGrid = this.gridCheckBox.Checked;
+			this.graphicPanel.Draw(this.GetGraphicLayer());
+		}
+
+		#endregion GraphicPanel
+
+		#region Properties
+
+		private void propertiesGroupBox_Paint(object sender, PaintEventArgs e)
+		{
+			e.Graphics.DrawLine(Pens.DarkGray, 1, 76, 198, 76);
+			e.Graphics.DrawLine(Pens.DarkGray, 1, 242, 198, 242);
 		}
 
 		private void clockComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -2061,19 +2324,33 @@ namespace BahnEditor.Editor
 			}
 		}
 
-		private void clockMinutesPointerCheckBox_CheckedChanged(object sender, EventArgs e)
+		private void clockXNumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			Graphic graphic = this.ActualGraphic;
-			if (graphic != null)
+			if (graphic != null && graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Clock))
 			{
-				if (clockMinutesPointerCheckBox.Checked)
-				{
-					graphic.Properties.ClockProperties |= ClockProperties.MinutePointer;
-				}
-				else
-				{
-					graphic.Properties.ClockProperties &= ~ClockProperties.MinutePointer;
-				}
+				graphic.Properties.ClockX = (int)clockXNumericUpDown.Value;
+				this.UserMadeChanges(true);
+			}
+		}
+
+		private void clockYNumericUpDown_ValueChanged(object sender, EventArgs e)
+		{
+			Graphic graphic = this.ActualGraphic;
+			if (graphic != null && graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Clock))
+			{
+				graphic.Properties.ClockY = (int)clockYNumericUpDown.Value;
+				this.UserMadeChanges(true);
+			}
+		}
+
+		private void clockWidthNumericUpDown_ValueChanged(object sender, EventArgs e)
+		{
+			Graphic graphic = this.ActualGraphic;
+			if (graphic != null && graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Clock))
+			{
+				graphic.Properties.ClockWidth = (int)clockWidthNumericUpDown.Value;
+				graphic.Properties.ClockHeight = (int)clockWidthNumericUpDown.Value;
 				this.UserMadeChanges(true);
 			}
 		}
@@ -2106,40 +2383,56 @@ namespace BahnEditor.Editor
 			}
 		}
 
-		private void clockWidthNumericUpDown_ValueChanged(object sender, EventArgs e)
+		private void clockMinutesPointerCheckBox_CheckedChanged(object sender, EventArgs e)
 		{
 			Graphic graphic = this.ActualGraphic;
-			if (graphic != null && graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Clock))
+			if (graphic != null)
 			{
-				graphic.Properties.ClockWidth = (int)clockWidthNumericUpDown.Value;
-				graphic.Properties.ClockHeight = (int)clockWidthNumericUpDown.Value;
+				if (clockMinutesPointerCheckBox.Checked)
+				{
+					graphic.Properties.ClockProperties |= ClockProperties.MinutePointer;
+				}
+				else
+				{
+					graphic.Properties.ClockProperties &= ~ClockProperties.MinutePointer;
+				}
 				this.UserMadeChanges(true);
 			}
 		}
 
-		private void clockXNumericUpDown_ValueChanged(object sender, EventArgs e)
+		private void clockColorHoursPointerButton_Click(object sender, EventArgs e)
 		{
 			Graphic graphic = this.ActualGraphic;
 			if (graphic != null && graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Clock))
 			{
-				graphic.Properties.ClockX = (int)clockXNumericUpDown.Value;
-				this.UserMadeChanges(true);
+				DialogResult dr = this.colorDialog.ShowDialog();
+				if (dr == DialogResult.OK)
+				{
+					graphic.Properties.ClockColorHoursPointer = PixelFromColor(this.colorDialog.Color);
+					this.UserMadeChanges(true);
+					this.clockColorHoursPointerButton.BackColor = this.colorDialog.Color;
+				}
 			}
 		}
 
-		private void clockYNumericUpDown_ValueChanged(object sender, EventArgs e)
+		private void clockColorMinutesPointerButton_Click(object sender, EventArgs e)
 		{
 			Graphic graphic = this.ActualGraphic;
 			if (graphic != null && graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Clock))
 			{
-				graphic.Properties.ClockY = (int)clockYNumericUpDown.Value;
-				this.UserMadeChanges(true);
+				DialogResult dr = this.colorDialog.ShowDialog();
+				if (dr == DialogResult.OK)
+				{
+					graphic.Properties.ClockColorMinutesPointer = PixelFromColor(this.colorDialog.Color);
+					this.UserMadeChanges(true);
+					this.clockColorMinutesPointerButton.BackColor = this.colorDialog.Color;
+				}
 			}
 		}
 
 		private void cursorNormalDirectionComboBox_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			if (this.cursorNormalDirectionCBCodeChanged)
+			if (this.cursorNormalDirectionComboBoxCC)
 			{
 				return;
 			}
@@ -2150,9 +2443,9 @@ namespace BahnEditor.Editor
 				if (cursorNormalDirectionComboBox.SelectedIndex == 0)
 				{
 					graphic.Properties.RawData &= ~GraphicProperties.Properties.Cursor;
-					this.cursorReverseDirectionCBCodeChanged = true;
+					this.cursorReverseDirectionComboBoxCC = true;
 					this.cursorReverseDirectionComboBox.SelectedIndex = 0;
-					this.cursorReverseDirectionCBCodeChanged = false;
+					this.cursorReverseDirectionComboBoxCC = false;
 				}
 				else
 				{
@@ -2165,7 +2458,7 @@ namespace BahnEditor.Editor
 
 		private void cursorReverseDirectionComboBox_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			if (this.cursorReverseDirectionCBCodeChanged)
+			if (this.cursorReverseDirectionComboBoxCC)
 			{
 				return;
 			}
@@ -2176,9 +2469,9 @@ namespace BahnEditor.Editor
 				if (cursorReverseDirectionComboBox.SelectedIndex == 0)
 				{
 					graphic.Properties.RawData &= ~GraphicProperties.Properties.Cursor;
-					this.cursorNormalDirectionCBCodeChanged = true;
+					this.cursorNormalDirectionComboBoxCC = true;
 					this.cursorNormalDirectionComboBox.SelectedIndex = 0;
-					this.cursorNormalDirectionCBCodeChanged = false;
+					this.cursorNormalDirectionComboBoxCC = false;
 				}
 				else
 				{
@@ -2187,202 +2480,6 @@ namespace BahnEditor.Editor
 				}
 				this.UserMadeChanges(true);
 			}
-		}
-
-		private void graphicPanel_MouseDown(object sender, MouseEventArgs e)
-		{
-			this.MouseDownOnGraphic(e);
-		}
-
-		private void graphicPanel_MouseMove(object sender, MouseEventArgs e)
-		{
-			this.MouseMoveOnGraphic(e);
-		}
-
-		private void graphicPanel_MouseUp(object sender, MouseEventArgs e)
-		{
-			this.MouseUpOnGraphic(e);
-		}
-
-		private void drawPanel_Paint(object sender, PaintEventArgs e)
-		{
-			this.DrawGraphic(e.Graphics);
-		}
-
-		private void Editor_FormClosing(object sender, FormClosingEventArgs e)
-		{
-			e.Cancel = !this.AskSaveGraphic();
-		}
-
-		private void Editor_Load(object sender, EventArgs e)
-		{
-			this.EditorLoaded();
-		}
-
-		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			Application.Exit();
-		}
-
-		private void foregroundAboveRadioButton_CheckedChanged(object sender, EventArgs e)
-		{
-			this.SelectLayer();
-		}
-
-		private void foregroundRadioButton_CheckedChanged(object sender, EventArgs e)
-		{
-			this.SelectLayer();
-		}
-
-		private void frontRadioButton6_CheckedChanged(object sender, EventArgs e)
-		{
-			this.SelectLayer();
-		}
-
-		private void leftColorButton_Click(object sender, EventArgs e)
-		{
-			this.colorDialog.Color = PixelToColor(this.leftPixel);
-			DialogResult dr = this.colorDialog.ShowDialog();
-			if (dr == DialogResult.OK)
-			{
-				Color c = this.colorDialog.Color;
-				if (Pixel.IsSpecial(this.leftPixel) && Pixel.UsesRgb(this.leftPixel))
-				{
-					this.leftPixel = Pixel.Create(c.R, c.G, c.B, Pixel.GetProperty(this.leftPixel));
-				}
-				else
-				{
-					this.leftComboBoxSelectedCodeChanged = true;
-					this.leftComboBox.SelectedIndex = 0;
-					this.leftComboBoxSelectedCodeChanged = false;
-					this.leftPixel = PixelFromColor(c);
-				}
-				this.leftColorButton.BackColor = c;
-				this.leftLabel.Text = String.Format("Left: {0} - {1} - {2}", c.R, c.G, c.B);
-			}
-		}
-
-		private void leftComboBox_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			if (this.leftComboBoxSelectedCodeChanged)
-				return;
-			if (this.leftComboBox.SelectedIndex == 0)
-			{
-				if (this.lastLeftPixel != 0 && !Pixel.IsTransparent(this.lastLeftPixel) && Pixel.UsesRgb(this.lastLeftPixel))
-				{
-					if (Pixel.IsSpecial(this.lastLeftPixel))
-					{
-						this.leftPixel = Pixel.Create(Pixel.GetRed(this.lastLeftPixel), Pixel.GetGreen(this.lastLeftPixel), Pixel.GetBlue(this.lastLeftPixel));
-					}
-					else
-					{
-						this.leftPixel = this.lastLeftPixel;
-					}
-				}
-				else
-				{
-					this.leftPixel = Pixel.Create(0, 0, 0);
-				}
-			}
-			else if (this.leftComboBox.SelectedIndex == 1)
-			{
-				if (Pixel.IsTransparent(this.leftPixel) != true)
-				{
-					this.lastLeftPixel = this.leftPixel;
-					this.leftPixel = Pixel.Create(0, 0, 0, Pixel.PixelProperty.Transparent);
-				}
-			}
-			else
-			{
-				uint lastPixel = 0;
-				if (this.leftPixel != 0 && !Pixel.IsTransparent(this.leftPixel) && Pixel.UsesRgb(this.leftPixel))
-				{
-					lastPixel = this.leftPixel;
-				}
-				else if (this.lastLeftPixel != 0 && !Pixel.IsTransparent(this.lastLeftPixel) && Pixel.UsesRgb(this.lastLeftPixel))
-				{
-					lastPixel = this.lastLeftPixel;
-				}
-				uint pixel = PixelFromComboBox(this.leftComboBox.SelectedIndex, lastPixel);
-				if (pixel != 0)
-				{
-					if (!Pixel.IsTransparent(this.leftPixel) && Pixel.UsesRgb(this.leftPixel))
-					{
-						this.lastLeftPixel = this.leftPixel;
-					}
-					this.leftPixel = pixel;
-				}
-				else
-				{
-					MessageBox.Show("Internal Error", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-				}
-			}
-			Color color = PixelToColor(this.leftPixel);
-			this.leftColorButton.BackColor = color;
-			this.leftLabel.Text = String.Format("Left: {0} - {1} - {2}", color.R, color.G, color.B);
-		}
-
-		private void loadFileDialog_FileOk(object sender, CancelEventArgs e)
-		{
-			this.LoadGraphicArchive();
-		}
-
-		private void newToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			if (!this.AskSaveGraphic())
-				return;
-			this.NewGraphicArchive();
-		}
-
-		private void openToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			if (!this.AskSaveGraphic())
-				return;
-			this.loadFileDialog.ShowDialog();
-		}
-
-		private void overviewDownButton_Click(object sender, EventArgs e)
-		{
-			if (this.overviewLine > 0)
-			{
-				this.overviewLine--;
-				this.overviewPanel.Invalidate();
-			}
-			graphicPanel.Focus();
-		}
-
-		private void overviewLeftRightButton_Click(object sender, EventArgs e)
-		{
-			if (this.overviewAlternative == 1)
-				this.overviewAlternative = 0;
-			else
-				this.overviewAlternative = 1;
-			this.overviewPanel.Invalidate();
-			graphicPanel.Focus();
-		}
-
-		private void overviewPanel_Click(object sender, EventArgs e)
-		{
-			MouseEventArgs me = e as MouseEventArgs;
-			if (me != null)
-				MouseClickOnOverview(me);
-			else
-				MessageBox.Show("Internal Error", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-		}
-
-		private void overviewPanel_Paint(object sender, PaintEventArgs e)
-		{
-			this.DrawOverview(e.Graphics);
-		}
-
-		private void overviewUpButton_Click(object sender, EventArgs e)
-		{
-			if (this.overviewLine < 4)
-			{
-				this.overviewLine++;
-				this.overviewPanel.Invalidate();
-			}
-			graphicPanel.Focus();
 		}
 
 		private void particleComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -2427,16 +2524,6 @@ namespace BahnEditor.Editor
 			}
 		}
 
-		private void particleWidthNumericUpDown_ValueChanged(object sender, EventArgs e)
-		{
-			Graphic graphic = this.ActualGraphic;
-			if (graphic != null && graphic.Properties.HasParticles)
-			{
-				graphic.Properties.ParticleWidth = (int)particleWidthNumericUpDown.Value;
-				this.UserMadeChanges(true);
-			}
-		}
-
 		private void particleXNumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			Graphic graphic = this.ActualGraphic;
@@ -2457,6 +2544,73 @@ namespace BahnEditor.Editor
 			}
 		}
 
+		private void particleWidthNumericUpDown_ValueChanged(object sender, EventArgs e)
+		{
+			Graphic graphic = this.ActualGraphic;
+			if (graphic != null && graphic.Properties.HasParticles)
+			{
+				graphic.Properties.ParticleWidth = (int)particleWidthNumericUpDown.Value;
+				this.UserMadeChanges(true);
+			}
+		}
+
+		#endregion Properties
+
+		#region Color and layer
+
+		private void foregroundRadioButton_CheckedChanged(object sender, EventArgs e)
+		{
+			this.SelectLayer();
+		}
+
+		private void backgroundRadioButton_CheckedChanged(object sender, EventArgs e)
+		{
+			this.SelectLayer();
+		}
+
+		private void backgroundRadioButton2_CheckedChanged(object sender, EventArgs e)
+		{
+			this.SelectLayer();
+		}
+
+		private void toBackgroundRadioButton_CheckedChanged(object sender, EventArgs e)
+		{
+			this.SelectLayer();
+		}
+
+		private void foregroundAboveRadioButton_CheckedChanged(object sender, EventArgs e)
+		{
+			this.SelectLayer();
+		}
+
+		private void frontRadioButton_CheckedChanged(object sender, EventArgs e)
+		{
+			this.SelectLayer();
+		}
+
+		private void leftColorButton_Click(object sender, EventArgs e)
+		{
+			this.colorDialog.Color = PixelToColor(this.leftPixel);
+			DialogResult dr = this.colorDialog.ShowDialog();
+			if (dr == DialogResult.OK)
+			{
+				Color c = this.colorDialog.Color;
+				if (Pixel.IsSpecial(this.leftPixel) && Pixel.UsesRgb(this.leftPixel))
+				{
+					this.leftPixel = Pixel.Create(c.R, c.G, c.B, Pixel.GetProperty(this.leftPixel));
+				}
+				else
+				{
+					this.leftComboBoxCC = true;
+					this.leftComboBox.SelectedIndex = 0;
+					this.leftComboBoxCC = false;
+					this.leftPixel = PixelFromColor(c);
+				}
+				this.leftColorButton.BackColor = c;
+				this.leftLabel.Text = String.Format("Left: {0} - {1} - {2}", c.R, c.G, c.B);
+			}
+		}
+
 		private void rightColorButton_Click(object sender, EventArgs e)
 		{
 			this.colorDialog.Color = PixelToColor(this.rightPixel);
@@ -2470,9 +2624,9 @@ namespace BahnEditor.Editor
 				}
 				else
 				{
-					this.rightComboBoxSelectedCodeChanged = true;
+					this.rightComboBoxCC = true;
 					this.rightComboBox.SelectedIndex = 0;
-					this.rightComboBoxSelectedCodeChanged = false;
+					this.rightComboBoxCC = false;
 					this.rightPixel = PixelFromColor(c);
 				}
 				this.rightColorButton.BackColor = c;
@@ -2480,9 +2634,69 @@ namespace BahnEditor.Editor
 			}
 		}
 
+		private void leftComboBox_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (this.leftComboBoxCC)
+				return;
+			if (this.leftComboBox.SelectedIndex == 0)
+			{
+				if (this.lastLeftPixel != 0 && !Pixel.IsTransparent(this.lastLeftPixel) && Pixel.UsesRgb(this.lastLeftPixel))
+				{
+					if (Pixel.IsSpecial(this.lastLeftPixel))
+					{
+						this.leftPixel = Pixel.Create(Pixel.GetRed(this.lastLeftPixel), Pixel.GetGreen(this.lastLeftPixel), Pixel.GetBlue(this.lastLeftPixel));
+					}
+					else
+					{
+						this.leftPixel = this.lastLeftPixel;
+					}
+				}
+				else
+				{
+					this.leftPixel = Pixel.Create(0, 0, 0);
+				}
+			}
+			else if (this.leftComboBox.SelectedIndex == 1)
+			{
+				if (Pixel.IsTransparent(this.leftPixel) != true)
+				{
+					this.lastLeftPixel = this.leftPixel;
+					this.leftPixel = Pixel.Create(0, 0, 0, Pixel.PixelProperty.Transparent);
+				}
+			}
+			else
+			{
+				uint lastPixel = 0;
+				if (this.leftPixel != 0 && !Pixel.IsTransparent(this.leftPixel) && Pixel.UsesRgb(this.leftPixel))
+				{
+					lastPixel = this.leftPixel;
+				}
+				else if (this.lastLeftPixel != 0 && !Pixel.IsTransparent(this.lastLeftPixel) && Pixel.UsesRgb(this.lastLeftPixel))
+				{
+					lastPixel = this.lastLeftPixel;
+				}
+				uint pixel = PixelFromComboBoxIndex(this.leftComboBox.SelectedIndex, lastPixel);
+				if (pixel != 0)
+				{
+					if (!Pixel.IsTransparent(this.leftPixel) && Pixel.UsesRgb(this.leftPixel))
+					{
+						this.lastLeftPixel = this.leftPixel;
+					}
+					this.leftPixel = pixel;
+				}
+				else
+				{
+					MessageBox.Show("Internal Error", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+			}
+			Color color = PixelToColor(this.leftPixel);
+			this.leftColorButton.BackColor = color;
+			this.leftLabel.Text = String.Format("Left: {0} - {1} - {2}", color.R, color.G, color.B);
+		}
+
 		private void rightComboBox_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			if (this.rightComboBoxSelectedCodeChanged)
+			if (this.rightComboBoxCC)
 				return;
 			if (this.rightComboBox.SelectedIndex == 0)
 			{
@@ -2521,7 +2735,7 @@ namespace BahnEditor.Editor
 				{
 					lastPixel = this.lastRightPixel;
 				}
-				uint pixel = PixelFromComboBox(this.rightComboBox.SelectedIndex, lastPixel);
+				uint pixel = PixelFromComboBoxIndex(this.rightComboBox.SelectedIndex, lastPixel);
 				if (pixel != 0)
 				{
 					if (!Pixel.IsTransparent(this.rightPixel) && Pixel.UsesRgb(this.rightPixel))
@@ -2540,18 +2754,27 @@ namespace BahnEditor.Editor
 			this.rightLabel.Text = String.Format("Right: {0} - {1} - {2}", color.R, color.G, color.B);
 		}
 
-		private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+		#endregion Color and layer
+
+		#region Menu and toolstrip
+
+		private void animationToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			this.ClickOnSaveButton(true);
+			this.OpenAnimationForm();
 		}
 
-		private void saveFileDialog_FileOk(object sender, CancelEventArgs e)
+		private void newToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			this.lastPath = this.saveFileDialog.FileName;
-			if (!this.SaveGraphicArchive())
-			{
-				e.Cancel = true;
-			}
+			if (!this.AskSaveGraphic())
+				return;
+			this.NewGraphicArchive();
+		}
+
+		private void openToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (!this.AskSaveGraphic())
+				return;
+			this.loadFileDialog.ShowDialog();
 		}
 
 		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2559,34 +2782,43 @@ namespace BahnEditor.Editor
 			this.ClickOnSaveButton(false);
 		}
 
-		private void tabControl_Selecting(object sender, TabControlCancelEventArgs e)
+		private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			switch (e.TabPage.Name)
-			{
-				case "zoom1Tab":
-					this.graphicPanel.ZoomFactor = ZoomFactor.Zoom1;
-					break;
-
-				case "zoom2Tab":
-					this.graphicPanel.ZoomFactor = ZoomFactor.Zoom2;
-					break;
-
-				case "zoom4Tab":
-					this.graphicPanel.ZoomFactor = ZoomFactor.Zoom4;
-					break;
-
-				default:
-					throw new Exception("Internal Error!");
-			}
-			this.UpdateProperties();
-			this.UpdateZoom();
-			this.UpdateUndoRedoButtons();
-			this.graphicPanel.Draw(this.GetLayer());
+			this.ClickOnSaveButton(true);
 		}
 
-		private void toBackgroundRadioButton_CheckedChanged(object sender, EventArgs e)
+		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			this.SelectLayer();
+			Application.Exit();
+		}
+
+		private void cutToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			this.CopyGraphic(true);
+		}
+
+		private void copyToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			this.CopyGraphic(false);
+		}
+
+		private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			this.PasteGraphic();
+		}
+
+		private void copyToBitmapToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			this.CopyGraphicToBitmap(1);
+		}
+
+		private void selectAllToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			this.selected = true;
+			this.selectStartPoint = new Point(0, 0);
+			this.selectEndPoint = new Point(Constants.ElementWidth * 3 * (int)this.graphicPanel.ZoomFactor - 1, Constants.ElementHeight * 8 * (int)this.graphicPanel.ZoomFactor - 1);
+			//this.toolStripStatusLabel1.Text = String.Format("Select: {0}, {1}, {2}, {3}", this.selectStartPoint.ToString(), this.drawingSelection, this.selectEndPoint.ToString(), this.selected);
+			this.graphicPanel.Invalidate();
 		}
 
 		private void zoomInButton_Click(object sender, EventArgs e)
@@ -2599,186 +2831,6 @@ namespace BahnEditor.Editor
 			this.ZoomInOut(false);
 		}
 
-		private void animationNumericUpDown_ValueChanged(object sender, EventArgs e)
-		{
-			if (this.animationPhaseCodeChanged)
-				return;
-			this.actualAnimationPhase = (int)this.animationNumericUpDown.Value;
-			this.UpdateUndoRedoButtons();
-			this.UpdateProperties();
-			this.graphicPanel.Draw(this.GetLayer());
-		}
-
-		private void propertiesGroupBox_Paint(object sender, PaintEventArgs e)
-		{
-			e.Graphics.DrawLine(Pens.DarkGray, 1, 76, 198, 76);
-			e.Graphics.DrawLine(Pens.DarkGray, 1, 242, 198, 242);
-		}
-
-		private void alternativesCheckBox_CheckedChanged(object sender, EventArgs e)
-		{
-			if (alternativeCheckBoxCodeChanged)
-				return;
-			if (this.alternativesCheckBox.Checked)
-			{
-				if (this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative] != null && !this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative].IsTransparent())
-				{
-					this.zoom1Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, 1, this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative]);
-					this.zoom1Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative);
-					if (this.zoom2Archive[this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative] != null && !this.zoom2Archive[this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative].IsTransparent())
-					{
-						this.zoom2Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, 1, this.zoom2Archive[this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative]);
-						this.zoom2Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative);
-					}
-					if (this.zoom4Archive[this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative] != null && !this.zoom4Archive[this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative].IsTransparent())
-					{
-						this.zoom4Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, 1, this.zoom4Archive[this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative]);
-						this.zoom4Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative);
-					}
-					if (this.zoom1Archive.Animation != null && this.zoom1Archive.Animation[this.actualGraphic, Constants.NoAlternative] != null)
-					{
-						this.zoom1Archive.Animation.AddAnimationProgram(this.zoom1Archive.Animation[this.actualGraphic, Constants.NoAlternative], this.actualGraphic, 1);
-						this.zoom1Archive.Animation.RemoveAnimationProgram(this.actualGraphic, Constants.NoAlternative);
-					}
-				}
-				this.actualAlternative = 1;
-				this.UserMadeChanges(true);
-			}
-			else
-			{
-				if (this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 1] != null && !this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 1].IsTransparent())
-				{
-					if ((this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 2] != null && !this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 2].IsTransparent())
-						|| (this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 3] != null && !this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 3].IsTransparent())
-						|| (this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 4] != null && !this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 4].IsTransparent()))
-					{
-						if (MessageBox.Show("Only the first alternative will be saved!" + Environment.NewLine + "The other alternatives will be deleted!", "Alternatives", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) == DialogResult.Cancel)
-						{
-							this.alternativeCheckBoxCodeChanged = true;
-							this.alternativesCheckBox.Checked = true;
-							this.alternativeCheckBoxCodeChanged = false;
-							return;
-						}
-						else
-						{
-							for (int i = 2; i <= Constants.MaxAlternative; i++)
-							{
-								if (this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, i] != null)
-								{
-									this.zoom1Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, i);
-									if (this.zoom2Archive[this.actualGraphic, this.actualAnimationPhase, i] != null) this.zoom2Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, i);
-									if (this.zoom4Archive[this.actualGraphic, this.actualAnimationPhase, i] != null) this.zoom4Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, i);
-									if (this.zoom1Archive.Animation != null && this.zoom1Archive.Animation[this.actualGraphic, i] != null) this.zoom1Archive.Animation.RemoveAnimationProgram(this.actualGraphic, i);
-								}
-							}
-						}
-					}
-
-					this.zoom1Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative, this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 1]);
-					this.zoom1Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, 1);
-					if (this.zoom2Archive[this.actualGraphic, this.actualAnimationPhase, 1] != null && !this.zoom2Archive[this.actualGraphic, this.actualAnimationPhase, 1].IsTransparent())
-					{
-						this.zoom2Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative, this.zoom2Archive[this.actualGraphic, this.actualAnimationPhase, 1]);
-						this.zoom2Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, 1);
-					}
-					if (this.zoom4Archive[this.actualGraphic, this.actualAnimationPhase, 1] != null && !this.zoom4Archive[this.actualGraphic, this.actualAnimationPhase, 1].IsTransparent())
-					{
-						this.zoom4Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, Constants.NoAlternative, this.zoom4Archive[this.actualGraphic, this.actualAnimationPhase, 1]);
-						this.zoom4Archive.RemoveGraphic(this.actualGraphic, this.actualAnimationPhase, 1);
-					}
-					if (this.zoom1Archive.Animation != null && this.zoom1Archive.Animation[this.actualGraphic, 1] != null)
-					{
-						this.zoom1Archive.Animation.AddAnimationProgram(this.zoom1Archive.Animation[this.actualGraphic, 1], this.actualGraphic, Constants.NoAlternative);
-						this.zoom1Archive.Animation.RemoveAnimationProgram(this.actualGraphic, 1);
-					}
-				}
-				this.actualAlternative = Constants.NoAlternative;
-				this.UserMadeChanges(true);
-			}
-			this.UpdateUndoRedoButtons();
-			this.overviewPanel.Invalidate();
-			this.graphicPanel.Draw(this.GetLayer());
-			this.UpdateAnimation();
-		}
-
-		private void gridCheckBox_CheckedChanged(object sender, EventArgs e)
-		{
-			this.graphicPanel.DisplayGrid = this.gridCheckBox.Checked;
-			this.graphicPanel.Draw(this.GetLayer());
-		}
-
-		private void selectAllToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			this.selected = true;
-			this.selectStartPoint = new Point(0, 0);
-			this.selectEndPoint = new Point(Constants.ElementWidth * 3 * (int)this.graphicPanel.ZoomFactor - 1, Constants.ElementHeight * 8 * (int)this.graphicPanel.ZoomFactor - 1);
-			//this.toolStripStatusLabel1.Text = String.Format("Select: {0}, {1}, {2}, {3}", this.selectStartPoint.ToString(), this.drawingSelection, this.selectEndPoint.ToString(), this.selected);
-			this.graphicPanel.Invalidate();
-		}
-
-		private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			this.PasteGraphic();
-		}
-
-		private void copyToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			this.CopyGraphic(false);
-		}
-
-		private void cutToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			this.CopyGraphic(true);
-		}
-
-		private void copyToBitmapToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			this.CopyGraphicToBitmap(1);
-		}
-
-		private void Editor_KeyDown(object sender, KeyEventArgs e)
-		{
-			if (e.KeyData == Keys.Escape && this.selected)
-			{
-				this.selected = false;
-				this.selectEndPoint = new Point();
-				this.selectStartPoint = new Point();
-				this.graphicPanel.Invalidate();
-			}
-			else
-			{
-				switch (e.KeyData)
-				{
-					case Keys.D1:
-						this.normalModeToolStripRadioButton.Checked = true;
-						break;
-
-					case Keys.D2:
-						this.lineToolStripRadioButton.Checked = true;
-						break;
-
-					case Keys.D3:
-						this.rectangleToolStripRadioButton.Checked = true;
-						break;
-
-					case Keys.D4:
-						this.fillToolStripRadioButton.Checked = true;
-						break;
-
-					case Keys.D5:
-						this.selectToolStripRadioButton.Checked = true;
-						break;
-
-					case Keys.D6:
-						this.pickColorToolStripRadioButton.Checked = true;
-						break;
-
-					default:
-						break;
-				}
-			}
-		}
-
 		private void undoToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			this.Undo();
@@ -2789,6 +2841,8 @@ namespace BahnEditor.Editor
 			this.Redo();
 		}
 
+		#endregion Menu and toolstrip
+
 		#endregion Event-Handler
 
 		#region Nested Classes
@@ -2796,6 +2850,7 @@ namespace BahnEditor.Editor
 		private interface ICommand<T>
 		{
 			T Do(T input);
+
 			T Undo(T input);
 		}
 
