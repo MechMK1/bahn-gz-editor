@@ -424,6 +424,7 @@ namespace BahnEditor.Editor
 			{
 				this.DrawSelection(g);
 				this.DrawSpecial(g);
+				this.DrawClock(g);
 				// Grid for animations
 				if (this.graphicPanel.DisplayGrid && this.zoom1Archive.Animation != null && this.zoom1Archive.Animation[this.actualGraphic, this.actualAlternative] != null)
 				{
@@ -626,6 +627,40 @@ namespace BahnEditor.Editor
 													(Math.Abs(corner1.X - corner2.X) + (int)elementSize),
 													(Math.Abs(corner1.Y - corner2.Y) + (int)elementSize));
 				Pen pen = new Pen(Brushes.Black);
+				float[] dashValues = { 3, 3 };
+				pen.DashPattern = dashValues;
+				g.DrawRectangle(pen, rectangle);
+				pen.Dispose();
+			}
+		}
+
+		private void DrawClock(Graphics g)
+		{
+			if (this.ActualGraphic != null && this.ActualGraphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Clock))
+			{
+				int xc = this.ActualGraphic.Properties.ClockX;
+				int yc = this.ActualGraphic.Properties.ClockY;
+				int wc = this.ActualGraphic.Properties.ClockWidth;
+
+				Point corner1 = new Point(), corner2 = new Point();
+				corner1.X = (xc - (wc / 2) + Constants.ElementWidth * (int)this.graphicPanel.ZoomFactor);
+				corner2.X = (xc + ((wc - 1) / 2) + Constants.ElementWidth * (int)this.graphicPanel.ZoomFactor);
+				corner1.Y = (yc - (wc / 2) + Constants.ElementHeight * (int)this.graphicPanel.ZoomFactor);
+				corner2.Y = (yc + ((wc - 1) / 2) + Constants.ElementHeight * (int)this.graphicPanel.ZoomFactor);
+
+				float elementSize = (this.graphicPanel.ZoomLevel) / (int)this.graphicPanel.ZoomFactor;
+				corner1.Y = ((Constants.ElementHeight * 8 * (int)this.graphicPanel.ZoomFactor) - corner1.Y);
+				corner2.Y = ((Constants.ElementHeight * 8 * (int)this.graphicPanel.ZoomFactor) - corner2.Y);
+				corner1.X = (int)(corner1.X * elementSize);
+				corner1.Y = (int)(corner1.Y * elementSize);
+				corner2.X = (int)(corner2.X * elementSize);
+				corner2.Y = (int)(corner2.Y * elementSize);
+
+				Rectangle rectangle = new Rectangle(Math.Min(corner1.X, corner2.X),
+													(Math.Min(corner1.Y, corner2.Y) - (int)elementSize),
+													(Math.Abs(corner1.X - corner2.X) + (int)elementSize),
+													(Math.Abs(corner1.Y - corner2.Y) + (int)elementSize));
+				Pen pen = new Pen(Brushes.Blue);
 				float[] dashValues = { 3, 3 };
 				pen.DashPattern = dashValues;
 				g.DrawRectangle(pen, rectangle);
@@ -2331,6 +2366,7 @@ namespace BahnEditor.Editor
 			{
 				graphic.Properties.ClockX = (int)clockXNumericUpDown.Value;
 				this.UserMadeChanges(true);
+				this.graphicPanel.Invalidate();
 			}
 		}
 
@@ -2341,6 +2377,7 @@ namespace BahnEditor.Editor
 			{
 				graphic.Properties.ClockY = (int)clockYNumericUpDown.Value;
 				this.UserMadeChanges(true);
+				this.graphicPanel.Invalidate();
 			}
 		}
 
@@ -2352,6 +2389,7 @@ namespace BahnEditor.Editor
 				graphic.Properties.ClockWidth = (int)clockWidthNumericUpDown.Value;
 				graphic.Properties.ClockHeight = (int)clockWidthNumericUpDown.Value;
 				this.UserMadeChanges(true);
+				this.graphicPanel.Invalidate();
 			}
 		}
 
@@ -2363,7 +2401,7 @@ namespace BahnEditor.Editor
 				switch (this.clockRotationComboBox.SelectedIndex)
 				{
 					case 0:
-						graphic.Properties.ClockProperties &= ~(ClockProperties.RotatedNorthEast & ClockProperties.RotatedNorthWest);
+						graphic.Properties.ClockProperties &= ~(ClockProperties.RotatedNorthEast | ClockProperties.RotatedNorthWest);
 						break;
 
 					case 1:
