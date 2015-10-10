@@ -348,7 +348,7 @@
 			this.mouseButtonsGroupBox.Controls.Add(this.rightComboBox);
 			this.mouseButtonsGroupBox.Location = new System.Drawing.Point(3, 1);
 			this.mouseButtonsGroupBox.Name = "mouseButtonsGroupBox";
-			this.mouseButtonsGroupBox.Size = new System.Drawing.Size(200, 138);
+			this.mouseButtonsGroupBox.Size = new System.Drawing.Size(200, 135);
 			this.mouseButtonsGroupBox.TabIndex = 17;
 			this.mouseButtonsGroupBox.TabStop = false;
 			this.mouseButtonsGroupBox.Text = "Mousebuttons";
@@ -427,7 +427,7 @@
 			// rightLabel
 			// 
 			this.rightLabel.AutoSize = true;
-			this.rightLabel.Location = new System.Drawing.Point(7, 88);
+			this.rightLabel.Location = new System.Drawing.Point(7, 85);
 			this.rightLabel.Name = "rightLabel";
 			this.rightLabel.Size = new System.Drawing.Size(38, 13);
 			this.rightLabel.TabIndex = 8;
@@ -438,7 +438,7 @@
 			this.rightColorButton.BackColor = System.Drawing.Color.White;
 			this.rightColorButton.FlatAppearance.BorderSize = 0;
 			this.rightColorButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.rightColorButton.Location = new System.Drawing.Point(131, 83);
+			this.rightColorButton.Location = new System.Drawing.Point(131, 80);
 			this.rightColorButton.Name = "rightColorButton";
 			this.rightColorButton.Size = new System.Drawing.Size(60, 23);
 			this.rightColorButton.TabIndex = 1;
@@ -489,7 +489,7 @@
             "as path (background)",
             "as path (foreground, tracks)",
             "as text"});
-			this.rightComboBox.Location = new System.Drawing.Point(6, 112);
+			this.rightComboBox.Location = new System.Drawing.Point(6, 109);
 			this.rightComboBox.Name = "rightComboBox";
 			this.rightComboBox.Size = new System.Drawing.Size(188, 21);
 			this.rightComboBox.TabIndex = 5;
@@ -607,9 +607,19 @@
 			// 
 			this.particleWidthNumericUpDown.Enabled = false;
 			this.particleWidthNumericUpDown.Location = new System.Drawing.Point(156, 32);
+			this.particleWidthNumericUpDown.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
 			this.particleWidthNumericUpDown.Name = "particleWidthNumericUpDown";
 			this.particleWidthNumericUpDown.Size = new System.Drawing.Size(33, 20);
 			this.particleWidthNumericUpDown.TabIndex = 11;
+			this.particleWidthNumericUpDown.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
 			this.particleWidthNumericUpDown.ValueChanged += new System.EventHandler(this.particleWidthNumericUpDown_ValueChanged);
 			// 
 			// particleWidthLabel
@@ -760,9 +770,19 @@
 			// 
 			this.clockWidthNumericUpDown.Enabled = false;
 			this.clockWidthNumericUpDown.Location = new System.Drawing.Point(156, 82);
+			this.clockWidthNumericUpDown.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
 			this.clockWidthNumericUpDown.Name = "clockWidthNumericUpDown";
 			this.clockWidthNumericUpDown.Size = new System.Drawing.Size(33, 20);
 			this.clockWidthNumericUpDown.TabIndex = 12;
+			this.clockWidthNumericUpDown.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
 			this.clockWidthNumericUpDown.ValueChanged += new System.EventHandler(this.clockWidthNumericUpDown_ValueChanged);
 			// 
 			// clockWidthLabel

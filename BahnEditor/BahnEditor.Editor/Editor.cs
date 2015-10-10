@@ -425,6 +425,8 @@ namespace BahnEditor.Editor
 				this.DrawSelection(g);
 				this.DrawSpecial(g);
 				this.DrawClock(g);
+				this.DrawParticles(g);
+
 				// Grid for animations
 				if (this.graphicPanel.DisplayGrid && this.zoom1Archive.Animation != null && this.zoom1Archive.Animation[this.actualGraphic, this.actualAlternative] != null)
 				{
@@ -557,21 +559,14 @@ namespace BahnEditor.Editor
 					else
 						brush = new SolidBrush(PixelToColor(pixel));
 
-					float elementSize = (this.graphicPanel.ZoomLevel) / (int)this.graphicPanel.ZoomFactor;
+					
 					Point corner1 = this.specialModeStartPoint;
 					Point corner2 = this.specialModeEndPoint;
 
-					corner1.Y = ((Constants.ElementHeight * 8 * (int)this.graphicPanel.ZoomFactor) - corner1.Y);
-					corner2.Y = ((Constants.ElementHeight * 8 * (int)this.graphicPanel.ZoomFactor) - corner2.Y);
-					corner1.X = (int)(corner1.X * elementSize);
-					corner1.Y = (int)(corner1.Y * elementSize);
-					corner2.X = (int)(corner2.X * elementSize);
-					corner2.Y = (int)(corner2.Y * elementSize);
 
-					RectangleF rectangle = new RectangleF(Math.Min(corner1.X, corner2.X),
-														Math.Min(corner1.Y, corner2.Y) - elementSize,
-														Math.Abs(corner1.X - corner2.X) + elementSize,
-														Math.Abs(corner1.Y - corner2.Y) + elementSize);
+
+					Rectangle rectangle = this.CalculateRectangle(corner1, corner2);
+
 					g.FillRectangle(brush, rectangle);
 					brush.Dispose();
 				}
@@ -611,21 +606,11 @@ namespace BahnEditor.Editor
 		{
 			if (this.selected)
 			{
-				float elementSize = (this.graphicPanel.ZoomLevel) / (int)this.graphicPanel.ZoomFactor;
 				Point corner1 = this.selectStartPoint;
 				Point corner2 = this.selectEndPoint;
 
-				corner1.Y = ((Constants.ElementHeight * 8 * (int)this.graphicPanel.ZoomFactor) - corner1.Y);
-				corner2.Y = ((Constants.ElementHeight * 8 * (int)this.graphicPanel.ZoomFactor) - corner2.Y);
-				corner1.X = (int)(corner1.X * elementSize);
-				corner1.Y = (int)(corner1.Y * elementSize);
-				corner2.X = (int)(corner2.X * elementSize);
-				corner2.Y = (int)(corner2.Y * elementSize);
+				Rectangle rectangle = this.CalculateRectangle(corner1, corner2);
 
-				Rectangle rectangle = new Rectangle(Math.Min(corner1.X, corner2.X),
-													(Math.Min(corner1.Y, corner2.Y) - (int)elementSize),
-													(Math.Abs(corner1.X - corner2.X) + (int)elementSize),
-													(Math.Abs(corner1.Y - corner2.Y) + (int)elementSize));
 				Pen pen = new Pen(Brushes.Black);
 				float[] dashValues = { 3, 3 };
 				pen.DashPattern = dashValues;
@@ -648,19 +633,43 @@ namespace BahnEditor.Editor
 				corner1.Y = (yc - (wc / 2) + Constants.ElementHeight * (int)this.graphicPanel.ZoomFactor);
 				corner2.Y = (yc + ((wc - 1) / 2) + Constants.ElementHeight * (int)this.graphicPanel.ZoomFactor);
 
-				float elementSize = (this.graphicPanel.ZoomLevel) / (int)this.graphicPanel.ZoomFactor;
-				corner1.Y = ((Constants.ElementHeight * 8 * (int)this.graphicPanel.ZoomFactor) - corner1.Y);
-				corner2.Y = ((Constants.ElementHeight * 8 * (int)this.graphicPanel.ZoomFactor) - corner2.Y);
-				corner1.X = (int)(corner1.X * elementSize);
-				corner1.Y = (int)(corner1.Y * elementSize);
-				corner2.X = (int)(corner2.X * elementSize);
-				corner2.Y = (int)(corner2.Y * elementSize);
+				Rectangle rectangle = this.CalculateRectangle(corner1, corner2);
 
-				Rectangle rectangle = new Rectangle(Math.Min(corner1.X, corner2.X),
-													(Math.Min(corner1.Y, corner2.Y) - (int)elementSize),
-													(Math.Abs(corner1.X - corner2.X) + (int)elementSize),
-													(Math.Abs(corner1.Y - corner2.Y) + (int)elementSize));
 				Pen pen = new Pen(Brushes.Blue);
+				float[] dashValues = { 3, 3 };
+				pen.DashPattern = dashValues;
+				g.DrawRectangle(pen, rectangle);
+				pen.Dispose();
+			}
+		}
+
+		private void DrawParticles(Graphics g)
+		{
+			if(this.ActualGraphic != null && this.ActualGraphic.Properties.HasParticles)
+			{
+				int xp = this.ActualGraphic.Properties.ParticleX;
+				int yp = this.ActualGraphic.Properties.ParticleY;
+				int wp = this.ActualGraphic.Properties.ParticleWidth;
+
+				Point corner1 = new Point(), corner2 = new Point();
+				corner1.X = (xp + Constants.ElementWidth * (int)this.graphicPanel.ZoomFactor);
+				corner2.X = (xp + wp - 1 + Constants.ElementWidth * (int)this.graphicPanel.ZoomFactor);
+				corner1.Y = (yp + Constants.ElementHeight * (int)this.graphicPanel.ZoomFactor);
+				corner2.Y = (yp + Constants.ElementHeight * (int)this.graphicPanel.ZoomFactor + 4);
+
+				Rectangle rectangle = this.CalculateRectangle(corner1, corner2);
+				Brush brush;
+				
+				if(this.ActualGraphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Steam))
+				{
+					brush = Brushes.LightGray;
+				}
+				else
+				{
+					brush = Brushes.Gray;
+				}
+
+				Pen pen = new Pen(brush);
 				float[] dashValues = { 3, 3 };
 				pen.DashPattern = dashValues;
 				g.DrawRectangle(pen, rectangle);
@@ -1148,7 +1157,7 @@ namespace BahnEditor.Editor
 				this.particleWidthNumericUpDown.Enabled = false;
 				this.particleXNumericUpDown.Enabled = false;
 				this.particleYNumericUpDown.Enabled = false;
-				this.particleWidthNumericUpDown.Value = 0;
+				this.particleWidthNumericUpDown.Value = 1;
 				this.particleXNumericUpDown.Value = 0;
 				this.particleYNumericUpDown.Value = 0;
 			}
@@ -1190,7 +1199,7 @@ namespace BahnEditor.Editor
 				this.clockYNumericUpDown.Enabled = false;
 				this.clockXNumericUpDown.Value = 0;
 				this.clockYNumericUpDown.Value = 0;
-				this.clockWidthNumericUpDown.Value = 0;
+				this.clockWidthNumericUpDown.Value = 1;
 				this.clockMinutesPointerCheckBox.Checked = false;
 				this.clockRotationComboBox.SelectedIndex = 0;
 				this.clockColorHoursPointerButton.BackColor = Color.Black;
@@ -1801,6 +1810,22 @@ namespace BahnEditor.Editor
 			return pixels.ToArray();
 		}
 
+		private Rectangle CalculateRectangle(Point point1, Point point2)
+		{
+			float elementSize = (this.graphicPanel.ZoomLevel) / (int)this.graphicPanel.ZoomFactor;
+			point1.Y = ((Constants.ElementHeight * 8 * (int)this.graphicPanel.ZoomFactor) - point1.Y);
+			point2.Y = ((Constants.ElementHeight * 8 * (int)this.graphicPanel.ZoomFactor) - point2.Y);
+			point1.X = (int)(point1.X * elementSize);
+			point1.Y = (int)(point1.Y * elementSize);
+			point2.X = (int)(point2.X * elementSize);
+			point2.Y = (int)(point2.Y * elementSize);
+
+			return new Rectangle(Math.Min(point1.X, point2.X),
+												(Math.Min(point1.Y, point2.Y) - (int)elementSize),
+												(Math.Abs(point1.X - point2.X) + (int)elementSize),
+												(Math.Abs(point1.Y - point2.Y) + (int)elementSize));
+		}
+
 		#endregion Helper
 
 		#region Copy and Paste
@@ -2356,6 +2381,7 @@ namespace BahnEditor.Editor
 					default:
 						throw new ArgumentOutOfRangeException("clockComboBox.SelectedIndex");
 				}
+				this.graphicPanel.Invalidate();
 			}
 		}
 
@@ -2530,7 +2556,7 @@ namespace BahnEditor.Editor
 					case 0:
 						if (graphic.Properties.HasParticles)
 						{
-							graphic.Properties.RawData &= ~(GraphicProperties.Properties.Smoke & GraphicProperties.Properties.Steam);
+							graphic.Properties.RawData &= ~(GraphicProperties.Properties.Smoke | GraphicProperties.Properties.Steam);
 							this.particleWidthNumericUpDown.Enabled = false;
 							this.particleXNumericUpDown.Enabled = false;
 							this.particleYNumericUpDown.Enabled = false;
@@ -2559,6 +2585,7 @@ namespace BahnEditor.Editor
 					default:
 						throw new ArgumentOutOfRangeException("particleComboBox.SelectedIndex");
 				}
+				this.graphicPanel.Invalidate();
 			}
 		}
 
@@ -2569,6 +2596,7 @@ namespace BahnEditor.Editor
 			{
 				graphic.Properties.ParticleX = (int)particleXNumericUpDown.Value;
 				this.UserMadeChanges(true);
+				this.graphicPanel.Invalidate();
 			}
 		}
 
@@ -2579,6 +2607,7 @@ namespace BahnEditor.Editor
 			{
 				graphic.Properties.ParticleY = (int)particleYNumericUpDown.Value;
 				this.UserMadeChanges(true);
+				this.graphicPanel.Invalidate();
 			}
 		}
 
@@ -2589,6 +2618,7 @@ namespace BahnEditor.Editor
 			{
 				graphic.Properties.ParticleWidth = (int)particleWidthNumericUpDown.Value;
 				this.UserMadeChanges(true);
+				this.graphicPanel.Invalidate();
 			}
 		}
 
