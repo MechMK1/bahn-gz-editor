@@ -31,7 +31,10 @@
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Editor));
 			this.toolStrip = new System.Windows.Forms.ToolStrip();
-			this.newToolStripButton = new System.Windows.Forms.ToolStripButton();
+			this.newToolStripButton = new System.Windows.Forms.ToolStripSplitButton();
+			this.newGraphicToolStripItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.newDrivingWayToolStripItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.signalToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.openToolStripButton = new System.Windows.Forms.ToolStripButton();
 			this.saveToolStripButton = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
@@ -45,21 +48,39 @@
 			this.zoomInButton = new System.Windows.Forms.ToolStripButton();
 			this.zoomOutButton = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+			this.normalModeToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
+			this.lineToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
+			this.rectangleToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
+			this.fillToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
+			this.selectToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
+			this.pickColorToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
 			this.controlPanel = new System.Windows.Forms.Panel();
-			this.mouseButtonsGroupBox = new System.Windows.Forms.GroupBox();
-			this.leftColorButton = new System.Windows.Forms.Button();
-			this.leftLabel = new System.Windows.Forms.Label();
-			this.leftComboBox = new System.Windows.Forms.ComboBox();
-			this.rightLabel = new System.Windows.Forms.Label();
-			this.rightColorButton = new System.Windows.Forms.Button();
-			this.rightComboBox = new System.Windows.Forms.ComboBox();
+			this.drivingWayGroupBox = new System.Windows.Forms.GroupBox();
+			this.drivingWayButtonChange8 = new System.Windows.Forms.Button();
+			this.drivingWayLabel8 = new System.Windows.Forms.Label();
+			this.drivingWayButtonChange7 = new System.Windows.Forms.Button();
+			this.drivingWayLabel7 = new System.Windows.Forms.Label();
+			this.drivingWayButtonChange6 = new System.Windows.Forms.Button();
+			this.drivingWayLabel6 = new System.Windows.Forms.Label();
+			this.drivingWayButtonChange5 = new System.Windows.Forms.Button();
+			this.drivingWayLabel5 = new System.Windows.Forms.Label();
+			this.drivingWayButtonChange4 = new System.Windows.Forms.Button();
+			this.drivingWayLabel4 = new System.Windows.Forms.Label();
+			this.drivingWayButtonChange3 = new System.Windows.Forms.Button();
+			this.drivingWayLabel3 = new System.Windows.Forms.Label();
+			this.drivingWayButtonChange2 = new System.Windows.Forms.Button();
+			this.drivingWayLabel2 = new System.Windows.Forms.Label();
+			this.drivingWayButtonChange1 = new System.Windows.Forms.Button();
+			this.drivingWayLabel1 = new System.Windows.Forms.Label();
+			this.drivingWayLabelInfo = new System.Windows.Forms.Label();
+			this.layerGroupBox = new System.Windows.Forms.GroupBox();
+			this.foregroundRadioButton = new System.Windows.Forms.RadioButton();
+			this.backgroundRadioButton = new System.Windows.Forms.RadioButton();
+			this.frontRadioButton = new System.Windows.Forms.RadioButton();
+			this.backgroundRadioButton2 = new System.Windows.Forms.RadioButton();
+			this.foregroundAboveRadioButton = new System.Windows.Forms.RadioButton();
+			this.toBackgroundRadioButton = new System.Windows.Forms.RadioButton();
 			this.propertiesGroupBox = new System.Windows.Forms.GroupBox();
-			this.cursorDirectionPanel = new System.Windows.Forms.Panel();
-			this.cursorReverseDirectionComboBox = new System.Windows.Forms.ComboBox();
-			this.cursorLabel = new System.Windows.Forms.Label();
-			this.cursorReverseDirectionLabel = new System.Windows.Forms.Label();
-			this.cursorNormalDirectionComboBox = new System.Windows.Forms.ComboBox();
-			this.cursorNormalDirectionLabel = new System.Windows.Forms.Label();
 			this.particlePropertiesPanel = new System.Windows.Forms.Panel();
 			this.particleWidthNumericUpDown = new System.Windows.Forms.NumericUpDown();
 			this.particleWidthLabel = new System.Windows.Forms.Label();
@@ -69,7 +90,7 @@
 			this.particleLabel = new System.Windows.Forms.Label();
 			this.particleXNumericUpDown = new System.Windows.Forms.NumericUpDown();
 			this.particleComboBox = new System.Windows.Forms.ComboBox();
-			this.clockPanel = new System.Windows.Forms.Panel();
+			this.clockPropertiesPanel = new System.Windows.Forms.Panel();
 			this.clockColorMinutesPointerButton = new System.Windows.Forms.Button();
 			this.clockColorHoursPointerButton = new System.Windows.Forms.Button();
 			this.clockColorMinutesPointerLabel = new System.Windows.Forms.Label();
@@ -85,16 +106,24 @@
 			this.clockRotationComboBox = new System.Windows.Forms.ComboBox();
 			this.clockRotationLabel = new System.Windows.Forms.Label();
 			this.clockLabel = new System.Windows.Forms.Label();
-			this.frontRadioButton = new System.Windows.Forms.RadioButton();
-			this.foregroundAboveRadioButton = new System.Windows.Forms.RadioButton();
-			this.toBackgroundRadioButton = new System.Windows.Forms.RadioButton();
-			this.backgroundRadioButton2 = new System.Windows.Forms.RadioButton();
-			this.backgroundRadioButton = new System.Windows.Forms.RadioButton();
-			this.foregroundRadioButton = new System.Windows.Forms.RadioButton();
+			this.mouseButtonsGroupBox = new System.Windows.Forms.GroupBox();
+			this.leftColorButton = new System.Windows.Forms.Button();
+			this.leftLabel = new System.Windows.Forms.Label();
+			this.leftComboBox = new System.Windows.Forms.ComboBox();
+			this.rightLabel = new System.Windows.Forms.Label();
+			this.rightColorButton = new System.Windows.Forms.Button();
+			this.rightComboBox = new System.Windows.Forms.ComboBox();
+			this.cursorReverseDirectionComboBox = new System.Windows.Forms.ComboBox();
+			this.cursorReverseDirectionLabel = new System.Windows.Forms.Label();
+			this.cursorNormalDirectionComboBox = new System.Windows.Forms.ComboBox();
+			this.cursorNormalDirectionLabel = new System.Windows.Forms.Label();
 			this.loadFileDialog = new System.Windows.Forms.OpenFileDialog();
 			this.menuStrip = new System.Windows.Forms.MenuStrip();
 			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.newGraphicToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.newDrivingWayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.signalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
 			this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -133,40 +162,38 @@
 			this.animationNumericUpDown = new System.Windows.Forms.NumericUpDown();
 			this.alternativesCheckBox = new System.Windows.Forms.CheckBox();
 			this.scrollPanel = new System.Windows.Forms.Panel();
+			this.graphicPanel = new BahnEditor.Editor.GraphicPanel();
 			this.gridCheckBox = new System.Windows.Forms.CheckBox();
 			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
 			this.zoomLevelStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-			this.overviewPanel = new System.Windows.Forms.PictureBox();
-			this.overviewDownButton = new System.Windows.Forms.Button();
-			this.overviewUpButton = new System.Windows.Forms.Button();
 			this.overviewLeftRightButton = new System.Windows.Forms.Button();
-			this.graphicPanel = new BahnEditor.Editor.GraphicPanel();
-			this.normalModeToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
-			this.lineToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
-			this.rectangleToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
-			this.fillToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
-			this.selectToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
-			this.pickColorToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
+			this.overviewUpButton = new System.Windows.Forms.Button();
+			this.overviewDownButton = new System.Windows.Forms.Button();
+			this.overviewDrawPanel = new System.Windows.Forms.PictureBox();
+			this.overviewPanel = new System.Windows.Forms.Panel();
+			this.cursorGroupBox = new System.Windows.Forms.GroupBox();
 			this.toolStrip.SuspendLayout();
 			this.controlPanel.SuspendLayout();
-			this.mouseButtonsGroupBox.SuspendLayout();
+			this.drivingWayGroupBox.SuspendLayout();
+			this.layerGroupBox.SuspendLayout();
 			this.propertiesGroupBox.SuspendLayout();
-			this.cursorDirectionPanel.SuspendLayout();
 			this.particlePropertiesPanel.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.particleWidthNumericUpDown)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.particleYNumericUpDown)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.particleXNumericUpDown)).BeginInit();
-			this.clockPanel.SuspendLayout();
+			this.clockPropertiesPanel.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.clockWidthNumericUpDown)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.clockYNumericUpDown)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.clockXNumericUpDown)).BeginInit();
+			this.mouseButtonsGroupBox.SuspendLayout();
 			this.menuStrip.SuspendLayout();
 			this.tabControl.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.animationNumericUpDown)).BeginInit();
 			this.scrollPanel.SuspendLayout();
 			this.statusStrip1.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.overviewPanel)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.overviewDrawPanel)).BeginInit();
 			this.overviewPanel.SuspendLayout();
+			this.cursorGroupBox.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// toolStrip
@@ -202,12 +229,37 @@
 			// newToolStripButton
 			// 
 			this.newToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.newToolStripButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newGraphicToolStripItem,
+            this.newDrivingWayToolStripItem,
+            this.signalToolStripMenuItem1});
 			this.newToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("newToolStripButton.Image")));
 			this.newToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.newToolStripButton.Name = "newToolStripButton";
-			this.newToolStripButton.Size = new System.Drawing.Size(23, 22);
+			this.newToolStripButton.Size = new System.Drawing.Size(32, 22);
 			this.newToolStripButton.Text = "&New";
-			this.newToolStripButton.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
+			this.newToolStripButton.ButtonClick += new System.EventHandler(this.newToolStripMenuItem_Click);
+			// 
+			// newGraphicToolStripItem
+			// 
+			this.newGraphicToolStripItem.Name = "newGraphicToolStripItem";
+			this.newGraphicToolStripItem.Size = new System.Drawing.Size(138, 22);
+			this.newGraphicToolStripItem.Text = "Graphic";
+			this.newGraphicToolStripItem.Click += new System.EventHandler(this.newGraphicToolStripItem_Click);
+			// 
+			// newDrivingWayToolStripItem
+			// 
+			this.newDrivingWayToolStripItem.Name = "newDrivingWayToolStripItem";
+			this.newDrivingWayToolStripItem.Size = new System.Drawing.Size(138, 22);
+			this.newDrivingWayToolStripItem.Text = "Driving Way";
+			this.newDrivingWayToolStripItem.Click += new System.EventHandler(this.newDrivingWayToolStripItem_Click);
+			// 
+			// signalToolStripMenuItem1
+			// 
+			this.signalToolStripMenuItem1.Enabled = false;
+			this.signalToolStripMenuItem1.Name = "signalToolStripMenuItem1";
+			this.signalToolStripMenuItem1.Size = new System.Drawing.Size(138, 22);
+			this.signalToolStripMenuItem1.Text = "Signal";
 			// 
 			// openToolStripButton
 			// 
@@ -320,273 +372,392 @@
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
 			this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
 			// 
+			// normalModeToolStripRadioButton
+			// 
+			this.normalModeToolStripRadioButton.Checked = true;
+			this.normalModeToolStripRadioButton.CheckOnClick = true;
+			this.normalModeToolStripRadioButton.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.normalModeToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.normalModeToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("normalModeToolStripRadioButton.Image")));
+			this.normalModeToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.normalModeToolStripRadioButton.Name = "normalModeToolStripRadioButton";
+			this.normalModeToolStripRadioButton.RadioButtonGroupID = 0;
+			this.normalModeToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
+			this.normalModeToolStripRadioButton.Text = "Normal Mode";
+			// 
+			// lineToolStripRadioButton
+			// 
+			this.lineToolStripRadioButton.CheckOnClick = true;
+			this.lineToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.lineToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("lineToolStripRadioButton.Image")));
+			this.lineToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.lineToolStripRadioButton.Name = "lineToolStripRadioButton";
+			this.lineToolStripRadioButton.RadioButtonGroupID = 0;
+			this.lineToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
+			this.lineToolStripRadioButton.Text = "Line";
+			// 
+			// rectangleToolStripRadioButton
+			// 
+			this.rectangleToolStripRadioButton.CheckOnClick = true;
+			this.rectangleToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.rectangleToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("rectangleToolStripRadioButton.Image")));
+			this.rectangleToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.rectangleToolStripRadioButton.Name = "rectangleToolStripRadioButton";
+			this.rectangleToolStripRadioButton.RadioButtonGroupID = 0;
+			this.rectangleToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
+			this.rectangleToolStripRadioButton.Text = "Rectangle";
+			// 
+			// fillToolStripRadioButton
+			// 
+			this.fillToolStripRadioButton.CheckOnClick = true;
+			this.fillToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.fillToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("fillToolStripRadioButton.Image")));
+			this.fillToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.fillToolStripRadioButton.Name = "fillToolStripRadioButton";
+			this.fillToolStripRadioButton.RadioButtonGroupID = 0;
+			this.fillToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
+			this.fillToolStripRadioButton.Text = "Fill";
+			// 
+			// selectToolStripRadioButton
+			// 
+			this.selectToolStripRadioButton.CheckOnClick = true;
+			this.selectToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.selectToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("selectToolStripRadioButton.Image")));
+			this.selectToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.selectToolStripRadioButton.Name = "selectToolStripRadioButton";
+			this.selectToolStripRadioButton.RadioButtonGroupID = 0;
+			this.selectToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
+			this.selectToolStripRadioButton.Text = "Select area";
+			// 
+			// pickColorToolStripRadioButton
+			// 
+			this.pickColorToolStripRadioButton.CheckOnClick = true;
+			this.pickColorToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.pickColorToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("pickColorToolStripRadioButton.Image")));
+			this.pickColorToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.pickColorToolStripRadioButton.Name = "pickColorToolStripRadioButton";
+			this.pickColorToolStripRadioButton.RadioButtonGroupID = 0;
+			this.pickColorToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
+			this.pickColorToolStripRadioButton.Text = "Pick color";
+			// 
 			// controlPanel
 			// 
 			this.controlPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.controlPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.controlPanel.Controls.Add(this.mouseButtonsGroupBox);
+			this.controlPanel.Controls.Add(this.drivingWayGroupBox);
+			this.controlPanel.Controls.Add(this.layerGroupBox);
 			this.controlPanel.Controls.Add(this.propertiesGroupBox);
-			this.controlPanel.Controls.Add(this.frontRadioButton);
-			this.controlPanel.Controls.Add(this.foregroundAboveRadioButton);
-			this.controlPanel.Controls.Add(this.toBackgroundRadioButton);
-			this.controlPanel.Controls.Add(this.backgroundRadioButton2);
-			this.controlPanel.Controls.Add(this.backgroundRadioButton);
-			this.controlPanel.Controls.Add(this.foregroundRadioButton);
 			this.controlPanel.Location = new System.Drawing.Point(794, 52);
 			this.controlPanel.Name = "controlPanel";
-			this.controlPanel.Size = new System.Drawing.Size(207, 653);
+			this.controlPanel.Size = new System.Drawing.Size(207, 652);
 			this.controlPanel.TabIndex = 2;
 			// 
-			// mouseButtonsGroupBox
+			// drivingWayGroupBox
 			// 
-			this.mouseButtonsGroupBox.Controls.Add(this.leftColorButton);
-			this.mouseButtonsGroupBox.Controls.Add(this.leftLabel);
-			this.mouseButtonsGroupBox.Controls.Add(this.leftComboBox);
-			this.mouseButtonsGroupBox.Controls.Add(this.rightLabel);
-			this.mouseButtonsGroupBox.Controls.Add(this.rightColorButton);
-			this.mouseButtonsGroupBox.Controls.Add(this.rightComboBox);
-			this.mouseButtonsGroupBox.Location = new System.Drawing.Point(3, 1);
-			this.mouseButtonsGroupBox.Name = "mouseButtonsGroupBox";
-			this.mouseButtonsGroupBox.Size = new System.Drawing.Size(200, 135);
-			this.mouseButtonsGroupBox.TabIndex = 17;
-			this.mouseButtonsGroupBox.TabStop = false;
-			this.mouseButtonsGroupBox.Text = "Mousebuttons";
+			this.drivingWayGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.drivingWayGroupBox.Controls.Add(this.drivingWayButtonChange8);
+			this.drivingWayGroupBox.Controls.Add(this.drivingWayLabel8);
+			this.drivingWayGroupBox.Controls.Add(this.drivingWayButtonChange7);
+			this.drivingWayGroupBox.Controls.Add(this.drivingWayLabel7);
+			this.drivingWayGroupBox.Controls.Add(this.drivingWayButtonChange6);
+			this.drivingWayGroupBox.Controls.Add(this.drivingWayLabel6);
+			this.drivingWayGroupBox.Controls.Add(this.drivingWayButtonChange5);
+			this.drivingWayGroupBox.Controls.Add(this.drivingWayLabel5);
+			this.drivingWayGroupBox.Controls.Add(this.drivingWayButtonChange4);
+			this.drivingWayGroupBox.Controls.Add(this.drivingWayLabel4);
+			this.drivingWayGroupBox.Controls.Add(this.drivingWayButtonChange3);
+			this.drivingWayGroupBox.Controls.Add(this.drivingWayLabel3);
+			this.drivingWayGroupBox.Controls.Add(this.drivingWayButtonChange2);
+			this.drivingWayGroupBox.Controls.Add(this.drivingWayLabel2);
+			this.drivingWayGroupBox.Controls.Add(this.drivingWayButtonChange1);
+			this.drivingWayGroupBox.Controls.Add(this.drivingWayLabel1);
+			this.drivingWayGroupBox.Controls.Add(this.drivingWayLabelInfo);
+			this.drivingWayGroupBox.Location = new System.Drawing.Point(2, 262);
+			this.drivingWayGroupBox.Name = "drivingWayGroupBox";
+			this.drivingWayGroupBox.Size = new System.Drawing.Size(200, 385);
+			this.drivingWayGroupBox.TabIndex = 18;
+			this.drivingWayGroupBox.TabStop = false;
+			this.drivingWayGroupBox.Text = "Driving Way";
 			// 
-			// leftColorButton
+			// drivingWayButtonChange8
 			// 
-			this.leftColorButton.BackColor = System.Drawing.Color.Black;
-			this.leftColorButton.FlatAppearance.BorderSize = 0;
-			this.leftColorButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.leftColorButton.Location = new System.Drawing.Point(9, 16);
-			this.leftColorButton.Name = "leftColorButton";
-			this.leftColorButton.Size = new System.Drawing.Size(60, 23);
-			this.leftColorButton.TabIndex = 0;
-			this.leftColorButton.TabStop = false;
-			this.leftColorButton.UseVisualStyleBackColor = false;
-			this.leftColorButton.Click += new System.EventHandler(this.leftColorButton_Click);
+			this.drivingWayButtonChange8.Location = new System.Drawing.Point(12, 352);
+			this.drivingWayButtonChange8.Name = "drivingWayButtonChange8";
+			this.drivingWayButtonChange8.Size = new System.Drawing.Size(112, 23);
+			this.drivingWayButtonChange8.TabIndex = 16;
+			this.drivingWayButtonChange8.Tag = "8";
+			this.drivingWayButtonChange8.Text = "Change";
+			this.drivingWayButtonChange8.UseVisualStyleBackColor = true;
+			this.drivingWayButtonChange8.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
 			// 
-			// leftLabel
+			// drivingWayLabel8
 			// 
-			this.leftLabel.AutoSize = true;
-			this.leftLabel.Location = new System.Drawing.Point(75, 21);
-			this.leftLabel.Name = "leftLabel";
-			this.leftLabel.Size = new System.Drawing.Size(31, 13);
-			this.leftLabel.TabIndex = 7;
-			this.leftLabel.Text = "Left: ";
+			this.drivingWayLabel8.AutoSize = true;
+			this.drivingWayLabel8.Font = new System.Drawing.Font("Courier New", 8.25F);
+			this.drivingWayLabel8.Location = new System.Drawing.Point(12, 336);
+			this.drivingWayLabel8.Name = "drivingWayLabel8";
+			this.drivingWayLabel8.Size = new System.Drawing.Size(28, 14);
+			this.drivingWayLabel8.TabIndex = 15;
+			this.drivingWayLabel8.Text = "---";
 			// 
-			// leftComboBox
+			// drivingWayButtonChange7
 			// 
-			this.leftComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.leftComboBox.FormattingEnabled = true;
-			this.leftComboBox.Items.AddRange(new object[] {
-            "Default",
-            "Transparent",
-            "Half transparent (behind glass)",
-            "Light (always bright)",
-            "Lamp white-yellow",
-            "Lamp cold white (LED)",
-            "Lamp red",
-            "Lamp yellow, light bulb",
-            "Lamp yellow, gas light",
-            "Window0 (yellow at night)",
-            "Window1 (yellow at night)",
-            "Window2 (yellow at night)",
-            "Window0 (neon at night)",
-            "Window1 (neon at night)",
-            "Window2 (neon at night)",
-            "as background",
-            "as sleepers 0",
-            "as sleepers 1",
-            "as sleepers 3",
-            "as rails on road 0",
-            "as rails on road 1",
-            "as rails on road 2",
-            "as rails on road 3",
-            "as rails on trackbed 0",
-            "as rails on trackbed 1",
-            "as rails on trackbed 2",
-            "as rails on trackbed 3",
-            "as marking points bus 0",
-            "as marking points bus 1",
-            "as marking points bus 2",
-            "as marking points bus 3",
-            "as marking points water",
-            "as gravel",
-            "as small gravel / sand",
-            "as grassy (grass rail)",
-            "as path (background)",
-            "as path (foreground, tracks)",
-            "as text"});
-			this.leftComboBox.Location = new System.Drawing.Point(6, 45);
-			this.leftComboBox.Name = "leftComboBox";
-			this.leftComboBox.Size = new System.Drawing.Size(188, 21);
-			this.leftComboBox.TabIndex = 4;
-			this.leftComboBox.SelectedIndexChanged += new System.EventHandler(this.leftComboBox_SelectedIndexChanged);
+			this.drivingWayButtonChange7.Location = new System.Drawing.Point(12, 310);
+			this.drivingWayButtonChange7.Name = "drivingWayButtonChange7";
+			this.drivingWayButtonChange7.Size = new System.Drawing.Size(112, 23);
+			this.drivingWayButtonChange7.TabIndex = 14;
+			this.drivingWayButtonChange7.Tag = "7";
+			this.drivingWayButtonChange7.Text = "Change";
+			this.drivingWayButtonChange7.UseVisualStyleBackColor = true;
+			this.drivingWayButtonChange7.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
 			// 
-			// rightLabel
+			// drivingWayLabel7
 			// 
-			this.rightLabel.AutoSize = true;
-			this.rightLabel.Location = new System.Drawing.Point(7, 85);
-			this.rightLabel.Name = "rightLabel";
-			this.rightLabel.Size = new System.Drawing.Size(38, 13);
-			this.rightLabel.TabIndex = 8;
-			this.rightLabel.Text = "Right: ";
+			this.drivingWayLabel7.AutoSize = true;
+			this.drivingWayLabel7.Font = new System.Drawing.Font("Courier New", 8.25F);
+			this.drivingWayLabel7.Location = new System.Drawing.Point(12, 294);
+			this.drivingWayLabel7.Name = "drivingWayLabel7";
+			this.drivingWayLabel7.Size = new System.Drawing.Size(28, 14);
+			this.drivingWayLabel7.TabIndex = 13;
+			this.drivingWayLabel7.Text = "---";
 			// 
-			// rightColorButton
+			// drivingWayButtonChange6
 			// 
-			this.rightColorButton.BackColor = System.Drawing.Color.White;
-			this.rightColorButton.FlatAppearance.BorderSize = 0;
-			this.rightColorButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.rightColorButton.Location = new System.Drawing.Point(131, 80);
-			this.rightColorButton.Name = "rightColorButton";
-			this.rightColorButton.Size = new System.Drawing.Size(60, 23);
-			this.rightColorButton.TabIndex = 1;
-			this.rightColorButton.TabStop = false;
-			this.rightColorButton.UseVisualStyleBackColor = false;
-			this.rightColorButton.Click += new System.EventHandler(this.rightColorButton_Click);
+			this.drivingWayButtonChange6.Location = new System.Drawing.Point(12, 268);
+			this.drivingWayButtonChange6.Name = "drivingWayButtonChange6";
+			this.drivingWayButtonChange6.Size = new System.Drawing.Size(112, 23);
+			this.drivingWayButtonChange6.TabIndex = 12;
+			this.drivingWayButtonChange6.Tag = "6";
+			this.drivingWayButtonChange6.Text = "Change";
+			this.drivingWayButtonChange6.UseVisualStyleBackColor = true;
+			this.drivingWayButtonChange6.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
 			// 
-			// rightComboBox
+			// drivingWayLabel6
 			// 
-			this.rightComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.rightComboBox.FormattingEnabled = true;
-			this.rightComboBox.Items.AddRange(new object[] {
-            "Default",
-            "Transparent",
-            "Half transparent (behind glass)",
-            "Light (always bright)",
-            "Lamp white-yellow",
-            "Lamp cold white (LED)",
-            "Lamp red",
-            "Lamp yellow, light bulb",
-            "Lamp yellow, gas light",
-            "Window0 (yellow at night)",
-            "Window1 (yellow at night)",
-            "Window2 (yellow at night)",
-            "Window0 (neon at night)",
-            "Window1 (neon at night)",
-            "Window2 (neon at night)",
-            "as background",
-            "as sleepers 0",
-            "as sleepers 1",
-            "as sleepers 3",
-            "as rails on road 0",
-            "as rails on road 1",
-            "as rails on road 2",
-            "as rails on road 3",
-            "as rails on trackbed 0",
-            "as rails on trackbed 1",
-            "as rails on trackbed 2",
-            "as rails on trackbed 3",
-            "as marking points bus 0",
-            "as marking points bus 1",
-            "as marking points bus 2",
-            "as marking points bus 3",
-            "as marking points water",
-            "as gravel",
-            "as small gravel / sand",
-            "as grassy (grass rail)",
-            "as path (background)",
-            "as path (foreground, tracks)",
-            "as text"});
-			this.rightComboBox.Location = new System.Drawing.Point(6, 109);
-			this.rightComboBox.Name = "rightComboBox";
-			this.rightComboBox.Size = new System.Drawing.Size(188, 21);
-			this.rightComboBox.TabIndex = 5;
-			this.rightComboBox.SelectedIndexChanged += new System.EventHandler(this.rightComboBox_SelectedIndexChanged);
+			this.drivingWayLabel6.AutoSize = true;
+			this.drivingWayLabel6.Font = new System.Drawing.Font("Courier New", 8.25F);
+			this.drivingWayLabel6.Location = new System.Drawing.Point(12, 252);
+			this.drivingWayLabel6.Name = "drivingWayLabel6";
+			this.drivingWayLabel6.Size = new System.Drawing.Size(28, 14);
+			this.drivingWayLabel6.TabIndex = 11;
+			this.drivingWayLabel6.Text = "---";
+			// 
+			// drivingWayButtonChange5
+			// 
+			this.drivingWayButtonChange5.Location = new System.Drawing.Point(12, 226);
+			this.drivingWayButtonChange5.Name = "drivingWayButtonChange5";
+			this.drivingWayButtonChange5.Size = new System.Drawing.Size(112, 23);
+			this.drivingWayButtonChange5.TabIndex = 10;
+			this.drivingWayButtonChange5.Tag = "5";
+			this.drivingWayButtonChange5.Text = "Change";
+			this.drivingWayButtonChange5.UseVisualStyleBackColor = true;
+			this.drivingWayButtonChange5.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
+			// 
+			// drivingWayLabel5
+			// 
+			this.drivingWayLabel5.AutoSize = true;
+			this.drivingWayLabel5.Font = new System.Drawing.Font("Courier New", 8.25F);
+			this.drivingWayLabel5.Location = new System.Drawing.Point(12, 210);
+			this.drivingWayLabel5.Name = "drivingWayLabel5";
+			this.drivingWayLabel5.Size = new System.Drawing.Size(28, 14);
+			this.drivingWayLabel5.TabIndex = 9;
+			this.drivingWayLabel5.Text = "---";
+			// 
+			// drivingWayButtonChange4
+			// 
+			this.drivingWayButtonChange4.Location = new System.Drawing.Point(12, 184);
+			this.drivingWayButtonChange4.Name = "drivingWayButtonChange4";
+			this.drivingWayButtonChange4.Size = new System.Drawing.Size(112, 23);
+			this.drivingWayButtonChange4.TabIndex = 8;
+			this.drivingWayButtonChange4.Tag = "4";
+			this.drivingWayButtonChange4.Text = "Change";
+			this.drivingWayButtonChange4.UseVisualStyleBackColor = true;
+			this.drivingWayButtonChange4.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
+			// 
+			// drivingWayLabel4
+			// 
+			this.drivingWayLabel4.AutoSize = true;
+			this.drivingWayLabel4.Font = new System.Drawing.Font("Courier New", 8.25F);
+			this.drivingWayLabel4.Location = new System.Drawing.Point(12, 168);
+			this.drivingWayLabel4.Name = "drivingWayLabel4";
+			this.drivingWayLabel4.Size = new System.Drawing.Size(28, 14);
+			this.drivingWayLabel4.TabIndex = 7;
+			this.drivingWayLabel4.Text = "---";
+			// 
+			// drivingWayButtonChange3
+			// 
+			this.drivingWayButtonChange3.Location = new System.Drawing.Point(12, 142);
+			this.drivingWayButtonChange3.Name = "drivingWayButtonChange3";
+			this.drivingWayButtonChange3.Size = new System.Drawing.Size(112, 23);
+			this.drivingWayButtonChange3.TabIndex = 6;
+			this.drivingWayButtonChange3.Tag = "3";
+			this.drivingWayButtonChange3.Text = "Change";
+			this.drivingWayButtonChange3.UseVisualStyleBackColor = true;
+			this.drivingWayButtonChange3.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
+			// 
+			// drivingWayLabel3
+			// 
+			this.drivingWayLabel3.AutoSize = true;
+			this.drivingWayLabel3.Font = new System.Drawing.Font("Courier New", 8.25F);
+			this.drivingWayLabel3.Location = new System.Drawing.Point(12, 126);
+			this.drivingWayLabel3.Name = "drivingWayLabel3";
+			this.drivingWayLabel3.Size = new System.Drawing.Size(28, 14);
+			this.drivingWayLabel3.TabIndex = 5;
+			this.drivingWayLabel3.Text = "---";
+			// 
+			// drivingWayButtonChange2
+			// 
+			this.drivingWayButtonChange2.Location = new System.Drawing.Point(12, 100);
+			this.drivingWayButtonChange2.Name = "drivingWayButtonChange2";
+			this.drivingWayButtonChange2.Size = new System.Drawing.Size(112, 23);
+			this.drivingWayButtonChange2.TabIndex = 4;
+			this.drivingWayButtonChange2.Tag = "2";
+			this.drivingWayButtonChange2.Text = "Change";
+			this.drivingWayButtonChange2.UseVisualStyleBackColor = true;
+			this.drivingWayButtonChange2.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
+			// 
+			// drivingWayLabel2
+			// 
+			this.drivingWayLabel2.AutoSize = true;
+			this.drivingWayLabel2.Font = new System.Drawing.Font("Courier New", 8.25F);
+			this.drivingWayLabel2.Location = new System.Drawing.Point(12, 84);
+			this.drivingWayLabel2.Name = "drivingWayLabel2";
+			this.drivingWayLabel2.Size = new System.Drawing.Size(28, 14);
+			this.drivingWayLabel2.TabIndex = 3;
+			this.drivingWayLabel2.Text = "---";
+			// 
+			// drivingWayButtonChange1
+			// 
+			this.drivingWayButtonChange1.Location = new System.Drawing.Point(12, 58);
+			this.drivingWayButtonChange1.Name = "drivingWayButtonChange1";
+			this.drivingWayButtonChange1.Size = new System.Drawing.Size(112, 23);
+			this.drivingWayButtonChange1.TabIndex = 2;
+			this.drivingWayButtonChange1.Tag = "1";
+			this.drivingWayButtonChange1.Text = "Change";
+			this.drivingWayButtonChange1.UseVisualStyleBackColor = true;
+			this.drivingWayButtonChange1.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
+			// 
+			// drivingWayLabel1
+			// 
+			this.drivingWayLabel1.AutoSize = true;
+			this.drivingWayLabel1.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.drivingWayLabel1.Location = new System.Drawing.Point(12, 42);
+			this.drivingWayLabel1.Name = "drivingWayLabel1";
+			this.drivingWayLabel1.Size = new System.Drawing.Size(28, 14);
+			this.drivingWayLabel1.TabIndex = 1;
+			this.drivingWayLabel1.Text = "---";
+			// 
+			// drivingWayLabelInfo
+			// 
+			this.drivingWayLabelInfo.AutoSize = true;
+			this.drivingWayLabelInfo.Location = new System.Drawing.Point(8, 21);
+			this.drivingWayLabelInfo.Name = "drivingWayLabelInfo";
+			this.drivingWayLabelInfo.Size = new System.Drawing.Size(166, 13);
+			this.drivingWayLabelInfo.TabIndex = 0;
+			this.drivingWayLabelInfo.Text = "Driving Way    arr.  dep.  Function";
+			// 
+			// layerGroupBox
+			// 
+			this.layerGroupBox.Controls.Add(this.foregroundRadioButton);
+			this.layerGroupBox.Controls.Add(this.backgroundRadioButton);
+			this.layerGroupBox.Controls.Add(this.frontRadioButton);
+			this.layerGroupBox.Controls.Add(this.backgroundRadioButton2);
+			this.layerGroupBox.Controls.Add(this.foregroundAboveRadioButton);
+			this.layerGroupBox.Controls.Add(this.toBackgroundRadioButton);
+			this.layerGroupBox.Location = new System.Drawing.Point(3, 2);
+			this.layerGroupBox.Name = "layerGroupBox";
+			this.layerGroupBox.Size = new System.Drawing.Size(200, 158);
+			this.layerGroupBox.TabIndex = 17;
+			this.layerGroupBox.TabStop = false;
+			this.layerGroupBox.Text = "Layer";
+			// 
+			// foregroundRadioButton
+			// 
+			this.foregroundRadioButton.AutoSize = true;
+			this.foregroundRadioButton.Checked = true;
+			this.foregroundRadioButton.Location = new System.Drawing.Point(11, 16);
+			this.foregroundRadioButton.Name = "foregroundRadioButton";
+			this.foregroundRadioButton.Size = new System.Drawing.Size(79, 17);
+			this.foregroundRadioButton.TabIndex = 10;
+			this.foregroundRadioButton.TabStop = true;
+			this.foregroundRadioButton.Text = "Foreground";
+			this.toolTip.SetToolTip(this.foregroundRadioButton, "Foreground (in front of driving way and train)");
+			this.foregroundRadioButton.UseVisualStyleBackColor = true;
+			this.foregroundRadioButton.CheckedChanged += new System.EventHandler(this.foregroundRadioButton_CheckedChanged);
+			// 
+			// backgroundRadioButton
+			// 
+			this.backgroundRadioButton.AutoSize = true;
+			this.backgroundRadioButton.Location = new System.Drawing.Point(11, 39);
+			this.backgroundRadioButton.Name = "backgroundRadioButton";
+			this.backgroundRadioButton.Size = new System.Drawing.Size(83, 17);
+			this.backgroundRadioButton.TabIndex = 11;
+			this.backgroundRadioButton.Text = "Background";
+			this.toolTip.SetToolTip(this.backgroundRadioButton, "Background (behind train)");
+			this.backgroundRadioButton.UseVisualStyleBackColor = true;
+			this.backgroundRadioButton.CheckedChanged += new System.EventHandler(this.backgroundRadioButton_CheckedChanged);
+			// 
+			// frontRadioButton
+			// 
+			this.frontRadioButton.AutoSize = true;
+			this.frontRadioButton.Location = new System.Drawing.Point(11, 131);
+			this.frontRadioButton.Name = "frontRadioButton";
+			this.frontRadioButton.Size = new System.Drawing.Size(49, 17);
+			this.frontRadioButton.TabIndex = 15;
+			this.frontRadioButton.Text = "Front";
+			this.toolTip.SetToolTip(this.frontRadioButton, "Front (used for bridges)");
+			this.frontRadioButton.UseVisualStyleBackColor = true;
+			this.frontRadioButton.CheckedChanged += new System.EventHandler(this.frontRadioButton_CheckedChanged);
+			// 
+			// backgroundRadioButton2
+			// 
+			this.backgroundRadioButton2.AutoSize = true;
+			this.backgroundRadioButton2.Location = new System.Drawing.Point(11, 62);
+			this.backgroundRadioButton2.Name = "backgroundRadioButton2";
+			this.backgroundRadioButton2.Size = new System.Drawing.Size(98, 17);
+			this.backgroundRadioButton2.TabIndex = 12;
+			this.backgroundRadioButton2.Text = "Background (2)";
+			this.toolTip.SetToolTip(this.backgroundRadioButton2, "Background (behind train; second layer)");
+			this.backgroundRadioButton2.UseVisualStyleBackColor = true;
+			this.backgroundRadioButton2.CheckedChanged += new System.EventHandler(this.backgroundRadioButton2_CheckedChanged);
+			// 
+			// foregroundAboveRadioButton
+			// 
+			this.foregroundAboveRadioButton.AutoSize = true;
+			this.foregroundAboveRadioButton.Location = new System.Drawing.Point(11, 108);
+			this.foregroundAboveRadioButton.Name = "foregroundAboveRadioButton";
+			this.foregroundAboveRadioButton.Size = new System.Drawing.Size(112, 17);
+			this.foregroundAboveRadioButton.TabIndex = 14;
+			this.foregroundAboveRadioButton.Text = "Foreground above";
+			this.toolTip.SetToolTip(this.foregroundAboveRadioButton, "Foreground above (use e.g. for overhead wires)");
+			this.foregroundAboveRadioButton.UseVisualStyleBackColor = true;
+			this.foregroundAboveRadioButton.CheckedChanged += new System.EventHandler(this.foregroundAboveRadioButton_CheckedChanged);
+			// 
+			// toBackgroundRadioButton
+			// 
+			this.toBackgroundRadioButton.AutoSize = true;
+			this.toBackgroundRadioButton.Location = new System.Drawing.Point(11, 85);
+			this.toBackgroundRadioButton.Name = "toBackgroundRadioButton";
+			this.toBackgroundRadioButton.Size = new System.Drawing.Size(98, 17);
+			this.toBackgroundRadioButton.TabIndex = 13;
+			this.toBackgroundRadioButton.Text = "To background";
+			this.toolTip.SetToolTip(this.toBackgroundRadioButton, "To background (=flat, use e.g. for platforms)");
+			this.toBackgroundRadioButton.UseVisualStyleBackColor = true;
+			this.toBackgroundRadioButton.CheckedChanged += new System.EventHandler(this.toBackgroundRadioButton_CheckedChanged);
 			// 
 			// propertiesGroupBox
 			// 
 			this.propertiesGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.propertiesGroupBox.Controls.Add(this.cursorDirectionPanel);
 			this.propertiesGroupBox.Controls.Add(this.particlePropertiesPanel);
-			this.propertiesGroupBox.Controls.Add(this.clockPanel);
-			this.propertiesGroupBox.Location = new System.Drawing.Point(3, 337);
+			this.propertiesGroupBox.Controls.Add(this.clockPropertiesPanel);
+			this.propertiesGroupBox.Location = new System.Drawing.Point(2, 403);
 			this.propertiesGroupBox.Name = "propertiesGroupBox";
-			this.propertiesGroupBox.Size = new System.Drawing.Size(200, 311);
+			this.propertiesGroupBox.Size = new System.Drawing.Size(200, 244);
 			this.propertiesGroupBox.TabIndex = 16;
 			this.propertiesGroupBox.TabStop = false;
 			this.propertiesGroupBox.Text = "Properties";
 			this.propertiesGroupBox.Paint += new System.Windows.Forms.PaintEventHandler(this.propertiesGroupBox_Paint);
-			// 
-			// cursorDirectionPanel
-			// 
-			this.cursorDirectionPanel.Controls.Add(this.cursorReverseDirectionComboBox);
-			this.cursorDirectionPanel.Controls.Add(this.cursorLabel);
-			this.cursorDirectionPanel.Controls.Add(this.cursorReverseDirectionLabel);
-			this.cursorDirectionPanel.Controls.Add(this.cursorNormalDirectionComboBox);
-			this.cursorDirectionPanel.Controls.Add(this.cursorNormalDirectionLabel);
-			this.cursorDirectionPanel.Location = new System.Drawing.Point(2, 243);
-			this.cursorDirectionPanel.Name = "cursorDirectionPanel";
-			this.cursorDirectionPanel.Size = new System.Drawing.Size(196, 66);
-			this.cursorDirectionPanel.TabIndex = 9;
-			// 
-			// cursorReverseDirectionComboBox
-			// 
-			this.cursorReverseDirectionComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.cursorReverseDirectionComboBox.FormattingEnabled = true;
-			this.cursorReverseDirectionComboBox.Items.AddRange(new object[] {
-            "",
-            "↑",
-            "↓",
-            "←",
-            "→",
-            "↘",
-            "↖",
-            "↙",
-            "↗"});
-			this.cursorReverseDirectionComboBox.Location = new System.Drawing.Point(139, 42);
-			this.cursorReverseDirectionComboBox.Name = "cursorReverseDirectionComboBox";
-			this.cursorReverseDirectionComboBox.Size = new System.Drawing.Size(34, 21);
-			this.cursorReverseDirectionComboBox.TabIndex = 13;
-			this.cursorReverseDirectionComboBox.SelectedIndexChanged += new System.EventHandler(this.cursorReverseDirectionComboBox_SelectedIndexChanged);
-			// 
-			// cursorLabel
-			// 
-			this.cursorLabel.AutoSize = true;
-			this.cursorLabel.Location = new System.Drawing.Point(6, 3);
-			this.cursorLabel.Name = "cursorLabel";
-			this.cursorLabel.Size = new System.Drawing.Size(111, 13);
-			this.cursorLabel.TabIndex = 10;
-			this.cursorLabel.Text = "Direction of the cursor";
-			// 
-			// cursorReverseDirectionLabel
-			// 
-			this.cursorReverseDirectionLabel.AutoSize = true;
-			this.cursorReverseDirectionLabel.Location = new System.Drawing.Point(6, 45);
-			this.cursorReverseDirectionLabel.Name = "cursorReverseDirectionLabel";
-			this.cursorReverseDirectionLabel.Size = new System.Drawing.Size(90, 13);
-			this.cursorReverseDirectionLabel.TabIndex = 12;
-			this.cursorReverseDirectionLabel.Text = "Reverse direction";
-			// 
-			// cursorNormalDirectionComboBox
-			// 
-			this.cursorNormalDirectionComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.cursorNormalDirectionComboBox.FormattingEnabled = true;
-			this.cursorNormalDirectionComboBox.Items.AddRange(new object[] {
-            "",
-            "↑",
-            "↓",
-            "←",
-            "→",
-            "↘",
-            "↖",
-            "↙",
-            "↗"});
-			this.cursorNormalDirectionComboBox.Location = new System.Drawing.Point(139, 20);
-			this.cursorNormalDirectionComboBox.Name = "cursorNormalDirectionComboBox";
-			this.cursorNormalDirectionComboBox.Size = new System.Drawing.Size(34, 21);
-			this.cursorNormalDirectionComboBox.TabIndex = 9;
-			this.cursorNormalDirectionComboBox.SelectedIndexChanged += new System.EventHandler(this.cursorNormalDirectionComboBox_SelectedIndexChanged);
-			// 
-			// cursorNormalDirectionLabel
-			// 
-			this.cursorNormalDirectionLabel.AutoSize = true;
-			this.cursorNormalDirectionLabel.Location = new System.Drawing.Point(6, 23);
-			this.cursorNormalDirectionLabel.Name = "cursorNormalDirectionLabel";
-			this.cursorNormalDirectionLabel.Size = new System.Drawing.Size(83, 13);
-			this.cursorNormalDirectionLabel.TabIndex = 11;
-			this.cursorNormalDirectionLabel.Text = "Normal direction";
 			// 
 			// particlePropertiesPanel
 			// 
@@ -690,27 +861,27 @@
 			this.particleComboBox.TabIndex = 3;
 			this.particleComboBox.SelectedIndexChanged += new System.EventHandler(this.particleComboBox_SelectedIndexChanged);
 			// 
-			// clockPanel
+			// clockPropertiesPanel
 			// 
-			this.clockPanel.Controls.Add(this.clockColorMinutesPointerButton);
-			this.clockPanel.Controls.Add(this.clockColorHoursPointerButton);
-			this.clockPanel.Controls.Add(this.clockColorMinutesPointerLabel);
-			this.clockPanel.Controls.Add(this.clockColorHoursPointerLabel);
-			this.clockPanel.Controls.Add(this.clockMinutesPointerCheckBox);
-			this.clockPanel.Controls.Add(this.clockWidthNumericUpDown);
-			this.clockPanel.Controls.Add(this.clockWidthLabel);
-			this.clockPanel.Controls.Add(this.clockYNumericUpDown);
-			this.clockPanel.Controls.Add(this.clockYLabel);
-			this.clockPanel.Controls.Add(this.clockXNumericUpDown);
-			this.clockPanel.Controls.Add(this.clockXLabel);
-			this.clockPanel.Controls.Add(this.clockComboBox);
-			this.clockPanel.Controls.Add(this.clockRotationComboBox);
-			this.clockPanel.Controls.Add(this.clockRotationLabel);
-			this.clockPanel.Controls.Add(this.clockLabel);
-			this.clockPanel.Location = new System.Drawing.Point(2, 77);
-			this.clockPanel.Name = "clockPanel";
-			this.clockPanel.Size = new System.Drawing.Size(196, 165);
-			this.clockPanel.TabIndex = 8;
+			this.clockPropertiesPanel.Controls.Add(this.clockColorMinutesPointerButton);
+			this.clockPropertiesPanel.Controls.Add(this.clockColorHoursPointerButton);
+			this.clockPropertiesPanel.Controls.Add(this.clockColorMinutesPointerLabel);
+			this.clockPropertiesPanel.Controls.Add(this.clockColorHoursPointerLabel);
+			this.clockPropertiesPanel.Controls.Add(this.clockMinutesPointerCheckBox);
+			this.clockPropertiesPanel.Controls.Add(this.clockWidthNumericUpDown);
+			this.clockPropertiesPanel.Controls.Add(this.clockWidthLabel);
+			this.clockPropertiesPanel.Controls.Add(this.clockYNumericUpDown);
+			this.clockPropertiesPanel.Controls.Add(this.clockYLabel);
+			this.clockPropertiesPanel.Controls.Add(this.clockXNumericUpDown);
+			this.clockPropertiesPanel.Controls.Add(this.clockXLabel);
+			this.clockPropertiesPanel.Controls.Add(this.clockComboBox);
+			this.clockPropertiesPanel.Controls.Add(this.clockRotationComboBox);
+			this.clockPropertiesPanel.Controls.Add(this.clockRotationLabel);
+			this.clockPropertiesPanel.Controls.Add(this.clockLabel);
+			this.clockPropertiesPanel.Location = new System.Drawing.Point(2, 77);
+			this.clockPropertiesPanel.Name = "clockPropertiesPanel";
+			this.clockPropertiesPanel.Size = new System.Drawing.Size(196, 165);
+			this.clockPropertiesPanel.TabIndex = 8;
 			// 
 			// clockColorMinutesPointerButton
 			// 
@@ -878,79 +1049,221 @@
 			this.clockLabel.TabIndex = 0;
 			this.clockLabel.Text = "Clock:";
 			// 
-			// frontRadioButton
+			// mouseButtonsGroupBox
 			// 
-			this.frontRadioButton.AutoSize = true;
-			this.frontRadioButton.Location = new System.Drawing.Point(15, 257);
-			this.frontRadioButton.Name = "frontRadioButton";
-			this.frontRadioButton.Size = new System.Drawing.Size(49, 17);
-			this.frontRadioButton.TabIndex = 15;
-			this.frontRadioButton.Text = "Front";
-			this.toolTip.SetToolTip(this.frontRadioButton, "Front (used for bridges)");
-			this.frontRadioButton.UseVisualStyleBackColor = true;
-			this.frontRadioButton.CheckedChanged += new System.EventHandler(this.frontRadioButton_CheckedChanged);
+			this.mouseButtonsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.mouseButtonsGroupBox.Controls.Add(this.leftColorButton);
+			this.mouseButtonsGroupBox.Controls.Add(this.leftLabel);
+			this.mouseButtonsGroupBox.Controls.Add(this.leftComboBox);
+			this.mouseButtonsGroupBox.Controls.Add(this.rightLabel);
+			this.mouseButtonsGroupBox.Controls.Add(this.rightColorButton);
+			this.mouseButtonsGroupBox.Controls.Add(this.rightComboBox);
+			this.mouseButtonsGroupBox.Location = new System.Drawing.Point(13, 626);
+			this.mouseButtonsGroupBox.Name = "mouseButtonsGroupBox";
+			this.mouseButtonsGroupBox.Size = new System.Drawing.Size(377, 78);
+			this.mouseButtonsGroupBox.TabIndex = 17;
+			this.mouseButtonsGroupBox.TabStop = false;
+			this.mouseButtonsGroupBox.Text = "Mousebuttons";
 			// 
-			// foregroundAboveRadioButton
+			// leftColorButton
 			// 
-			this.foregroundAboveRadioButton.AutoSize = true;
-			this.foregroundAboveRadioButton.Location = new System.Drawing.Point(15, 234);
-			this.foregroundAboveRadioButton.Name = "foregroundAboveRadioButton";
-			this.foregroundAboveRadioButton.Size = new System.Drawing.Size(112, 17);
-			this.foregroundAboveRadioButton.TabIndex = 14;
-			this.foregroundAboveRadioButton.Text = "Foreground above";
-			this.toolTip.SetToolTip(this.foregroundAboveRadioButton, "Foreground above (use e.g. for overhead wires)");
-			this.foregroundAboveRadioButton.UseVisualStyleBackColor = true;
-			this.foregroundAboveRadioButton.CheckedChanged += new System.EventHandler(this.foregroundAboveRadioButton_CheckedChanged);
+			this.leftColorButton.BackColor = System.Drawing.Color.Black;
+			this.leftColorButton.FlatAppearance.BorderSize = 0;
+			this.leftColorButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.leftColorButton.Location = new System.Drawing.Point(116, 16);
+			this.leftColorButton.Name = "leftColorButton";
+			this.leftColorButton.Size = new System.Drawing.Size(60, 23);
+			this.leftColorButton.TabIndex = 0;
+			this.leftColorButton.TabStop = false;
+			this.leftColorButton.UseVisualStyleBackColor = false;
+			this.leftColorButton.Click += new System.EventHandler(this.leftColorButton_Click);
 			// 
-			// toBackgroundRadioButton
+			// leftLabel
 			// 
-			this.toBackgroundRadioButton.AutoSize = true;
-			this.toBackgroundRadioButton.Location = new System.Drawing.Point(15, 211);
-			this.toBackgroundRadioButton.Name = "toBackgroundRadioButton";
-			this.toBackgroundRadioButton.Size = new System.Drawing.Size(98, 17);
-			this.toBackgroundRadioButton.TabIndex = 13;
-			this.toBackgroundRadioButton.Text = "To background";
-			this.toolTip.SetToolTip(this.toBackgroundRadioButton, "To background (=flat, use e.g. for platforms)");
-			this.toBackgroundRadioButton.UseVisualStyleBackColor = true;
-			this.toBackgroundRadioButton.CheckedChanged += new System.EventHandler(this.toBackgroundRadioButton_CheckedChanged);
+			this.leftLabel.AutoSize = true;
+			this.leftLabel.Location = new System.Drawing.Point(6, 21);
+			this.leftLabel.Name = "leftLabel";
+			this.leftLabel.Size = new System.Drawing.Size(31, 13);
+			this.leftLabel.TabIndex = 7;
+			this.leftLabel.Text = "Left: ";
 			// 
-			// backgroundRadioButton2
+			// leftComboBox
 			// 
-			this.backgroundRadioButton2.AutoSize = true;
-			this.backgroundRadioButton2.Location = new System.Drawing.Point(15, 188);
-			this.backgroundRadioButton2.Name = "backgroundRadioButton2";
-			this.backgroundRadioButton2.Size = new System.Drawing.Size(98, 17);
-			this.backgroundRadioButton2.TabIndex = 12;
-			this.backgroundRadioButton2.Text = "Background (2)";
-			this.toolTip.SetToolTip(this.backgroundRadioButton2, "Background (behind train; second layer)");
-			this.backgroundRadioButton2.UseVisualStyleBackColor = true;
-			this.backgroundRadioButton2.CheckedChanged += new System.EventHandler(this.backgroundRadioButton2_CheckedChanged);
+			this.leftComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.leftComboBox.FormattingEnabled = true;
+			this.leftComboBox.Items.AddRange(new object[] {
+            "Default",
+            "Transparent",
+            "Half transparent (behind glass)",
+            "Light (always bright)",
+            "Lamp white-yellow",
+            "Lamp cold white (LED)",
+            "Lamp red",
+            "Lamp yellow, light bulb",
+            "Lamp yellow, gas light",
+            "Window0 (yellow at night)",
+            "Window1 (yellow at night)",
+            "Window2 (yellow at night)",
+            "Window0 (neon at night)",
+            "Window1 (neon at night)",
+            "Window2 (neon at night)",
+            "as background",
+            "as sleepers 0",
+            "as sleepers 1",
+            "as sleepers 3",
+            "as rails on road 0",
+            "as rails on road 1",
+            "as rails on road 2",
+            "as rails on road 3",
+            "as rails on trackbed 0",
+            "as rails on trackbed 1",
+            "as rails on trackbed 2",
+            "as rails on trackbed 3",
+            "as marking points bus 0",
+            "as marking points bus 1",
+            "as marking points bus 2",
+            "as marking points bus 3",
+            "as marking points water",
+            "as gravel",
+            "as small gravel / sand",
+            "as grassy (grass rail)",
+            "as path (background)",
+            "as path (foreground, tracks)",
+            "as text"});
+			this.leftComboBox.Location = new System.Drawing.Point(6, 45);
+			this.leftComboBox.Name = "leftComboBox";
+			this.leftComboBox.Size = new System.Drawing.Size(170, 21);
+			this.leftComboBox.TabIndex = 4;
+			this.leftComboBox.SelectedIndexChanged += new System.EventHandler(this.leftComboBox_SelectedIndexChanged);
 			// 
-			// backgroundRadioButton
+			// rightLabel
 			// 
-			this.backgroundRadioButton.AutoSize = true;
-			this.backgroundRadioButton.Location = new System.Drawing.Point(15, 165);
-			this.backgroundRadioButton.Name = "backgroundRadioButton";
-			this.backgroundRadioButton.Size = new System.Drawing.Size(83, 17);
-			this.backgroundRadioButton.TabIndex = 11;
-			this.backgroundRadioButton.Text = "Background";
-			this.toolTip.SetToolTip(this.backgroundRadioButton, "Background (behind train)");
-			this.backgroundRadioButton.UseVisualStyleBackColor = true;
-			this.backgroundRadioButton.CheckedChanged += new System.EventHandler(this.backgroundRadioButton_CheckedChanged);
+			this.rightLabel.AutoSize = true;
+			this.rightLabel.Location = new System.Drawing.Point(267, 21);
+			this.rightLabel.Name = "rightLabel";
+			this.rightLabel.Size = new System.Drawing.Size(38, 13);
+			this.rightLabel.TabIndex = 8;
+			this.rightLabel.Text = "Right: ";
 			// 
-			// foregroundRadioButton
+			// rightColorButton
 			// 
-			this.foregroundRadioButton.AutoSize = true;
-			this.foregroundRadioButton.Checked = true;
-			this.foregroundRadioButton.Location = new System.Drawing.Point(15, 142);
-			this.foregroundRadioButton.Name = "foregroundRadioButton";
-			this.foregroundRadioButton.Size = new System.Drawing.Size(79, 17);
-			this.foregroundRadioButton.TabIndex = 10;
-			this.foregroundRadioButton.TabStop = true;
-			this.foregroundRadioButton.Text = "Foreground";
-			this.toolTip.SetToolTip(this.foregroundRadioButton, "Foreground (in front of driving way and train)");
-			this.foregroundRadioButton.UseVisualStyleBackColor = true;
-			this.foregroundRadioButton.CheckedChanged += new System.EventHandler(this.foregroundRadioButton_CheckedChanged);
+			this.rightColorButton.BackColor = System.Drawing.Color.White;
+			this.rightColorButton.FlatAppearance.BorderSize = 0;
+			this.rightColorButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.rightColorButton.Location = new System.Drawing.Point(201, 16);
+			this.rightColorButton.Name = "rightColorButton";
+			this.rightColorButton.Size = new System.Drawing.Size(60, 23);
+			this.rightColorButton.TabIndex = 1;
+			this.rightColorButton.TabStop = false;
+			this.rightColorButton.UseVisualStyleBackColor = false;
+			this.rightColorButton.Click += new System.EventHandler(this.rightColorButton_Click);
+			// 
+			// rightComboBox
+			// 
+			this.rightComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.rightComboBox.FormattingEnabled = true;
+			this.rightComboBox.Items.AddRange(new object[] {
+            "Default",
+            "Transparent",
+            "Half transparent (behind glass)",
+            "Light (always bright)",
+            "Lamp white-yellow",
+            "Lamp cold white (LED)",
+            "Lamp red",
+            "Lamp yellow, light bulb",
+            "Lamp yellow, gas light",
+            "Window0 (yellow at night)",
+            "Window1 (yellow at night)",
+            "Window2 (yellow at night)",
+            "Window0 (neon at night)",
+            "Window1 (neon at night)",
+            "Window2 (neon at night)",
+            "as background",
+            "as sleepers 0",
+            "as sleepers 1",
+            "as sleepers 3",
+            "as rails on road 0",
+            "as rails on road 1",
+            "as rails on road 2",
+            "as rails on road 3",
+            "as rails on trackbed 0",
+            "as rails on trackbed 1",
+            "as rails on trackbed 2",
+            "as rails on trackbed 3",
+            "as marking points bus 0",
+            "as marking points bus 1",
+            "as marking points bus 2",
+            "as marking points bus 3",
+            "as marking points water",
+            "as gravel",
+            "as small gravel / sand",
+            "as grassy (grass rail)",
+            "as path (background)",
+            "as path (foreground, tracks)",
+            "as text"});
+			this.rightComboBox.Location = new System.Drawing.Point(201, 45);
+			this.rightComboBox.Name = "rightComboBox";
+			this.rightComboBox.Size = new System.Drawing.Size(170, 21);
+			this.rightComboBox.TabIndex = 5;
+			this.rightComboBox.SelectedIndexChanged += new System.EventHandler(this.rightComboBox_SelectedIndexChanged);
+			// 
+			// cursorReverseDirectionComboBox
+			// 
+			this.cursorReverseDirectionComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cursorReverseDirectionComboBox.FormattingEnabled = true;
+			this.cursorReverseDirectionComboBox.Items.AddRange(new object[] {
+            "",
+            "↑",
+            "↓",
+            "←",
+            "→",
+            "↘",
+            "↖",
+            "↙",
+            "↗"});
+			this.cursorReverseDirectionComboBox.Location = new System.Drawing.Point(123, 42);
+			this.cursorReverseDirectionComboBox.Name = "cursorReverseDirectionComboBox";
+			this.cursorReverseDirectionComboBox.Size = new System.Drawing.Size(34, 21);
+			this.cursorReverseDirectionComboBox.TabIndex = 13;
+			this.cursorReverseDirectionComboBox.SelectedIndexChanged += new System.EventHandler(this.cursorReverseDirectionComboBox_SelectedIndexChanged);
+			// 
+			// cursorReverseDirectionLabel
+			// 
+			this.cursorReverseDirectionLabel.AutoSize = true;
+			this.cursorReverseDirectionLabel.Location = new System.Drawing.Point(10, 46);
+			this.cursorReverseDirectionLabel.Name = "cursorReverseDirectionLabel";
+			this.cursorReverseDirectionLabel.Size = new System.Drawing.Size(90, 13);
+			this.cursorReverseDirectionLabel.TabIndex = 12;
+			this.cursorReverseDirectionLabel.Text = "Reverse direction";
+			// 
+			// cursorNormalDirectionComboBox
+			// 
+			this.cursorNormalDirectionComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cursorNormalDirectionComboBox.FormattingEnabled = true;
+			this.cursorNormalDirectionComboBox.Items.AddRange(new object[] {
+            "",
+            "↑",
+            "↓",
+            "←",
+            "→",
+            "↘",
+            "↖",
+            "↙",
+            "↗"});
+			this.cursorNormalDirectionComboBox.Location = new System.Drawing.Point(123, 21);
+			this.cursorNormalDirectionComboBox.Name = "cursorNormalDirectionComboBox";
+			this.cursorNormalDirectionComboBox.Size = new System.Drawing.Size(34, 21);
+			this.cursorNormalDirectionComboBox.TabIndex = 9;
+			this.cursorNormalDirectionComboBox.SelectedIndexChanged += new System.EventHandler(this.cursorNormalDirectionComboBox_SelectedIndexChanged);
+			// 
+			// cursorNormalDirectionLabel
+			// 
+			this.cursorNormalDirectionLabel.AutoSize = true;
+			this.cursorNormalDirectionLabel.Location = new System.Drawing.Point(10, 24);
+			this.cursorNormalDirectionLabel.Name = "cursorNormalDirectionLabel";
+			this.cursorNormalDirectionLabel.Size = new System.Drawing.Size(83, 13);
+			this.cursorNormalDirectionLabel.TabIndex = 11;
+			this.cursorNormalDirectionLabel.Text = "Normal direction";
 			// 
 			// loadFileDialog
 			// 
@@ -986,13 +1299,37 @@
 			// 
 			// newToolStripMenuItem
 			// 
+			this.newToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newGraphicToolStripMenuItem,
+            this.newDrivingWayToolStripMenuItem,
+            this.signalToolStripMenuItem});
 			this.newToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("newToolStripMenuItem.Image")));
 			this.newToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.newToolStripMenuItem.Name = "newToolStripMenuItem";
 			this.newToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
 			this.newToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
 			this.newToolStripMenuItem.Text = "&New";
-			this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
+			// 
+			// newGraphicToolStripMenuItem
+			// 
+			this.newGraphicToolStripMenuItem.Name = "newGraphicToolStripMenuItem";
+			this.newGraphicToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+			this.newGraphicToolStripMenuItem.Text = "Graphic";
+			this.newGraphicToolStripMenuItem.Click += new System.EventHandler(this.newGraphicToolStripItem_Click);
+			// 
+			// newDrivingWayToolStripMenuItem
+			// 
+			this.newDrivingWayToolStripMenuItem.Name = "newDrivingWayToolStripMenuItem";
+			this.newDrivingWayToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+			this.newDrivingWayToolStripMenuItem.Text = "Driving Way";
+			this.newDrivingWayToolStripMenuItem.Click += new System.EventHandler(this.newDrivingWayToolStripItem_Click);
+			// 
+			// signalToolStripMenuItem
+			// 
+			this.signalToolStripMenuItem.Enabled = false;
+			this.signalToolStripMenuItem.Name = "signalToolStripMenuItem";
+			this.signalToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+			this.signalToolStripMenuItem.Text = "Signal";
 			// 
 			// openToolStripMenuItem
 			// 
@@ -1223,7 +1560,7 @@
 			this.tabControl.Controls.Add(this.zoom1Tab);
 			this.tabControl.Controls.Add(this.zoom2Tab);
 			this.tabControl.Controls.Add(this.zoom4Tab);
-			this.tabControl.Location = new System.Drawing.Point(13, 120);
+			this.tabControl.Location = new System.Drawing.Point(13, 117);
 			this.tabControl.Name = "tabControl";
 			this.tabControl.SelectedIndex = 0;
 			this.tabControl.Size = new System.Drawing.Size(161, 20);
@@ -1264,7 +1601,7 @@
 			// 
 			this.animationPhaseLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.animationPhaseLabel.AutoSize = true;
-			this.animationPhaseLabel.Location = new System.Drawing.Point(664, 120);
+			this.animationPhaseLabel.Location = new System.Drawing.Point(664, 119);
 			this.animationPhaseLabel.Name = "animationPhaseLabel";
 			this.animationPhaseLabel.Size = new System.Drawing.Size(85, 13);
 			this.animationPhaseLabel.TabIndex = 5;
@@ -1274,7 +1611,7 @@
 			// 
 			this.animationNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.animationNumericUpDown.Enabled = false;
-			this.animationNumericUpDown.Location = new System.Drawing.Point(755, 118);
+			this.animationNumericUpDown.Location = new System.Drawing.Point(755, 117);
 			this.animationNumericUpDown.Maximum = new decimal(new int[] {
             99,
             0,
@@ -1290,7 +1627,7 @@
 			// 
 			this.alternativesCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.alternativesCheckBox.AutoSize = true;
-			this.alternativesCheckBox.Location = new System.Drawing.Point(542, 119);
+			this.alternativesCheckBox.Location = new System.Drawing.Point(542, 118);
 			this.alternativesCheckBox.Name = "alternativesCheckBox";
 			this.alternativesCheckBox.Size = new System.Drawing.Size(103, 17);
 			this.alternativesCheckBox.TabIndex = 7;
@@ -1307,17 +1644,31 @@
 			this.scrollPanel.AutoScrollMargin = new System.Drawing.Size(20, 20);
 			this.scrollPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.scrollPanel.Controls.Add(this.graphicPanel);
-			this.scrollPanel.Location = new System.Drawing.Point(13, 140);
+			this.scrollPanel.Location = new System.Drawing.Point(13, 137);
 			this.scrollPanel.Name = "scrollPanel";
-			this.scrollPanel.Size = new System.Drawing.Size(775, 564);
+			this.scrollPanel.Size = new System.Drawing.Size(775, 483);
 			this.scrollPanel.TabIndex = 8;
+			// 
+			// graphicPanel
+			// 
+			this.graphicPanel.DisplayGrid = true;
+			this.graphicPanel.Location = new System.Drawing.Point(20, 20);
+			this.graphicPanel.Name = "graphicPanel";
+			this.graphicPanel.Size = new System.Drawing.Size(732, 524);
+			this.graphicPanel.TabIndex = 4;
+			this.graphicPanel.ZoomFactor = BahnEditor.BahnLib.ZoomFactor.Zoom1;
+			this.graphicPanel.ZoomLevel = 6;
+			this.graphicPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.graphicPanel_Paint);
+			this.graphicPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.graphicPanel_MouseDown);
+			this.graphicPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.graphicPanel_MouseMove);
+			this.graphicPanel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.graphicPanel_MouseUp);
 			// 
 			// gridCheckBox
 			// 
 			this.gridCheckBox.AutoSize = true;
 			this.gridCheckBox.Checked = true;
 			this.gridCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.gridCheckBox.Location = new System.Drawing.Point(191, 119);
+			this.gridCheckBox.Location = new System.Drawing.Point(191, 118);
 			this.gridCheckBox.Name = "gridCheckBox";
 			this.gridCheckBox.Size = new System.Drawing.Size(45, 17);
 			this.gridCheckBox.TabIndex = 9;
@@ -1329,7 +1680,7 @@
 			// 
 			this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.zoomLevelStatusLabel});
-			this.statusStrip1.Location = new System.Drawing.Point(0, 708);
+			this.statusStrip1.Location = new System.Drawing.Point(0, 707);
 			this.statusStrip1.Name = "statusStrip1";
 			this.statusStrip1.Size = new System.Drawing.Size(1008, 22);
 			this.statusStrip1.TabIndex = 10;
@@ -1339,44 +1690,6 @@
 			// 
 			this.zoomLevelStatusLabel.Name = "zoomLevelStatusLabel";
 			this.zoomLevelStatusLabel.Size = new System.Drawing.Size(0, 17);
-			// 
-			// overviewPanel
-			// 
-			this.overviewPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.overviewPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.overviewPanel.Controls.Add(this.overviewDownButton);
-			this.overviewPanel.Controls.Add(this.overviewUpButton);
-			this.overviewPanel.Controls.Add(this.overviewLeftRightButton);
-			this.overviewPanel.Location = new System.Drawing.Point(13, 52);
-			this.overviewPanel.Name = "overviewPanel";
-			this.overviewPanel.Size = new System.Drawing.Size(775, 64);
-			this.overviewPanel.TabIndex = 5;
-			this.overviewPanel.TabStop = false;
-			this.overviewPanel.Click += new System.EventHandler(this.overviewPanel_Click);
-			this.overviewPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.overviewPanel_Paint);
-			// 
-			// overviewDownButton
-			// 
-			this.overviewDownButton.BackgroundImage = global::BahnEditor.Editor.Properties.Resources.downarrow;
-			this.overviewDownButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-			this.overviewDownButton.Location = new System.Drawing.Point(14, 15);
-			this.overviewDownButton.Name = "overviewDownButton";
-			this.overviewDownButton.Size = new System.Drawing.Size(17, 17);
-			this.overviewDownButton.TabIndex = 3;
-			this.overviewDownButton.UseVisualStyleBackColor = true;
-			this.overviewDownButton.Click += new System.EventHandler(this.overviewDownButton_Click);
-			// 
-			// overviewUpButton
-			// 
-			this.overviewUpButton.BackgroundImage = global::BahnEditor.Editor.Properties.Resources.uparrow;
-			this.overviewUpButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-			this.overviewUpButton.Location = new System.Drawing.Point(14, -1);
-			this.overviewUpButton.Name = "overviewUpButton";
-			this.overviewUpButton.Size = new System.Drawing.Size(17, 17);
-			this.overviewUpButton.TabIndex = 2;
-			this.overviewUpButton.UseVisualStyleBackColor = true;
-			this.overviewUpButton.Click += new System.EventHandler(this.overviewUpButton_Click);
 			// 
 			// overviewLeftRightButton
 			// 
@@ -1389,93 +1702,77 @@
 			this.overviewLeftRightButton.UseVisualStyleBackColor = true;
 			this.overviewLeftRightButton.Click += new System.EventHandler(this.overviewLeftRightButton_Click);
 			// 
-			// graphicPanel
+			// overviewUpButton
 			// 
-			this.graphicPanel.DisplayGrid = true;
-			this.graphicPanel.Location = new System.Drawing.Point(20, 20);
-			this.graphicPanel.Name = "graphicPanel";
-			this.graphicPanel.Size = new System.Drawing.Size(732, 521);
-			this.graphicPanel.TabIndex = 4;
-			this.graphicPanel.ZoomFactor = BahnEditor.BahnLib.ZoomFactor.Zoom1;
-			this.graphicPanel.ZoomLevel = 6;
-			this.graphicPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.graphicPanel_Paint);
-			this.graphicPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.graphicPanel_MouseDown);
-			this.graphicPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.graphicPanel_MouseMove);
-			this.graphicPanel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.graphicPanel_MouseUp);
+			this.overviewUpButton.BackgroundImage = global::BahnEditor.Editor.Properties.Resources.uparrow;
+			this.overviewUpButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+			this.overviewUpButton.Location = new System.Drawing.Point(14, 0);
+			this.overviewUpButton.Name = "overviewUpButton";
+			this.overviewUpButton.Size = new System.Drawing.Size(17, 17);
+			this.overviewUpButton.TabIndex = 2;
+			this.overviewUpButton.UseVisualStyleBackColor = true;
+			this.overviewUpButton.Click += new System.EventHandler(this.overviewUpButton_Click);
 			// 
-			// normalModeToolStripRadioButton
+			// overviewDownButton
 			// 
-			this.normalModeToolStripRadioButton.Checked = true;
-			this.normalModeToolStripRadioButton.CheckOnClick = true;
-			this.normalModeToolStripRadioButton.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.normalModeToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.normalModeToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("normalModeToolStripRadioButton.Image")));
-			this.normalModeToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.normalModeToolStripRadioButton.Name = "normalModeToolStripRadioButton";
-			this.normalModeToolStripRadioButton.RadioButtonGroupID = 0;
-			this.normalModeToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
-			this.normalModeToolStripRadioButton.Text = "Normal Mode";
+			this.overviewDownButton.BackgroundImage = global::BahnEditor.Editor.Properties.Resources.downarrow;
+			this.overviewDownButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+			this.overviewDownButton.Location = new System.Drawing.Point(14, 16);
+			this.overviewDownButton.Name = "overviewDownButton";
+			this.overviewDownButton.Size = new System.Drawing.Size(17, 17);
+			this.overviewDownButton.TabIndex = 3;
+			this.overviewDownButton.UseVisualStyleBackColor = true;
+			this.overviewDownButton.Click += new System.EventHandler(this.overviewDownButton_Click);
 			// 
-			// lineToolStripRadioButton
+			// overviewDrawPanel
 			// 
-			this.lineToolStripRadioButton.CheckOnClick = true;
-			this.lineToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.lineToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("lineToolStripRadioButton.Image")));
-			this.lineToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.lineToolStripRadioButton.Name = "lineToolStripRadioButton";
-			this.lineToolStripRadioButton.RadioButtonGroupID = 0;
-			this.lineToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
-			this.lineToolStripRadioButton.Text = "Line";
+			this.overviewDrawPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.overviewDrawPanel.Location = new System.Drawing.Point(40, 0);
+			this.overviewDrawPanel.Name = "overviewDrawPanel";
+			this.overviewDrawPanel.Size = new System.Drawing.Size(735, 60);
+			this.overviewDrawPanel.TabIndex = 5;
+			this.overviewDrawPanel.TabStop = false;
+			this.overviewDrawPanel.Click += new System.EventHandler(this.overviewDrawPanel_Click);
+			this.overviewDrawPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.overviewDrawPanel_Paint);
 			// 
-			// rectangleToolStripRadioButton
+			// overviewPanel
 			// 
-			this.rectangleToolStripRadioButton.CheckOnClick = true;
-			this.rectangleToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.rectangleToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("rectangleToolStripRadioButton.Image")));
-			this.rectangleToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.rectangleToolStripRadioButton.Name = "rectangleToolStripRadioButton";
-			this.rectangleToolStripRadioButton.RadioButtonGroupID = 0;
-			this.rectangleToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
-			this.rectangleToolStripRadioButton.Text = "Rectangle";
+			this.overviewPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.overviewPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.overviewPanel.Controls.Add(this.overviewLeftRightButton);
+			this.overviewPanel.Controls.Add(this.overviewDrawPanel);
+			this.overviewPanel.Controls.Add(this.overviewDownButton);
+			this.overviewPanel.Controls.Add(this.overviewUpButton);
+			this.overviewPanel.Location = new System.Drawing.Point(13, 52);
+			this.overviewPanel.Name = "overviewPanel";
+			this.overviewPanel.Size = new System.Drawing.Size(775, 60);
+			this.overviewPanel.TabIndex = 11;
 			// 
-			// fillToolStripRadioButton
+			// cursorGroupBox
 			// 
-			this.fillToolStripRadioButton.CheckOnClick = true;
-			this.fillToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.fillToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("fillToolStripRadioButton.Image")));
-			this.fillToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.fillToolStripRadioButton.Name = "fillToolStripRadioButton";
-			this.fillToolStripRadioButton.RadioButtonGroupID = 0;
-			this.fillToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
-			this.fillToolStripRadioButton.Text = "Fill";
-			// 
-			// selectToolStripRadioButton
-			// 
-			this.selectToolStripRadioButton.CheckOnClick = true;
-			this.selectToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.selectToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("selectToolStripRadioButton.Image")));
-			this.selectToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.selectToolStripRadioButton.Name = "selectToolStripRadioButton";
-			this.selectToolStripRadioButton.RadioButtonGroupID = 0;
-			this.selectToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
-			this.selectToolStripRadioButton.Text = "Select area";
-			// 
-			// pickColorToolStripRadioButton
-			// 
-			this.pickColorToolStripRadioButton.CheckOnClick = true;
-			this.pickColorToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.pickColorToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("pickColorToolStripRadioButton.Image")));
-			this.pickColorToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.pickColorToolStripRadioButton.Name = "pickColorToolStripRadioButton";
-			this.pickColorToolStripRadioButton.RadioButtonGroupID = 0;
-			this.pickColorToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
-			this.pickColorToolStripRadioButton.Text = "Pick color";
+			this.cursorGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.cursorGroupBox.Controls.Add(this.cursorReverseDirectionComboBox);
+			this.cursorGroupBox.Controls.Add(this.cursorNormalDirectionLabel);
+			this.cursorGroupBox.Controls.Add(this.cursorNormalDirectionComboBox);
+			this.cursorGroupBox.Controls.Add(this.cursorReverseDirectionLabel);
+			this.cursorGroupBox.Location = new System.Drawing.Point(399, 626);
+			this.cursorGroupBox.Name = "cursorGroupBox";
+			this.cursorGroupBox.Size = new System.Drawing.Size(164, 78);
+			this.cursorGroupBox.TabIndex = 18;
+			this.cursorGroupBox.TabStop = false;
+			this.cursorGroupBox.Text = "Movement of cursor";
 			// 
 			// Editor
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(1008, 730);
+			this.ClientSize = new System.Drawing.Size(1008, 729);
+			this.Controls.Add(this.cursorGroupBox);
+			this.Controls.Add(this.mouseButtonsGroupBox);
+			this.Controls.Add(this.overviewPanel);
 			this.Controls.Add(this.statusStrip1);
 			this.Controls.Add(this.gridCheckBox);
 			this.Controls.Add(this.scrollPanel);
@@ -1483,13 +1780,12 @@
 			this.Controls.Add(this.animationPhaseLabel);
 			this.Controls.Add(this.tabControl);
 			this.Controls.Add(this.animationNumericUpDown);
-			this.Controls.Add(this.overviewPanel);
 			this.Controls.Add(this.controlPanel);
 			this.Controls.Add(this.toolStrip);
 			this.Controls.Add(this.menuStrip);
 			this.KeyPreview = true;
 			this.MainMenuStrip = this.menuStrip;
-			this.MinimumSize = new System.Drawing.Size(800, 710);
+			this.MinimumSize = new System.Drawing.Size(800, 600);
 			this.Name = "Editor";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Bahn Editor";
@@ -1499,22 +1795,23 @@
 			this.toolStrip.ResumeLayout(false);
 			this.toolStrip.PerformLayout();
 			this.controlPanel.ResumeLayout(false);
-			this.controlPanel.PerformLayout();
-			this.mouseButtonsGroupBox.ResumeLayout(false);
-			this.mouseButtonsGroupBox.PerformLayout();
+			this.drivingWayGroupBox.ResumeLayout(false);
+			this.drivingWayGroupBox.PerformLayout();
+			this.layerGroupBox.ResumeLayout(false);
+			this.layerGroupBox.PerformLayout();
 			this.propertiesGroupBox.ResumeLayout(false);
-			this.cursorDirectionPanel.ResumeLayout(false);
-			this.cursorDirectionPanel.PerformLayout();
 			this.particlePropertiesPanel.ResumeLayout(false);
 			this.particlePropertiesPanel.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.particleWidthNumericUpDown)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.particleYNumericUpDown)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.particleXNumericUpDown)).EndInit();
-			this.clockPanel.ResumeLayout(false);
-			this.clockPanel.PerformLayout();
+			this.clockPropertiesPanel.ResumeLayout(false);
+			this.clockPropertiesPanel.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.clockWidthNumericUpDown)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.clockYNumericUpDown)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.clockXNumericUpDown)).EndInit();
+			this.mouseButtonsGroupBox.ResumeLayout(false);
+			this.mouseButtonsGroupBox.PerformLayout();
 			this.menuStrip.ResumeLayout(false);
 			this.menuStrip.PerformLayout();
 			this.tabControl.ResumeLayout(false);
@@ -1522,8 +1819,10 @@
 			this.scrollPanel.ResumeLayout(false);
 			this.statusStrip1.ResumeLayout(false);
 			this.statusStrip1.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.overviewPanel)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.overviewDrawPanel)).EndInit();
 			this.overviewPanel.ResumeLayout(false);
+			this.cursorGroupBox.ResumeLayout(false);
+			this.cursorGroupBox.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -1543,10 +1842,6 @@
 		private System.Windows.Forms.ComboBox leftComboBox;
 		private System.Windows.Forms.Label rightLabel;
 		private System.Windows.Forms.Label leftLabel;
-		private System.Windows.Forms.PictureBox overviewPanel;
-		private System.Windows.Forms.Button overviewLeftRightButton;
-		private System.Windows.Forms.Button overviewUpButton;
-		private System.Windows.Forms.Button overviewDownButton;
 		private System.Windows.Forms.TabControl tabControl;
 		private System.Windows.Forms.TabPage zoom1Tab;
 		private System.Windows.Forms.TabPage zoom2Tab;
@@ -1561,7 +1856,6 @@
 		private System.Windows.Forms.RadioButton foregroundRadioButton;
 		private System.Windows.Forms.Label particleLabel;
 		private System.Windows.Forms.ComboBox particleComboBox;
-		private System.Windows.Forms.ToolStripButton newToolStripButton;
 		private System.Windows.Forms.ToolStripButton openToolStripButton;
 		private System.Windows.Forms.ToolStripButton saveToolStripButton;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator;
@@ -1605,16 +1899,14 @@
 		private System.Windows.Forms.ComboBox cursorReverseDirectionComboBox;
 		private System.Windows.Forms.Label cursorReverseDirectionLabel;
 		private System.Windows.Forms.Label cursorNormalDirectionLabel;
-		private System.Windows.Forms.Label cursorLabel;
 		private System.Windows.Forms.ComboBox cursorNormalDirectionComboBox;
 		private System.Windows.Forms.ToolStripMenuItem animationToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 		private System.Windows.Forms.NumericUpDown animationNumericUpDown;
 		private System.Windows.Forms.Label animationPhaseLabel;
 		private System.Windows.Forms.ToolTip toolTip;
-		private System.Windows.Forms.Panel cursorDirectionPanel;
 		private System.Windows.Forms.GroupBox propertiesGroupBox;
-		private System.Windows.Forms.Panel clockPanel;
+		private System.Windows.Forms.Panel clockPropertiesPanel;
 		private System.Windows.Forms.Button clockColorMinutesPointerButton;
 		private System.Windows.Forms.Button clockColorHoursPointerButton;
 		private System.Windows.Forms.Label clockColorMinutesPointerLabel;
@@ -1648,6 +1940,38 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
 		private System.Windows.Forms.ToolStripButton undoToolStripButton;
 		private System.Windows.Forms.ToolStripButton redoToolStripButton;
+		private System.Windows.Forms.Button overviewLeftRightButton;
+		private System.Windows.Forms.Button overviewUpButton;
+		private System.Windows.Forms.Button overviewDownButton;
+		private System.Windows.Forms.PictureBox overviewDrawPanel;
+		private System.Windows.Forms.Panel overviewPanel;
+		private System.Windows.Forms.ToolStripMenuItem newGraphicToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem newDrivingWayToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem signalToolStripMenuItem;
+		private System.Windows.Forms.ToolStripSplitButton newToolStripButton;
+		private System.Windows.Forms.ToolStripMenuItem newGraphicToolStripItem;
+		private System.Windows.Forms.ToolStripMenuItem newDrivingWayToolStripItem;
+		private System.Windows.Forms.ToolStripMenuItem signalToolStripMenuItem1;
+		private System.Windows.Forms.GroupBox layerGroupBox;
+		private System.Windows.Forms.GroupBox cursorGroupBox;
+		private System.Windows.Forms.GroupBox drivingWayGroupBox;
+		private System.Windows.Forms.Label drivingWayLabelInfo;
+		private System.Windows.Forms.Button drivingWayButtonChange1;
+		private System.Windows.Forms.Label drivingWayLabel1;
+		private System.Windows.Forms.Button drivingWayButtonChange8;
+		private System.Windows.Forms.Label drivingWayLabel8;
+		private System.Windows.Forms.Button drivingWayButtonChange7;
+		private System.Windows.Forms.Label drivingWayLabel7;
+		private System.Windows.Forms.Button drivingWayButtonChange6;
+		private System.Windows.Forms.Label drivingWayLabel6;
+		private System.Windows.Forms.Button drivingWayButtonChange5;
+		private System.Windows.Forms.Label drivingWayLabel5;
+		private System.Windows.Forms.Button drivingWayButtonChange4;
+		private System.Windows.Forms.Label drivingWayLabel4;
+		private System.Windows.Forms.Button drivingWayButtonChange3;
+		private System.Windows.Forms.Label drivingWayLabel3;
+		private System.Windows.Forms.Button drivingWayButtonChange2;
+		private System.Windows.Forms.Label drivingWayLabel2;
 
 	}
 }

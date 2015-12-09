@@ -50,6 +50,12 @@
     <Compile Include="AnimationForm.Designer.cs">
       <DependentUpon>AnimationForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="DrivingWaySettingsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DrivingWaySettingsForm.Designer.cs">
+      <DependentUpon>DrivingWaySettingsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="GraphicPanel.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -66,6 +72,9 @@
     </Compile>
     <EmbeddedResource Include="AnimationForm.resx">
       <DependentUpon>AnimationForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DrivingWaySettingsForm.resx">
+      <DependentUpon>DrivingWaySettingsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Editor.resx">
       <DependentUpon>Editor.cs</DependentUpon>

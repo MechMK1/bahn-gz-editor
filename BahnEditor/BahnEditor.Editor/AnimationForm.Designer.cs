@@ -120,7 +120,7 @@
 			this.noAnimationLabel.Name = "noAnimationLabel";
 			this.noAnimationLabel.Size = new System.Drawing.Size(308, 18);
 			this.noAnimationLabel.TabIndex = 1;
-			this.noAnimationLabel.Text = "No animation defined for the selected layer.";
+			this.noAnimationLabel.Text = "No animation defined for the selected graphic.";
 			// 
 			// addAnimationStepButton
 			// 

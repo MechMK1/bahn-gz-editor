@@ -66,6 +66,7 @@ namespace BahnEditor.Editor
 
 		private string lastPath = "";
 		private bool userMadeChanges = false;
+		private Mode mode;
 		private AnimationForm animationForm;
 		private GraphicArchive zoom1Archive;
 		private GraphicArchive zoom2Archive;
@@ -75,6 +76,17 @@ namespace BahnEditor.Editor
 		private bool isMouseCaptured = false;
 
 		#endregion Private Fields
+
+		#region Enums
+
+		private enum Mode
+		{
+			Graphic = 0,
+			DrivingWay = 1,
+			Signal = 2
+		}
+
+		#endregion
 
 		#region Internal Properties
 
@@ -208,11 +220,12 @@ namespace BahnEditor.Editor
 			this.clockComboBox.SelectedIndex = 0;
 			this.clockRotationComboBox.SelectedIndex = 0;
 			this.animationForm = new AnimationForm(this);
-			this.NewGraphicArchive();
+			this.NewGraphic(Mode.Graphic);
 		}
 
-		private void NewGraphicArchive()
+		private void NewGraphic(Mode mode)
 		{
+			this.mode = mode;
 			this.zoom1Archive = new GraphicArchive(ZoomFactor.Zoom1);
 			this.zoom2Archive = new GraphicArchive(ZoomFactor.Zoom2);
 			this.zoom4Archive = new GraphicArchive(ZoomFactor.Zoom4);
@@ -227,6 +240,7 @@ namespace BahnEditor.Editor
 			this.tabControlSelectedCC = true;
 			this.tabControl.SelectedIndex = 0;
 			this.tabControlSelectedCC = false;
+			this.SetMode(mode);
 			this.ChangeLayer(LayerID.Foreground);
 			this.UserMadeChanges(false);
 			this.animationNumbericUpDownCC = true;
@@ -234,14 +248,15 @@ namespace BahnEditor.Editor
 			this.animationNumbericUpDownCC = false;
 			this.lastPath = "";
 			this.UpdateProperties();
+			this.UpdateDrivingWay();
 			this.UpdateZoom();
 			this.UpdateUndoRedoButtons();
 			this.graphicPanel.Draw(this.GetGraphicLayer());
-			this.overviewPanel.Invalidate();
+			this.overviewDrawPanel.Invalidate();
 			this.UpdateAnimation();
 		}
 
-		private void LoadGraphicArchive()
+		private void LoadGraphic()
 		{
 			try
 			{
@@ -274,7 +289,22 @@ namespace BahnEditor.Editor
 				{
 					this.zoom4Archive = new GraphicArchive(ZoomFactor.Zoom4);
 				}
+				for (int i = 0; i < 90; i++)
+				{
+					if (this.zoom1Archive[i] != null)
+					{
+						if (this.zoom1Archive[i].Properties.RawData.HasFlag(GraphicProperties.Properties.DrivingWay))
+						{
+							this.SetMode(Mode.DrivingWay);
+						}
+						else
+						{
+							this.SetMode(Mode.Graphic);
+						}
+						break;
+					}
 
+				}
 				this.urStack = new Dictionary<Tuple<int, int, int, LayerID, ZoomFactor>, UndoRedoStack>();
 				this.actualGraphic = 0;
 				this.actualAnimationPhase = 0;
@@ -298,19 +328,20 @@ namespace BahnEditor.Editor
 				this.animationNumericUpDown.Value = Constants.MinAnimationPhase;
 				this.animationNumbericUpDownCC = false;
 				this.UpdateProperties();
+				this.UpdateDrivingWay();
 				this.lastPath = this.zoom1Archive.FileName;
 				this.UserMadeChanges(false);
 				this.ChangeLayer(LayerID.Foreground);
 				this.UpdateZoom();
 				this.UpdateUndoRedoButtons();
 				this.graphicPanel.Draw(this.GetGraphicLayer());
-				this.overviewPanel.Invalidate();
+				this.overviewDrawPanel.Invalidate();
 				this.UpdateAnimation();
 			}
 			catch (Exception ex)
 			{
 				MessageBox.Show(String.Format("There was an error while loading: {0}!", ex.ToString()), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-				this.NewGraphicArchive();
+				this.NewGraphic(mode);
 			}
 		}
 
@@ -414,6 +445,21 @@ namespace BahnEditor.Editor
 			this.UpdateZoom();
 		}
 
+		private void SetMode(Mode mode)
+		{
+			this.mode = mode;
+			if (mode == Mode.Graphic)
+			{
+				this.drivingWayGroupBox.Visible = false;
+				this.propertiesGroupBox.Visible = true;
+			}
+			else if (mode == Mode.DrivingWay)
+			{
+				this.propertiesGroupBox.Visible = false;
+				this.drivingWayGroupBox.Visible = true;
+			}
+		}
+
 		#endregion Editor Methods
 
 		#region Drawing
@@ -460,7 +506,7 @@ namespace BahnEditor.Editor
 		{
 			if (this.zoom1Archive != null)
 			{
-				g.TranslateTransform(40, 15);
+				g.TranslateTransform(1, 15);
 				for (int i = this.overviewLine * 18 + this.overviewAlternative, j = 1; j <= 9; i += 2, j++)
 				{
 					if (this.zoom1Archive[i] != null)
@@ -480,7 +526,7 @@ namespace BahnEditor.Editor
 				if (this.alternativesCheckBox.Checked)
 				{
 					g.ResetTransform();
-					g.TranslateTransform(440, 5);
+					g.TranslateTransform(400, 2);
 					/*alternative a*/
 					if (this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 1] != null)
 					{
@@ -509,7 +555,7 @@ namespace BahnEditor.Editor
 					g.DrawString("b", DefaultFont, Brushes.Black, 10, 15);
 
 					/*alternative c*/
-					g.TranslateTransform(-Constants.ElementWidth - 10, 30);
+					g.TranslateTransform(-Constants.ElementWidth - 10, 28);
 					if (this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 3] != null)
 					{
 						GraphicPanel.DrawElement(g, GraphicPreview(this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, 3]), 1, false, ZoomFactor.Zoom1);
@@ -559,7 +605,7 @@ namespace BahnEditor.Editor
 					else
 						brush = new SolidBrush(PixelToColor(pixel));
 
-					
+
 					Point corner1 = this.specialModeStartPoint;
 					Point corner2 = this.specialModeEndPoint;
 
@@ -645,7 +691,7 @@ namespace BahnEditor.Editor
 
 		private void DrawParticles(Graphics g)
 		{
-			if(this.ActualGraphic != null && this.ActualGraphic.Properties.HasParticles)
+			if (this.ActualGraphic != null && this.ActualGraphic.Properties.HasParticles)
 			{
 				int xp = this.ActualGraphic.Properties.ParticleX;
 				int yp = this.ActualGraphic.Properties.ParticleY;
@@ -659,8 +705,8 @@ namespace BahnEditor.Editor
 
 				Rectangle rectangle = this.CalculateRectangle(corner1, corner2);
 				Brush brush;
-				
-				if(this.ActualGraphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Steam))
+
+				if (this.ActualGraphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Steam))
 				{
 					brush = Brushes.LightGray;
 				}
@@ -728,12 +774,14 @@ namespace BahnEditor.Editor
 				if (this.lineToolStripRadioButton.Checked || this.rectangleToolStripRadioButton.Checked)
 				{
 					this.specialModeStartPoint = p;
+					this.specialModeEndPoint = p;
 					this.specialModeMouseButton = e.Button;
 					this.drawingSpecialMode = true;
 				}
 				else if (this.selectToolStripRadioButton.Checked)
 				{
 					this.selectStartPoint = p;
+					this.selectEndPoint = p;
 					this.selected = true;
 					this.drawingSelection = true;
 				}
@@ -925,7 +973,7 @@ namespace BahnEditor.Editor
 				this.UpdateUndoRedoButtons();
 				this.graphicPanel.Draw(layer);
 			}
-			this.overviewPanel.Invalidate();
+			this.overviewDrawPanel.Invalidate();
 		}
 
 		private void MouseClickOnOverview(MouseEventArgs e)
@@ -933,7 +981,7 @@ namespace BahnEditor.Editor
 			if (!e.Button.HasFlag(MouseButtons.Left))
 				return;
 			int element = -1;
-			int x = e.X - 40;
+			int x = e.X - 1;
 			if (x >= 0 && 31 >= x)
 				element = 0;
 			else if (x >= 42 && 73 >= x)
@@ -975,15 +1023,16 @@ namespace BahnEditor.Editor
 				this.alternativeCheckBoxCC = false;
 
 				this.UpdateProperties();
+				this.UpdateDrivingWay();
 				this.UpdateUndoRedoButtons();
 				this.graphicPanel.Draw(this.GetGraphicLayer());
-				this.overviewPanel.Invalidate();
+				this.overviewDrawPanel.Invalidate();
 				this.UpdateAnimation();
 			}
 			else if (this.alternativesCheckBox.Checked)
 			{
-				int xa = e.X - 440;
-				int ya = e.Y - 5;
+				int xa = e.X - 400;
+				int ya = e.Y - 2;
 				int alternative = -1;
 				if (xa >= 0 && Constants.ElementWidth >= xa)
 				{
@@ -991,7 +1040,7 @@ namespace BahnEditor.Editor
 					{
 						alternative = 1;
 					}
-					else if (ya >= 30 && 55 >= ya)
+					else if (ya >= 28 && 55 >= ya)
 					{
 						alternative = 3;
 					}
@@ -1002,7 +1051,7 @@ namespace BahnEditor.Editor
 					{
 						alternative = 2;
 					}
-					else if (ya >= 30 && 55 >= ya)
+					else if (ya >= 28 && 55 >= ya)
 					{
 						alternative = 4;
 					}
@@ -1011,7 +1060,8 @@ namespace BahnEditor.Editor
 				{
 					this.actualAlternative = alternative;
 					this.UpdateProperties();
-					this.overviewPanel.Invalidate();
+					this.UpdateDrivingWay();
+					this.overviewDrawPanel.Invalidate();
 					this.graphicPanel.Draw(this.GetGraphicLayer());
 					this.UpdateAnimation();
 				}
@@ -1032,7 +1082,7 @@ namespace BahnEditor.Editor
 					this.zoom1Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
 					this.UserMadeChanges(true);
 					ChangePropertyComboBoxes(true);
-					this.overviewPanel.Invalidate();
+					this.overviewDrawPanel.Invalidate();
 				}
 			}
 			else if (this.graphicPanel.ZoomFactor == ZoomFactor.Zoom2)
@@ -1043,7 +1093,7 @@ namespace BahnEditor.Editor
 					this.zoom2Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
 					this.UserMadeChanges(true);
 					ChangePropertyComboBoxes(true);
-					this.overviewPanel.Invalidate();
+					this.overviewDrawPanel.Invalidate();
 				}
 			}
 			else if (this.graphicPanel.ZoomFactor == ZoomFactor.Zoom4)
@@ -1054,7 +1104,7 @@ namespace BahnEditor.Editor
 					this.zoom4Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
 					this.UserMadeChanges(true);
 					ChangePropertyComboBoxes(true);
-					this.overviewPanel.Invalidate();
+					this.overviewDrawPanel.Invalidate();
 				}
 			}
 		}
@@ -1129,100 +1179,136 @@ namespace BahnEditor.Editor
 
 		private void UpdateProperties()
 		{
-			Graphic graphic = this.ActualGraphic;
-			if (graphic == null)
+			if (this.mode == Mode.Graphic)
 			{
-				ChangePropertyComboBoxes(false);
-			}
-			else
-			{
-				ChangePropertyComboBoxes(true);
-			}
-			if (graphic != null && graphic.Properties.HasParticles)
-			{
-				if (graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Steam))
-					this.particleComboBox.SelectedIndex = 1;
+				Graphic graphic = this.ActualGraphic;
+				if (graphic == null)
+				{
+					ChangePropertyComboBoxes(false);
+				}
 				else
-					this.particleComboBox.SelectedIndex = 2;
-				this.particleWidthNumericUpDown.Enabled = true;
-				this.particleXNumericUpDown.Enabled = true;
-				this.particleYNumericUpDown.Enabled = true;
-				this.particleWidthNumericUpDown.Value = graphic.Properties.ParticleWidth;
-				this.particleXNumericUpDown.Value = graphic.Properties.ParticleX;
-				this.particleYNumericUpDown.Value = graphic.Properties.ParticleY;
-			}
-			else if (this.particleComboBox.SelectedIndex != 0)
-			{
-				this.particleComboBox.SelectedIndex = 0;
-				this.particleWidthNumericUpDown.Enabled = false;
-				this.particleXNumericUpDown.Enabled = false;
-				this.particleYNumericUpDown.Enabled = false;
-				this.particleWidthNumericUpDown.Value = 1;
-				this.particleXNumericUpDown.Value = 0;
-				this.particleYNumericUpDown.Value = 0;
-			}
-			if (graphic != null && graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Clock))
-			{
-				if (graphic.Properties.ClockProperties.HasFlag(ClockProperties.Display24h))
-					this.clockComboBox.SelectedIndex = 2;
-				else
-					this.clockComboBox.SelectedIndex = 1;
-				this.clockColorHoursPointerButton.Enabled = true;
-				this.clockColorMinutesPointerButton.Enabled = true;
-				this.clockMinutesPointerCheckBox.Enabled = true;
-				this.clockRotationComboBox.Enabled = true;
-				this.clockWidthNumericUpDown.Enabled = true;
-				this.clockXNumericUpDown.Enabled = true;
-				this.clockYNumericUpDown.Enabled = true;
-				this.clockXNumericUpDown.Value = graphic.Properties.ClockX;
-				this.clockYNumericUpDown.Value = graphic.Properties.ClockY;
-				this.clockWidthNumericUpDown.Value = graphic.Properties.ClockWidth;
-				this.clockMinutesPointerCheckBox.Checked = graphic.Properties.ClockProperties.HasFlag(ClockProperties.MinutePointer);
-				if (graphic.Properties.ClockProperties.HasFlag(ClockProperties.RotatedNorthWest))
-					this.clockRotationComboBox.SelectedIndex = 1;
-				else if (graphic.Properties.ClockProperties.HasFlag(ClockProperties.RotatedNorthEast))
-					this.clockRotationComboBox.SelectedIndex = 2;
-				else
+				{
+					ChangePropertyComboBoxes(true);
+				}
+				if (graphic != null && graphic.Properties.HasParticles)
+				{
+					if (graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Steam))
+						this.particleComboBox.SelectedIndex = 1;
+					else
+						this.particleComboBox.SelectedIndex = 2;
+					this.particleWidthNumericUpDown.Enabled = true;
+					this.particleXNumericUpDown.Enabled = true;
+					this.particleYNumericUpDown.Enabled = true;
+					this.particleWidthNumericUpDown.Value = graphic.Properties.ParticleWidth;
+					this.particleXNumericUpDown.Value = graphic.Properties.ParticleX;
+					this.particleYNumericUpDown.Value = graphic.Properties.ParticleY;
+				}
+				else if (this.particleComboBox.SelectedIndex != 0)
+				{
+					this.particleComboBox.SelectedIndex = 0;
+					this.particleWidthNumericUpDown.Enabled = false;
+					this.particleXNumericUpDown.Enabled = false;
+					this.particleYNumericUpDown.Enabled = false;
+					this.particleWidthNumericUpDown.Value = 1;
+					this.particleXNumericUpDown.Value = 0;
+					this.particleYNumericUpDown.Value = 0;
+				}
+				if (graphic != null && graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Clock))
+				{
+					if (graphic.Properties.ClockProperties.HasFlag(ClockProperties.Display24h))
+						this.clockComboBox.SelectedIndex = 2;
+					else
+						this.clockComboBox.SelectedIndex = 1;
+					this.clockColorHoursPointerButton.Enabled = true;
+					this.clockColorMinutesPointerButton.Enabled = true;
+					this.clockMinutesPointerCheckBox.Enabled = true;
+					this.clockRotationComboBox.Enabled = true;
+					this.clockWidthNumericUpDown.Enabled = true;
+					this.clockXNumericUpDown.Enabled = true;
+					this.clockYNumericUpDown.Enabled = true;
+					this.clockXNumericUpDown.Value = graphic.Properties.ClockX;
+					this.clockYNumericUpDown.Value = graphic.Properties.ClockY;
+					this.clockWidthNumericUpDown.Value = graphic.Properties.ClockWidth;
+					this.clockMinutesPointerCheckBox.Checked = graphic.Properties.ClockProperties.HasFlag(ClockProperties.MinutePointer);
+					if (graphic.Properties.ClockProperties.HasFlag(ClockProperties.RotatedNorthWest))
+						this.clockRotationComboBox.SelectedIndex = 1;
+					else if (graphic.Properties.ClockProperties.HasFlag(ClockProperties.RotatedNorthEast))
+						this.clockRotationComboBox.SelectedIndex = 2;
+					else
+						this.clockRotationComboBox.SelectedIndex = 0;
+					this.clockColorHoursPointerButton.BackColor = PixelToColor(graphic.Properties.ClockColorHoursPointer);
+					this.clockColorMinutesPointerButton.BackColor = PixelToColor(graphic.Properties.ClockColorMinutesPointer);
+				}
+				else if (this.clockComboBox.SelectedIndex != 0)
+				{
+					this.clockComboBox.SelectedIndex = 0;
+					this.clockColorHoursPointerButton.Enabled = false;
+					this.clockColorMinutesPointerButton.Enabled = false;
+					this.clockMinutesPointerCheckBox.Enabled = false;
+					this.clockRotationComboBox.Enabled = false;
+					this.clockWidthNumericUpDown.Enabled = false;
+					this.clockXNumericUpDown.Enabled = false;
+					this.clockYNumericUpDown.Enabled = false;
+					this.clockXNumericUpDown.Value = 0;
+					this.clockYNumericUpDown.Value = 0;
+					this.clockWidthNumericUpDown.Value = 1;
+					this.clockMinutesPointerCheckBox.Checked = false;
 					this.clockRotationComboBox.SelectedIndex = 0;
-				this.clockColorHoursPointerButton.BackColor = PixelToColor(graphic.Properties.ClockColorHoursPointer);
-				this.clockColorMinutesPointerButton.BackColor = PixelToColor(graphic.Properties.ClockColorMinutesPointer);
+					this.clockColorHoursPointerButton.BackColor = Color.Black;
+					this.clockColorMinutesPointerButton.BackColor = Color.Black;
+				}
+				Graphic z1Graphic = this.ActualZoom1Graphic;
+				if (z1Graphic != null && z1Graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Cursor))
+				{
+					this.cursorNormalDirectionComboBoxCC = true;
+					this.cursorReverseDirectionComboBoxCC = true;
+					this.cursorNormalDirectionComboBox.SelectedIndex = (int)z1Graphic.Properties.CursorNormalDirection + 1;
+					this.cursorReverseDirectionComboBox.SelectedIndex = (int)z1Graphic.Properties.CursorReverseDirection + 1;
+					this.cursorNormalDirectionComboBoxCC = false;
+					this.cursorReverseDirectionComboBoxCC = false;
+				}
+				else if (this.cursorNormalDirectionComboBox.SelectedIndex > -1 || this.cursorReverseDirectionComboBox.SelectedIndex > -1)
+				{
+					this.cursorNormalDirectionComboBoxCC = true;
+					this.cursorReverseDirectionComboBoxCC = true;
+					this.cursorNormalDirectionComboBox.SelectedIndex = -1;
+					this.cursorReverseDirectionComboBox.SelectedIndex = -1;
+					this.cursorNormalDirectionComboBoxCC = false;
+					this.cursorReverseDirectionComboBoxCC = false;
+				}
 			}
-			else if (this.clockComboBox.SelectedIndex != 0)
+		}
+
+		private void UpdateDrivingWay()
+		{
+			if (this.mode == Mode.DrivingWay)
 			{
-				this.clockComboBox.SelectedIndex = 0;
-				this.clockColorHoursPointerButton.Enabled = false;
-				this.clockColorMinutesPointerButton.Enabled = false;
-				this.clockMinutesPointerCheckBox.Enabled = false;
-				this.clockRotationComboBox.Enabled = false;
-				this.clockWidthNumericUpDown.Enabled = false;
-				this.clockXNumericUpDown.Enabled = false;
-				this.clockYNumericUpDown.Enabled = false;
-				this.clockXNumericUpDown.Value = 0;
-				this.clockYNumericUpDown.Value = 0;
-				this.clockWidthNumericUpDown.Value = 1;
-				this.clockMinutesPointerCheckBox.Checked = false;
-				this.clockRotationComboBox.SelectedIndex = 0;
-				this.clockColorHoursPointerButton.BackColor = Color.Black;
-				this.clockColorMinutesPointerButton.BackColor = Color.Black;
-			}
-			Graphic z1Graphic = this.ActualZoom1Graphic;
-			if (z1Graphic != null && z1Graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.Cursor))
-			{
-				this.cursorNormalDirectionComboBoxCC = true;
-				this.cursorReverseDirectionComboBoxCC = true;
-				this.cursorNormalDirectionComboBox.SelectedIndex = (int)z1Graphic.Properties.CursorNormalDirection + 1;
-				this.cursorReverseDirectionComboBox.SelectedIndex = (int)z1Graphic.Properties.CursorReverseDirection + 1;
-				this.cursorNormalDirectionComboBoxCC = false;
-				this.cursorReverseDirectionComboBoxCC = false;
-			}
-			else if (this.cursorNormalDirectionComboBox.SelectedIndex > -1 || this.cursorReverseDirectionComboBox.SelectedIndex > -1)
-			{
-				this.cursorNormalDirectionComboBoxCC = true;
-				this.cursorReverseDirectionComboBoxCC = true;
-				this.cursorNormalDirectionComboBox.SelectedIndex = -1;
-				this.cursorReverseDirectionComboBox.SelectedIndex = -1;
-				this.cursorNormalDirectionComboBoxCC = false;
-				this.cursorReverseDirectionComboBoxCC = false;
+				Graphic graphic = this.ActualZoom1Graphic;
+				Label[] drivingWayLabels = { this.drivingWayLabel1, this.drivingWayLabel2, this.drivingWayLabel3, this.drivingWayLabel4, this.drivingWayLabel5, this.drivingWayLabel6, this.drivingWayLabel7, this.drivingWayLabel8 };
+				if (graphic != null)
+				{
+					for (int i = 0; i < drivingWayLabels.Length; i++)
+					{
+						if (i < graphic.DrivingWay.Count)
+						{
+							DrivingWayElement drivingWay = graphic.DrivingWay[i];
+							Tuple<string, string> strings = DrivingWayFunctionToString(drivingWay.Function);
+							string text = String.Format("{0,-10}{1,-3}{2,-3}{3}{5}                {4,-8}", DrivingWayToString(drivingWay.DrivingWay), DirectionToArrow(drivingWay.Arrival), DirectionToArrow(drivingWay.Departure), strings.Item1, strings.Item2, Environment.NewLine);
+							drivingWayLabels[i].Text = text;
+						}
+						else
+						{
+							drivingWayLabels[i].Text = "---";
+						}
+					}
+				}
+				else
+				{
+					foreach (Label label in drivingWayLabels)
+					{
+						label.Text = "---";
+					}
+				}
 			}
 		}
 
@@ -1826,6 +1912,70 @@ namespace BahnEditor.Editor
 												(Math.Abs(point1.Y - point2.Y) + (int)elementSize));
 		}
 
+		private static string DirectionToArrow(Direction direction)
+		{
+			switch (direction)
+			{
+				case Direction.North:
+					return "↑";
+				case Direction.South:
+					return "↓";
+				case Direction.East:
+					return "→";
+				case Direction.West:
+					return "←";
+				case Direction.NorthEast:
+					return "↗";
+				case Direction.NorthWest:
+					return "↖";
+				case Direction.SouthEast:
+					return "↘";
+				case Direction.SouthWest:
+					return "↙";
+				default:
+					return "";
+			}
+		}
+
+		private static string DrivingWayToString(DrivingWay drivingWay)
+		{
+			switch (drivingWay)
+			{
+				case DrivingWay.Rail:
+					return "Rail";
+				case DrivingWay.Road:
+					return "Road";
+				case DrivingWay.RailAndRoad:
+					return "Rail+Road";
+				case DrivingWay.Water:
+					return "Water";
+				default:
+					return "---";
+			}
+		}
+
+		private static Tuple<string, string> DrivingWayFunctionToString(DrivingWayFunction function)
+		{
+			string string1;
+			string string2;
+
+			if (function.HasFlag(DrivingWayFunction.TunnelIn) && !function.HasFlag(DrivingWayFunction.Ramp))
+				string1 = "Tunnel in";
+			else if (function.HasFlag(DrivingWayFunction.TunnelOut) && !function.HasFlag(DrivingWayFunction.Ramp))
+				string1 = "Tunnel out";
+			else if (function.HasFlag(DrivingWayFunction.Ramp))
+				string1 = "Ramp";
+			else
+				string1 = "---";
+
+			if (function.HasFlag(DrivingWayFunction.Crossing))
+				string2 = "Crossing";
+			else
+				string2 = "---";
+
+			return Tuple.Create<string, string>(string1, string2);
+		}
+
 		#endregion Helper
 
 		#region Copy and Paste
@@ -2132,7 +2282,7 @@ namespace BahnEditor.Editor
 
 		private void loadFileDialog_FileOk(object sender, CancelEventArgs e)
 		{
-			this.LoadGraphicArchive();
+			this.LoadGraphic();
 		}
 
 		private void saveFileDialog_FileOk(object sender, CancelEventArgs e)
@@ -2148,12 +2298,13 @@ namespace BahnEditor.Editor
 
 		#region Overview
 
-		private void overviewPanel_Paint(object sender, PaintEventArgs e)
+		private void overviewDrawPanel_Paint(object sender, PaintEventArgs e)
 		{
+			System.Diagnostics.Debug.WriteLine("overviewDrawPanel_Paint");
 			this.DrawOverview(e.Graphics);
 		}
 
-		private void overviewPanel_Click(object sender, EventArgs e)
+		private void overviewDrawPanel_Click(object sender, EventArgs e)
 		{
 			MouseEventArgs me = e as MouseEventArgs;
 			if (me != null)
@@ -2167,9 +2318,9 @@ namespace BahnEditor.Editor
 			if (this.overviewLine < 4)
 			{
 				this.overviewLine++;
-				this.overviewPanel.Invalidate();
+				this.overviewDrawPanel.Invalidate();
 			}
-			this.overviewPanel.Focus();
+			this.overviewDrawPanel.Focus();
 		}
 
 		private void overviewDownButton_Click(object sender, EventArgs e)
@@ -2177,9 +2328,9 @@ namespace BahnEditor.Editor
 			if (this.overviewLine > 0)
 			{
 				this.overviewLine--;
-				this.overviewPanel.Invalidate();
+				this.overviewDrawPanel.Invalidate();
 			}
-			overviewPanel.Focus();
+			overviewDrawPanel.Focus();
 		}
 
 		private void overviewLeftRightButton_Click(object sender, EventArgs e)
@@ -2188,8 +2339,8 @@ namespace BahnEditor.Editor
 				this.overviewAlternative = 0;
 			else
 				this.overviewAlternative = 1;
-			this.overviewPanel.Invalidate();
-			overviewPanel.Focus();
+			this.overviewDrawPanel.Invalidate();
+			overviewDrawPanel.Focus();
 		}
 
 		private void animationNumericUpDown_ValueChanged(object sender, EventArgs e)
@@ -2283,7 +2434,7 @@ namespace BahnEditor.Editor
 				this.UserMadeChanges(true);
 			}
 			this.UpdateUndoRedoButtons();
-			this.overviewPanel.Invalidate();
+			this.overviewDrawPanel.Invalidate();
 			this.graphicPanel.Draw(this.GetGraphicLayer());
 			this.UpdateAnimation();
 		}
@@ -2325,7 +2476,6 @@ namespace BahnEditor.Editor
 		private void propertiesGroupBox_Paint(object sender, PaintEventArgs e)
 		{
 			e.Graphics.DrawLine(Pens.DarkGray, 1, 76, 198, 76);
-			e.Graphics.DrawLine(Pens.DarkGray, 1, 242, 198, 242);
 		}
 
 		private void clockComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -2835,7 +2985,7 @@ namespace BahnEditor.Editor
 		{
 			if (!this.AskSaveGraphic())
 				return;
-			this.NewGraphicArchive();
+			this.NewGraphic(Mode.Graphic);
 		}
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -3045,5 +3195,74 @@ namespace BahnEditor.Editor
 		}
 
 		#endregion Nested Classes
+
+		private void newGraphicToolStripItem_Click(object sender, EventArgs e)
+		{
+			if (!this.AskSaveGraphic())
+				return;
+			this.NewGraphic(Mode.Graphic);
+		}
+
+		private void newDrivingWayToolStripItem_Click(object sender, EventArgs e)
+		{
+			if (!this.AskSaveGraphic())
+				return;
+			this.NewGraphic(Mode.DrivingWay);
+		}
+
+		private void drivingWayButtonChange_Click(object sender, EventArgs e)
+		{
+			Button b = sender as Button;
+			if (b != null)
+			{
+				this.CreateGraphic();
+				Graphic graphic = this.ActualGraphic;
+				if (graphic != null)
+				{
+					int index = int.Parse((string)b.Tag) - 1;
+					DrivingWaySettingsForm drivingWayForm;
+					if (graphic.DrivingWay.Count > index && graphic.DrivingWay[index] != null)
+					{
+						drivingWayForm = new DrivingWaySettingsForm(graphic.DrivingWay[index]);
+					}
+					else
+					{
+						drivingWayForm = new DrivingWaySettingsForm();
+					}
+					DialogResult result = drivingWayForm.ShowDialog();
+					if (result == DialogResult.OK)
+					{
+						if (drivingWayForm.Delete)
+						{
+							try
+							{
+								graphic.DrivingWay.RemoveAt(index);
+								this.UpdateDrivingWay();
+							}
+							catch (ArgumentOutOfRangeException)
+							{ }
+						}
+						else
+						{
+							DrivingWayElement drivingWayElement = new DrivingWayElement(drivingWayForm.DrivingWay, drivingWayForm.DrivingWayFunction, drivingWayForm.DirectionArrival, drivingWayForm.DirectionDeparture);
+							if(!graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.DrivingWay))
+							{
+								graphic.Properties.RawData |= GraphicProperties.Properties.DrivingWay;
+							}
+							if (graphic.DrivingWay.Count > index)
+								graphic.DrivingWay[index] = drivingWayElement;
+							else
+								graphic.DrivingWay.Add(drivingWayElement);
+							this.UpdateDrivingWay();
+						}
+						this.UserMadeChanges(true);
+					}
+				}
+			}
+			else
+			{
+				MessageBox.Show("Sender not button");
+			}
+		}
 	}
 }
