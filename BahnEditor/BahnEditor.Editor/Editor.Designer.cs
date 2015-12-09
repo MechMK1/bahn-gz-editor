@@ -48,31 +48,8 @@
 			this.zoomInButton = new System.Windows.Forms.ToolStripButton();
 			this.zoomOutButton = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-			this.normalModeToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
-			this.lineToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
-			this.rectangleToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
-			this.fillToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
-			this.selectToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
-			this.pickColorToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
 			this.controlPanel = new System.Windows.Forms.Panel();
-			this.drivingWayGroupBox = new System.Windows.Forms.GroupBox();
-			this.drivingWayButtonChange8 = new System.Windows.Forms.Button();
-			this.drivingWayLabel8 = new System.Windows.Forms.Label();
-			this.drivingWayButtonChange7 = new System.Windows.Forms.Button();
-			this.drivingWayLabel7 = new System.Windows.Forms.Label();
-			this.drivingWayButtonChange6 = new System.Windows.Forms.Button();
-			this.drivingWayLabel6 = new System.Windows.Forms.Label();
-			this.drivingWayButtonChange5 = new System.Windows.Forms.Button();
-			this.drivingWayLabel5 = new System.Windows.Forms.Label();
-			this.drivingWayButtonChange4 = new System.Windows.Forms.Button();
-			this.drivingWayLabel4 = new System.Windows.Forms.Label();
-			this.drivingWayButtonChange3 = new System.Windows.Forms.Button();
-			this.drivingWayLabel3 = new System.Windows.Forms.Label();
-			this.drivingWayButtonChange2 = new System.Windows.Forms.Button();
-			this.drivingWayLabel2 = new System.Windows.Forms.Label();
-			this.drivingWayButtonChange1 = new System.Windows.Forms.Button();
-			this.drivingWayLabel1 = new System.Windows.Forms.Label();
-			this.drivingWayLabelInfo = new System.Windows.Forms.Label();
+			this.propertiesSplitContainer = new System.Windows.Forms.SplitContainer();
 			this.layerGroupBox = new System.Windows.Forms.GroupBox();
 			this.foregroundRadioButton = new System.Windows.Forms.RadioButton();
 			this.backgroundRadioButton = new System.Windows.Forms.RadioButton();
@@ -80,6 +57,25 @@
 			this.backgroundRadioButton2 = new System.Windows.Forms.RadioButton();
 			this.foregroundAboveRadioButton = new System.Windows.Forms.RadioButton();
 			this.toBackgroundRadioButton = new System.Windows.Forms.RadioButton();
+			this.drivingWayGroupBox = new System.Windows.Forms.GroupBox();
+			this.drivingWayAutoScrollPanel = new System.Windows.Forms.Panel();
+			this.drivingWayButtonChange8 = new System.Windows.Forms.Button();
+			this.drivingWayButtonChange7 = new System.Windows.Forms.Button();
+			this.drivingWayButtonChange6 = new System.Windows.Forms.Button();
+			this.drivingWayButtonChange5 = new System.Windows.Forms.Button();
+			this.drivingWayButtonChange4 = new System.Windows.Forms.Button();
+			this.drivingWayButtonChange3 = new System.Windows.Forms.Button();
+			this.drivingWayButtonChange2 = new System.Windows.Forms.Button();
+			this.drivingWayButtonChange1 = new System.Windows.Forms.Button();
+			this.drivingWayLabelInfo = new System.Windows.Forms.Label();
+			this.drivingWayLabel1 = new System.Windows.Forms.Label();
+			this.drivingWayLabel8 = new System.Windows.Forms.Label();
+			this.drivingWayLabel2 = new System.Windows.Forms.Label();
+			this.drivingWayLabel7 = new System.Windows.Forms.Label();
+			this.drivingWayLabel3 = new System.Windows.Forms.Label();
+			this.drivingWayLabel6 = new System.Windows.Forms.Label();
+			this.drivingWayLabel4 = new System.Windows.Forms.Label();
+			this.drivingWayLabel5 = new System.Windows.Forms.Label();
 			this.propertiesGroupBox = new System.Windows.Forms.GroupBox();
 			this.particlePropertiesPanel = new System.Windows.Forms.Panel();
 			this.particleWidthNumericUpDown = new System.Windows.Forms.NumericUpDown();
@@ -162,7 +158,6 @@
 			this.animationNumericUpDown = new System.Windows.Forms.NumericUpDown();
 			this.alternativesCheckBox = new System.Windows.Forms.CheckBox();
 			this.scrollPanel = new System.Windows.Forms.Panel();
-			this.graphicPanel = new BahnEditor.Editor.GraphicPanel();
 			this.gridCheckBox = new System.Windows.Forms.CheckBox();
 			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
 			this.zoomLevelStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
@@ -172,10 +167,22 @@
 			this.overviewDrawPanel = new System.Windows.Forms.PictureBox();
 			this.overviewPanel = new System.Windows.Forms.Panel();
 			this.cursorGroupBox = new System.Windows.Forms.GroupBox();
+			this.graphicPanel = new BahnEditor.Editor.GraphicPanel();
+			this.normalModeToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
+			this.lineToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
+			this.rectangleToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
+			this.fillToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
+			this.selectToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
+			this.pickColorToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
 			this.toolStrip.SuspendLayout();
 			this.controlPanel.SuspendLayout();
-			this.drivingWayGroupBox.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.propertiesSplitContainer)).BeginInit();
+			this.propertiesSplitContainer.Panel1.SuspendLayout();
+			this.propertiesSplitContainer.Panel2.SuspendLayout();
+			this.propertiesSplitContainer.SuspendLayout();
 			this.layerGroupBox.SuspendLayout();
+			this.drivingWayGroupBox.SuspendLayout();
+			this.drivingWayAutoScrollPanel.SuspendLayout();
 			this.propertiesGroupBox.SuspendLayout();
 			this.particlePropertiesPanel.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.particleWidthNumericUpDown)).BeginInit();
@@ -372,290 +379,37 @@
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
 			this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
 			// 
-			// normalModeToolStripRadioButton
-			// 
-			this.normalModeToolStripRadioButton.Checked = true;
-			this.normalModeToolStripRadioButton.CheckOnClick = true;
-			this.normalModeToolStripRadioButton.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.normalModeToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.normalModeToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("normalModeToolStripRadioButton.Image")));
-			this.normalModeToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.normalModeToolStripRadioButton.Name = "normalModeToolStripRadioButton";
-			this.normalModeToolStripRadioButton.RadioButtonGroupID = 0;
-			this.normalModeToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
-			this.normalModeToolStripRadioButton.Text = "Normal Mode";
-			// 
-			// lineToolStripRadioButton
-			// 
-			this.lineToolStripRadioButton.CheckOnClick = true;
-			this.lineToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.lineToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("lineToolStripRadioButton.Image")));
-			this.lineToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.lineToolStripRadioButton.Name = "lineToolStripRadioButton";
-			this.lineToolStripRadioButton.RadioButtonGroupID = 0;
-			this.lineToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
-			this.lineToolStripRadioButton.Text = "Line";
-			// 
-			// rectangleToolStripRadioButton
-			// 
-			this.rectangleToolStripRadioButton.CheckOnClick = true;
-			this.rectangleToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.rectangleToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("rectangleToolStripRadioButton.Image")));
-			this.rectangleToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.rectangleToolStripRadioButton.Name = "rectangleToolStripRadioButton";
-			this.rectangleToolStripRadioButton.RadioButtonGroupID = 0;
-			this.rectangleToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
-			this.rectangleToolStripRadioButton.Text = "Rectangle";
-			// 
-			// fillToolStripRadioButton
-			// 
-			this.fillToolStripRadioButton.CheckOnClick = true;
-			this.fillToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.fillToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("fillToolStripRadioButton.Image")));
-			this.fillToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.fillToolStripRadioButton.Name = "fillToolStripRadioButton";
-			this.fillToolStripRadioButton.RadioButtonGroupID = 0;
-			this.fillToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
-			this.fillToolStripRadioButton.Text = "Fill";
-			// 
-			// selectToolStripRadioButton
-			// 
-			this.selectToolStripRadioButton.CheckOnClick = true;
-			this.selectToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.selectToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("selectToolStripRadioButton.Image")));
-			this.selectToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.selectToolStripRadioButton.Name = "selectToolStripRadioButton";
-			this.selectToolStripRadioButton.RadioButtonGroupID = 0;
-			this.selectToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
-			this.selectToolStripRadioButton.Text = "Select area";
-			// 
-			// pickColorToolStripRadioButton
-			// 
-			this.pickColorToolStripRadioButton.CheckOnClick = true;
-			this.pickColorToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.pickColorToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("pickColorToolStripRadioButton.Image")));
-			this.pickColorToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.pickColorToolStripRadioButton.Name = "pickColorToolStripRadioButton";
-			this.pickColorToolStripRadioButton.RadioButtonGroupID = 0;
-			this.pickColorToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
-			this.pickColorToolStripRadioButton.Text = "Pick color";
-			// 
 			// controlPanel
 			// 
 			this.controlPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.controlPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.controlPanel.Controls.Add(this.drivingWayGroupBox);
-			this.controlPanel.Controls.Add(this.layerGroupBox);
-			this.controlPanel.Controls.Add(this.propertiesGroupBox);
-			this.controlPanel.Location = new System.Drawing.Point(794, 52);
+			this.controlPanel.Controls.Add(this.propertiesSplitContainer);
+			this.controlPanel.Location = new System.Drawing.Point(784, 52);
 			this.controlPanel.Name = "controlPanel";
-			this.controlPanel.Size = new System.Drawing.Size(207, 652);
+			this.controlPanel.Size = new System.Drawing.Size(217, 652);
 			this.controlPanel.TabIndex = 2;
 			// 
-			// drivingWayGroupBox
+			// propertiesSplitContainer
 			// 
-			this.drivingWayGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.drivingWayGroupBox.Controls.Add(this.drivingWayButtonChange8);
-			this.drivingWayGroupBox.Controls.Add(this.drivingWayLabel8);
-			this.drivingWayGroupBox.Controls.Add(this.drivingWayButtonChange7);
-			this.drivingWayGroupBox.Controls.Add(this.drivingWayLabel7);
-			this.drivingWayGroupBox.Controls.Add(this.drivingWayButtonChange6);
-			this.drivingWayGroupBox.Controls.Add(this.drivingWayLabel6);
-			this.drivingWayGroupBox.Controls.Add(this.drivingWayButtonChange5);
-			this.drivingWayGroupBox.Controls.Add(this.drivingWayLabel5);
-			this.drivingWayGroupBox.Controls.Add(this.drivingWayButtonChange4);
-			this.drivingWayGroupBox.Controls.Add(this.drivingWayLabel4);
-			this.drivingWayGroupBox.Controls.Add(this.drivingWayButtonChange3);
-			this.drivingWayGroupBox.Controls.Add(this.drivingWayLabel3);
-			this.drivingWayGroupBox.Controls.Add(this.drivingWayButtonChange2);
-			this.drivingWayGroupBox.Controls.Add(this.drivingWayLabel2);
-			this.drivingWayGroupBox.Controls.Add(this.drivingWayButtonChange1);
-			this.drivingWayGroupBox.Controls.Add(this.drivingWayLabel1);
-			this.drivingWayGroupBox.Controls.Add(this.drivingWayLabelInfo);
-			this.drivingWayGroupBox.Location = new System.Drawing.Point(2, 262);
-			this.drivingWayGroupBox.Name = "drivingWayGroupBox";
-			this.drivingWayGroupBox.Size = new System.Drawing.Size(200, 385);
-			this.drivingWayGroupBox.TabIndex = 18;
-			this.drivingWayGroupBox.TabStop = false;
-			this.drivingWayGroupBox.Text = "Driving Way";
+			this.propertiesSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.propertiesSplitContainer.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
+			this.propertiesSplitContainer.IsSplitterFixed = true;
+			this.propertiesSplitContainer.Location = new System.Drawing.Point(0, 0);
+			this.propertiesSplitContainer.Name = "propertiesSplitContainer";
+			this.propertiesSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
 			// 
-			// drivingWayButtonChange8
+			// propertiesSplitContainer.Panel1
 			// 
-			this.drivingWayButtonChange8.Location = new System.Drawing.Point(12, 352);
-			this.drivingWayButtonChange8.Name = "drivingWayButtonChange8";
-			this.drivingWayButtonChange8.Size = new System.Drawing.Size(112, 23);
-			this.drivingWayButtonChange8.TabIndex = 16;
-			this.drivingWayButtonChange8.Tag = "8";
-			this.drivingWayButtonChange8.Text = "Change";
-			this.drivingWayButtonChange8.UseVisualStyleBackColor = true;
-			this.drivingWayButtonChange8.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
+			this.propertiesSplitContainer.Panel1.Controls.Add(this.layerGroupBox);
 			// 
-			// drivingWayLabel8
+			// propertiesSplitContainer.Panel2
 			// 
-			this.drivingWayLabel8.AutoSize = true;
-			this.drivingWayLabel8.Font = new System.Drawing.Font("Courier New", 8.25F);
-			this.drivingWayLabel8.Location = new System.Drawing.Point(12, 336);
-			this.drivingWayLabel8.Name = "drivingWayLabel8";
-			this.drivingWayLabel8.Size = new System.Drawing.Size(28, 14);
-			this.drivingWayLabel8.TabIndex = 15;
-			this.drivingWayLabel8.Text = "---";
-			// 
-			// drivingWayButtonChange7
-			// 
-			this.drivingWayButtonChange7.Location = new System.Drawing.Point(12, 310);
-			this.drivingWayButtonChange7.Name = "drivingWayButtonChange7";
-			this.drivingWayButtonChange7.Size = new System.Drawing.Size(112, 23);
-			this.drivingWayButtonChange7.TabIndex = 14;
-			this.drivingWayButtonChange7.Tag = "7";
-			this.drivingWayButtonChange7.Text = "Change";
-			this.drivingWayButtonChange7.UseVisualStyleBackColor = true;
-			this.drivingWayButtonChange7.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
-			// 
-			// drivingWayLabel7
-			// 
-			this.drivingWayLabel7.AutoSize = true;
-			this.drivingWayLabel7.Font = new System.Drawing.Font("Courier New", 8.25F);
-			this.drivingWayLabel7.Location = new System.Drawing.Point(12, 294);
-			this.drivingWayLabel7.Name = "drivingWayLabel7";
-			this.drivingWayLabel7.Size = new System.Drawing.Size(28, 14);
-			this.drivingWayLabel7.TabIndex = 13;
-			this.drivingWayLabel7.Text = "---";
-			// 
-			// drivingWayButtonChange6
-			// 
-			this.drivingWayButtonChange6.Location = new System.Drawing.Point(12, 268);
-			this.drivingWayButtonChange6.Name = "drivingWayButtonChange6";
-			this.drivingWayButtonChange6.Size = new System.Drawing.Size(112, 23);
-			this.drivingWayButtonChange6.TabIndex = 12;
-			this.drivingWayButtonChange6.Tag = "6";
-			this.drivingWayButtonChange6.Text = "Change";
-			this.drivingWayButtonChange6.UseVisualStyleBackColor = true;
-			this.drivingWayButtonChange6.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
-			// 
-			// drivingWayLabel6
-			// 
-			this.drivingWayLabel6.AutoSize = true;
-			this.drivingWayLabel6.Font = new System.Drawing.Font("Courier New", 8.25F);
-			this.drivingWayLabel6.Location = new System.Drawing.Point(12, 252);
-			this.drivingWayLabel6.Name = "drivingWayLabel6";
-			this.drivingWayLabel6.Size = new System.Drawing.Size(28, 14);
-			this.drivingWayLabel6.TabIndex = 11;
-			this.drivingWayLabel6.Text = "---";
-			// 
-			// drivingWayButtonChange5
-			// 
-			this.drivingWayButtonChange5.Location = new System.Drawing.Point(12, 226);
-			this.drivingWayButtonChange5.Name = "drivingWayButtonChange5";
-			this.drivingWayButtonChange5.Size = new System.Drawing.Size(112, 23);
-			this.drivingWayButtonChange5.TabIndex = 10;
-			this.drivingWayButtonChange5.Tag = "5";
-			this.drivingWayButtonChange5.Text = "Change";
-			this.drivingWayButtonChange5.UseVisualStyleBackColor = true;
-			this.drivingWayButtonChange5.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
-			// 
-			// drivingWayLabel5
-			// 
-			this.drivingWayLabel5.AutoSize = true;
-			this.drivingWayLabel5.Font = new System.Drawing.Font("Courier New", 8.25F);
-			this.drivingWayLabel5.Location = new System.Drawing.Point(12, 210);
-			this.drivingWayLabel5.Name = "drivingWayLabel5";
-			this.drivingWayLabel5.Size = new System.Drawing.Size(28, 14);
-			this.drivingWayLabel5.TabIndex = 9;
-			this.drivingWayLabel5.Text = "---";
-			// 
-			// drivingWayButtonChange4
-			// 
-			this.drivingWayButtonChange4.Location = new System.Drawing.Point(12, 184);
-			this.drivingWayButtonChange4.Name = "drivingWayButtonChange4";
-			this.drivingWayButtonChange4.Size = new System.Drawing.Size(112, 23);
-			this.drivingWayButtonChange4.TabIndex = 8;
-			this.drivingWayButtonChange4.Tag = "4";
-			this.drivingWayButtonChange4.Text = "Change";
-			this.drivingWayButtonChange4.UseVisualStyleBackColor = true;
-			this.drivingWayButtonChange4.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
-			// 
-			// drivingWayLabel4
-			// 
-			this.drivingWayLabel4.AutoSize = true;
-			this.drivingWayLabel4.Font = new System.Drawing.Font("Courier New", 8.25F);
-			this.drivingWayLabel4.Location = new System.Drawing.Point(12, 168);
-			this.drivingWayLabel4.Name = "drivingWayLabel4";
-			this.drivingWayLabel4.Size = new System.Drawing.Size(28, 14);
-			this.drivingWayLabel4.TabIndex = 7;
-			this.drivingWayLabel4.Text = "---";
-			// 
-			// drivingWayButtonChange3
-			// 
-			this.drivingWayButtonChange3.Location = new System.Drawing.Point(12, 142);
-			this.drivingWayButtonChange3.Name = "drivingWayButtonChange3";
-			this.drivingWayButtonChange3.Size = new System.Drawing.Size(112, 23);
-			this.drivingWayButtonChange3.TabIndex = 6;
-			this.drivingWayButtonChange3.Tag = "3";
-			this.drivingWayButtonChange3.Text = "Change";
-			this.drivingWayButtonChange3.UseVisualStyleBackColor = true;
-			this.drivingWayButtonChange3.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
-			// 
-			// drivingWayLabel3
-			// 
-			this.drivingWayLabel3.AutoSize = true;
-			this.drivingWayLabel3.Font = new System.Drawing.Font("Courier New", 8.25F);
-			this.drivingWayLabel3.Location = new System.Drawing.Point(12, 126);
-			this.drivingWayLabel3.Name = "drivingWayLabel3";
-			this.drivingWayLabel3.Size = new System.Drawing.Size(28, 14);
-			this.drivingWayLabel3.TabIndex = 5;
-			this.drivingWayLabel3.Text = "---";
-			// 
-			// drivingWayButtonChange2
-			// 
-			this.drivingWayButtonChange2.Location = new System.Drawing.Point(12, 100);
-			this.drivingWayButtonChange2.Name = "drivingWayButtonChange2";
-			this.drivingWayButtonChange2.Size = new System.Drawing.Size(112, 23);
-			this.drivingWayButtonChange2.TabIndex = 4;
-			this.drivingWayButtonChange2.Tag = "2";
-			this.drivingWayButtonChange2.Text = "Change";
-			this.drivingWayButtonChange2.UseVisualStyleBackColor = true;
-			this.drivingWayButtonChange2.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
-			// 
-			// drivingWayLabel2
-			// 
-			this.drivingWayLabel2.AutoSize = true;
-			this.drivingWayLabel2.Font = new System.Drawing.Font("Courier New", 8.25F);
-			this.drivingWayLabel2.Location = new System.Drawing.Point(12, 84);
-			this.drivingWayLabel2.Name = "drivingWayLabel2";
-			this.drivingWayLabel2.Size = new System.Drawing.Size(28, 14);
-			this.drivingWayLabel2.TabIndex = 3;
-			this.drivingWayLabel2.Text = "---";
-			// 
-			// drivingWayButtonChange1
-			// 
-			this.drivingWayButtonChange1.Location = new System.Drawing.Point(12, 58);
-			this.drivingWayButtonChange1.Name = "drivingWayButtonChange1";
-			this.drivingWayButtonChange1.Size = new System.Drawing.Size(112, 23);
-			this.drivingWayButtonChange1.TabIndex = 2;
-			this.drivingWayButtonChange1.Tag = "1";
-			this.drivingWayButtonChange1.Text = "Change";
-			this.drivingWayButtonChange1.UseVisualStyleBackColor = true;
-			this.drivingWayButtonChange1.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
-			// 
-			// drivingWayLabel1
-			// 
-			this.drivingWayLabel1.AutoSize = true;
-			this.drivingWayLabel1.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.drivingWayLabel1.Location = new System.Drawing.Point(12, 42);
-			this.drivingWayLabel1.Name = "drivingWayLabel1";
-			this.drivingWayLabel1.Size = new System.Drawing.Size(28, 14);
-			this.drivingWayLabel1.TabIndex = 1;
-			this.drivingWayLabel1.Text = "---";
-			// 
-			// drivingWayLabelInfo
-			// 
-			this.drivingWayLabelInfo.AutoSize = true;
-			this.drivingWayLabelInfo.Location = new System.Drawing.Point(8, 21);
-			this.drivingWayLabelInfo.Name = "drivingWayLabelInfo";
-			this.drivingWayLabelInfo.Size = new System.Drawing.Size(166, 13);
-			this.drivingWayLabelInfo.TabIndex = 0;
-			this.drivingWayLabelInfo.Text = "Driving Way    arr.  dep.  Function";
+			this.propertiesSplitContainer.Panel2.Controls.Add(this.propertiesGroupBox);
+			this.propertiesSplitContainer.Panel2.Controls.Add(this.drivingWayGroupBox);
+			this.propertiesSplitContainer.Size = new System.Drawing.Size(215, 650);
+			this.propertiesSplitContainer.SplitterDistance = 158;
+			this.propertiesSplitContainer.TabIndex = 19;
 			// 
 			// layerGroupBox
 			// 
@@ -665,9 +419,10 @@
 			this.layerGroupBox.Controls.Add(this.backgroundRadioButton2);
 			this.layerGroupBox.Controls.Add(this.foregroundAboveRadioButton);
 			this.layerGroupBox.Controls.Add(this.toBackgroundRadioButton);
-			this.layerGroupBox.Location = new System.Drawing.Point(3, 2);
+			this.layerGroupBox.Dock = System.Windows.Forms.DockStyle.Top;
+			this.layerGroupBox.Location = new System.Drawing.Point(0, 0);
 			this.layerGroupBox.Name = "layerGroupBox";
-			this.layerGroupBox.Size = new System.Drawing.Size(200, 158);
+			this.layerGroupBox.Size = new System.Drawing.Size(215, 158);
 			this.layerGroupBox.TabIndex = 17;
 			this.layerGroupBox.TabStop = false;
 			this.layerGroupBox.Text = "Layer";
@@ -746,14 +501,228 @@
 			this.toBackgroundRadioButton.UseVisualStyleBackColor = true;
 			this.toBackgroundRadioButton.CheckedChanged += new System.EventHandler(this.toBackgroundRadioButton_CheckedChanged);
 			// 
+			// drivingWayGroupBox
+			// 
+			this.drivingWayGroupBox.Controls.Add(this.drivingWayAutoScrollPanel);
+			this.drivingWayGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.drivingWayGroupBox.Location = new System.Drawing.Point(0, 0);
+			this.drivingWayGroupBox.Name = "drivingWayGroupBox";
+			this.drivingWayGroupBox.Size = new System.Drawing.Size(215, 488);
+			this.drivingWayGroupBox.TabIndex = 18;
+			this.drivingWayGroupBox.TabStop = false;
+			this.drivingWayGroupBox.Text = "Driving Way";
+			// 
+			// drivingWayAutoScrollPanel
+			// 
+			this.drivingWayAutoScrollPanel.AutoScroll = true;
+			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayButtonChange8);
+			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayButtonChange7);
+			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayButtonChange6);
+			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayButtonChange5);
+			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayButtonChange4);
+			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayButtonChange3);
+			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayButtonChange2);
+			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayButtonChange1);
+			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayLabelInfo);
+			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayLabel1);
+			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayLabel8);
+			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayLabel2);
+			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayLabel7);
+			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayLabel3);
+			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayLabel6);
+			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayLabel4);
+			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayLabel5);
+			this.drivingWayAutoScrollPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.drivingWayAutoScrollPanel.Location = new System.Drawing.Point(3, 16);
+			this.drivingWayAutoScrollPanel.Name = "drivingWayAutoScrollPanel";
+			this.drivingWayAutoScrollPanel.Size = new System.Drawing.Size(209, 469);
+			this.drivingWayAutoScrollPanel.TabIndex = 17;
+			// 
+			// drivingWayButtonChange8
+			// 
+			this.drivingWayButtonChange8.Location = new System.Drawing.Point(3, 339);
+			this.drivingWayButtonChange8.Name = "drivingWayButtonChange8";
+			this.drivingWayButtonChange8.Size = new System.Drawing.Size(112, 23);
+			this.drivingWayButtonChange8.TabIndex = 16;
+			this.drivingWayButtonChange8.Tag = "8";
+			this.drivingWayButtonChange8.Text = "Change";
+			this.drivingWayButtonChange8.UseVisualStyleBackColor = true;
+			this.drivingWayButtonChange8.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
+			// 
+			// drivingWayButtonChange7
+			// 
+			this.drivingWayButtonChange7.Location = new System.Drawing.Point(3, 297);
+			this.drivingWayButtonChange7.Name = "drivingWayButtonChange7";
+			this.drivingWayButtonChange7.Size = new System.Drawing.Size(112, 23);
+			this.drivingWayButtonChange7.TabIndex = 14;
+			this.drivingWayButtonChange7.Tag = "7";
+			this.drivingWayButtonChange7.Text = "Change";
+			this.drivingWayButtonChange7.UseVisualStyleBackColor = true;
+			this.drivingWayButtonChange7.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
+			// 
+			// drivingWayButtonChange6
+			// 
+			this.drivingWayButtonChange6.Location = new System.Drawing.Point(3, 255);
+			this.drivingWayButtonChange6.Name = "drivingWayButtonChange6";
+			this.drivingWayButtonChange6.Size = new System.Drawing.Size(112, 23);
+			this.drivingWayButtonChange6.TabIndex = 12;
+			this.drivingWayButtonChange6.Tag = "6";
+			this.drivingWayButtonChange6.Text = "Change";
+			this.drivingWayButtonChange6.UseVisualStyleBackColor = true;
+			this.drivingWayButtonChange6.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
+			// 
+			// drivingWayButtonChange5
+			// 
+			this.drivingWayButtonChange5.Location = new System.Drawing.Point(3, 213);
+			this.drivingWayButtonChange5.Name = "drivingWayButtonChange5";
+			this.drivingWayButtonChange5.Size = new System.Drawing.Size(112, 23);
+			this.drivingWayButtonChange5.TabIndex = 10;
+			this.drivingWayButtonChange5.Tag = "5";
+			this.drivingWayButtonChange5.Text = "Change";
+			this.drivingWayButtonChange5.UseVisualStyleBackColor = true;
+			this.drivingWayButtonChange5.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
+			// 
+			// drivingWayButtonChange4
+			// 
+			this.drivingWayButtonChange4.Location = new System.Drawing.Point(3, 171);
+			this.drivingWayButtonChange4.Name = "drivingWayButtonChange4";
+			this.drivingWayButtonChange4.Size = new System.Drawing.Size(112, 23);
+			this.drivingWayButtonChange4.TabIndex = 8;
+			this.drivingWayButtonChange4.Tag = "4";
+			this.drivingWayButtonChange4.Text = "Change";
+			this.drivingWayButtonChange4.UseVisualStyleBackColor = true;
+			this.drivingWayButtonChange4.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
+			// 
+			// drivingWayButtonChange3
+			// 
+			this.drivingWayButtonChange3.Location = new System.Drawing.Point(3, 129);
+			this.drivingWayButtonChange3.Name = "drivingWayButtonChange3";
+			this.drivingWayButtonChange3.Size = new System.Drawing.Size(112, 23);
+			this.drivingWayButtonChange3.TabIndex = 6;
+			this.drivingWayButtonChange3.Tag = "3";
+			this.drivingWayButtonChange3.Text = "Change";
+			this.drivingWayButtonChange3.UseVisualStyleBackColor = true;
+			this.drivingWayButtonChange3.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
+			// 
+			// drivingWayButtonChange2
+			// 
+			this.drivingWayButtonChange2.Location = new System.Drawing.Point(3, 87);
+			this.drivingWayButtonChange2.Name = "drivingWayButtonChange2";
+			this.drivingWayButtonChange2.Size = new System.Drawing.Size(112, 23);
+			this.drivingWayButtonChange2.TabIndex = 4;
+			this.drivingWayButtonChange2.Tag = "2";
+			this.drivingWayButtonChange2.Text = "Change";
+			this.drivingWayButtonChange2.UseVisualStyleBackColor = true;
+			this.drivingWayButtonChange2.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
+			// 
+			// drivingWayButtonChange1
+			// 
+			this.drivingWayButtonChange1.Location = new System.Drawing.Point(3, 45);
+			this.drivingWayButtonChange1.Name = "drivingWayButtonChange1";
+			this.drivingWayButtonChange1.Size = new System.Drawing.Size(112, 23);
+			this.drivingWayButtonChange1.TabIndex = 2;
+			this.drivingWayButtonChange1.Tag = "1";
+			this.drivingWayButtonChange1.Text = "Change";
+			this.drivingWayButtonChange1.UseVisualStyleBackColor = true;
+			this.drivingWayButtonChange1.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
+			// 
+			// drivingWayLabelInfo
+			// 
+			this.drivingWayLabelInfo.AutoSize = true;
+			this.drivingWayLabelInfo.Location = new System.Drawing.Point(-1, 8);
+			this.drivingWayLabelInfo.Name = "drivingWayLabelInfo";
+			this.drivingWayLabelInfo.Size = new System.Drawing.Size(166, 13);
+			this.drivingWayLabelInfo.TabIndex = 0;
+			this.drivingWayLabelInfo.Text = "Driving Way    arr.  dep.  Function";
+			// 
+			// drivingWayLabel1
+			// 
+			this.drivingWayLabel1.AutoSize = true;
+			this.drivingWayLabel1.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.drivingWayLabel1.Location = new System.Drawing.Point(1, 29);
+			this.drivingWayLabel1.Name = "drivingWayLabel1";
+			this.drivingWayLabel1.Size = new System.Drawing.Size(28, 14);
+			this.drivingWayLabel1.TabIndex = 1;
+			this.drivingWayLabel1.Text = "---";
+			// 
+			// drivingWayLabel8
+			// 
+			this.drivingWayLabel8.AutoSize = true;
+			this.drivingWayLabel8.Font = new System.Drawing.Font("Courier New", 8.25F);
+			this.drivingWayLabel8.Location = new System.Drawing.Point(1, 323);
+			this.drivingWayLabel8.Name = "drivingWayLabel8";
+			this.drivingWayLabel8.Size = new System.Drawing.Size(28, 14);
+			this.drivingWayLabel8.TabIndex = 15;
+			this.drivingWayLabel8.Text = "---";
+			// 
+			// drivingWayLabel2
+			// 
+			this.drivingWayLabel2.AutoSize = true;
+			this.drivingWayLabel2.Font = new System.Drawing.Font("Courier New", 8.25F);
+			this.drivingWayLabel2.Location = new System.Drawing.Point(1, 71);
+			this.drivingWayLabel2.Name = "drivingWayLabel2";
+			this.drivingWayLabel2.Size = new System.Drawing.Size(28, 14);
+			this.drivingWayLabel2.TabIndex = 3;
+			this.drivingWayLabel2.Text = "---";
+			// 
+			// drivingWayLabel7
+			// 
+			this.drivingWayLabel7.AutoSize = true;
+			this.drivingWayLabel7.Font = new System.Drawing.Font("Courier New", 8.25F);
+			this.drivingWayLabel7.Location = new System.Drawing.Point(1, 281);
+			this.drivingWayLabel7.Name = "drivingWayLabel7";
+			this.drivingWayLabel7.Size = new System.Drawing.Size(28, 14);
+			this.drivingWayLabel7.TabIndex = 13;
+			this.drivingWayLabel7.Text = "---";
+			// 
+			// drivingWayLabel3
+			// 
+			this.drivingWayLabel3.AutoSize = true;
+			this.drivingWayLabel3.Font = new System.Drawing.Font("Courier New", 8.25F);
+			this.drivingWayLabel3.Location = new System.Drawing.Point(1, 113);
+			this.drivingWayLabel3.Name = "drivingWayLabel3";
+			this.drivingWayLabel3.Size = new System.Drawing.Size(28, 14);
+			this.drivingWayLabel3.TabIndex = 5;
+			this.drivingWayLabel3.Text = "---";
+			// 
+			// drivingWayLabel6
+			// 
+			this.drivingWayLabel6.AutoSize = true;
+			this.drivingWayLabel6.Font = new System.Drawing.Font("Courier New", 8.25F);
+			this.drivingWayLabel6.Location = new System.Drawing.Point(1, 239);
+			this.drivingWayLabel6.Name = "drivingWayLabel6";
+			this.drivingWayLabel6.Size = new System.Drawing.Size(28, 14);
+			this.drivingWayLabel6.TabIndex = 11;
+			this.drivingWayLabel6.Text = "---";
+			// 
+			// drivingWayLabel4
+			// 
+			this.drivingWayLabel4.AutoSize = true;
+			this.drivingWayLabel4.Font = new System.Drawing.Font("Courier New", 8.25F);
+			this.drivingWayLabel4.Location = new System.Drawing.Point(1, 155);
+			this.drivingWayLabel4.Name = "drivingWayLabel4";
+			this.drivingWayLabel4.Size = new System.Drawing.Size(28, 14);
+			this.drivingWayLabel4.TabIndex = 7;
+			this.drivingWayLabel4.Text = "---";
+			// 
+			// drivingWayLabel5
+			// 
+			this.drivingWayLabel5.AutoSize = true;
+			this.drivingWayLabel5.Font = new System.Drawing.Font("Courier New", 8.25F);
+			this.drivingWayLabel5.Location = new System.Drawing.Point(1, 197);
+			this.drivingWayLabel5.Name = "drivingWayLabel5";
+			this.drivingWayLabel5.Size = new System.Drawing.Size(28, 14);
+			this.drivingWayLabel5.TabIndex = 9;
+			this.drivingWayLabel5.Text = "---";
+			// 
 			// propertiesGroupBox
 			// 
-			this.propertiesGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.propertiesGroupBox.Controls.Add(this.particlePropertiesPanel);
 			this.propertiesGroupBox.Controls.Add(this.clockPropertiesPanel);
-			this.propertiesGroupBox.Location = new System.Drawing.Point(2, 403);
+			this.propertiesGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.propertiesGroupBox.Location = new System.Drawing.Point(0, 0);
 			this.propertiesGroupBox.Name = "propertiesGroupBox";
-			this.propertiesGroupBox.Size = new System.Drawing.Size(200, 244);
+			this.propertiesGroupBox.Size = new System.Drawing.Size(215, 488);
 			this.propertiesGroupBox.TabIndex = 16;
 			this.propertiesGroupBox.TabStop = false;
 			this.propertiesGroupBox.Text = "Properties";
@@ -771,13 +740,13 @@
 			this.particlePropertiesPanel.Controls.Add(this.particleComboBox);
 			this.particlePropertiesPanel.Location = new System.Drawing.Point(2, 13);
 			this.particlePropertiesPanel.Name = "particlePropertiesPanel";
-			this.particlePropertiesPanel.Size = new System.Drawing.Size(196, 63);
+			this.particlePropertiesPanel.Size = new System.Drawing.Size(213, 63);
 			this.particlePropertiesPanel.TabIndex = 7;
 			// 
 			// particleWidthNumericUpDown
 			// 
 			this.particleWidthNumericUpDown.Enabled = false;
-			this.particleWidthNumericUpDown.Location = new System.Drawing.Point(156, 32);
+			this.particleWidthNumericUpDown.Location = new System.Drawing.Point(166, 32);
 			this.particleWidthNumericUpDown.Minimum = new decimal(new int[] {
             1,
             0,
@@ -796,7 +765,7 @@
 			// particleWidthLabel
 			// 
 			this.particleWidthLabel.AutoSize = true;
-			this.particleWidthLabel.Location = new System.Drawing.Point(119, 34);
+			this.particleWidthLabel.Location = new System.Drawing.Point(129, 34);
 			this.particleWidthLabel.Name = "particleWidthLabel";
 			this.particleWidthLabel.Size = new System.Drawing.Size(38, 13);
 			this.particleWidthLabel.TabIndex = 10;
@@ -805,7 +774,7 @@
 			// particleYLabel
 			// 
 			this.particleYLabel.AutoSize = true;
-			this.particleYLabel.Location = new System.Drawing.Point(63, 34);
+			this.particleYLabel.Location = new System.Drawing.Point(68, 34);
 			this.particleYLabel.Name = "particleYLabel";
 			this.particleYLabel.Size = new System.Drawing.Size(15, 13);
 			this.particleYLabel.TabIndex = 9;
@@ -814,7 +783,7 @@
 			// particleYNumericUpDown
 			// 
 			this.particleYNumericUpDown.Enabled = false;
-			this.particleYNumericUpDown.Location = new System.Drawing.Point(80, 32);
+			this.particleYNumericUpDown.Location = new System.Drawing.Point(85, 32);
 			this.particleYNumericUpDown.Name = "particleYNumericUpDown";
 			this.particleYNumericUpDown.Size = new System.Drawing.Size(33, 20);
 			this.particleYNumericUpDown.TabIndex = 8;
@@ -857,7 +826,7 @@
             "Smoke (dark colors)"});
 			this.particleComboBox.Location = new System.Drawing.Point(86, 5);
 			this.particleComboBox.Name = "particleComboBox";
-			this.particleComboBox.Size = new System.Drawing.Size(104, 21);
+			this.particleComboBox.Size = new System.Drawing.Size(121, 21);
 			this.particleComboBox.TabIndex = 3;
 			this.particleComboBox.SelectedIndexChanged += new System.EventHandler(this.particleComboBox_SelectedIndexChanged);
 			// 
@@ -880,7 +849,7 @@
 			this.clockPropertiesPanel.Controls.Add(this.clockLabel);
 			this.clockPropertiesPanel.Location = new System.Drawing.Point(2, 77);
 			this.clockPropertiesPanel.Name = "clockPropertiesPanel";
-			this.clockPropertiesPanel.Size = new System.Drawing.Size(196, 165);
+			this.clockPropertiesPanel.Size = new System.Drawing.Size(214, 165);
 			this.clockPropertiesPanel.TabIndex = 8;
 			// 
 			// clockColorMinutesPointerButton
@@ -888,7 +857,7 @@
 			this.clockColorMinutesPointerButton.BackColor = System.Drawing.Color.Black;
 			this.clockColorMinutesPointerButton.Enabled = false;
 			this.clockColorMinutesPointerButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.clockColorMinutesPointerButton.Location = new System.Drawing.Point(136, 134);
+			this.clockColorMinutesPointerButton.Location = new System.Drawing.Point(154, 133);
 			this.clockColorMinutesPointerButton.Name = "clockColorMinutesPointerButton";
 			this.clockColorMinutesPointerButton.Size = new System.Drawing.Size(53, 23);
 			this.clockColorMinutesPointerButton.TabIndex = 18;
@@ -900,7 +869,7 @@
 			this.clockColorHoursPointerButton.BackColor = System.Drawing.Color.Black;
 			this.clockColorHoursPointerButton.Enabled = false;
 			this.clockColorHoursPointerButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.clockColorHoursPointerButton.Location = new System.Drawing.Point(136, 108);
+			this.clockColorHoursPointerButton.Location = new System.Drawing.Point(154, 108);
 			this.clockColorHoursPointerButton.Name = "clockColorHoursPointerButton";
 			this.clockColorHoursPointerButton.Size = new System.Drawing.Size(53, 23);
 			this.clockColorHoursPointerButton.TabIndex = 17;
@@ -940,7 +909,7 @@
 			// clockWidthNumericUpDown
 			// 
 			this.clockWidthNumericUpDown.Enabled = false;
-			this.clockWidthNumericUpDown.Location = new System.Drawing.Point(156, 82);
+			this.clockWidthNumericUpDown.Location = new System.Drawing.Point(166, 82);
 			this.clockWidthNumericUpDown.Minimum = new decimal(new int[] {
             1,
             0,
@@ -959,7 +928,7 @@
 			// clockWidthLabel
 			// 
 			this.clockWidthLabel.AutoSize = true;
-			this.clockWidthLabel.Location = new System.Drawing.Point(119, 84);
+			this.clockWidthLabel.Location = new System.Drawing.Point(129, 84);
 			this.clockWidthLabel.Name = "clockWidthLabel";
 			this.clockWidthLabel.Size = new System.Drawing.Size(38, 13);
 			this.clockWidthLabel.TabIndex = 11;
@@ -968,7 +937,7 @@
 			// clockYNumericUpDown
 			// 
 			this.clockYNumericUpDown.Enabled = false;
-			this.clockYNumericUpDown.Location = new System.Drawing.Point(80, 82);
+			this.clockYNumericUpDown.Location = new System.Drawing.Point(85, 82);
 			this.clockYNumericUpDown.Name = "clockYNumericUpDown";
 			this.clockYNumericUpDown.Size = new System.Drawing.Size(33, 20);
 			this.clockYNumericUpDown.TabIndex = 10;
@@ -977,7 +946,7 @@
 			// clockYLabel
 			// 
 			this.clockYLabel.AutoSize = true;
-			this.clockYLabel.Location = new System.Drawing.Point(63, 84);
+			this.clockYLabel.Location = new System.Drawing.Point(68, 84);
 			this.clockYLabel.Name = "clockYLabel";
 			this.clockYLabel.Size = new System.Drawing.Size(15, 13);
 			this.clockYLabel.TabIndex = 9;
@@ -1009,7 +978,7 @@
             "No clock",
             "With 12h display",
             "With 24h display"});
-			this.clockComboBox.Location = new System.Drawing.Point(68, 7);
+			this.clockComboBox.Location = new System.Drawing.Point(86, 5);
 			this.clockComboBox.Name = "clockComboBox";
 			this.clockComboBox.Size = new System.Drawing.Size(121, 21);
 			this.clockComboBox.TabIndex = 6;
@@ -1025,7 +994,7 @@
             "towards the viewer",
             "rotated to Northwest",
             "rotated to Northeast"});
-			this.clockRotationComboBox.Location = new System.Drawing.Point(68, 32);
+			this.clockRotationComboBox.Location = new System.Drawing.Point(86, 32);
 			this.clockRotationComboBox.Name = "clockRotationComboBox";
 			this.clockRotationComboBox.Size = new System.Drawing.Size(121, 21);
 			this.clockRotationComboBox.TabIndex = 5;
@@ -1601,7 +1570,7 @@
 			// 
 			this.animationPhaseLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.animationPhaseLabel.AutoSize = true;
-			this.animationPhaseLabel.Location = new System.Drawing.Point(664, 119);
+			this.animationPhaseLabel.Location = new System.Drawing.Point(657, 119);
 			this.animationPhaseLabel.Name = "animationPhaseLabel";
 			this.animationPhaseLabel.Size = new System.Drawing.Size(85, 13);
 			this.animationPhaseLabel.TabIndex = 5;
@@ -1611,7 +1580,7 @@
 			// 
 			this.animationNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.animationNumericUpDown.Enabled = false;
-			this.animationNumericUpDown.Location = new System.Drawing.Point(755, 117);
+			this.animationNumericUpDown.Location = new System.Drawing.Point(748, 117);
 			this.animationNumericUpDown.Maximum = new decimal(new int[] {
             99,
             0,
@@ -1646,22 +1615,8 @@
 			this.scrollPanel.Controls.Add(this.graphicPanel);
 			this.scrollPanel.Location = new System.Drawing.Point(13, 137);
 			this.scrollPanel.Name = "scrollPanel";
-			this.scrollPanel.Size = new System.Drawing.Size(775, 483);
+			this.scrollPanel.Size = new System.Drawing.Size(768, 483);
 			this.scrollPanel.TabIndex = 8;
-			// 
-			// graphicPanel
-			// 
-			this.graphicPanel.DisplayGrid = true;
-			this.graphicPanel.Location = new System.Drawing.Point(20, 20);
-			this.graphicPanel.Name = "graphicPanel";
-			this.graphicPanel.Size = new System.Drawing.Size(732, 524);
-			this.graphicPanel.TabIndex = 4;
-			this.graphicPanel.ZoomFactor = BahnEditor.BahnLib.ZoomFactor.Zoom1;
-			this.graphicPanel.ZoomLevel = 6;
-			this.graphicPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.graphicPanel_Paint);
-			this.graphicPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.graphicPanel_MouseDown);
-			this.graphicPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.graphicPanel_MouseMove);
-			this.graphicPanel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.graphicPanel_MouseUp);
 			// 
 			// gridCheckBox
 			// 
@@ -1731,7 +1686,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.overviewDrawPanel.Location = new System.Drawing.Point(40, 0);
 			this.overviewDrawPanel.Name = "overviewDrawPanel";
-			this.overviewDrawPanel.Size = new System.Drawing.Size(735, 60);
+			this.overviewDrawPanel.Size = new System.Drawing.Size(721, 60);
 			this.overviewDrawPanel.TabIndex = 5;
 			this.overviewDrawPanel.TabStop = false;
 			this.overviewDrawPanel.Click += new System.EventHandler(this.overviewDrawPanel_Click);
@@ -1748,7 +1703,7 @@
 			this.overviewPanel.Controls.Add(this.overviewUpButton);
 			this.overviewPanel.Location = new System.Drawing.Point(13, 52);
 			this.overviewPanel.Name = "overviewPanel";
-			this.overviewPanel.Size = new System.Drawing.Size(775, 60);
+			this.overviewPanel.Size = new System.Drawing.Size(768, 60);
 			this.overviewPanel.TabIndex = 11;
 			// 
 			// cursorGroupBox
@@ -1758,12 +1713,94 @@
 			this.cursorGroupBox.Controls.Add(this.cursorNormalDirectionLabel);
 			this.cursorGroupBox.Controls.Add(this.cursorNormalDirectionComboBox);
 			this.cursorGroupBox.Controls.Add(this.cursorReverseDirectionLabel);
-			this.cursorGroupBox.Location = new System.Drawing.Point(399, 626);
+			this.cursorGroupBox.Location = new System.Drawing.Point(394, 626);
 			this.cursorGroupBox.Name = "cursorGroupBox";
 			this.cursorGroupBox.Size = new System.Drawing.Size(164, 78);
 			this.cursorGroupBox.TabIndex = 18;
 			this.cursorGroupBox.TabStop = false;
 			this.cursorGroupBox.Text = "Movement of cursor";
+			// 
+			// graphicPanel
+			// 
+			this.graphicPanel.DisplayGrid = true;
+			this.graphicPanel.Location = new System.Drawing.Point(20, 20);
+			this.graphicPanel.Name = "graphicPanel";
+			this.graphicPanel.Size = new System.Drawing.Size(732, 524);
+			this.graphicPanel.TabIndex = 4;
+			this.graphicPanel.ZoomFactor = BahnEditor.BahnLib.ZoomFactor.Zoom1;
+			this.graphicPanel.ZoomLevel = 6;
+			this.graphicPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.graphicPanel_Paint);
+			this.graphicPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.graphicPanel_MouseDown);
+			this.graphicPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.graphicPanel_MouseMove);
+			this.graphicPanel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.graphicPanel_MouseUp);
+			// 
+			// normalModeToolStripRadioButton
+			// 
+			this.normalModeToolStripRadioButton.Checked = true;
+			this.normalModeToolStripRadioButton.CheckOnClick = true;
+			this.normalModeToolStripRadioButton.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.normalModeToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.normalModeToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("normalModeToolStripRadioButton.Image")));
+			this.normalModeToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.normalModeToolStripRadioButton.Name = "normalModeToolStripRadioButton";
+			this.normalModeToolStripRadioButton.RadioButtonGroupID = 0;
+			this.normalModeToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
+			this.normalModeToolStripRadioButton.Text = "Normal Mode";
+			// 
+			// lineToolStripRadioButton
+			// 
+			this.lineToolStripRadioButton.CheckOnClick = true;
+			this.lineToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.lineToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("lineToolStripRadioButton.Image")));
+			this.lineToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.lineToolStripRadioButton.Name = "lineToolStripRadioButton";
+			this.lineToolStripRadioButton.RadioButtonGroupID = 0;
+			this.lineToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
+			this.lineToolStripRadioButton.Text = "Line";
+			// 
+			// rectangleToolStripRadioButton
+			// 
+			this.rectangleToolStripRadioButton.CheckOnClick = true;
+			this.rectangleToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.rectangleToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("rectangleToolStripRadioButton.Image")));
+			this.rectangleToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.rectangleToolStripRadioButton.Name = "rectangleToolStripRadioButton";
+			this.rectangleToolStripRadioButton.RadioButtonGroupID = 0;
+			this.rectangleToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
+			this.rectangleToolStripRadioButton.Text = "Rectangle";
+			// 
+			// fillToolStripRadioButton
+			// 
+			this.fillToolStripRadioButton.CheckOnClick = true;
+			this.fillToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.fillToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("fillToolStripRadioButton.Image")));
+			this.fillToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.fillToolStripRadioButton.Name = "fillToolStripRadioButton";
+			this.fillToolStripRadioButton.RadioButtonGroupID = 0;
+			this.fillToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
+			this.fillToolStripRadioButton.Text = "Fill";
+			// 
+			// selectToolStripRadioButton
+			// 
+			this.selectToolStripRadioButton.CheckOnClick = true;
+			this.selectToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.selectToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("selectToolStripRadioButton.Image")));
+			this.selectToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.selectToolStripRadioButton.Name = "selectToolStripRadioButton";
+			this.selectToolStripRadioButton.RadioButtonGroupID = 0;
+			this.selectToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
+			this.selectToolStripRadioButton.Text = "Select area";
+			// 
+			// pickColorToolStripRadioButton
+			// 
+			this.pickColorToolStripRadioButton.CheckOnClick = true;
+			this.pickColorToolStripRadioButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.pickColorToolStripRadioButton.Image = ((System.Drawing.Image)(resources.GetObject("pickColorToolStripRadioButton.Image")));
+			this.pickColorToolStripRadioButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.pickColorToolStripRadioButton.Name = "pickColorToolStripRadioButton";
+			this.pickColorToolStripRadioButton.RadioButtonGroupID = 0;
+			this.pickColorToolStripRadioButton.Size = new System.Drawing.Size(23, 22);
+			this.pickColorToolStripRadioButton.Text = "Pick color";
 			// 
 			// Editor
 			// 
@@ -1795,10 +1832,15 @@
 			this.toolStrip.ResumeLayout(false);
 			this.toolStrip.PerformLayout();
 			this.controlPanel.ResumeLayout(false);
-			this.drivingWayGroupBox.ResumeLayout(false);
-			this.drivingWayGroupBox.PerformLayout();
+			this.propertiesSplitContainer.Panel1.ResumeLayout(false);
+			this.propertiesSplitContainer.Panel2.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.propertiesSplitContainer)).EndInit();
+			this.propertiesSplitContainer.ResumeLayout(false);
 			this.layerGroupBox.ResumeLayout(false);
 			this.layerGroupBox.PerformLayout();
+			this.drivingWayGroupBox.ResumeLayout(false);
+			this.drivingWayAutoScrollPanel.ResumeLayout(false);
+			this.drivingWayAutoScrollPanel.PerformLayout();
 			this.propertiesGroupBox.ResumeLayout(false);
 			this.particlePropertiesPanel.ResumeLayout(false);
 			this.particlePropertiesPanel.PerformLayout();
@@ -1955,23 +1997,25 @@
 		private System.Windows.Forms.GroupBox layerGroupBox;
 		private System.Windows.Forms.GroupBox cursorGroupBox;
 		private System.Windows.Forms.GroupBox drivingWayGroupBox;
-		private System.Windows.Forms.Label drivingWayLabelInfo;
-		private System.Windows.Forms.Button drivingWayButtonChange1;
-		private System.Windows.Forms.Label drivingWayLabel1;
+		private System.Windows.Forms.Panel drivingWayAutoScrollPanel;
 		private System.Windows.Forms.Button drivingWayButtonChange8;
-		private System.Windows.Forms.Label drivingWayLabel8;
 		private System.Windows.Forms.Button drivingWayButtonChange7;
-		private System.Windows.Forms.Label drivingWayLabel7;
 		private System.Windows.Forms.Button drivingWayButtonChange6;
-		private System.Windows.Forms.Label drivingWayLabel6;
 		private System.Windows.Forms.Button drivingWayButtonChange5;
-		private System.Windows.Forms.Label drivingWayLabel5;
 		private System.Windows.Forms.Button drivingWayButtonChange4;
-		private System.Windows.Forms.Label drivingWayLabel4;
 		private System.Windows.Forms.Button drivingWayButtonChange3;
-		private System.Windows.Forms.Label drivingWayLabel3;
 		private System.Windows.Forms.Button drivingWayButtonChange2;
+		private System.Windows.Forms.Button drivingWayButtonChange1;
+		private System.Windows.Forms.Label drivingWayLabelInfo;
+		private System.Windows.Forms.Label drivingWayLabel1;
+		private System.Windows.Forms.Label drivingWayLabel8;
 		private System.Windows.Forms.Label drivingWayLabel2;
+		private System.Windows.Forms.Label drivingWayLabel7;
+		private System.Windows.Forms.Label drivingWayLabel3;
+		private System.Windows.Forms.Label drivingWayLabel6;
+		private System.Windows.Forms.Label drivingWayLabel4;
+		private System.Windows.Forms.Label drivingWayLabel5;
+		private System.Windows.Forms.SplitContainer propertiesSplitContainer;
 
 	}
 }

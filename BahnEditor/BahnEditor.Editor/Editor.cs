@@ -2475,7 +2475,7 @@ namespace BahnEditor.Editor
 
 		private void propertiesGroupBox_Paint(object sender, PaintEventArgs e)
 		{
-			e.Graphics.DrawLine(Pens.DarkGray, 1, 76, 198, 76);
+			e.Graphics.DrawLine(Pens.DarkGray, 0, 76, 214, 76);
 		}
 
 		private void clockComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -2772,6 +2772,61 @@ namespace BahnEditor.Editor
 			}
 		}
 
+		private void drivingWayButtonChange_Click(object sender, EventArgs e)
+		{
+			Button b = sender as Button;
+			if (b != null)
+			{
+				this.CreateGraphic();
+				Graphic graphic = this.ActualGraphic;
+				if (graphic != null)
+				{
+					int index = int.Parse((string)b.Tag) - 1;
+					DrivingWaySettingsForm drivingWayForm;
+					if (graphic.DrivingWay.Count > index && graphic.DrivingWay[index] != null)
+					{
+						drivingWayForm = new DrivingWaySettingsForm(graphic.DrivingWay[index]);
+					}
+					else
+					{
+						drivingWayForm = new DrivingWaySettingsForm();
+					}
+					DialogResult result = drivingWayForm.ShowDialog();
+					if (result == DialogResult.OK)
+					{
+						if (drivingWayForm.Delete)
+						{
+							try
+							{
+								graphic.DrivingWay.RemoveAt(index);
+								this.UpdateDrivingWay();
+							}
+							catch (ArgumentOutOfRangeException)
+							{ }
+						}
+						else
+						{
+							DrivingWayElement drivingWayElement = new DrivingWayElement(drivingWayForm.DrivingWay, drivingWayForm.DrivingWayFunction, drivingWayForm.DirectionArrival, drivingWayForm.DirectionDeparture);
+							if(!graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.DrivingWay))
+							{
+								graphic.Properties.RawData |= GraphicProperties.Properties.DrivingWay;
+							}
+							if (graphic.DrivingWay.Count > index)
+								graphic.DrivingWay[index] = drivingWayElement;
+							else
+								graphic.DrivingWay.Add(drivingWayElement);
+							this.UpdateDrivingWay();
+						}
+						this.UserMadeChanges(true);
+					}
+				}
+			}
+			else
+			{
+				MessageBox.Show("Sender not button");
+			}
+		}
+
 		#endregion Properties
 
 		#region Color and layer
@@ -2975,12 +3030,24 @@ namespace BahnEditor.Editor
 		#endregion Color and layer
 
 		#region Menu and toolstrip
-
 		private void animationToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			this.OpenAnimationForm();
 		}
 
+		private void newDrivingWayToolStripItem_Click(object sender, EventArgs e)
+		{
+			if (!this.AskSaveGraphic())
+				return;
+			this.NewGraphic(Mode.DrivingWay);
+		}
+
+		private void newGraphicToolStripItem_Click(object sender, EventArgs e)
+		{
+			if (!this.AskSaveGraphic())
+				return;
+			this.NewGraphic(Mode.Graphic);
+		}
 		private void newToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			if (!this.AskSaveGraphic())
@@ -3195,74 +3262,5 @@ namespace BahnEditor.Editor
 		}
 
 		#endregion Nested Classes
-
-		private void newGraphicToolStripItem_Click(object sender, EventArgs e)
-		{
-			if (!this.AskSaveGraphic())
-				return;
-			this.NewGraphic(Mode.Graphic);
-		}
-
-		private void newDrivingWayToolStripItem_Click(object sender, EventArgs e)
-		{
-			if (!this.AskSaveGraphic())
-				return;
-			this.NewGraphic(Mode.DrivingWay);
-		}
-
-		private void drivingWayButtonChange_Click(object sender, EventArgs e)
-		{
-			Button b = sender as Button;
-			if (b != null)
-			{
-				this.CreateGraphic();
-				Graphic graphic = this.ActualGraphic;
-				if (graphic != null)
-				{
-					int index = int.Parse((string)b.Tag) - 1;
-					DrivingWaySettingsForm drivingWayForm;
-					if (graphic.DrivingWay.Count > index && graphic.DrivingWay[index] != null)
-					{
-						drivingWayForm = new DrivingWaySettingsForm(graphic.DrivingWay[index]);
-					}
-					else
-					{
-						drivingWayForm = new DrivingWaySettingsForm();
-					}
-					DialogResult result = drivingWayForm.ShowDialog();
-					if (result == DialogResult.OK)
-					{
-						if (drivingWayForm.Delete)
-						{
-							try
-							{
-								graphic.DrivingWay.RemoveAt(index);
-								this.UpdateDrivingWay();
-							}
-							catch (ArgumentOutOfRangeException)
-							{ }
-						}
-						else
-						{
-							DrivingWayElement drivingWayElement = new DrivingWayElement(drivingWayForm.DrivingWay, drivingWayForm.DrivingWayFunction, drivingWayForm.DirectionArrival, drivingWayForm.DirectionDeparture);
-							if(!graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.DrivingWay))
-							{
-								graphic.Properties.RawData |= GraphicProperties.Properties.DrivingWay;
-							}
-							if (graphic.DrivingWay.Count > index)
-								graphic.DrivingWay[index] = drivingWayElement;
-							else
-								graphic.DrivingWay.Add(drivingWayElement);
-							this.UpdateDrivingWay();
-						}
-						this.UserMadeChanges(true);
-					}
-				}
-			}
-			else
-			{
-				MessageBox.Show("Sender not button");
-			}
-		}
 	}
 }
