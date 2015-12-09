@@ -829,6 +829,14 @@ namespace BahnEditor.Editor
 						}
 						else if (this.fillToolStripRadioButton.Checked)
 						{
+							uint[,] layer2 = new uint[layer.GetLength(0), layer.GetLength(1)];
+							for (int i = 0; i < layer.GetLength(0); i++)
+							{
+								for (int j = 0; j < layer.GetLength(1); j++)
+								{
+									layer2[i, j] = layer[i, j];
+								}
+							}
 							uint oldColor = layer[p.Y, p.X];
 							uint newColor = 0;
 							if (e.Button == MouseButtons.Left)
@@ -849,15 +857,17 @@ namespace BahnEditor.Editor
 								Point point = stack.Pop();
 								if (point.X >= 0 && point.Y >= 0 && point.X < layer.GetLength(1) && point.Y < layer.GetLength(0))
 								{
-									if (layer[point.Y, point.X] == oldColor)
+									if (layer2[point.Y, point.X] == oldColor)
 									{
 										changes.Add(point);
+										layer2[point.Y, point.X] = newColor;
 										stack.Push(new Point(point.X, point.Y + 1));
 										stack.Push(new Point(point.X, point.Y - 1));
 										stack.Push(new Point(point.X + 1, point.Y));
 										stack.Push(new Point(point.X - 1, point.Y));
 									}
 								}
+								System.Diagnostics.Debug.WriteLine(String.Format("{0}, {1}", stack.Count, changes.Count));
 							}
 							this.UndoRedo.Do(new ChangePixelsCommand(newColor, changes.ToArray()), layer);
 							this.UserMadeChanges(true);
