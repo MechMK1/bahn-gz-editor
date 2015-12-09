@@ -51,6 +51,7 @@
 			this.okButton.TabIndex = 0;
 			this.okButton.Text = "OK";
 			this.okButton.UseVisualStyleBackColor = true;
+			this.okButton.Click += new System.EventHandler(this.okButton_Click);
 			// 
 			// cancelButton
 			// 
@@ -76,7 +77,6 @@
 			this.typeComboBox.Name = "typeComboBox";
 			this.typeComboBox.Size = new System.Drawing.Size(99, 21);
 			this.typeComboBox.TabIndex = 2;
-			this.typeComboBox.SelectedIndexChanged += new System.EventHandler(this.typeComboBox_SelectedIndexChanged);
 			// 
 			// arrivalComboBox
 			// 
@@ -95,7 +95,6 @@
 			this.arrivalComboBox.Name = "arrivalComboBox";
 			this.arrivalComboBox.Size = new System.Drawing.Size(34, 21);
 			this.arrivalComboBox.TabIndex = 10;
-			this.arrivalComboBox.SelectedIndexChanged += new System.EventHandler(this.arrivalComboBox_SelectedIndexChanged);
 			// 
 			// departureComboBox
 			// 
@@ -114,7 +113,6 @@
 			this.departureComboBox.Name = "departureComboBox";
 			this.departureComboBox.Size = new System.Drawing.Size(34, 21);
 			this.departureComboBox.TabIndex = 11;
-			this.departureComboBox.SelectedIndexChanged += new System.EventHandler(this.departureComboBox_SelectedIndexChanged);
 			// 
 			// additionalFunctionComboBox
 			// 
@@ -129,7 +127,6 @@
 			this.additionalFunctionComboBox.Name = "additionalFunctionComboBox";
 			this.additionalFunctionComboBox.Size = new System.Drawing.Size(139, 21);
 			this.additionalFunctionComboBox.TabIndex = 12;
-			this.additionalFunctionComboBox.SelectedIndexChanged += new System.EventHandler(this.additionalFunctionComboBox_SelectedIndexChanged);
 			// 
 			// typeLabel
 			// 
@@ -176,7 +173,6 @@
 			this.crossingCheckBox.TabIndex = 17;
 			this.crossingCheckBox.Text = "Crossing";
 			this.crossingCheckBox.UseVisualStyleBackColor = true;
-			this.crossingCheckBox.CheckedChanged += new System.EventHandler(this.crossingCheckBox_CheckedChanged);
 			// 
 			// infoLabel
 			// 

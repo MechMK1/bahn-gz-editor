@@ -86,7 +86,7 @@ namespace BahnEditor.Editor
 			Signal = 2
 		}
 
-		#endregion
+		#endregion Enums
 
 		#region Internal Properties
 
@@ -303,7 +303,6 @@ namespace BahnEditor.Editor
 						}
 						break;
 					}
-
 				}
 				this.urStack = new Dictionary<Tuple<int, int, int, LayerID, ZoomFactor>, UndoRedoStack>();
 				this.actualGraphic = 0;
@@ -605,11 +604,8 @@ namespace BahnEditor.Editor
 					else
 						brush = new SolidBrush(PixelToColor(pixel));
 
-
 					Point corner1 = this.specialModeStartPoint;
 					Point corner2 = this.specialModeEndPoint;
-
-
 
 					Rectangle rectangle = this.CalculateRectangle(corner1, corner2);
 
@@ -1918,20 +1914,28 @@ namespace BahnEditor.Editor
 			{
 				case Direction.North:
 					return "↑";
+
 				case Direction.South:
 					return "↓";
+
 				case Direction.East:
 					return "→";
+
 				case Direction.West:
 					return "←";
+
 				case Direction.NorthEast:
 					return "↗";
+
 				case Direction.NorthWest:
 					return "↖";
+
 				case Direction.SouthEast:
 					return "↘";
+
 				case Direction.SouthWest:
 					return "↙";
+
 				default:
 					return "";
 			}
@@ -1943,12 +1947,16 @@ namespace BahnEditor.Editor
 			{
 				case DrivingWay.Rail:
 					return "Rail";
+
 				case DrivingWay.Road:
 					return "Road";
+
 				case DrivingWay.RailAndRoad:
 					return "Rail+Road";
+
 				case DrivingWay.Water:
 					return "Water";
+
 				default:
 					return "---";
 			}
@@ -2807,7 +2815,7 @@ namespace BahnEditor.Editor
 						else
 						{
 							DrivingWayElement drivingWayElement = new DrivingWayElement(drivingWayForm.DrivingWay, drivingWayForm.DrivingWayFunction, drivingWayForm.DirectionArrival, drivingWayForm.DirectionDeparture);
-							if(!graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.DrivingWay))
+							if (!graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.DrivingWay))
 							{
 								graphic.Properties.RawData |= GraphicProperties.Properties.DrivingWay;
 							}
@@ -3030,6 +3038,7 @@ namespace BahnEditor.Editor
 		#endregion Color and layer
 
 		#region Menu and toolstrip
+
 		private void animationToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			this.OpenAnimationForm();
@@ -3048,6 +3057,7 @@ namespace BahnEditor.Editor
 				return;
 			this.NewGraphic(Mode.Graphic);
 		}
+
 		private void newToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			if (!this.AskSaveGraphic())
