@@ -256,18 +256,18 @@ namespace BahnEditor.Editor
 			this.UpdateAnimation();
 		}
 
-		private void LoadGraphic()
+		private void LoadGraphic(string filename)
 		{
 			try
 			{
-				this.zoom1Archive = GraphicArchive.Load(this.loadFileDialog.FileName);
+				this.zoom1Archive = GraphicArchive.Load(filename);
 				if (this.zoom1Archive.ZoomFactor != ZoomFactor.Zoom1)
 				{
 					throw new InvalidDataException("Zoomfactor of archive not 1");
 				}
 				try
 				{
-					this.zoom2Archive = GraphicArchive.Load(this.loadFileDialog.FileName.Remove(this.loadFileDialog.FileName.Length - 3) + "uz2");
+					this.zoom2Archive = GraphicArchive.Load(filename.Remove(filename.Length - 3) + "uz2");
 					if (this.zoom2Archive.ZoomFactor != ZoomFactor.Zoom2)
 					{
 						throw new InvalidDataException("Zoom2-file found, internal zoomfactor not 2");
@@ -279,7 +279,7 @@ namespace BahnEditor.Editor
 				}
 				try
 				{
-					this.zoom4Archive = GraphicArchive.Load(this.loadFileDialog.FileName.Remove(this.loadFileDialog.FileName.Length - 3) + "uz4");
+					this.zoom4Archive = GraphicArchive.Load(filename.Remove(filename.Length - 3) + "uz4");
 					if (this.zoom4Archive.ZoomFactor != ZoomFactor.Zoom4)
 					{
 						throw new InvalidDataException("Zoom4-file found, internal zoomfactor not 4");
@@ -386,6 +386,82 @@ namespace BahnEditor.Editor
 			{
 				MessageBox.Show("A graphic is empty (fully transparent)!", "Invalid graphic!", MessageBoxButtons.OK, MessageBoxIcon.Information);
 				return false;
+			}
+		}
+
+		private void InsertGraphicToArchive(string filename)
+		{
+			ChooseGraphicLoadTypeForm chooseGraphicForm = new ChooseGraphicLoadTypeForm();
+			while (true)
+			{
+				DialogResult result = chooseGraphicForm.ShowDialog();
+				if (result == DialogResult.OK)
+				{
+					if (chooseGraphicForm.AddToArchive)
+					{
+						if (!CheckPositionForExistingGraphic(chooseGraphicForm.Position, chooseGraphicForm.Alternative, chooseGraphicForm.AnimationPhase))
+						{
+							if (chooseGraphicForm.Alternative > Constants.NoAlternative && CheckPositionForExistingGraphic(chooseGraphicForm.Position, Constants.NoAlternative, Constants.MinAnimationPhase))
+							{
+								MessageBox.Show("You need to enable alternatives for this graphic if you want to add a new alternative graphic!", "Add alternative graphic", MessageBoxButtons.OK, MessageBoxIcon.Information);
+								continue;
+							}
+							else if (chooseGraphicForm.Alternative == Constants.NoAlternative &&
+								(CheckPositionForExistingGraphic(chooseGraphicForm.Position, 1, Constants.MinAnimationPhase)
+								|| CheckPositionForExistingGraphic(chooseGraphicForm.Position, 2, Constants.MinAnimationPhase)
+								|| CheckPositionForExistingGraphic(chooseGraphicForm.Position, 3, Constants.MinAnimationPhase)
+								|| CheckPositionForExistingGraphic(chooseGraphicForm.Position, 4, Constants.MinAnimationPhase)))
+							{
+								MessageBox.Show("Alternatives are enabled for this graphic! You can't add a graphic to this position!", "Add alternative graphic", MessageBoxButtons.OK, MessageBoxIcon.Information);
+								continue;
+							}
+						}
+						else
+						{
+							DialogResult result2 = MessageBox.Show("There is already a graphic on the defined position!" + Environment.NewLine + "Do you want to replace it?", "Position not free", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+							if (result2 == DialogResult.No)
+							{
+								continue;
+							}
+							else if (result2 == DialogResult.Yes)
+							{
+								try { this.zoom1Archive.RemoveGraphic(chooseGraphicForm.Position, chooseGraphicForm.AnimationPhase, chooseGraphicForm.Alternative); }
+								catch (ArgumentException)
+								{ }
+
+								try { this.zoom2Archive.RemoveGraphic(chooseGraphicForm.Position, chooseGraphicForm.AnimationPhase, chooseGraphicForm.Alternative); }
+								catch (ArgumentException)
+								{ }
+
+								try { this.zoom4Archive.RemoveGraphic(chooseGraphicForm.Position, chooseGraphicForm.AnimationPhase, chooseGraphicForm.Alternative); }
+								catch (ArgumentException)
+								{ }
+
+							}
+							else
+							{
+								throw new ArgumentException("WTF in InsertToGraphicArchive");
+							}
+
+						}
+						this.zoom1Archive.AddGraphic(chooseGraphicForm.Position, chooseGraphicForm.AnimationPhase, chooseGraphicForm.Alternative, Graphic.Load(filename));
+						if (File.Exists(filename.Remove(filename.Length - 3) + "gz2"))
+							this.zoom2Archive.AddGraphic(chooseGraphicForm.Position, chooseGraphicForm.AnimationPhase, chooseGraphicForm.Alternative, Graphic.Load(filename.Remove(filename.Length - 3) + "gz2"));
+						if (File.Exists(filename.Remove(filename.Length - 3) + "gz4"))
+							this.zoom4Archive.AddGraphic(chooseGraphicForm.Position, chooseGraphicForm.AnimationPhase, chooseGraphicForm.Alternative, Graphic.Load(filename.Remove(filename.Length - 3) + "gz4"));
+						this.UserMadeChanges(true);
+						this.overviewDrawPanel.Invalidate();
+						return;
+					}
+					else
+					{
+						MessageBox.Show("Not yet implemented!");
+					}
+				}
+				else
+				{
+					return;
+				}
 			}
 		}
 
@@ -1994,6 +2070,18 @@ namespace BahnEditor.Editor
 			return Tuple.Create<string, string>(string1, string2);
 		}
 
+		/// <summary>
+		/// Checks if a graphic exists at the defined position in the archive
+		/// </summary>
+		/// <param name="position">Position in the archive</param>
+		/// <param name="alternative">Alternative in the archive</param>
+		/// <param name="animationPhase">Animationphase in the archive</param>
+		/// <returns>Returns true if the graphic exists, else false</returns>
+		private bool CheckPositionForExistingGraphic(int position, int alternative, int animationPhase)
+		{
+			return this.Zoom1Archive[position, animationPhase, alternative] != null;
+		}
+
 		#endregion Helper
 
 		#region Copy and Paste
@@ -2300,7 +2388,12 @@ namespace BahnEditor.Editor
 
 		private void loadFileDialog_FileOk(object sender, CancelEventArgs e)
 		{
-			this.LoadGraphic();
+			if (this.loadFileDialog.SafeFileName.EndsWith(".gz1"))
+				this.InsertGraphicToArchive(this.loadFileDialog.FileName);
+			else if (this.loadFileDialog.SafeFileName.EndsWith(".uz1"))
+				this.LoadGraphic(this.loadFileDialog.FileName);
+			else
+				MessageBox.Show("Filename with incorrect extension", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 		}
 
 		private void saveFileDialog_FileOk(object sender, CancelEventArgs e)

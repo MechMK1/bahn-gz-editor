@@ -50,6 +50,12 @@
     <Compile Include="AnimationForm.Designer.cs">
       <DependentUpon>AnimationForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ChooseGraphicLoadTypeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ChooseGraphicLoadTypeForm.Designer.cs">
+      <DependentUpon>ChooseGraphicLoadTypeForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="DrivingWaySettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -72,6 +78,9 @@
     </Compile>
     <EmbeddedResource Include="AnimationForm.resx">
       <DependentUpon>AnimationForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ChooseGraphicLoadTypeForm.resx">
+      <DependentUpon>ChooseGraphicLoadTypeForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="DrivingWaySettingsForm.resx">
       <DependentUpon>DrivingWaySettingsForm.cs</DependentUpon>

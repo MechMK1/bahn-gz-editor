@@ -128,27 +128,27 @@ namespace BahnEditor.BahnLib
 		/// Adds a graphic to the archive at the given position with animationphase and alternative.
 		/// </summary>
 		/// <param name="elementNumber">Position in the archive</param>
-		/// <param name="phase">Animationphase</param>
+		/// <param name="animationPhase">Animationphase</param>
 		/// <param name="alternative">Alternative</param>
 		/// <param name="graphic">Graphic</param>
 		/// <exception cref="System.ArgumentNullException"/>
 		/// <exception cref="System.ArgumentOutOfRangeException"/>
 		/// <exception cref="System.ArgumentException"/>
-		public void AddGraphic(int elementNumber, int phase, int alternative, Graphic graphic)
+		public void AddGraphic(int elementNumber, int animationPhase, int alternative, Graphic graphic)
 		{
 			if (graphic == null)
 				throw new ArgumentNullException("graphic");
 			if (elementNumber < 0 || elementNumber > Constants.MaxElementsInArchive)
 				throw new ArgumentOutOfRangeException("elementNumber");
-			if (phase < 0 || phase > Constants.MaxAnimationPhase)
-				throw new ArgumentOutOfRangeException("phase");
+			if (animationPhase < 0 || animationPhase > Constants.MaxAnimationPhase)
+				throw new ArgumentOutOfRangeException("animationPhase");
 			if (alternative < Constants.NoAlternative || alternative > Constants.MaxAlternative)
 				throw new ArgumentOutOfRangeException("alternative");
 			if (graphic.ZoomFactor != this.ZoomFactor)
 				throw new ArgumentException("Zoomfactor not matching");
-			if (this.graphics.Count(x => x.ElementNumber == elementNumber && x.AnimationPhase == phase && x.Alternative == alternative) > 0)
+			if (this.graphics.Count(x => x.ElementNumber == elementNumber && x.AnimationPhase == animationPhase && x.Alternative == alternative) > 0)
 				throw new ArgumentException("Graphic is already existing at this position");
-			this.graphics.Add(new ArchiveElement(elementNumber, phase, alternative, graphic));
+			this.graphics.Add(new ArchiveElement(elementNumber, animationPhase, alternative, graphic));
 		}
 
 		public void AddAnimation()
@@ -174,17 +174,17 @@ namespace BahnEditor.BahnLib
 		/// Removes a graphic from the archive at the given position, animationphase and alternative.
 		/// </summary>
 		/// <param name="elementNumber">Position in the archive</param>
-		/// <param name="phase">Animationphase</param>
+		/// <param name="animationPhase">Animationphase</param>
 		/// <param name="alternative">Alternative</param>
 		/// <exception cref="System.ArgumentException"/>
-		public void RemoveGraphic(int elementNumber, int phase, int alternative)
+		public void RemoveGraphic(int elementNumber, int animationPhase, int alternative)
 		{
-			int result = this.graphics.Count(x => x.ElementNumber == elementNumber && x.AnimationPhase == phase && x.Alternative == alternative);
+			int result = this.graphics.Count(x => x.ElementNumber == elementNumber && x.AnimationPhase == animationPhase && x.Alternative == alternative);
 			if (result > 1)
 				throw new ArgumentException("Too many graphics found");
 			if (result == 0)
 				throw new ArgumentException("Graphic not found");
-			this.graphics.RemoveAll(x => x.ElementNumber == elementNumber && x.AnimationPhase == phase && x.Alternative == alternative);
+			this.graphics.RemoveAll(x => x.ElementNumber == elementNumber && x.AnimationPhase == animationPhase && x.Alternative == alternative);
 		}
 
 		public void RemoveAnimation()

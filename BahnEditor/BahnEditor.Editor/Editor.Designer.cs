@@ -57,25 +57,6 @@
 			this.backgroundRadioButton2 = new System.Windows.Forms.RadioButton();
 			this.foregroundAboveRadioButton = new System.Windows.Forms.RadioButton();
 			this.toBackgroundRadioButton = new System.Windows.Forms.RadioButton();
-			this.drivingWayGroupBox = new System.Windows.Forms.GroupBox();
-			this.drivingWayAutoScrollPanel = new System.Windows.Forms.Panel();
-			this.drivingWayButtonChange8 = new System.Windows.Forms.Button();
-			this.drivingWayButtonChange7 = new System.Windows.Forms.Button();
-			this.drivingWayButtonChange6 = new System.Windows.Forms.Button();
-			this.drivingWayButtonChange5 = new System.Windows.Forms.Button();
-			this.drivingWayButtonChange4 = new System.Windows.Forms.Button();
-			this.drivingWayButtonChange3 = new System.Windows.Forms.Button();
-			this.drivingWayButtonChange2 = new System.Windows.Forms.Button();
-			this.drivingWayButtonChange1 = new System.Windows.Forms.Button();
-			this.drivingWayLabelInfo = new System.Windows.Forms.Label();
-			this.drivingWayLabel1 = new System.Windows.Forms.Label();
-			this.drivingWayLabel8 = new System.Windows.Forms.Label();
-			this.drivingWayLabel2 = new System.Windows.Forms.Label();
-			this.drivingWayLabel7 = new System.Windows.Forms.Label();
-			this.drivingWayLabel3 = new System.Windows.Forms.Label();
-			this.drivingWayLabel6 = new System.Windows.Forms.Label();
-			this.drivingWayLabel4 = new System.Windows.Forms.Label();
-			this.drivingWayLabel5 = new System.Windows.Forms.Label();
 			this.propertiesGroupBox = new System.Windows.Forms.GroupBox();
 			this.particlePropertiesPanel = new System.Windows.Forms.Panel();
 			this.particleWidthNumericUpDown = new System.Windows.Forms.NumericUpDown();
@@ -102,6 +83,25 @@
 			this.clockRotationComboBox = new System.Windows.Forms.ComboBox();
 			this.clockRotationLabel = new System.Windows.Forms.Label();
 			this.clockLabel = new System.Windows.Forms.Label();
+			this.drivingWayGroupBox = new System.Windows.Forms.GroupBox();
+			this.drivingWayAutoScrollPanel = new System.Windows.Forms.Panel();
+			this.drivingWayButtonChange8 = new System.Windows.Forms.Button();
+			this.drivingWayButtonChange7 = new System.Windows.Forms.Button();
+			this.drivingWayButtonChange6 = new System.Windows.Forms.Button();
+			this.drivingWayButtonChange5 = new System.Windows.Forms.Button();
+			this.drivingWayButtonChange4 = new System.Windows.Forms.Button();
+			this.drivingWayButtonChange3 = new System.Windows.Forms.Button();
+			this.drivingWayButtonChange2 = new System.Windows.Forms.Button();
+			this.drivingWayButtonChange1 = new System.Windows.Forms.Button();
+			this.drivingWayLabelInfo = new System.Windows.Forms.Label();
+			this.drivingWayLabel1 = new System.Windows.Forms.Label();
+			this.drivingWayLabel8 = new System.Windows.Forms.Label();
+			this.drivingWayLabel2 = new System.Windows.Forms.Label();
+			this.drivingWayLabel7 = new System.Windows.Forms.Label();
+			this.drivingWayLabel3 = new System.Windows.Forms.Label();
+			this.drivingWayLabel6 = new System.Windows.Forms.Label();
+			this.drivingWayLabel4 = new System.Windows.Forms.Label();
+			this.drivingWayLabel5 = new System.Windows.Forms.Label();
 			this.mouseButtonsGroupBox = new System.Windows.Forms.GroupBox();
 			this.leftColorButton = new System.Windows.Forms.Button();
 			this.leftLabel = new System.Windows.Forms.Label();
@@ -167,6 +167,7 @@
 			this.overviewDrawPanel = new System.Windows.Forms.PictureBox();
 			this.overviewPanel = new System.Windows.Forms.Panel();
 			this.cursorGroupBox = new System.Windows.Forms.GroupBox();
+			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.graphicPanel = new BahnEditor.Editor.GraphicPanel();
 			this.normalModeToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
 			this.lineToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
@@ -181,8 +182,6 @@
 			this.propertiesSplitContainer.Panel2.SuspendLayout();
 			this.propertiesSplitContainer.SuspendLayout();
 			this.layerGroupBox.SuspendLayout();
-			this.drivingWayGroupBox.SuspendLayout();
-			this.drivingWayAutoScrollPanel.SuspendLayout();
 			this.propertiesGroupBox.SuspendLayout();
 			this.particlePropertiesPanel.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.particleWidthNumericUpDown)).BeginInit();
@@ -192,6 +191,8 @@
 			((System.ComponentModel.ISupportInitialize)(this.clockWidthNumericUpDown)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.clockYNumericUpDown)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.clockXNumericUpDown)).BeginInit();
+			this.drivingWayGroupBox.SuspendLayout();
+			this.drivingWayAutoScrollPanel.SuspendLayout();
 			this.mouseButtonsGroupBox.SuspendLayout();
 			this.menuStrip.SuspendLayout();
 			this.tabControl.SuspendLayout();
@@ -501,220 +502,6 @@
 			this.toBackgroundRadioButton.UseVisualStyleBackColor = true;
 			this.toBackgroundRadioButton.CheckedChanged += new System.EventHandler(this.toBackgroundRadioButton_CheckedChanged);
 			// 
-			// drivingWayGroupBox
-			// 
-			this.drivingWayGroupBox.Controls.Add(this.drivingWayAutoScrollPanel);
-			this.drivingWayGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.drivingWayGroupBox.Location = new System.Drawing.Point(0, 0);
-			this.drivingWayGroupBox.Name = "drivingWayGroupBox";
-			this.drivingWayGroupBox.Size = new System.Drawing.Size(215, 488);
-			this.drivingWayGroupBox.TabIndex = 18;
-			this.drivingWayGroupBox.TabStop = false;
-			this.drivingWayGroupBox.Text = "Driving Way";
-			// 
-			// drivingWayAutoScrollPanel
-			// 
-			this.drivingWayAutoScrollPanel.AutoScroll = true;
-			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayButtonChange8);
-			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayButtonChange7);
-			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayButtonChange6);
-			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayButtonChange5);
-			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayButtonChange4);
-			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayButtonChange3);
-			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayButtonChange2);
-			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayButtonChange1);
-			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayLabelInfo);
-			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayLabel1);
-			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayLabel8);
-			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayLabel2);
-			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayLabel7);
-			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayLabel3);
-			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayLabel6);
-			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayLabel4);
-			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayLabel5);
-			this.drivingWayAutoScrollPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.drivingWayAutoScrollPanel.Location = new System.Drawing.Point(3, 16);
-			this.drivingWayAutoScrollPanel.Name = "drivingWayAutoScrollPanel";
-			this.drivingWayAutoScrollPanel.Size = new System.Drawing.Size(209, 469);
-			this.drivingWayAutoScrollPanel.TabIndex = 17;
-			// 
-			// drivingWayButtonChange8
-			// 
-			this.drivingWayButtonChange8.Location = new System.Drawing.Point(3, 339);
-			this.drivingWayButtonChange8.Name = "drivingWayButtonChange8";
-			this.drivingWayButtonChange8.Size = new System.Drawing.Size(112, 23);
-			this.drivingWayButtonChange8.TabIndex = 16;
-			this.drivingWayButtonChange8.Tag = "8";
-			this.drivingWayButtonChange8.Text = "Change";
-			this.drivingWayButtonChange8.UseVisualStyleBackColor = true;
-			this.drivingWayButtonChange8.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
-			// 
-			// drivingWayButtonChange7
-			// 
-			this.drivingWayButtonChange7.Location = new System.Drawing.Point(3, 297);
-			this.drivingWayButtonChange7.Name = "drivingWayButtonChange7";
-			this.drivingWayButtonChange7.Size = new System.Drawing.Size(112, 23);
-			this.drivingWayButtonChange7.TabIndex = 14;
-			this.drivingWayButtonChange7.Tag = "7";
-			this.drivingWayButtonChange7.Text = "Change";
-			this.drivingWayButtonChange7.UseVisualStyleBackColor = true;
-			this.drivingWayButtonChange7.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
-			// 
-			// drivingWayButtonChange6
-			// 
-			this.drivingWayButtonChange6.Location = new System.Drawing.Point(3, 255);
-			this.drivingWayButtonChange6.Name = "drivingWayButtonChange6";
-			this.drivingWayButtonChange6.Size = new System.Drawing.Size(112, 23);
-			this.drivingWayButtonChange6.TabIndex = 12;
-			this.drivingWayButtonChange6.Tag = "6";
-			this.drivingWayButtonChange6.Text = "Change";
-			this.drivingWayButtonChange6.UseVisualStyleBackColor = true;
-			this.drivingWayButtonChange6.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
-			// 
-			// drivingWayButtonChange5
-			// 
-			this.drivingWayButtonChange5.Location = new System.Drawing.Point(3, 213);
-			this.drivingWayButtonChange5.Name = "drivingWayButtonChange5";
-			this.drivingWayButtonChange5.Size = new System.Drawing.Size(112, 23);
-			this.drivingWayButtonChange5.TabIndex = 10;
-			this.drivingWayButtonChange5.Tag = "5";
-			this.drivingWayButtonChange5.Text = "Change";
-			this.drivingWayButtonChange5.UseVisualStyleBackColor = true;
-			this.drivingWayButtonChange5.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
-			// 
-			// drivingWayButtonChange4
-			// 
-			this.drivingWayButtonChange4.Location = new System.Drawing.Point(3, 171);
-			this.drivingWayButtonChange4.Name = "drivingWayButtonChange4";
-			this.drivingWayButtonChange4.Size = new System.Drawing.Size(112, 23);
-			this.drivingWayButtonChange4.TabIndex = 8;
-			this.drivingWayButtonChange4.Tag = "4";
-			this.drivingWayButtonChange4.Text = "Change";
-			this.drivingWayButtonChange4.UseVisualStyleBackColor = true;
-			this.drivingWayButtonChange4.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
-			// 
-			// drivingWayButtonChange3
-			// 
-			this.drivingWayButtonChange3.Location = new System.Drawing.Point(3, 129);
-			this.drivingWayButtonChange3.Name = "drivingWayButtonChange3";
-			this.drivingWayButtonChange3.Size = new System.Drawing.Size(112, 23);
-			this.drivingWayButtonChange3.TabIndex = 6;
-			this.drivingWayButtonChange3.Tag = "3";
-			this.drivingWayButtonChange3.Text = "Change";
-			this.drivingWayButtonChange3.UseVisualStyleBackColor = true;
-			this.drivingWayButtonChange3.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
-			// 
-			// drivingWayButtonChange2
-			// 
-			this.drivingWayButtonChange2.Location = new System.Drawing.Point(3, 87);
-			this.drivingWayButtonChange2.Name = "drivingWayButtonChange2";
-			this.drivingWayButtonChange2.Size = new System.Drawing.Size(112, 23);
-			this.drivingWayButtonChange2.TabIndex = 4;
-			this.drivingWayButtonChange2.Tag = "2";
-			this.drivingWayButtonChange2.Text = "Change";
-			this.drivingWayButtonChange2.UseVisualStyleBackColor = true;
-			this.drivingWayButtonChange2.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
-			// 
-			// drivingWayButtonChange1
-			// 
-			this.drivingWayButtonChange1.Location = new System.Drawing.Point(3, 45);
-			this.drivingWayButtonChange1.Name = "drivingWayButtonChange1";
-			this.drivingWayButtonChange1.Size = new System.Drawing.Size(112, 23);
-			this.drivingWayButtonChange1.TabIndex = 2;
-			this.drivingWayButtonChange1.Tag = "1";
-			this.drivingWayButtonChange1.Text = "Change";
-			this.drivingWayButtonChange1.UseVisualStyleBackColor = true;
-			this.drivingWayButtonChange1.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
-			// 
-			// drivingWayLabelInfo
-			// 
-			this.drivingWayLabelInfo.AutoSize = true;
-			this.drivingWayLabelInfo.Location = new System.Drawing.Point(-1, 8);
-			this.drivingWayLabelInfo.Name = "drivingWayLabelInfo";
-			this.drivingWayLabelInfo.Size = new System.Drawing.Size(166, 13);
-			this.drivingWayLabelInfo.TabIndex = 0;
-			this.drivingWayLabelInfo.Text = "Driving Way    arr.  dep.  Function";
-			// 
-			// drivingWayLabel1
-			// 
-			this.drivingWayLabel1.AutoSize = true;
-			this.drivingWayLabel1.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.drivingWayLabel1.Location = new System.Drawing.Point(1, 29);
-			this.drivingWayLabel1.Name = "drivingWayLabel1";
-			this.drivingWayLabel1.Size = new System.Drawing.Size(28, 14);
-			this.drivingWayLabel1.TabIndex = 1;
-			this.drivingWayLabel1.Text = "---";
-			// 
-			// drivingWayLabel8
-			// 
-			this.drivingWayLabel8.AutoSize = true;
-			this.drivingWayLabel8.Font = new System.Drawing.Font("Courier New", 8.25F);
-			this.drivingWayLabel8.Location = new System.Drawing.Point(1, 323);
-			this.drivingWayLabel8.Name = "drivingWayLabel8";
-			this.drivingWayLabel8.Size = new System.Drawing.Size(28, 14);
-			this.drivingWayLabel8.TabIndex = 15;
-			this.drivingWayLabel8.Text = "---";
-			// 
-			// drivingWayLabel2
-			// 
-			this.drivingWayLabel2.AutoSize = true;
-			this.drivingWayLabel2.Font = new System.Drawing.Font("Courier New", 8.25F);
-			this.drivingWayLabel2.Location = new System.Drawing.Point(1, 71);
-			this.drivingWayLabel2.Name = "drivingWayLabel2";
-			this.drivingWayLabel2.Size = new System.Drawing.Size(28, 14);
-			this.drivingWayLabel2.TabIndex = 3;
-			this.drivingWayLabel2.Text = "---";
-			// 
-			// drivingWayLabel7
-			// 
-			this.drivingWayLabel7.AutoSize = true;
-			this.drivingWayLabel7.Font = new System.Drawing.Font("Courier New", 8.25F);
-			this.drivingWayLabel7.Location = new System.Drawing.Point(1, 281);
-			this.drivingWayLabel7.Name = "drivingWayLabel7";
-			this.drivingWayLabel7.Size = new System.Drawing.Size(28, 14);
-			this.drivingWayLabel7.TabIndex = 13;
-			this.drivingWayLabel7.Text = "---";
-			// 
-			// drivingWayLabel3
-			// 
-			this.drivingWayLabel3.AutoSize = true;
-			this.drivingWayLabel3.Font = new System.Drawing.Font("Courier New", 8.25F);
-			this.drivingWayLabel3.Location = new System.Drawing.Point(1, 113);
-			this.drivingWayLabel3.Name = "drivingWayLabel3";
-			this.drivingWayLabel3.Size = new System.Drawing.Size(28, 14);
-			this.drivingWayLabel3.TabIndex = 5;
-			this.drivingWayLabel3.Text = "---";
-			// 
-			// drivingWayLabel6
-			// 
-			this.drivingWayLabel6.AutoSize = true;
-			this.drivingWayLabel6.Font = new System.Drawing.Font("Courier New", 8.25F);
-			this.drivingWayLabel6.Location = new System.Drawing.Point(1, 239);
-			this.drivingWayLabel6.Name = "drivingWayLabel6";
-			this.drivingWayLabel6.Size = new System.Drawing.Size(28, 14);
-			this.drivingWayLabel6.TabIndex = 11;
-			this.drivingWayLabel6.Text = "---";
-			// 
-			// drivingWayLabel4
-			// 
-			this.drivingWayLabel4.AutoSize = true;
-			this.drivingWayLabel4.Font = new System.Drawing.Font("Courier New", 8.25F);
-			this.drivingWayLabel4.Location = new System.Drawing.Point(1, 155);
-			this.drivingWayLabel4.Name = "drivingWayLabel4";
-			this.drivingWayLabel4.Size = new System.Drawing.Size(28, 14);
-			this.drivingWayLabel4.TabIndex = 7;
-			this.drivingWayLabel4.Text = "---";
-			// 
-			// drivingWayLabel5
-			// 
-			this.drivingWayLabel5.AutoSize = true;
-			this.drivingWayLabel5.Font = new System.Drawing.Font("Courier New", 8.25F);
-			this.drivingWayLabel5.Location = new System.Drawing.Point(1, 197);
-			this.drivingWayLabel5.Name = "drivingWayLabel5";
-			this.drivingWayLabel5.Size = new System.Drawing.Size(28, 14);
-			this.drivingWayLabel5.TabIndex = 9;
-			this.drivingWayLabel5.Text = "---";
-			// 
 			// propertiesGroupBox
 			// 
 			this.propertiesGroupBox.Controls.Add(this.particlePropertiesPanel);
@@ -1018,6 +805,220 @@
 			this.clockLabel.TabIndex = 0;
 			this.clockLabel.Text = "Clock:";
 			// 
+			// drivingWayGroupBox
+			// 
+			this.drivingWayGroupBox.Controls.Add(this.drivingWayAutoScrollPanel);
+			this.drivingWayGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.drivingWayGroupBox.Location = new System.Drawing.Point(0, 0);
+			this.drivingWayGroupBox.Name = "drivingWayGroupBox";
+			this.drivingWayGroupBox.Size = new System.Drawing.Size(215, 488);
+			this.drivingWayGroupBox.TabIndex = 18;
+			this.drivingWayGroupBox.TabStop = false;
+			this.drivingWayGroupBox.Text = "Driving Way";
+			// 
+			// drivingWayAutoScrollPanel
+			// 
+			this.drivingWayAutoScrollPanel.AutoScroll = true;
+			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayButtonChange8);
+			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayButtonChange7);
+			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayButtonChange6);
+			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayButtonChange5);
+			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayButtonChange4);
+			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayButtonChange3);
+			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayButtonChange2);
+			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayButtonChange1);
+			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayLabelInfo);
+			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayLabel1);
+			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayLabel8);
+			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayLabel2);
+			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayLabel7);
+			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayLabel3);
+			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayLabel6);
+			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayLabel4);
+			this.drivingWayAutoScrollPanel.Controls.Add(this.drivingWayLabel5);
+			this.drivingWayAutoScrollPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.drivingWayAutoScrollPanel.Location = new System.Drawing.Point(3, 16);
+			this.drivingWayAutoScrollPanel.Name = "drivingWayAutoScrollPanel";
+			this.drivingWayAutoScrollPanel.Size = new System.Drawing.Size(209, 469);
+			this.drivingWayAutoScrollPanel.TabIndex = 17;
+			// 
+			// drivingWayButtonChange8
+			// 
+			this.drivingWayButtonChange8.Location = new System.Drawing.Point(3, 339);
+			this.drivingWayButtonChange8.Name = "drivingWayButtonChange8";
+			this.drivingWayButtonChange8.Size = new System.Drawing.Size(112, 23);
+			this.drivingWayButtonChange8.TabIndex = 16;
+			this.drivingWayButtonChange8.Tag = "8";
+			this.drivingWayButtonChange8.Text = "Change";
+			this.drivingWayButtonChange8.UseVisualStyleBackColor = true;
+			this.drivingWayButtonChange8.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
+			// 
+			// drivingWayButtonChange7
+			// 
+			this.drivingWayButtonChange7.Location = new System.Drawing.Point(3, 297);
+			this.drivingWayButtonChange7.Name = "drivingWayButtonChange7";
+			this.drivingWayButtonChange7.Size = new System.Drawing.Size(112, 23);
+			this.drivingWayButtonChange7.TabIndex = 14;
+			this.drivingWayButtonChange7.Tag = "7";
+			this.drivingWayButtonChange7.Text = "Change";
+			this.drivingWayButtonChange7.UseVisualStyleBackColor = true;
+			this.drivingWayButtonChange7.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
+			// 
+			// drivingWayButtonChange6
+			// 
+			this.drivingWayButtonChange6.Location = new System.Drawing.Point(3, 255);
+			this.drivingWayButtonChange6.Name = "drivingWayButtonChange6";
+			this.drivingWayButtonChange6.Size = new System.Drawing.Size(112, 23);
+			this.drivingWayButtonChange6.TabIndex = 12;
+			this.drivingWayButtonChange6.Tag = "6";
+			this.drivingWayButtonChange6.Text = "Change";
+			this.drivingWayButtonChange6.UseVisualStyleBackColor = true;
+			this.drivingWayButtonChange6.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
+			// 
+			// drivingWayButtonChange5
+			// 
+			this.drivingWayButtonChange5.Location = new System.Drawing.Point(3, 213);
+			this.drivingWayButtonChange5.Name = "drivingWayButtonChange5";
+			this.drivingWayButtonChange5.Size = new System.Drawing.Size(112, 23);
+			this.drivingWayButtonChange5.TabIndex = 10;
+			this.drivingWayButtonChange5.Tag = "5";
+			this.drivingWayButtonChange5.Text = "Change";
+			this.drivingWayButtonChange5.UseVisualStyleBackColor = true;
+			this.drivingWayButtonChange5.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
+			// 
+			// drivingWayButtonChange4
+			// 
+			this.drivingWayButtonChange4.Location = new System.Drawing.Point(3, 171);
+			this.drivingWayButtonChange4.Name = "drivingWayButtonChange4";
+			this.drivingWayButtonChange4.Size = new System.Drawing.Size(112, 23);
+			this.drivingWayButtonChange4.TabIndex = 8;
+			this.drivingWayButtonChange4.Tag = "4";
+			this.drivingWayButtonChange4.Text = "Change";
+			this.drivingWayButtonChange4.UseVisualStyleBackColor = true;
+			this.drivingWayButtonChange4.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
+			// 
+			// drivingWayButtonChange3
+			// 
+			this.drivingWayButtonChange3.Location = new System.Drawing.Point(3, 129);
+			this.drivingWayButtonChange3.Name = "drivingWayButtonChange3";
+			this.drivingWayButtonChange3.Size = new System.Drawing.Size(112, 23);
+			this.drivingWayButtonChange3.TabIndex = 6;
+			this.drivingWayButtonChange3.Tag = "3";
+			this.drivingWayButtonChange3.Text = "Change";
+			this.drivingWayButtonChange3.UseVisualStyleBackColor = true;
+			this.drivingWayButtonChange3.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
+			// 
+			// drivingWayButtonChange2
+			// 
+			this.drivingWayButtonChange2.Location = new System.Drawing.Point(3, 87);
+			this.drivingWayButtonChange2.Name = "drivingWayButtonChange2";
+			this.drivingWayButtonChange2.Size = new System.Drawing.Size(112, 23);
+			this.drivingWayButtonChange2.TabIndex = 4;
+			this.drivingWayButtonChange2.Tag = "2";
+			this.drivingWayButtonChange2.Text = "Change";
+			this.drivingWayButtonChange2.UseVisualStyleBackColor = true;
+			this.drivingWayButtonChange2.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
+			// 
+			// drivingWayButtonChange1
+			// 
+			this.drivingWayButtonChange1.Location = new System.Drawing.Point(3, 45);
+			this.drivingWayButtonChange1.Name = "drivingWayButtonChange1";
+			this.drivingWayButtonChange1.Size = new System.Drawing.Size(112, 23);
+			this.drivingWayButtonChange1.TabIndex = 2;
+			this.drivingWayButtonChange1.Tag = "1";
+			this.drivingWayButtonChange1.Text = "Change";
+			this.drivingWayButtonChange1.UseVisualStyleBackColor = true;
+			this.drivingWayButtonChange1.Click += new System.EventHandler(this.drivingWayButtonChange_Click);
+			// 
+			// drivingWayLabelInfo
+			// 
+			this.drivingWayLabelInfo.AutoSize = true;
+			this.drivingWayLabelInfo.Location = new System.Drawing.Point(-1, 8);
+			this.drivingWayLabelInfo.Name = "drivingWayLabelInfo";
+			this.drivingWayLabelInfo.Size = new System.Drawing.Size(166, 13);
+			this.drivingWayLabelInfo.TabIndex = 0;
+			this.drivingWayLabelInfo.Text = "Driving Way    arr.  dep.  Function";
+			// 
+			// drivingWayLabel1
+			// 
+			this.drivingWayLabel1.AutoSize = true;
+			this.drivingWayLabel1.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.drivingWayLabel1.Location = new System.Drawing.Point(1, 29);
+			this.drivingWayLabel1.Name = "drivingWayLabel1";
+			this.drivingWayLabel1.Size = new System.Drawing.Size(28, 14);
+			this.drivingWayLabel1.TabIndex = 1;
+			this.drivingWayLabel1.Text = "---";
+			// 
+			// drivingWayLabel8
+			// 
+			this.drivingWayLabel8.AutoSize = true;
+			this.drivingWayLabel8.Font = new System.Drawing.Font("Courier New", 8.25F);
+			this.drivingWayLabel8.Location = new System.Drawing.Point(1, 323);
+			this.drivingWayLabel8.Name = "drivingWayLabel8";
+			this.drivingWayLabel8.Size = new System.Drawing.Size(28, 14);
+			this.drivingWayLabel8.TabIndex = 15;
+			this.drivingWayLabel8.Text = "---";
+			// 
+			// drivingWayLabel2
+			// 
+			this.drivingWayLabel2.AutoSize = true;
+			this.drivingWayLabel2.Font = new System.Drawing.Font("Courier New", 8.25F);
+			this.drivingWayLabel2.Location = new System.Drawing.Point(1, 71);
+			this.drivingWayLabel2.Name = "drivingWayLabel2";
+			this.drivingWayLabel2.Size = new System.Drawing.Size(28, 14);
+			this.drivingWayLabel2.TabIndex = 3;
+			this.drivingWayLabel2.Text = "---";
+			// 
+			// drivingWayLabel7
+			// 
+			this.drivingWayLabel7.AutoSize = true;
+			this.drivingWayLabel7.Font = new System.Drawing.Font("Courier New", 8.25F);
+			this.drivingWayLabel7.Location = new System.Drawing.Point(1, 281);
+			this.drivingWayLabel7.Name = "drivingWayLabel7";
+			this.drivingWayLabel7.Size = new System.Drawing.Size(28, 14);
+			this.drivingWayLabel7.TabIndex = 13;
+			this.drivingWayLabel7.Text = "---";
+			// 
+			// drivingWayLabel3
+			// 
+			this.drivingWayLabel3.AutoSize = true;
+			this.drivingWayLabel3.Font = new System.Drawing.Font("Courier New", 8.25F);
+			this.drivingWayLabel3.Location = new System.Drawing.Point(1, 113);
+			this.drivingWayLabel3.Name = "drivingWayLabel3";
+			this.drivingWayLabel3.Size = new System.Drawing.Size(28, 14);
+			this.drivingWayLabel3.TabIndex = 5;
+			this.drivingWayLabel3.Text = "---";
+			// 
+			// drivingWayLabel6
+			// 
+			this.drivingWayLabel6.AutoSize = true;
+			this.drivingWayLabel6.Font = new System.Drawing.Font("Courier New", 8.25F);
+			this.drivingWayLabel6.Location = new System.Drawing.Point(1, 239);
+			this.drivingWayLabel6.Name = "drivingWayLabel6";
+			this.drivingWayLabel6.Size = new System.Drawing.Size(28, 14);
+			this.drivingWayLabel6.TabIndex = 11;
+			this.drivingWayLabel6.Text = "---";
+			// 
+			// drivingWayLabel4
+			// 
+			this.drivingWayLabel4.AutoSize = true;
+			this.drivingWayLabel4.Font = new System.Drawing.Font("Courier New", 8.25F);
+			this.drivingWayLabel4.Location = new System.Drawing.Point(1, 155);
+			this.drivingWayLabel4.Name = "drivingWayLabel4";
+			this.drivingWayLabel4.Size = new System.Drawing.Size(28, 14);
+			this.drivingWayLabel4.TabIndex = 7;
+			this.drivingWayLabel4.Text = "---";
+			// 
+			// drivingWayLabel5
+			// 
+			this.drivingWayLabel5.AutoSize = true;
+			this.drivingWayLabel5.Font = new System.Drawing.Font("Courier New", 8.25F);
+			this.drivingWayLabel5.Location = new System.Drawing.Point(1, 197);
+			this.drivingWayLabel5.Name = "drivingWayLabel5";
+			this.drivingWayLabel5.Size = new System.Drawing.Size(28, 14);
+			this.drivingWayLabel5.TabIndex = 9;
+			this.drivingWayLabel5.Text = "---";
+			// 
 			// mouseButtonsGroupBox
 			// 
 			this.mouseButtonsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -1236,7 +1237,7 @@
 			// 
 			// loadFileDialog
 			// 
-			this.loadFileDialog.Filter = "Archive files|*.uz1";
+			this.loadFileDialog.Filter = "Archive files|*.uz1|Graphic file|*.gz1";
 			this.loadFileDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.loadFileDialog_FileOk);
 			// 
 			// menuStrip
@@ -1355,7 +1356,8 @@
             this.pasteToolStripMenuItem,
             this.copyToBitmapToolStripMenuItem,
             this.toolStripSeparator9,
-            this.selectAllToolStripMenuItem});
+            this.selectAllToolStripMenuItem,
+            this.toolStripMenuItem1});
 			this.editToolStripMenuItem.Name = "editToolStripMenuItem";
 			this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
 			this.editToolStripMenuItem.Text = "&Edit";
@@ -1686,7 +1688,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.overviewDrawPanel.Location = new System.Drawing.Point(40, 0);
 			this.overviewDrawPanel.Name = "overviewDrawPanel";
-			this.overviewDrawPanel.Size = new System.Drawing.Size(721, 60);
+			this.overviewDrawPanel.Size = new System.Drawing.Size(727, 60);
 			this.overviewDrawPanel.TabIndex = 5;
 			this.overviewDrawPanel.TabStop = false;
 			this.overviewDrawPanel.Click += new System.EventHandler(this.overviewDrawPanel_Click);
@@ -1719,6 +1721,11 @@
 			this.cursorGroupBox.TabIndex = 18;
 			this.cursorGroupBox.TabStop = false;
 			this.cursorGroupBox.Text = "Movement of cursor";
+			// 
+			// toolStripMenuItem1
+			// 
+			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(164, 22);
 			// 
 			// graphicPanel
 			// 
@@ -1838,9 +1845,6 @@
 			this.propertiesSplitContainer.ResumeLayout(false);
 			this.layerGroupBox.ResumeLayout(false);
 			this.layerGroupBox.PerformLayout();
-			this.drivingWayGroupBox.ResumeLayout(false);
-			this.drivingWayAutoScrollPanel.ResumeLayout(false);
-			this.drivingWayAutoScrollPanel.PerformLayout();
 			this.propertiesGroupBox.ResumeLayout(false);
 			this.particlePropertiesPanel.ResumeLayout(false);
 			this.particlePropertiesPanel.PerformLayout();
@@ -1852,6 +1856,9 @@
 			((System.ComponentModel.ISupportInitialize)(this.clockWidthNumericUpDown)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.clockYNumericUpDown)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.clockXNumericUpDown)).EndInit();
+			this.drivingWayGroupBox.ResumeLayout(false);
+			this.drivingWayAutoScrollPanel.ResumeLayout(false);
+			this.drivingWayAutoScrollPanel.PerformLayout();
 			this.mouseButtonsGroupBox.ResumeLayout(false);
 			this.mouseButtonsGroupBox.PerformLayout();
 			this.menuStrip.ResumeLayout(false);
@@ -2016,6 +2023,7 @@
 		private System.Windows.Forms.Label drivingWayLabel4;
 		private System.Windows.Forms.Label drivingWayLabel5;
 		private System.Windows.Forms.SplitContainer propertiesSplitContainer;
+		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
 
 	}
 }
