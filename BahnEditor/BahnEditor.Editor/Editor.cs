@@ -1453,6 +1453,16 @@ namespace BahnEditor.Editor
 			}
 		}
 
+		private void UpdateGraphicPanelCentered()
+		{
+			graphicPanel.Left = (this.scrollPanel.Width - graphicPanel.Width) / 2;
+			this.scrollPanel.AutoScrollPosition = new Point
+			{
+				X = (this.graphicPanel.Width - this.scrollPanel.Width) / 2,
+				Y = (this.graphicPanel.Height - this.scrollPanel.Height) / 2
+			};
+		}
+
 		#endregion Update Methods
 
 		#region Layer Methods
@@ -2405,6 +2415,11 @@ namespace BahnEditor.Editor
 			}
 		}
 
+		private void scrollPanel_SizeChanged(object sender, EventArgs e)
+		{
+			this.UpdateGraphicPanelCentered();
+		}
+
 		#endregion Editor
 
 		#region Overview
@@ -2578,6 +2593,11 @@ namespace BahnEditor.Editor
 		{
 			this.graphicPanel.DisplayGrid = this.gridCheckBox.Checked;
 			this.graphicPanel.Draw(this.GetGraphicLayer());
+		}
+
+		private void graphicPanel_SizeChanged(object sender, EventArgs e)
+		{
+			this.UpdateGraphicPanelCentered();
 		}
 
 		#endregion GraphicPanel
@@ -3375,5 +3395,7 @@ namespace BahnEditor.Editor
 		}
 
 		#endregion Nested Classes
+
+		
 	}
 }

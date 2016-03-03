@@ -136,6 +136,7 @@
 			this.copyToBitmapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
 			this.selectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.animationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -167,7 +168,6 @@
 			this.overviewDrawPanel = new System.Windows.Forms.PictureBox();
 			this.overviewPanel = new System.Windows.Forms.Panel();
 			this.cursorGroupBox = new System.Windows.Forms.GroupBox();
-			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.graphicPanel = new BahnEditor.Editor.GraphicPanel();
 			this.normalModeToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
 			this.lineToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
@@ -1435,6 +1435,11 @@
 			this.selectAllToolStripMenuItem.Text = "Select &All";
 			this.selectAllToolStripMenuItem.Click += new System.EventHandler(this.selectAllToolStripMenuItem_Click);
 			// 
+			// toolStripMenuItem1
+			// 
+			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(164, 22);
+			// 
 			// toolsToolStripMenuItem
 			// 
 			this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -1443,7 +1448,7 @@
             this.customizeToolStripMenuItem,
             this.optionsToolStripMenuItem});
 			this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-			this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
+			this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
 			this.toolsToolStripMenuItem.Text = "&Tools";
 			// 
 			// animationToolStripMenuItem
@@ -1612,13 +1617,13 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.scrollPanel.AutoScroll = true;
-			this.scrollPanel.AutoScrollMargin = new System.Drawing.Size(20, 20);
 			this.scrollPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.scrollPanel.Controls.Add(this.graphicPanel);
 			this.scrollPanel.Location = new System.Drawing.Point(13, 137);
 			this.scrollPanel.Name = "scrollPanel";
 			this.scrollPanel.Size = new System.Drawing.Size(768, 483);
 			this.scrollPanel.TabIndex = 8;
+			this.scrollPanel.SizeChanged += new System.EventHandler(this.scrollPanel_SizeChanged);
 			// 
 			// gridCheckBox
 			// 
@@ -1722,11 +1727,6 @@
 			this.cursorGroupBox.TabStop = false;
 			this.cursorGroupBox.Text = "Movement of cursor";
 			// 
-			// toolStripMenuItem1
-			// 
-			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-			this.toolStripMenuItem1.Size = new System.Drawing.Size(164, 22);
-			// 
 			// graphicPanel
 			// 
 			this.graphicPanel.DisplayGrid = true;
@@ -1736,6 +1736,7 @@
 			this.graphicPanel.TabIndex = 4;
 			this.graphicPanel.ZoomFactor = BahnEditor.BahnLib.ZoomFactor.Zoom1;
 			this.graphicPanel.ZoomLevel = 6;
+			this.graphicPanel.SizeChanged += new System.EventHandler(this.graphicPanel_SizeChanged);
 			this.graphicPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.graphicPanel_Paint);
 			this.graphicPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.graphicPanel_MouseDown);
 			this.graphicPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.graphicPanel_MouseMove);
