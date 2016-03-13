@@ -33,7 +33,11 @@
 			this.toolStrip = new System.Windows.Forms.ToolStrip();
 			this.newToolStripButton = new System.Windows.Forms.ToolStripSplitButton();
 			this.newGraphicToolStripItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.newSingleGraphicToolStripItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.newArchiveGraphicToolStripItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.newDrivingWayToolStripItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.newSingleDrivingWayToolStripItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.newArchiveDrivingWayToolStripItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.signalToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.openToolStripButton = new System.Windows.Forms.ToolStripButton();
 			this.saveToolStripButton = new System.Windows.Forms.ToolStripButton();
@@ -136,8 +140,8 @@
 			this.copyToBitmapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
 			this.selectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.archiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.animationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.customizeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -168,6 +172,10 @@
 			this.overviewDrawPanel = new System.Windows.Forms.PictureBox();
 			this.overviewPanel = new System.Windows.Forms.Panel();
 			this.cursorGroupBox = new System.Windows.Forms.GroupBox();
+			this.newSingleGraphicToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.newArchiveGraphicToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.newSingleDrivingWayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.newArchiveDrivingWayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.graphicPanel = new BahnEditor.Editor.GraphicPanel();
 			this.normalModeToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
 			this.lineToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
@@ -246,27 +254,59 @@
 			this.newToolStripButton.Name = "newToolStripButton";
 			this.newToolStripButton.Size = new System.Drawing.Size(32, 22);
 			this.newToolStripButton.Text = "&New";
-			this.newToolStripButton.ButtonClick += new System.EventHandler(this.newToolStripMenuItem_Click);
+			this.newToolStripButton.ButtonClick += new System.EventHandler(this.newArchiveGraphicToolStripItem_Click);
 			// 
 			// newGraphicToolStripItem
 			// 
+			this.newGraphicToolStripItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newSingleGraphicToolStripItem,
+            this.newArchiveGraphicToolStripItem});
 			this.newGraphicToolStripItem.Name = "newGraphicToolStripItem";
-			this.newGraphicToolStripItem.Size = new System.Drawing.Size(138, 22);
+			this.newGraphicToolStripItem.Size = new System.Drawing.Size(152, 22);
 			this.newGraphicToolStripItem.Text = "Graphic";
-			this.newGraphicToolStripItem.Click += new System.EventHandler(this.newGraphicToolStripItem_Click);
+			// 
+			// newSingleGraphicToolStripItem
+			// 
+			this.newSingleGraphicToolStripItem.Name = "newSingleGraphicToolStripItem";
+			this.newSingleGraphicToolStripItem.Size = new System.Drawing.Size(135, 22);
+			this.newSingleGraphicToolStripItem.Text = "Single File";
+			this.newSingleGraphicToolStripItem.Click += new System.EventHandler(this.newSingleGraphicToolStripItem_Click);
+			// 
+			// newArchiveGraphicToolStripItem
+			// 
+			this.newArchiveGraphicToolStripItem.Name = "newArchiveGraphicToolStripItem";
+			this.newArchiveGraphicToolStripItem.Size = new System.Drawing.Size(135, 22);
+			this.newArchiveGraphicToolStripItem.Text = "Archive File";
+			this.newArchiveGraphicToolStripItem.Click += new System.EventHandler(this.newArchiveGraphicToolStripItem_Click);
 			// 
 			// newDrivingWayToolStripItem
 			// 
+			this.newDrivingWayToolStripItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newSingleDrivingWayToolStripItem,
+            this.newArchiveDrivingWayToolStripItem});
 			this.newDrivingWayToolStripItem.Name = "newDrivingWayToolStripItem";
-			this.newDrivingWayToolStripItem.Size = new System.Drawing.Size(138, 22);
+			this.newDrivingWayToolStripItem.Size = new System.Drawing.Size(152, 22);
 			this.newDrivingWayToolStripItem.Text = "Driving Way";
-			this.newDrivingWayToolStripItem.Click += new System.EventHandler(this.newDrivingWayToolStripItem_Click);
+			// 
+			// newSingleDrivingWayToolStripItem
+			// 
+			this.newSingleDrivingWayToolStripItem.Name = "newSingleDrivingWayToolStripItem";
+			this.newSingleDrivingWayToolStripItem.Size = new System.Drawing.Size(152, 22);
+			this.newSingleDrivingWayToolStripItem.Text = "Single File";
+			this.newSingleDrivingWayToolStripItem.Click += new System.EventHandler(this.newSingleDrivingWayToolStripItem_Click);
+			// 
+			// newArchiveDrivingWayToolStripItem
+			// 
+			this.newArchiveDrivingWayToolStripItem.Name = "newArchiveDrivingWayToolStripItem";
+			this.newArchiveDrivingWayToolStripItem.Size = new System.Drawing.Size(152, 22);
+			this.newArchiveDrivingWayToolStripItem.Text = "Archive";
+			this.newArchiveDrivingWayToolStripItem.Click += new System.EventHandler(this.newArchiveDrivingWayToolStripItem_Click);
 			// 
 			// signalToolStripMenuItem1
 			// 
 			this.signalToolStripMenuItem1.Enabled = false;
 			this.signalToolStripMenuItem1.Name = "signalToolStripMenuItem1";
-			this.signalToolStripMenuItem1.Size = new System.Drawing.Size(138, 22);
+			this.signalToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
 			this.signalToolStripMenuItem1.Text = "Signal";
 			// 
 			// openToolStripButton
@@ -1282,17 +1322,21 @@
 			// 
 			// newGraphicToolStripMenuItem
 			// 
+			this.newGraphicToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newSingleGraphicToolStripMenuItem,
+            this.newArchiveGraphicToolStripMenuItem});
 			this.newGraphicToolStripMenuItem.Name = "newGraphicToolStripMenuItem";
 			this.newGraphicToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
 			this.newGraphicToolStripMenuItem.Text = "Graphic";
-			this.newGraphicToolStripMenuItem.Click += new System.EventHandler(this.newGraphicToolStripItem_Click);
 			// 
 			// newDrivingWayToolStripMenuItem
 			// 
+			this.newDrivingWayToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newSingleDrivingWayToolStripMenuItem,
+            this.newArchiveDrivingWayToolStripMenuItem});
 			this.newDrivingWayToolStripMenuItem.Name = "newDrivingWayToolStripMenuItem";
 			this.newDrivingWayToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
 			this.newDrivingWayToolStripMenuItem.Text = "Driving Way";
-			this.newDrivingWayToolStripMenuItem.Click += new System.EventHandler(this.newDrivingWayToolStripItem_Click);
 			// 
 			// signalToolStripMenuItem
 			// 
@@ -1356,8 +1400,7 @@
             this.pasteToolStripMenuItem,
             this.copyToBitmapToolStripMenuItem,
             this.toolStripSeparator9,
-            this.selectAllToolStripMenuItem,
-            this.toolStripMenuItem1});
+            this.selectAllToolStripMenuItem});
 			this.editToolStripMenuItem.Name = "editToolStripMenuItem";
 			this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
 			this.editToolStripMenuItem.Text = "&Edit";
@@ -1435,14 +1478,10 @@
 			this.selectAllToolStripMenuItem.Text = "Select &All";
 			this.selectAllToolStripMenuItem.Click += new System.EventHandler(this.selectAllToolStripMenuItem_Click);
 			// 
-			// toolStripMenuItem1
-			// 
-			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-			this.toolStripMenuItem1.Size = new System.Drawing.Size(164, 22);
-			// 
 			// toolsToolStripMenuItem
 			// 
 			this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.archiveToolStripMenuItem,
             this.animationToolStripMenuItem,
             this.toolStripSeparator1,
             this.customizeToolStripMenuItem,
@@ -1450,6 +1489,13 @@
 			this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
 			this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
 			this.toolsToolStripMenuItem.Text = "&Tools";
+			// 
+			// archiveToolStripMenuItem
+			// 
+			this.archiveToolStripMenuItem.Name = "archiveToolStripMenuItem";
+			this.archiveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.archiveToolStripMenuItem.Text = "Archive";
+			this.archiveToolStripMenuItem.Click += new System.EventHandler(this.archiveToolStripMenuItem_Click);
 			// 
 			// animationToolStripMenuItem
 			// 
@@ -1524,7 +1570,6 @@
 			// 
 			// saveFileDialog
 			// 
-			this.saveFileDialog.Filter = "Archive files|*.uz1";
 			this.saveFileDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog_FileOk);
 			// 
 			// colorDialog
@@ -1726,6 +1771,34 @@
 			this.cursorGroupBox.TabIndex = 18;
 			this.cursorGroupBox.TabStop = false;
 			this.cursorGroupBox.Text = "Movement of cursor";
+			// 
+			// newSingleGraphicToolStripMenuItem
+			// 
+			this.newSingleGraphicToolStripMenuItem.Name = "newSingleGraphicToolStripMenuItem";
+			this.newSingleGraphicToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+			this.newSingleGraphicToolStripMenuItem.Text = "Single";
+			this.newSingleGraphicToolStripMenuItem.Click += new System.EventHandler(this.newSingleGraphicToolStripItem_Click);
+			// 
+			// newArchiveGraphicToolStripMenuItem
+			// 
+			this.newArchiveGraphicToolStripMenuItem.Name = "newArchiveGraphicToolStripMenuItem";
+			this.newArchiveGraphicToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+			this.newArchiveGraphicToolStripMenuItem.Text = "Archive";
+			this.newArchiveGraphicToolStripMenuItem.Click += new System.EventHandler(this.newArchiveGraphicToolStripItem_Click);
+			// 
+			// newSingleDrivingWayToolStripMenuItem
+			// 
+			this.newSingleDrivingWayToolStripMenuItem.Name = "newSingleDrivingWayToolStripMenuItem";
+			this.newSingleDrivingWayToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+			this.newSingleDrivingWayToolStripMenuItem.Text = "Single";
+			this.newSingleDrivingWayToolStripMenuItem.Click += new System.EventHandler(this.newSingleDrivingWayToolStripItem_Click);
+			// 
+			// newArchiveDrivingWayToolStripMenuItem
+			// 
+			this.newArchiveDrivingWayToolStripMenuItem.Name = "newArchiveDrivingWayToolStripMenuItem";
+			this.newArchiveDrivingWayToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+			this.newArchiveDrivingWayToolStripMenuItem.Text = "Archive";
+			this.newArchiveDrivingWayToolStripMenuItem.Click += new System.EventHandler(this.newArchiveDrivingWayToolStripItem_Click);
 			// 
 			// graphicPanel
 			// 
@@ -2024,7 +2097,15 @@
 		private System.Windows.Forms.Label drivingWayLabel4;
 		private System.Windows.Forms.Label drivingWayLabel5;
 		private System.Windows.Forms.SplitContainer propertiesSplitContainer;
-		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+		private System.Windows.Forms.ToolStripMenuItem archiveToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem newSingleGraphicToolStripItem;
+		private System.Windows.Forms.ToolStripMenuItem newArchiveGraphicToolStripItem;
+		private System.Windows.Forms.ToolStripMenuItem newSingleDrivingWayToolStripItem;
+		private System.Windows.Forms.ToolStripMenuItem newArchiveDrivingWayToolStripItem;
+		private System.Windows.Forms.ToolStripMenuItem newSingleGraphicToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem newArchiveGraphicToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem newSingleDrivingWayToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem newArchiveDrivingWayToolStripMenuItem;
 
 	}
 }

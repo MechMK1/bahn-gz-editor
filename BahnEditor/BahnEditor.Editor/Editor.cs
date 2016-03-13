@@ -62,15 +62,24 @@ namespace BahnEditor.Editor
 		private int overviewAlternative = 0;
 		private int overviewLine = 0;
 
+		//archives
+
+		private GraphicArchive zoom1Archive;
+		private GraphicArchive zoom2Archive;
+		private GraphicArchive zoom4Archive;
+
+		//single
+
+		private Graphic zoom1Graphic;
+		private Graphic zoom2Graphic;
+		private Graphic zoom4Graphic;
+
 		//other variables
 
 		private string lastPath = "";
 		private bool userMadeChanges = false;
 		private Mode mode;
 		private AnimationForm animationForm;
-		private GraphicArchive zoom1Archive;
-		private GraphicArchive zoom2Archive;
-		private GraphicArchive zoom4Archive;
 		private Dictionary<Tuple<int, int, int, LayerID, ZoomFactor>, UndoRedoStack> urStack;
 		private List<Point> changes;
 		private bool isMouseCaptured = false;
@@ -81,9 +90,11 @@ namespace BahnEditor.Editor
 
 		private enum Mode
 		{
-			Graphic = 0,
-			DrivingWay = 1,
-			Signal = 2
+			GraphicSingle = 0,
+			GraphicArchive = 1,
+			DrivingWaySingle = 2,
+			DrivingWayArchive = 3,
+			Signal = 4
 		}
 
 		#endregion Enums
@@ -146,21 +157,21 @@ namespace BahnEditor.Editor
 				switch (this.graphicPanel.ZoomFactor)
 				{
 					case ZoomFactor.Zoom1:
-						if (this.zoom1Archive != null)
+						if (this.ActualZoom1Graphic != null)
 						{
 							return this.ActualZoom1Graphic;
 						}
 						break;
 
 					case ZoomFactor.Zoom2:
-						if (this.zoom2Archive != null)
+						if (this.ActualZoom2Graphic != null)
 						{
 							return this.ActualZoom2Graphic;
 						}
 						break;
 
 					case ZoomFactor.Zoom4:
-						if (this.zoom4Archive != null)
+						if (this.ActualZoom4Graphic != null)
 						{
 							return this.ActualZoom4Graphic;
 						}
@@ -177,7 +188,7 @@ namespace BahnEditor.Editor
 		{
 			get
 			{
-				return this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, this.actualAlternative];
+				return (this.mode == Mode.GraphicSingle || this.mode == Mode.DrivingWaySingle) ? this.zoom1Graphic : this.zoom1Archive[this.actualGraphic, this.actualAnimationPhase, this.actualAlternative];
 			}
 		}
 
@@ -185,7 +196,7 @@ namespace BahnEditor.Editor
 		{
 			get
 			{
-				return this.zoom2Archive[this.actualGraphic, this.actualAnimationPhase, this.actualAlternative];
+				return (this.mode == Mode.GraphicSingle || this.mode == Mode.DrivingWaySingle) ? this.zoom2Graphic : this.zoom2Archive[this.actualGraphic, this.actualAnimationPhase, this.actualAlternative];
 			}
 		}
 
@@ -193,7 +204,7 @@ namespace BahnEditor.Editor
 		{
 			get
 			{
-				return this.zoom4Archive[this.actualGraphic, this.actualAnimationPhase, this.actualAlternative];
+				return (this.mode == Mode.GraphicSingle || this.mode == Mode.DrivingWaySingle) ? this.zoom4Graphic : this.zoom4Archive[this.actualGraphic, this.actualAnimationPhase, this.actualAlternative];
 			}
 		}
 
@@ -220,15 +231,23 @@ namespace BahnEditor.Editor
 			this.clockComboBox.SelectedIndex = 0;
 			this.clockRotationComboBox.SelectedIndex = 0;
 			this.animationForm = new AnimationForm(this);
-			this.NewGraphic(Mode.Graphic);
+			this.NewGraphic(Mode.GraphicArchive);
 		}
 
 		private void NewGraphic(Mode mode)
 		{
-			this.mode = mode;
-			this.zoom1Archive = new GraphicArchive(ZoomFactor.Zoom1);
-			this.zoom2Archive = new GraphicArchive(ZoomFactor.Zoom2);
-			this.zoom4Archive = new GraphicArchive(ZoomFactor.Zoom4);
+			if (mode == Mode.GraphicSingle || this.mode == Mode.DrivingWaySingle)
+			{
+				this.zoom1Graphic = new Graphic("", ZoomFactor.Zoom1);
+				this.zoom2Graphic = new Graphic("", ZoomFactor.Zoom2);
+				this.zoom4Graphic = new Graphic("", ZoomFactor.Zoom4);
+			}
+			else
+			{
+				this.zoom1Archive = new GraphicArchive(ZoomFactor.Zoom1);
+				this.zoom2Archive = new GraphicArchive(ZoomFactor.Zoom2);
+				this.zoom4Archive = new GraphicArchive(ZoomFactor.Zoom4);
+			}
 			this.urStack = new Dictionary<Tuple<int, int, int, LayerID, ZoomFactor>, UndoRedoStack>();
 			this.actualGraphic = 0;
 			this.actualAlternative = 0;
@@ -256,7 +275,15 @@ namespace BahnEditor.Editor
 			this.UpdateAnimation();
 		}
 
-		private void LoadGraphic(string filename)
+		private bool SaveGraphic()
+		{
+			if (this.mode == Mode.GraphicSingle || this.mode == Mode.DrivingWaySingle)
+				return this.SaveSingleGraphic();
+			else
+				return this.SaveGraphicArchive();
+		}
+
+		private void LoadGraphicArchive(string filename)
 		{
 			try
 			{
@@ -295,11 +322,11 @@ namespace BahnEditor.Editor
 					{
 						if (this.zoom1Archive[i].Properties.RawData.HasFlag(GraphicProperties.Properties.DrivingWay))
 						{
-							this.SetMode(Mode.DrivingWay);
+							this.SetMode(Mode.DrivingWayArchive);
 						}
 						else
 						{
-							this.SetMode(Mode.Graphic);
+							this.SetMode(Mode.GraphicArchive);
 						}
 						break;
 					}
@@ -340,7 +367,7 @@ namespace BahnEditor.Editor
 			catch (Exception ex)
 			{
 				MessageBox.Show(String.Format("There was an error while loading: {0}!", ex.ToString()), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-				this.NewGraphic(mode);
+				this.NewGraphic(Mode.GraphicArchive);
 			}
 		}
 
@@ -389,9 +416,78 @@ namespace BahnEditor.Editor
 			}
 		}
 
-		private void InsertGraphicToArchive(string filename)
+		private void LoadSingleGraphic(string filename)
 		{
-			ChooseGraphicLoadTypeForm chooseGraphicForm = new ChooseGraphicLoadTypeForm();
+			try
+			{
+				this.zoom1Graphic = Graphic.Load(filename);
+				if (this.zoom1Graphic.ZoomFactor != ZoomFactor.Zoom1)
+				{
+					throw new InvalidDataException("Zoomfactor of graphic not 1");
+				}
+				try
+				{
+					this.zoom2Graphic = Graphic.Load(filename.Remove(filename.Length - 3) + "uz2");
+					if (this.zoom2Graphic.ZoomFactor != ZoomFactor.Zoom2)
+					{
+						throw new InvalidDataException("Zoom2-file found, internal zoomfactor not 2");
+					}
+				}
+				catch (FileNotFoundException)
+				{
+					this.zoom2Graphic = null;
+				}
+				try
+				{
+					this.zoom4Graphic = Graphic.Load(filename.Remove(filename.Length - 3) + "uz4");
+					if (this.zoom4Graphic.ZoomFactor != ZoomFactor.Zoom4)
+					{
+						throw new InvalidDataException("Zoom4-file found, internal zoomfactor not 4");
+					}
+				}
+				catch (FileNotFoundException)
+				{
+					this.zoom4Graphic = null;
+				}
+				if (this.zoom1Graphic.Properties.RawData.HasFlag(GraphicProperties.Properties.DrivingWay))
+				{
+					this.SetMode(Mode.DrivingWaySingle);
+				}
+				else
+				{
+					this.SetMode(Mode.GraphicSingle);
+				}
+				this.urStack = new Dictionary<Tuple<int, int, int, LayerID, ZoomFactor>, UndoRedoStack>();
+				this.actualGraphic = 0;
+				this.actualAnimationPhase = 0;
+				this.graphicPanel.ZoomFactor = ZoomFactor.Zoom1;
+				this.tabControlSelectedCC = true;
+				this.tabControl.SelectedIndex = 0;
+				this.tabControlSelectedCC = false;
+				this.alternativeCheckBoxCC = true;
+				this.alternativesCheckBox.Checked = false;
+				this.alternativeCheckBoxCC = false;
+				this.animationNumbericUpDownCC = true;
+				this.animationNumericUpDown.Value = Constants.MinAnimationPhase;
+				this.animationNumbericUpDownCC = false;
+				this.UpdateProperties();
+				this.UpdateDrivingWay();
+				this.lastPath = filename;
+				this.UserMadeChanges(false);
+				this.ChangeLayer(LayerID.Foreground);
+				this.UpdateZoom();
+				this.UpdateUndoRedoButtons();
+				this.graphicPanel.Draw(this.GetGraphicLayer());
+				this.overviewDrawPanel.Invalidate();
+				this.UpdateAnimation();
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(String.Format("There was an error while loading: {0}!", ex.ToString()), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				this.NewGraphic(Mode.GraphicSingle);
+			}
+
+			/*ChooseGraphicLoadTypeForm chooseGraphicForm = new ChooseGraphicLoadTypeForm();
 			while (true)
 			{
 				DialogResult result = chooseGraphicForm.ShowDialog();
@@ -462,18 +558,51 @@ namespace BahnEditor.Editor
 				{
 					return;
 				}
+			}*/
+		}
+
+		private bool SaveSingleGraphic()
+		{
+			try
+			{
+				if (!this.zoom1Graphic.Save(lastPath, true))
+				{
+					MessageBox.Show("There was an error while saving the zoom1-archive!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return false;
+				}
+				if (!this.zoom2Graphic.IsTransparent() && !this.zoom2Graphic.Save(lastPath.Remove(lastPath.Length - 3) + "gz2", true))
+				{
+					MessageBox.Show("There was an error while saving the zoom2-archive!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return false;
+				}
+				if (!this.zoom4Graphic.IsTransparent() && !this.zoom4Graphic.Save(lastPath.Remove(lastPath.Length - 3) + "gz4", true))
+				{
+					MessageBox.Show("There was an error while saving the zoom4-archive!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return false;
+				}
+				this.UserMadeChanges(false);
+				return true;
+			}
+			catch (LayerIsEmptyException)
+			{
+				MessageBox.Show("A graphic is empty (fully transparent)!", "Invalid graphic!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				return false;
 			}
 		}
 
-		private void ClickOnSaveButton(bool forceSave)
+		private void ClickOnSaveButton(bool forceSaveDialog)
 		{
-			if (lastPath == "" || forceSave)
+			if (String.IsNullOrEmpty(lastPath) || forceSaveDialog)
 			{
+				if (this.mode == Mode.GraphicSingle || this.mode == Mode.DrivingWaySingle)
+					this.saveFileDialog.Filter = "Graphic files|*.gz1";
+				else
+					this.saveFileDialog.Filter = "Archive files|*.uz1";
 				this.saveFileDialog.ShowDialog();
 			}
 			else
 			{
-				this.SaveGraphicArchive();
+				this.SaveGraphic();
 			}
 		}
 
@@ -523,15 +652,49 @@ namespace BahnEditor.Editor
 		private void SetMode(Mode mode)
 		{
 			this.mode = mode;
-			if (mode == Mode.Graphic)
+			if (mode == Mode.GraphicArchive)
 			{
 				this.drivingWayGroupBox.Visible = false;
 				this.propertiesGroupBox.Visible = true;
+				this.overviewDownButton.Enabled = true;
+				this.overviewLeftRightButton.Enabled = true;
+				this.overviewUpButton.Enabled = true;
+				this.alternativesCheckBox.Enabled = true;
+				this.animationToolStripMenuItem.Enabled = true;
+				this.archiveToolStripMenuItem.Enabled = true;
 			}
-			else if (mode == Mode.DrivingWay)
+			else if (mode == Mode.GraphicSingle)
+			{
+				this.drivingWayGroupBox.Visible = false;
+				this.propertiesGroupBox.Visible = true;
+				this.overviewDownButton.Enabled = false;
+				this.overviewLeftRightButton.Enabled = false;
+				this.overviewUpButton.Enabled = false;
+				this.alternativesCheckBox.Enabled = false;
+				this.animationToolStripMenuItem.Enabled = false;
+				this.archiveToolStripMenuItem.Enabled = false;
+			}
+			else if (mode == Mode.DrivingWayArchive)
 			{
 				this.propertiesGroupBox.Visible = false;
 				this.drivingWayGroupBox.Visible = true;
+				this.overviewDownButton.Enabled = true;
+				this.overviewLeftRightButton.Enabled = true;
+				this.overviewUpButton.Enabled = true;
+				this.alternativesCheckBox.Enabled = true;
+				this.animationToolStripMenuItem.Enabled = true;
+				this.archiveToolStripMenuItem.Enabled = true;
+			}
+			else if(mode == Mode.DrivingWaySingle)
+			{
+				this.propertiesGroupBox.Visible = false;
+				this.drivingWayGroupBox.Visible = true;
+				this.overviewDownButton.Enabled = false;
+				this.overviewLeftRightButton.Enabled = false;
+				this.overviewUpButton.Enabled = false;
+				this.alternativesCheckBox.Enabled = false;
+				this.animationToolStripMenuItem.Enabled = false;
+				this.archiveToolStripMenuItem.Enabled = false;
 			}
 		}
 
@@ -579,6 +742,8 @@ namespace BahnEditor.Editor
 
 		private void DrawOverview(Graphics g)
 		{
+			if (this.mode == Mode.GraphicSingle || this.mode == Mode.DrivingWaySingle)
+				return;
 			if (this.zoom1Archive != null)
 			{
 				g.TranslateTransform(1, 15);
@@ -1156,38 +1321,38 @@ namespace BahnEditor.Editor
 
 		private void CreateGraphic()
 		{
-			if (this.graphicPanel.ZoomFactor == ZoomFactor.Zoom1)
+			if (this.graphicPanel.ZoomFactor == ZoomFactor.Zoom1 && this.ActualZoom1Graphic == null)
 			{
-				if (this.ActualZoom1Graphic == null)
-				{
-					Graphic graphic = new Graphic("No text");
+				Graphic graphic = new Graphic("No text");
+				if (this.mode == Mode.GraphicSingle || this.mode == Mode.DrivingWaySingle)
+					this.zoom1Graphic = graphic;
+				else
 					this.zoom1Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
-					this.UserMadeChanges(true);
-					ChangePropertyComboBoxes(true);
-					this.overviewDrawPanel.Invalidate();
-				}
+				this.UserMadeChanges(true);
+				ChangePropertyComboBoxes(true);
+				this.overviewDrawPanel.Invalidate();
 			}
-			else if (this.graphicPanel.ZoomFactor == ZoomFactor.Zoom2)
+			else if (this.graphicPanel.ZoomFactor == ZoomFactor.Zoom2 && this.ActualZoom2Graphic == null)
 			{
-				if (this.ActualZoom2Graphic == null)
-				{
-					Graphic graphic = new Graphic("No text", zoomFactor: ZoomFactor.Zoom2);
+				Graphic graphic = new Graphic("No text", zoomFactor: ZoomFactor.Zoom2);
+				if (this.mode == Mode.GraphicSingle || this.mode == Mode.DrivingWaySingle)
+					this.zoom2Graphic = graphic;
+				else
 					this.zoom2Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
-					this.UserMadeChanges(true);
-					ChangePropertyComboBoxes(true);
-					this.overviewDrawPanel.Invalidate();
-				}
+				this.UserMadeChanges(true);
+				ChangePropertyComboBoxes(true);
+				this.overviewDrawPanel.Invalidate();
 			}
-			else if (this.graphicPanel.ZoomFactor == ZoomFactor.Zoom4)
+			else if (this.graphicPanel.ZoomFactor == ZoomFactor.Zoom4 && this.ActualZoom4Graphic == null)
 			{
-				if (this.ActualZoom4Graphic == null)
-				{
-					Graphic graphic = new Graphic("No text", zoomFactor: ZoomFactor.Zoom4);
+				Graphic graphic = new Graphic("No text", zoomFactor: ZoomFactor.Zoom4);
+				if (this.mode == Mode.GraphicSingle || this.mode == Mode.DrivingWaySingle)
+					this.zoom4Graphic = graphic;
+				else
 					this.zoom4Archive.AddGraphic(this.actualGraphic, this.actualAnimationPhase, this.actualAlternative, graphic);
-					this.UserMadeChanges(true);
-					ChangePropertyComboBoxes(true);
-					this.overviewDrawPanel.Invalidate();
-				}
+				this.UserMadeChanges(true);
+				ChangePropertyComboBoxes(true);
+				this.overviewDrawPanel.Invalidate();
 			}
 		}
 
@@ -1261,7 +1426,7 @@ namespace BahnEditor.Editor
 
 		private void UpdateProperties()
 		{
-			if (this.mode == Mode.Graphic)
+			if (this.mode == Mode.GraphicArchive || this.mode == Mode.GraphicSingle)
 			{
 				Graphic graphic = this.ActualGraphic;
 				if (graphic == null)
@@ -1363,7 +1528,7 @@ namespace BahnEditor.Editor
 
 		private void UpdateDrivingWay()
 		{
-			if (this.mode == Mode.DrivingWay)
+			if (this.mode == Mode.DrivingWayArchive || this.mode == Mode.DrivingWaySingle)
 			{
 				Graphic graphic = this.ActualZoom1Graphic;
 				Label[] drivingWayLabels = { this.drivingWayLabel1, this.drivingWayLabel2, this.drivingWayLabel3, this.drivingWayLabel4, this.drivingWayLabel5, this.drivingWayLabel6, this.drivingWayLabel7, this.drivingWayLabel8 };
@@ -2399,9 +2564,9 @@ namespace BahnEditor.Editor
 		private void loadFileDialog_FileOk(object sender, CancelEventArgs e)
 		{
 			if (this.loadFileDialog.SafeFileName.EndsWith(".gz1"))
-				this.InsertGraphicToArchive(this.loadFileDialog.FileName);
+				this.LoadSingleGraphic(this.loadFileDialog.FileName);
 			else if (this.loadFileDialog.SafeFileName.EndsWith(".uz1"))
-				this.LoadGraphic(this.loadFileDialog.FileName);
+				this.LoadGraphicArchive(this.loadFileDialog.FileName);
 			else
 				MessageBox.Show("Filename with incorrect extension", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 		}
@@ -2409,7 +2574,7 @@ namespace BahnEditor.Editor
 		private void saveFileDialog_FileOk(object sender, CancelEventArgs e)
 		{
 			this.lastPath = this.saveFileDialog.FileName;
-			if (!this.SaveGraphicArchive())
+			if (!this.SaveGraphic())
 			{
 				e.Cancel = true;
 			}
@@ -3167,25 +3332,37 @@ namespace BahnEditor.Editor
 			this.OpenAnimationForm();
 		}
 
-		private void newDrivingWayToolStripItem_Click(object sender, EventArgs e)
+		private void archiveToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (!this.AskSaveGraphic())
-				return;
-			this.NewGraphic(Mode.DrivingWay);
+			MessageBox.Show("Not yet Implemented!");
 		}
 
-		private void newGraphicToolStripItem_Click(object sender, EventArgs e)
+		private void newArchiveDrivingWayToolStripItem_Click(object sender, EventArgs e)
 		{
 			if (!this.AskSaveGraphic())
 				return;
-			this.NewGraphic(Mode.Graphic);
+			this.NewGraphic(Mode.DrivingWayArchive);
 		}
 
-		private void newToolStripMenuItem_Click(object sender, EventArgs e)
+		private void newSingleDrivingWayToolStripItem_Click(object sender, EventArgs e)
 		{
 			if (!this.AskSaveGraphic())
 				return;
-			this.NewGraphic(Mode.Graphic);
+			this.NewGraphic(Mode.DrivingWaySingle);
+		}
+
+		private void newArchiveGraphicToolStripItem_Click(object sender, EventArgs e)
+		{
+			if (!this.AskSaveGraphic())
+				return;
+			this.NewGraphic(Mode.GraphicArchive);
+		}
+
+		private void newSingleGraphicToolStripItem_Click(object sender, EventArgs e)
+		{
+			if (!this.AskSaveGraphic())
+				return;
+			this.NewGraphic(Mode.GraphicSingle);
 		}
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)

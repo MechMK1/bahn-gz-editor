@@ -144,19 +144,19 @@ namespace BahnEditor.BahnLib
 			return !layersCompressed.ContainsKey(layerID);
 		}
 
-		public void Save(string path, bool overwrite)
+		public bool Save(string path, bool overwrite)
 		{
 			if (path == null)
 				throw new ArgumentNullException("path");
 			if (File.Exists(path) && !overwrite)
 			{
-				return;
+				return false;
 			}
 			else
 			{
 				using (FileStream stream = File.OpenWrite(path))
 				{
-					Save(stream);
+					return Save(stream);
 				}
 			}
 		}
@@ -319,10 +319,10 @@ namespace BahnEditor.BahnLib
 			return graphic;
 		}
 
-		internal void Save(Stream path)
+		internal bool Save(Stream path)
 		{
 			if (this.IsTransparent())
-				return; //If there is nothing to do, just don't do anything. Duh.
+				throw new LayerIsEmptyException("The graphic has no layers (fully transparent).");
 
 			BinaryWriter bw = new BinaryWriter(path, Encoding.Unicode);
 			bw.Write(Constants.HeaderText.ToArray()); //Headertext
@@ -386,6 +386,7 @@ namespace BahnEditor.BahnLib
 				_WriteLayerToStream(item.Value, bw, this.ZoomFactor);
 			}
 			bw.Flush();
+			return true;
 		}
 
 		#endregion Internal Methods
