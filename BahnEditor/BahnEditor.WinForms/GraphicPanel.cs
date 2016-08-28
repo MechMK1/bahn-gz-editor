@@ -5,7 +5,7 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace BahnEditor.Editor
+namespace BahnEditor.WinForms
 {
 	public class GraphicPanel : Control
 	{
@@ -74,7 +74,7 @@ namespace BahnEditor.Editor
 		public void Draw(uint[,] graphic)
 		{
 			this.canvas.Dispose();
-			Size size = new Size((int)((this.ZoomLevel) * Constants.ElementWidth * 3)+1, (int)((this.ZoomLevel) * Constants.ElementHeight * 8)+1);
+			Size size = new Size((int)((this.ZoomLevel) * Constants.ElementWidth * 3) + 1, (int)((this.ZoomLevel) * Constants.ElementHeight * 8) + 1);
 			this.canvas = new Bitmap(size.Width, size.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 			using (Graphics g = Graphics.FromImage(canvas))
 			{

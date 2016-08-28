@@ -12,10 +12,31 @@
 		/// Basic element width in pixels for scale 1:1
 		/// </summary>
 		public const int ElementWidth = 32;
+
 		/// <summary>
 		/// Basic element height in pixels for scale 1:1
 		/// </summary>
 		public const int ElementHeight = 16;
+
+		/// <summary>
+		/// Graphic width in pixels for scale 1:1
+		/// </summary>
+		public const int GraphicWidth = Constants.ElementWidth * ElementsXDirection;
+
+		/// <summary>
+		/// Graphic height in pixels for scale 1:1
+		/// </summary>
+		public const int GraphicHeight = Constants.ElementHeight * ElementsYDirection;
+
+		/// <summary>
+		/// Number of Elements in X-Coordinate
+		/// </summary>
+		public const int ElementsXDirection = 3;
+
+		/// <summary>
+		/// Number of Elements in Y-Coordinate
+		/// </summary>
+		public const int ElementsYDirection = 8;
 
 		//Elements in Archive
 		public const int MaxElementsInArchive = 89;

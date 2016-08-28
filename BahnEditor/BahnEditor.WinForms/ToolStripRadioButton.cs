@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace BahnEditor.Editor
+namespace BahnEditor.WinForms
 {
 	public class ToolStripRadioButton : ToolStripButton
 	{

@@ -1,4 +1,4 @@
-﻿namespace BahnEditor.Editor
+﻿namespace BahnEditor.WinForms
 {
 	partial class Editor
 	{
@@ -176,13 +176,13 @@
 			this.newArchiveGraphicToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.newSingleDrivingWayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.newArchiveDrivingWayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.graphicPanel = new BahnEditor.Editor.GraphicPanel();
-			this.normalModeToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
-			this.lineToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
-			this.rectangleToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
-			this.fillToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
-			this.selectToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
-			this.pickColorToolStripRadioButton = new BahnEditor.Editor.ToolStripRadioButton();
+			this.graphicPanel = new BahnEditor.WinForms.GraphicPanel();
+			this.normalModeToolStripRadioButton = new BahnEditor.WinForms.ToolStripRadioButton();
+			this.lineToolStripRadioButton = new BahnEditor.WinForms.ToolStripRadioButton();
+			this.rectangleToolStripRadioButton = new BahnEditor.WinForms.ToolStripRadioButton();
+			this.fillToolStripRadioButton = new BahnEditor.WinForms.ToolStripRadioButton();
+			this.selectToolStripRadioButton = new BahnEditor.WinForms.ToolStripRadioButton();
+			this.pickColorToolStripRadioButton = new BahnEditor.WinForms.ToolStripRadioButton();
 			this.toolStrip.SuspendLayout();
 			this.controlPanel.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.propertiesSplitContainer)).BeginInit();
@@ -1700,7 +1700,7 @@
 			// 
 			// overviewLeftRightButton
 			// 
-			this.overviewLeftRightButton.Image = global::BahnEditor.Editor.Properties.Resources.leftrightarrow;
+			this.overviewLeftRightButton.Image = global::BahnEditor.WinForms.Properties.Resources.leftrightarrow;
 			this.overviewLeftRightButton.Location = new System.Drawing.Point(4, 33);
 			this.overviewLeftRightButton.Name = "overviewLeftRightButton";
 			this.overviewLeftRightButton.Size = new System.Drawing.Size(27, 17);
@@ -1711,7 +1711,7 @@
 			// 
 			// overviewUpButton
 			// 
-			this.overviewUpButton.BackgroundImage = global::BahnEditor.Editor.Properties.Resources.uparrow;
+			this.overviewUpButton.BackgroundImage = global::BahnEditor.WinForms.Properties.Resources.uparrow;
 			this.overviewUpButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
 			this.overviewUpButton.Location = new System.Drawing.Point(14, 0);
 			this.overviewUpButton.Name = "overviewUpButton";
@@ -1722,7 +1722,7 @@
 			// 
 			// overviewDownButton
 			// 
-			this.overviewDownButton.BackgroundImage = global::BahnEditor.Editor.Properties.Resources.downarrow;
+			this.overviewDownButton.BackgroundImage = global::BahnEditor.WinForms.Properties.Resources.downarrow;
 			this.overviewDownButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
 			this.overviewDownButton.Location = new System.Drawing.Point(14, 16);
 			this.overviewDownButton.Name = "overviewDownButton";

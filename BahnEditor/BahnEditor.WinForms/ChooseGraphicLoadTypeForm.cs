@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace BahnEditor.Editor
+namespace BahnEditor.WinForms
 {
 	public partial class ChooseGraphicLoadTypeForm : Form
 	{
