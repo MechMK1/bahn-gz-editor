@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29324.140
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BahnEditor.BahnLib", "BahnEditor.BahnLib\BahnEditor.BahnLib.csproj", "{9552D044-73C6-4F57-A2E7-6605095D419F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BahnEditor.BahnLib", "BahnEditor.BahnLib\BahnEditor.BahnLib.csproj", "{9552D044-73C6-4F57-A2E7-6605095D419F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BahnEditor.Test", "BahnEditor.Test\BahnEditor.Test.csproj", "{92A6C615-0FEA-420D-88D9-7C7DE0AAA5D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BahnEditor.Editor", "BahnEditor.Winforms\BahnEditor.Winforms.csproj", "{1E8FB147-FB60-4327-9F4D-C85CB4B9CB3E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BahnEditor.Winforms", "BahnEditor.Winforms\BahnEditor.Winforms.csproj", "{1E8FB147-FB60-4327-9F4D-C85CB4B9CB3E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,6 +30,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BAADE26C-A4AE-404D-83A4-454454C07197}
 	EndGlobalSection
 	GlobalSection(Performance) = preSolution
 		HasPerformanceSessions = true
