@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 
     <IsPackable>false</IsPackable>
@@ -18,5 +17,5 @@
   <ItemGroup>
     <ProjectReference Include="..\BahnEditor.BahnLib\BahnEditor.BahnLib.csproj" />
   </ItemGroup>
-
+  
 </Project>
