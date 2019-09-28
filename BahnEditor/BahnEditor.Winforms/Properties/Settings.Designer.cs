@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BahnEditor.Editor.Properties
+namespace BahnEditor.Winforms.Properties
 {
 
 

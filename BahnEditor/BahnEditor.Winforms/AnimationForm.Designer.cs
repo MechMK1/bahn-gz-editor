@@ -1,4 +1,4 @@
-﻿namespace BahnEditor.Editor
+﻿namespace BahnEditor.Winforms
 {
 	partial class AnimationForm
 	{
@@ -147,7 +147,7 @@
 			// upAnimationStepButton
 			// 
 			this.upAnimationStepButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.upAnimationStepButton.BackgroundImage = global::BahnEditor.Editor.Properties.Resources.uparrow;
+			this.upAnimationStepButton.BackgroundImage = global::BahnEditor.Winforms.Properties.Resources.uparrow;
 			this.upAnimationStepButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
 			this.upAnimationStepButton.Location = new System.Drawing.Point(391, 99);
 			this.upAnimationStepButton.Name = "upAnimationStepButton";
@@ -159,7 +159,7 @@
 			// downAnimationStepButton
 			// 
 			this.downAnimationStepButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.downAnimationStepButton.BackgroundImage = global::BahnEditor.Editor.Properties.Resources.downarrow;
+			this.downAnimationStepButton.BackgroundImage = global::BahnEditor.Winforms.Properties.Resources.downarrow;
 			this.downAnimationStepButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
 			this.downAnimationStepButton.Location = new System.Drawing.Point(391, 128);
 			this.downAnimationStepButton.Name = "downAnimationStepButton";

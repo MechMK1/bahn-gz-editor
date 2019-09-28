@@ -7,8 +7,8 @@
     <ProjectGuid>{1E8FB147-FB60-4327-9F4D-C85CB4B9CB3E}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BahnEditor.Editor</RootNamespace>
-    <AssemblyName>BahnEditor.Editor</AssemblyName>
+    <RootNamespace>BahnEditor.Winforms</RootNamespace>
+    <AssemblyName>BahnEditor.Winforms</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

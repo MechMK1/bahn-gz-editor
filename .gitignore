@@ -5,6 +5,8 @@
 *.suo
 *.user
 *.sln.docstates
+/BahnEditor/.vs/BahnEditor/v16
+/.vs
 
 # Build results
 [Dd]ebug/

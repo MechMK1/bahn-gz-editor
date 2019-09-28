@@ -2,7 +2,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace BahnEditor.Editor
+namespace BahnEditor.Winforms
 {
 	public partial class DrivingWaySettingsForm : Form
 	{

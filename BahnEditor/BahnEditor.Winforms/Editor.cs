@@ -9,7 +9,7 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
-namespace BahnEditor.Editor
+namespace BahnEditor.Winforms
 {
 	public partial class Editor : Form
 	{

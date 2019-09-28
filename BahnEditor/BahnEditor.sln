@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BahnEditor.BahnLib", "BahnE
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BahnEditor.Test", "BahnEditor.Test\BahnEditor.Test.csproj", "{92A6C615-0FEA-420D-88D9-7C7DE0AAA5D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BahnEditor.Editor", "BahnEditor.Editor\BahnEditor.Editor.csproj", "{1E8FB147-FB60-4327-9F4D-C85CB4B9CB3E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BahnEditor.Editor", "BahnEditor.Winforms\BahnEditor.Winforms.csproj", "{1E8FB147-FB60-4327-9F4D-C85CB4B9CB3E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

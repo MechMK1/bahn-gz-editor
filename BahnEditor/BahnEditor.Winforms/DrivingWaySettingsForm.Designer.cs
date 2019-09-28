@@ -1,4 +1,4 @@
-﻿namespace BahnEditor.Editor
+﻿namespace BahnEditor.Winforms
 {
 	partial class DrivingWaySettingsForm
 	{

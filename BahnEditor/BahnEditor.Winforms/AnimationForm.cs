@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
 
-namespace BahnEditor.Editor
+namespace BahnEditor.Winforms
 {
 	public partial class AnimationForm : Form
 	{
